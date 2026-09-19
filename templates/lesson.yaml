@@ -1,0 +1,11 @@
+id: LESSON_ID
+title: Nueva clase
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites: [Definir conocimientos previos]
+objectives: [Definir un objetivo observable]
+skills: [Resolver problemas]
+curriculum: [m1-2027-sistemas]
+status: draft
+slides: [portada.mdx]

@@ -1,0 +1,17 @@
+# Reglas del proyecto
+
+Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en reducción.
+
+- Leer README y docs/architecture.md antes de cambiar la estructura.
+- TypeScript estricto; no any, ts-ignore, eval ni conversiones que oculten errores.
+- El contenido vive en content; el motor no debe contener ejercicios específicos.
+- Conservar IDs estables, autoría española y ecuaciones verificadas en ambos miembros.
+- Paquetes compartidos no importan aplicaciones. Matemática pura fuera de React.
+- Interactivos con parámetros iniciales, reinicio y representación estática determinista.
+- PDF: exactamente una página por diapositiva, todo revelado, sin notas ni controles.
+- Evitar recortes y scroll dentro del lienzo. Dividir contenido antes de reducir tipografía.
+- Ejecutar content:check, typecheck, lint, test, build y test:e2e antes de entregar.
+- Revisar visualmente diapositivas y PDF después de cambios de composición.
+- No publicar borradores. Conservar archive y atribución del prototipo.
+- No introducir dependencias o backend sin una necesidad del hito.
+- No afirmar ensayo en proyector ni revisión docente si no se han realizado.

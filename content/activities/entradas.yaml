@@ -1,0 +1,34 @@
+id: entradas
+type: paes
+prompt: En una función se venden 30 entradas. La entrada adulta cuesta $4.000 y la escolar $2.000. Se recaudan $80.000. ¿Cuántas entradas adultas se vendieron?
+answer: B · 10 entradas adultas.
+solution: 'a + e = 30 y 4a + 2e = 80 (miles de pesos). Al restar dos veces la primera ecuación de la segunda, 2a = 20. Luego a = 10 y e = 20. Comprobación: 40.000 + 40.000 = 80.000.'
+skills: [Resolver problemas, Modelar]
+source:
+  kind: original
+  reference: Elaboración propia para esta clase; alineada con M1, Admisión 2027.
+options:
+  - {
+      id: A,
+      text: '5',
+      correct: false,
+      explanation: Dividir 20 por 4 olvida que el coeficiente restante es 2.,
+    }
+  - {
+      id: B,
+      text: '10',
+      correct: true,
+      explanation: Satisface las ecuaciones de cantidad y recaudación.,
+    }
+  - {
+      id: C,
+      text: '20',
+      correct: false,
+      explanation: Corresponde a las entradas escolares.,
+    }
+  - {
+      id: D,
+      text: '30',
+      correct: false,
+      explanation: Confunde el total de entradas con las adultas.,
+    }

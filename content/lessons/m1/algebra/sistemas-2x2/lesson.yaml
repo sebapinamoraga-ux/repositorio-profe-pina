@@ -1,0 +1,33 @@
+id: sistemas-2x2
+title: Sistemas de ecuaciones 2×2
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites: [Resolver ecuaciones lineales y operar con números enteros]
+objectives:
+  - Resolver sistemas 2×2 mediante reducción y comprobar el par solución.
+  - Modelar dos condiciones de una situación mediante ecuaciones e interpretar la solución.
+skills: [Resolver problemas, Modelar, Representar, Argumentar]
+curriculum: [m1-2027-sistemas]
+status: published
+slides:
+  - apertura.mdx
+  - desafio.mdx
+  - activar.mdx
+  - signos.mdx
+  - concepto.mdx
+  - grafico.mdx
+  - idea.mdx
+  - resolver.mdx
+  - preparar.mdx
+  - reducir.mdx
+  - guiada.mdx
+  - error.mdx
+  - comparar.mdx
+  - elegir.mdx
+  - modelar.mdx
+  - contexto.mdx
+  - individual.mdx
+  - paes.mdx
+  - distractores.mdx
+  - cierre.mdx
