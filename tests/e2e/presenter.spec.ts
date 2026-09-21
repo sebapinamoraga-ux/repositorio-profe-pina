@@ -104,13 +104,16 @@ test('tema claro y tres niveles de mascota llegan a la clase y al PDF', async ({
   await expect(page.locator('.mascot-level-marca')).toHaveCount(1);
   await expect(page.locator('.mascot-level-sutil')).toHaveCount(2);
   await expect(page.locator('.mascot-level-pedagogica')).toHaveCount(6);
-  await expect(page.locator('.block-definicion')).toHaveCount(1);
+  await expect(page.locator('.block-definicion')).toHaveCount(7);
   await expect(page.locator('[data-slide="definicion"] h1')).toHaveText(
-    'Sistema de ecuaciones lineales de 2x2',
+    'Dos ecuaciones, dos incógnitas',
   );
   await expect(
+    page.locator('[data-slide="definicion"] .block-definicion .block-label'),
+  ).toHaveText('Sistema de ecuaciones lineales de 2x2');
+  await expect(
     page.locator('[data-slide="apertura"] .block-objetivo'),
-  ).toHaveCSS('background-color', 'rgb(255, 253, 250)');
+  ).toHaveCSS('background-color', 'rgb(241, 236, 251)');
   await expect(
     page.locator('[data-slide="definicion"] .block-definicion'),
   ).toHaveCSS('background-color', 'rgb(231, 239, 255)');
@@ -133,6 +136,60 @@ test('tema claro y tres niveles de mascota llegan a la clase y al PDF', async ({
     )
     .toBe('none');
 });
+test('cada momento pedagógico lleva su color y la asociación enlaza cajas', async ({
+  page,
+}) => {
+  await page.goto('/#clase=sistemas-2x2&modo=pdf');
+  const bg = (selector: string, rgb: string) =>
+    expect(page.locator(selector).first()).toHaveCSS('background-color', rgb);
+  const violet = 'rgb(241, 236, 251)';
+  await bg('[data-slide="apertura"] .block-objetivo', violet);
+  await bg('[data-slide="desafio"] .block-objetivo', violet);
+  await bg('[data-slide="cierre"] .block-cierre', violet);
+  await bg('[data-slide="metodos"] .block-definicion', 'rgb(231, 239, 255)');
+  await expect(
+    page.locator('[data-slide="metodos"] .block-definicion'),
+  ).toHaveCount(3);
+  for (const id of ['caso-unico', 'caso-infinitas', 'caso-vacio'])
+    await bg(`[data-slide="${id}"] .block-definicion`, 'rgb(231, 239, 255)');
+  for (const id of ['idea', 'reducir', 'elegir']) {
+    await bg(`[data-slide="${id}"] .block-comprobacion`, 'rgb(228, 244, 237)');
+    await expect(
+      page.locator(`[data-slide="${id}"] .block-comprobacion .block-label`),
+    ).toHaveText('Verifiquemos');
+  }
+  await bg('[data-slide="comparar"] .block-guiada', 'rgb(255, 241, 189)');
+  await bg('[data-slide="distractores"] .block-error', 'rgb(255, 241, 189)');
+  const rose = 'rgb(253, 231, 238)';
+  for (const id of ['contexto', 'individual'])
+    await bg(`[data-slide="${id}"] .block-ticket`, rose);
+  await expect(page.locator('[data-slide="modelar"] .registro')).toHaveCount(2);
+  await bg('[data-slide="modelar"] .registro', 'rgb(241, 235, 224)');
+  const slate = 'rgb(234, 239, 245)';
+  await bg(
+    '[data-slide="activar"] .teaching-card:not([class*="tono-"])',
+    slate,
+  );
+  await bg('[data-slide="preparar"] .teaching-card', slate);
+  await bg('[data-slide="idea"] .block-comprobacion', 'rgb(228, 244, 237)');
+  const border = (selector: string, rgb: string) =>
+    expect(page.locator(selector).first()).toHaveCSS('border-top-color', rgb);
+  await border('[data-slide="concepto"] .etiqueta.tono-1', 'rgb(10, 165, 160)');
+  await border('[data-slide="concepto"] .etiqueta.tono-2', 'rgb(242, 169, 0)');
+  await border(
+    '[data-slide="concepto"] .teaching-card.tono-3',
+    'rgb(43, 58, 143)',
+  );
+  await expect(
+    page.locator('[data-slide="concepto"] .katex .asoc-1'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('[data-slide="caso-unico"] .katex .asoc-5'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('[data-slide="paes"] .question .block-label'),
+  ).toHaveCSS('color', 'rgb(148, 39, 79)');
+});
 test('galería ofrece plantillas filtrables y vuelve a la clase', async ({
   page,
 }) => {
@@ -140,7 +197,7 @@ test('galería ofrece plantillas filtrables y vuelve a la clase', async ({
   await expect(
     page.getByRole('heading', { name: 'Presencia de Profe Piña' }),
   ).toBeVisible();
-  await expect(page.locator('.gallery-card')).toHaveCount(17);
+  await expect(page.locator('.gallery-card')).toHaveCount(18);
   await expect(page.locator('.gallery-feature .template-slide')).toContainText(
     'Objetivo de clase',
   );

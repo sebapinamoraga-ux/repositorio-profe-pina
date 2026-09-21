@@ -192,6 +192,33 @@
       "mdx": "Elige la ecuación que conviene transformar primero.\n\n<Tarjeta titulo=\"Sistema\">\n3x + 2y = 18; 2x − 5y = −7\n</Tarjeta>\n\n<PracticaIndividual titulo=\"Tiempo individual\">\nRegistra cada operación y verifica el par solución.\n</PracticaIndividual>"
     },
     {
+      "id": "sutil-ticket",
+      "title": "Ticket de salida",
+      "phase": "cierre",
+      "slideType": "Ticket de salida",
+      "layout": "bloque",
+      "purpose": "Cerrar la clase con una tarea breve e individual que muestre lo que cada estudiante logró.",
+      "eyebrow": "Ticket de salida",
+      "heading": "Antes de salir, resuelve",
+      "body": "Un problema breve para responder sin ayuda.",
+      "calloutTitle": "Trabajo individual · 6 minutos",
+      "calloutBody": "Define las incógnitas, plantea el sistema y comprueba el par solución.",
+      "mascot": {
+        "pose": 47,
+        "nivel": "sutil",
+        "ubicacion": "inferior-derecha",
+        "alt": "Profe Piña sostiene libros de estudio mientras se resuelve el ticket."
+      },
+      "uso": "ticket",
+      "preview": [
+        {
+          "title": "Consigna",
+          "text": "Problema breve con dos condiciones"
+        }
+      ],
+      "mdx": "Un problema breve para responder sin ayuda.\n\n<Ticket titulo=\"Trabajo individual · 6 minutos\">\nDefine las incógnitas, plantea el sistema y comprueba el par solución.\n</Ticket>"
+    },
+    {
       "id": "sutil-hito",
       "title": "Hito de progreso",
       "phase": "desarrollo",
@@ -341,7 +368,7 @@
         "ubicacion": "lateral-derecha",
         "alt": "Profe Piña presenta dos alternativas con ambas manos."
       },
-      "uso": "procedimiento",
+      "uso": "registro",
       "preview": [
         {
           "title": "Camino A",
@@ -352,7 +379,7 @@
           "text": "Despejar y sustituir."
         }
       ],
-      "mdx": "Observa los coeficientes antes de elegir una operación.\n\n<Paneles>\n<Tarjeta titulo=\"Camino A\">\nPreparar y sumar ecuaciones.\n</Tarjeta>\n<Tarjeta titulo=\"Camino B\">\nDespejar y sustituir.\n</Tarjeta>\n</Paneles>\n\n<Propiedad titulo=\"Dos caminos\">\nCompara cantidad de pasos y riesgo de error.\n</Propiedad>"
+      "mdx": "Observa los coeficientes antes de elegir una operación.\n\n<Paneles>\n<Registro titulo=\"Camino A\">\nPreparar y sumar ecuaciones.\n</Registro>\n<Registro titulo=\"Camino B\">\nDespejar y sustituir.\n</Registro>\n</Paneles>\n\n<Propiedad titulo=\"Dos caminos\">\nCompara cantidad de pasos y riesgo de error.\n</Propiedad>"
     },
     {
       "id": "pedagogica-modelado",

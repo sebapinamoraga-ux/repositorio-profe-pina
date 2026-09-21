@@ -16,6 +16,27 @@
   --success: #216e4e;
   --success-soft: #e4f4ed;
   --shadow: #17223b24;
+  --violet: #6b46c1;
+  --violet-soft: #f1ecfb;
+  --violet-line: #cbbcf0;
+  --violet-ink: #4a2f9a;
+  --slate: #8a9bb5;
+  --slate-soft: #eaeff5;
+  --slate-line: #c3cfde;
+  --slate-ink: #3b4a63;
+  --rose: #be3a68;
+  --rose-soft: #fde7ee;
+  --rose-line: #f0b3c7;
+  --rose-ink: #94274f;
+  --sand: #a59274;
+  --sand-soft: #f1ebe0;
+  --sand-line: #b5a385;
+  --sand-ink: #5d4e37;
+  --as-1: #0aa5a0;
+  --as-2: #f2a900;
+  --as-3: #2b3a8f;
+  --as-4: #a8321c;
+  --as-5: #9a8cf0;
 }
 * {
   box-sizing: border-box;
@@ -302,12 +323,15 @@ a {
   font-size: 29px;
   border-radius: 6px;
 }
+.question .block-label {
+  color: var(--rose-ink);
+}
 .option b {
-  color: var(--blue);
+  color: var(--rose-ink);
   font-size: 22px;
 }
 .option.selected {
-  border-color: var(--blue);
+  border-color: var(--rose);
 }
 .option.correct {
   border-color: var(--success);
@@ -1134,9 +1158,24 @@ a {
   }
 }
 
-/* Gramática visual docente: el azul de los bloques significa definición. */
+/* Gramática visual docente (docs/visual-language.md): un color por momento pedagógico. */
+.block {
+  background: var(--slate-soft);
+  border-color: var(--slate-line);
+  border-left-color: var(--slate);
+}
 .block .block-label {
-  color: var(--muted);
+  color: var(--slate-ink);
+}
+.block-objetivo,
+.block-cierre {
+  background: var(--violet-soft);
+  border-color: var(--violet-line);
+  border-left-color: var(--violet);
+}
+.block-objetivo .block-label,
+.block-cierre .block-label {
+  color: var(--violet-ink);
 }
 .block-definicion {
   background: var(--blue-soft);
@@ -1145,10 +1184,6 @@ a {
 }
 .block-definicion .block-label {
   color: var(--blue);
-}
-.block-propiedad,
-.block-cierre {
-  border-left-color: var(--muted);
 }
 .block-comprobacion {
   background: var(--success-soft);
@@ -1170,6 +1205,14 @@ a {
 .block-error .block-label {
   color: var(--yellow);
 }
+.block-ticket {
+  background: var(--rose-soft);
+  border-color: var(--rose-line);
+  border-left-color: var(--rose);
+}
+.block-ticket .block-label {
+  color: var(--rose-ink);
+}
 .teaching-panels {
   display: grid;
   gap: 24px;
@@ -1183,9 +1226,10 @@ a {
 }
 .teaching-card {
   padding: 20px 24px;
-  border: 1px solid #cec8bb;
+  border: 1px solid var(--slate-line);
+  border-left: 4px solid var(--slate);
   border-radius: 16px;
-  background: var(--panel);
+  background: var(--slate-soft);
 }
 .teaching-card h3 {
   margin: 0 0 14px;
@@ -1199,10 +1243,10 @@ a {
   display: inline-block;
   padding: 5px 12px;
   margin-bottom: 12px;
-  border: 1px solid #dfc36a;
+  border: 1px solid var(--slate-line);
   border-radius: 20px;
-  background: var(--yellow-soft);
-  color: var(--yellow);
+  background: var(--panel);
+  color: var(--slate-ink);
   font-size: 19px;
   font-weight: 650;
 }
@@ -1215,9 +1259,13 @@ a {
 .teaching-labels > * {
   margin: 0 !important;
   padding: 9px 16px;
-  border: 1px solid #cec8bb;
+  border: 1px solid var(--slate-line);
   border-radius: 10px;
-  background: var(--panel);
+  background: var(--slate-soft);
+}
+.slide .teaching-panels + *,
+.slide .teaching-labels + * {
+  margin-top: 14px;
 }
 .mascot-composition {
   display: grid;
@@ -1267,12 +1315,12 @@ a {
   margin: 0;
 }
 .template-callout {
-  background: var(--panel);
-  border-color: #cec8bb;
-  border-left-color: var(--muted);
+  background: var(--slate-soft);
+  border-color: var(--slate-line);
+  border-left-color: var(--slate);
 }
 .template-callout b {
-  color: var(--muted);
+  color: var(--slate-ink);
 }
 .template-slide[data-use='definicion'] .template-callout {
   background: var(--blue-soft);
@@ -1335,12 +1383,38 @@ a {
 }
 
 .template-slide[data-use='procedimiento'] .template-callout {
-  background: var(--panel);
-  border-color: #cec8bb;
-  border-left-color: var(--muted);
+  background: var(--slate-soft);
+  border-color: var(--slate-line);
+  border-left-color: var(--slate);
 }
 .template-slide[data-use='procedimiento'] .template-callout b {
-  color: var(--muted);
+  color: var(--slate-ink);
+}
+.template-slide[data-use='objetivo'] .template-callout,
+.template-slide[data-use='cierre'] .template-callout {
+  background: var(--violet-soft);
+  border-color: var(--violet-line);
+  border-left-color: var(--violet);
+}
+.template-slide[data-use='objetivo'] .template-callout b,
+.template-slide[data-use='cierre'] .template-callout b {
+  color: var(--violet-ink);
+}
+.template-slide[data-use='ticket'] .template-callout {
+  background: var(--rose-soft);
+  border-color: var(--rose-line);
+  border-left-color: var(--rose);
+}
+.template-slide[data-use='ticket'] .template-callout b {
+  color: var(--rose-ink);
+}
+.template-slide[data-use='registro'] .template-callout {
+  background: var(--sand-soft);
+  border: 2px dashed var(--sand-line);
+  border-left: 4px solid var(--sand);
+}
+.template-slide[data-use='registro'] .template-callout b {
+  color: var(--sand-ink);
 }
 .composition-foot .composition-companion p {
   font-size: 31px;
@@ -1375,4 +1449,87 @@ a {
 }
 .template-layout-dos-columnas .template-content {
   max-width: 66%;
+}
+
+/* Registro: material para consultar o compartir, no para revisar en clase. */
+.teaching-card.registro {
+  background: var(--sand-soft);
+  border: 2px dashed var(--sand-line);
+  border-left: 4px solid var(--sand);
+}
+.registro .block-label {
+  color: var(--sand-ink);
+}
+.registro .teaching-tag {
+  border-color: var(--sand-line);
+  color: var(--sand-ink);
+}
+
+/* Colores de asociación: solo enlazan cajas o términos que representan lo mismo. */
+.tono-1,
+.katex .asoc-1 {
+  --as: var(--as-1);
+}
+.tono-2,
+.katex .asoc-2 {
+  --as: var(--as-2);
+}
+.tono-3,
+.katex .asoc-3 {
+  --as: var(--as-3);
+}
+.tono-4,
+.katex .asoc-4 {
+  --as: var(--as-4);
+}
+.tono-5,
+.katex .asoc-5 {
+  --as: var(--as-5);
+}
+.teaching-card[class*='tono-'],
+.teaching-labels > .etiqueta[class*='tono-'] {
+  background: var(--panel);
+  border: 4px solid var(--as);
+}
+.asociado,
+.katex [class*='asoc-'] {
+  box-shadow: inset 0 -0.16em 0 var(--as);
+  padding: 0 0.1em;
+}
+
+/* Gráficos: cada recta comparte el color de su ecuación; la solución, el suyo. */
+.graph-primary-line {
+  stroke: var(--as-3);
+}
+.graph-secondary-line {
+  stroke: var(--as-4);
+}
+.graph-intersection {
+  fill: var(--as-5);
+  stroke: var(--ink);
+  stroke-width: 4;
+}
+.graph-probe {
+  fill: var(--ink);
+}
+.graph-guide {
+  stroke: var(--muted);
+}
+.graph-caption {
+  color: var(--as-3);
+}
+.graph-caption span:last-child {
+  color: var(--as-4);
+}
+
+/* Dentro de una fila de paneles, el gap ya separa las cajas: sin márgenes extra. */
+.teaching-panels > .block {
+  margin: 0;
+  padding-block: 18px;
+}
+.teaching-panels .katex-display {
+  margin: 8px 0 !important;
+}
+.panels-3 > .block {
+  padding-inline: 22px;
 }

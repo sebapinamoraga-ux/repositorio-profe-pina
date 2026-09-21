@@ -15,7 +15,7 @@ npm run dev
 
 Abrir http://127.0.0.1:5173. Flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice y F alterna pantalla completa. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
 
-El índice incluye una galería de 17 plantillas descargables y filtrables por momento de clase para incorporar la mascota con presencia sutil, pedagógica o de marca. Las reglas de autoría y el plan de crecimiento están en [Presencia de Profe Piña](docs/mascot-presence.md).
+El índice incluye una galería de 18 plantillas descargables y filtrables por momento de clase para incorporar la mascota con presencia sutil, pedagógica o de marca. Las reglas de autoría y el plan de crecimiento están en [Presencia de Profe Piña](docs/mascot-presence.md).
 
 ## Comprobar y exportar
 

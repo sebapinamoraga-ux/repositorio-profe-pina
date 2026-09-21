@@ -9,23 +9,23 @@ activities: []
 
 <Composicion plantilla="pedagogica-punto-clave" nota="Cada cantidad multiplica el precio de un producto.">
 <Etiquetas>
-<span>$x$: precio del sándwich</span>
-<span>$y$: precio del jugo</span>
-<span>Precios en pesos</span>
+<Etiqueta tono={1}>$x$: precio del sándwich</Etiqueta>
+<Etiqueta tono={2}>$y$: precio del jugo</Etiqueta>
+<Etiqueta>Precios en pesos</Etiqueta>
 </Etiquetas>
-<Tarjeta titulo="La primera compra">
+<Tarjeta titulo="La primera compra" tono={3}>
 2 sándwiches y 3 jugos cuestan **\$5.100**.
 </Tarjeta>
 <Paso n={1}>
 <Paneles>
-<Tarjeta titulo="2 sándwiches">$2\cdot x=2x$</Tarjeta>
-<Tarjeta titulo="3 jugos">$3\cdot y=3y$</Tarjeta>
+<Tarjeta titulo="2 sándwiches" tono={1}>$2\cdot x=2x$</Tarjeta>
+<Tarjeta titulo="3 jugos" tono={2}>$3\cdot y=3y$</Tarjeta>
 </Paneles>
 </Paso>
 <Paso n={2}>
 
 $$
-\underbrace{2x}_{\text{sándwiches}}+\underbrace{3y}_{\text{jugos}}=\underbrace{5.100}_{\text{total}}
+\underbrace{\htmlClass{asoc-1}{2x}}_{\text{sándwiches}}+\underbrace{\htmlClass{asoc-2}{3y}}_{\text{jugos}}=\underbrace{\htmlClass{asoc-3}{5.100}}_{\text{total}}
 $$
 
 </Paso>

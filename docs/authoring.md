@@ -6,7 +6,7 @@ El frontmatter de cada MDX tiene id, title, phase, layout, steps y activities. F
 
 La portada conserva el título principal y presenta directamente un bloque **Objetivo de clase**. No añade subtítulo descriptivo, duración ni una ruta temática del tipo “Ecuaciones → Sistemas → Modelamiento”; esos datos pertenecen al plan de la clase, no al lienzo proyectado.
 
-Escribe Markdown normal y matemáticas en línea con `$...$`. Para ecuaciones centrales, coloca cada delimitador `$$` en su propia línea y deja una línea vacía después del cierre. Escapa los signos monetarios como `\$2.000`. Cada diapositiva es un archivo, evitando dobles escapes de cadenas TypeScript. Usa etiquetas en español: Definicion, Propiedad, Teorema, EjemploResuelto, PracticaGuiada, ErrorTipico, PracticaIndividual, Cierre y Columnas.
+Escribe Markdown normal y matemáticas en línea con `$...$`. Para ecuaciones centrales, coloca cada delimitador `$$` en su propia línea y deja una línea vacía después del cierre. Escapa los signos monetarios como `\$2.000`. Cada diapositiva es un archivo, evitando dobles escapes de cadenas TypeScript. Usa etiquetas en español: Objetivo, Definicion, Propiedad, Teorema, EjemploResuelto, PracticaGuiada, ErrorTipico, PracticaIndividual, Comprobacion, Ticket, Registro, Cierre y Columnas. Para resaltar lo que se repite en distintos lugares de una lámina usa los colores de asociación: `tono={1}` a `tono={5}` en Tarjeta y Etiqueta, `<Asociado tono={3}>` en texto y `\htmlClass{asoc-3}{...}` dentro de una fórmula (ver el lenguaje visual).
 
 ```mdx
 <Paso n={1}>
@@ -45,6 +45,6 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 ## Diseño compartido
 
-Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Usa Objetivo para el propósito de clase; Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.
+Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Cada momento pedagógico tiene su color: Objetivo y Cierre en violeta, Definicion en azul, Comprobacion en verde («Verifiquemos»), práctica y error en ocre, Ticket en rosa y Registro en arena. Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.
 
 La galería permite filtrar por nivel y momento y descargar una diapositiva MDX válida. Guarda el archivo en slides, adapta su contenido y añade el nombre a lesson.yaml. También puedes crear un borrador con una plantilla: `npm run lesson:new -- --id nueva-clase --plantilla pedagogica-modelado`. Las ayudas son ejemplos editables, no contenido curricular listo para publicar.

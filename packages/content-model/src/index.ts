@@ -68,6 +68,8 @@ export const mascotTemplateSchema = z.object({
     'comprobacion',
     'error',
     'cierre',
+    'ticket',
+    'registro',
   ]),
   mdx: z.string().min(1),
   preview: z.array(z.object({ title: z.string(), text: z.string() })),
