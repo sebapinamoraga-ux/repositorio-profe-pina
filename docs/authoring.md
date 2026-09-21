@@ -37,18 +37,7 @@ Si la pregunta se resuelve con un sistema 2×2, declara en el YAML `model.equati
 
 La tipografía base es 31–32 px en el lienzo; no encoger para meter más texto. Separar un desarrollo en varias diapositivas. Cada página debe sostener una idea principal y caber completa sin scroll. Validar toda ecuación y verificar soluciones en el sistema original.
 
-La clase incluida dura 80 minutos y conserva el título, el objetivo y el ejemplo de las compras. Distribución docente (no se proyecta):
-
-| Tramo | Diapositivas | Minutos |
-| :--- | :--- | ---: |
-| Inicio y modelación de ambas compras | apertura a signos | 13 |
-| Definición y métodos | definicion a metodos | 7 |
-| Comparación del ejemplo por los tres métodos | idea a error | 20 |
-| Pausa en parejas y solución por reducción | comparar a elegir | 12 |
-| Registro de igualación y sustitución | modelar | 0 |
-| Intersección y tres casos de solución | grafico a caso-vacio | 13 |
-| Ticket: planteamiento, alternativas, solución y error | contexto a distractores | 10 |
-| Percepción del aprendizaje y de las presentaciones | cierre | 5 |
+La clase incluida dura 80 minutos y conserva el título, el objetivo y el ejemplo de las compras. La distribución docente del tiempo (no se proyecta) vive en `tramos` de lesson.yaml: cada tramo tiene `label`, `from` y `to` (nombres de archivo sin `.mdx`) y `minutes`. Los tramos son contiguos, cubren todas las diapositivas en orden y sus minutos suman `duration`; content:check lo verifica. Un tramo de 0 minutos marca una lámina de consulta.
 
 La lámina `modelar` queda como registro para consulta: se pasa sin revisarla durante la clase. En el ticket, dar seis minutos de trabajo antes de mostrar las alternativas; dedicar cuatro minutos a contrastar, resolver y discutir el error. La actividad es de elaboración propia, no una pregunta oficial PAES.
 

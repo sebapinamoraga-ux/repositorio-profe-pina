@@ -116,6 +116,17 @@ export const lessonSchema = z.object({
   curriculum: z.array(id).min(1),
   status: z.enum(['draft', 'published']),
   slides: z.array(z.string().regex(/^[a-z0-9-]+\.mdx$/)).min(1),
+  /** Distribución docente del tiempo (no se proyecta): tramos contiguos que cubren toda la clase. */
+  tramos: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        from: id,
+        to: id,
+        minutes: z.number().nonnegative(),
+      }),
+    )
+    .optional(),
 });
 /** Coeficientes [a, b, c] de la ecuación ax + by = c, en las unidades del enunciado. */
 const equationSchema = z.tuple([z.number(), z.number(), z.number()]);

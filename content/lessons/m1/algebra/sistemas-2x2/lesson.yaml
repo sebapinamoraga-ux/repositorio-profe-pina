@@ -12,6 +12,39 @@ objectives:
 skills: [Resolver problemas, Modelar, Representar, Argumentar]
 curriculum: [m1-2027-sistemas]
 status: draft
+tramos:
+  - label: Inicio y modelación de ambas compras
+    from: apertura
+    to: signos
+    minutes: 13
+  - label: Definición y métodos
+    from: definicion
+    to: metodos
+    minutes: 7
+  - label: Comparación del ejemplo por los tres métodos
+    from: idea
+    to: error
+    minutes: 20
+  - label: Pausa en parejas y solución por reducción
+    from: comparar
+    to: elegir
+    minutes: 12
+  - label: Registro de igualación y sustitución
+    from: modelar
+    to: modelar
+    minutes: 0
+  - label: Intersección y tres casos de solución
+    from: grafico
+    to: caso-vacio
+    minutes: 13
+  - label: 'Ticket: planteamiento, alternativas, solución y error'
+    from: contexto
+    to: distractores
+    minutes: 10
+  - label: Percepción del aprendizaje y de las presentaciones
+    from: cierre
+    to: cierre
+    minutes: 5
 slides:
   - apertura.mdx
   - desafio.mdx

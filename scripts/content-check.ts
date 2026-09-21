@@ -17,6 +17,7 @@ import {
   mascotTemplateMdx,
 } from '../packages/content-model/src/index';
 import { verifyActivity } from '../packages/content-model/src/verify-model';
+import { verifyLessonPlan } from '../packages/content-model/src/verify-plan';
 import {
   mascotPngPath,
   usedMascotPoses,
@@ -114,6 +115,8 @@ export async function checkContent() {
     if (basename(path) !== 'lesson.yaml') continue;
     try {
       const lesson = lessonSchema.parse(parse(await readFile(path, 'utf8')));
+      const planProblems = verifyLessonPlan(lesson);
+      if (planProblems.length) throw new Error(planProblems.join(' '));
       if (ids.has(lesson.id))
         throw new Error('Identificador de clase duplicado');
       ids.add(lesson.id);
