@@ -12,4 +12,4 @@ La colección completa (originales vectoriales `eps/`, `pdf/`, `.ai`, `.eps` y l
 
 `content:check` falla con el mensaje exacto si falta un paso: pose sin PNG, pose usada pero ignorada por git, o PNG versionado que ya nada usa.
 
-Pendiente: registrar en `docs/provenance.md` el origen y la licencia de estas ilustraciones antes de publicar la clase.
+Licencia: uso sin fines de lucro y comercial, según el autor. El proveedor, el comprobante y la posible atribución se registran en `docs/provenance.md`.

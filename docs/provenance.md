@@ -6,4 +6,6 @@ SHA-256 del ZIP conservado: `73d53d6c1c90fc6ba8377b53a0bfb635b24e3c5e9f0bb431392
 
 El motor actual reimplementa el renderizado con MDX compilado y usa conceptos de navegación, cajas pedagógicas y visualizaciones del prototipo. Los ejercicios de Sistemas y el problema de entradas son de elaboración propia, no preguntas oficiales.
 
+Ilustraciones de Profe Piña (content/assets/mascotas): según informó el autor, cuentan con licencia que permite su uso sin fines de lucro y con uso comercial. Falta registrar aquí el proveedor o la fuente y conservar el comprobante de la licencia, y confirmar si exige atribución.
+
 Referencia curricular: DEMRE, Temario Regular de Competencia Matemática 1, Admisión 2027, página 7: sistemas de ecuaciones lineales 2×2, resolución y problemas en contexto. Los PDF fuente permanecen en las carpetas originales del usuario.
