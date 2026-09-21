@@ -44,10 +44,6 @@ const components = new Set([
   'GraficoDosCondiciones',
   'GraficoRectas',
   'MascotaProfePina',
-  'Ticket',
-  'Registro',
-  'Etiqueta',
-  'Asociado',
   'div',
   'span',
 ]);
@@ -102,13 +98,6 @@ export function validateMdxTree(
         if (node.name === 'Paso' && inStep)
           throw new Error('No anidar bloques Paso');
       }
-      const tono = literalAttribute(attributes, 'tono');
-      if (tono !== undefined && !/^[1-5]$/.test(tono))
-        throw new Error(
-          `El tono de asociación debe ser un número de 1 a 5, no «${tono}».`,
-        );
-      if (node.name === 'Asociado' && tono === undefined)
-        throw new Error('Asociado requiere un tono de 1 a 5.');
       if (node.name === 'PreguntaPAES') {
         const id = attributes.find((a) => a.name === 'id')?.value;
         if (typeof id !== 'string')

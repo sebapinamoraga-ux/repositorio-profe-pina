@@ -1,16 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import {
-  BookOpen,
-  Camera,
-  CheckCheck,
-  CheckCircle2,
-  Lightbulb,
-  Target,
-  Ticket as TicketIcon,
-  TriangleAlert,
-  type LucideIcon,
-} from 'lucide-react';
+import { BookOpen, Lightbulb, TriangleAlert, CheckCircle2 } from 'lucide-react';
 import katex from 'katex';
 import type {
   Activity,
@@ -37,90 +27,42 @@ export const SlideContext = createContext<SlideRuntime>({
 });
 export const useSlide = () => useContext(SlideContext);
 type BlockProps = { titulo?: string; children: ReactNode };
-/** Un icono por momento pedagógico: el color nunca es la única señal (docs/visual-language.md). */
-const blockIcons: Record<string, LucideIcon> = {
-  error: TriangleAlert,
-  definicion: BookOpen,
-  cierre: CheckCircle2,
-  objetivo: Target,
-  comprobacion: CheckCheck,
-  ticket: TicketIcon,
-};
-const blockTitles: Record<string, string> = {
-  objetivo: 'Objetivo',
-  comprobacion: 'Verifiquemos',
-  ticket: 'Ticket de salida',
-};
 function Block({ kind, titulo, children }: { kind: string } & BlockProps) {
-  const Icon = blockIcons[kind] ?? Lightbulb;
+  const Icon =
+    kind === 'error'
+      ? TriangleAlert
+      : kind === 'definicion'
+        ? BookOpen
+        : kind === 'cierre'
+          ? CheckCircle2
+          : Lightbulb;
   return (
     <section className={`block block-${kind}`}>
       <div className="block-label">
         <Icon size={22} />
-        {titulo || blockTitles[kind] || kind}
+        {titulo || kind}
       </div>
       <div>{children}</div>
     </section>
   );
 }
-/** Color de asociación (1 a 5): enlaza cajas o términos que representan lo mismo en distintos lugares. */
-type Tono = number | string;
-const toneClass = (tono?: Tono) =>
-  tono === undefined ? '' : ` tono-${Number(tono)}`;
 export const Definicion = (p: BlockProps) => <Block kind="definicion" {...p} />;
 export const Objetivo = (p: BlockProps) => <Block kind="objetivo" {...p} />;
 export const Comprobacion = (p: BlockProps) => (
   <Block kind="comprobacion" {...p} />
 );
-export const Ticket = (p: BlockProps) => <Block kind="ticket" {...p} />;
 export function Tarjeta({
-  titulo,
-  etiqueta,
-  tono,
-  children,
-}: BlockProps & { etiqueta?: string; tono?: Tono }) {
-  return (
-    <section className={`teaching-card${toneClass(tono)}`}>
-      {etiqueta && <span className="teaching-tag">{etiqueta}</span>}
-      <h3>{titulo}</h3>
-      {children}
-    </section>
-  );
-}
-/** Material para consultar o compartir, no para revisar en clase. */
-export function Registro({
   titulo,
   etiqueta,
   children,
 }: BlockProps & { etiqueta?: string }) {
   return (
-    <section className="teaching-card registro">
-      <div className="block-label">
-        <Camera size={22} />
-        Registro · {titulo}
-      </div>
+    <section className="teaching-card">
       {etiqueta && <span className="teaching-tag">{etiqueta}</span>}
+      <h3>{titulo}</h3>
       {children}
     </section>
   );
-}
-export function Etiqueta({
-  tono,
-  children,
-}: {
-  tono?: Tono;
-  children: ReactNode;
-}) {
-  return <span className={`etiqueta${toneClass(tono)}`}>{children}</span>;
-}
-export function Asociado({
-  tono,
-  children,
-}: {
-  tono: Tono;
-  children: ReactNode;
-}) {
-  return <span className={`asociado${toneClass(tono)}`}>{children}</span>;
 }
 export function Paneles({
   children,

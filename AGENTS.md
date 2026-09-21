@@ -16,5 +16,5 @@ Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en
 - No introducir dependencias o backend sin una necesidad del hito.
 - No afirmar ensayo en proyector ni revisión docente si no se han realizado.
 
-- Aplicar docs/visual-language.md a toda clase y plantilla: un color por momento (violeta objetivo y reflexión, gris azulado datos y procedimiento, azul solo definiciones formales, verde «Verifiquemos», ocre práctica y error, rosa ticket, arena registro) y cinco colores de asociación reservados para enlazar cajas (tono 1 a 5) siempre con texto redundante. content:check falla con LaTeX inválido y con comandos de KaTeX distintos de \htmlClass asoc-1 a asoc-5.
+- Aplicar docs/visual-language.md a toda clase y plantilla: azul solo en definiciones formales; objetivos y procedimientos neutros, práctica y errores ocres, comprobaciones verdes.
 - Preferir Composicion con un ID de la galería para reservar espacio a la mascota; mantener una por lámina y validar las plantillas descargables.

@@ -8,7 +8,6 @@ import math from 'remark-math';
 import katex from 'rehype-katex';
 import { resolve } from 'node:path';
 import { contentPlugin } from './content-plugin.ts';
-import { katexOptions } from '../../packages/content-model/src/katex-trust.ts';
 export default defineConfig({
   root: resolve('apps/presenter'),
   base: process.env.BASE_PATH || '/',
@@ -16,14 +15,13 @@ export default defineConfig({
     contentPlugin(),
     mdx({
       remarkPlugins: [frontmatter, mdxFrontmatter, math],
-      rehypePlugins: [[katex, katexOptions]],
+      rehypePlugins: [
+        [katex, { strict: 'error', throwOnError: true, trust: false }],
+      ],
     }),
     react(),
     tailwind(),
   ],
   server: { fs: { allow: [resolve('.')] }, port: 5173 },
-  build: {
-    outDir: resolve(process.env.AULA_OUT_DIR || 'dist'),
-    emptyOutDir: true,
-  },
+  build: { outDir: resolve(process.env.AULA_OUT_DIR || 'dist'), emptyOutDir: true },
 });

@@ -16,7 +16,6 @@ import {
   mascotGallerySchema,
   mascotTemplateMdx,
 } from '../packages/content-model/src/index';
-import { katexOptions } from '../packages/content-model/src/katex-trust';
 import { verifyActivity } from '../packages/content-model/src/verify-model';
 import { verifyLessonPlan } from '../packages/content-model/src/verify-plan';
 import {
@@ -63,31 +62,6 @@ async function checkMascotAssets(root: string) {
       );
   }
 }
-/** KaTeX no lanza errores desde rehype: los deja como avisos, así que aquí se convierten en fallos. */
-async function compileChecked(
-  source: string,
-  validate: (tree: unknown) => void,
-) {
-  const file = await compile(source, {
-    remarkPlugins: [
-      remarkFrontmatter,
-      () => (tree: unknown) => validate(tree),
-      remarkMdxFrontmatter,
-      remarkMath,
-    ],
-    rehypePlugins: [[rehypeKatex, katexOptions]],
-  });
-  const formulas = file.messages.filter((m) => m.source === 'rehype-katex');
-  if (formulas.length)
-    throw new Error(
-      formulas
-        .map(
-          (m) =>
-            `Fórmula inválida${m.line ? ` (línea ${m.line})` : ''}: ${m.cause instanceof Error ? m.cause.message : m.reason}`,
-        )
-        .join('\n'),
-    );
-}
 export async function checkContent() {
   const root = resolve('content');
   const gallery = mascotGallerySchema.parse(
@@ -100,9 +74,17 @@ export async function checkContent() {
   for (const template of gallery.templates) {
     const source = mascotTemplateMdx(template);
     const slide = slideSchema.parse(parseFrontmatter(source));
-    await compileChecked(source, (tree) =>
-      validateMdxTree(tree, slide, templateIds),
-    );
+    await compile(source, {
+      remarkPlugins: [
+        remarkFrontmatter,
+        () => (tree: unknown) => validateMdxTree(tree, slide, templateIds),
+        remarkMdxFrontmatter,
+        remarkMath,
+      ],
+      rehypePlugins: [
+        [rehypeKatex, { throwOnError: true, strict: 'error', trust: false }],
+      ],
+    });
   }
   const activityIds = new Set<string>();
   for (const path of await walk(join(root, 'activities'))) {
@@ -159,9 +141,21 @@ export async function checkContent() {
           for (const ref of slide.activities)
             if (!activityIds.has(ref))
               throw new Error(`Actividad desconocida ${ref}`);
-          await compileChecked(text, (tree) =>
-            validateMdxTree(tree, slide, templateIds),
-          );
+          await compile(text, {
+            remarkPlugins: [
+              remarkFrontmatter,
+              () => (tree: unknown) =>
+                validateMdxTree(tree, slide, templateIds),
+              remarkMdxFrontmatter,
+              remarkMath,
+            ],
+            rehypePlugins: [
+              [
+                rehypeKatex,
+                { throwOnError: true, strict: 'error', trust: false },
+              ],
+            ],
+          });
           count++;
         } catch (error) {
           throw new Error(`${slidePath}: ${String(error)}`);
