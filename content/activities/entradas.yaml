@@ -7,20 +7,28 @@ skills: [Modelar, Resolver problemas, Argumentar]
 source:
   kind: original
   reference: Elaboración propia para tercero medio; contexto de aniversario escolar.
+model:
+  equations:
+    - [1, 1, 120]
+    - [2, 3, 280]
 options:
   - id: A
     text: '40 en preventa y 80 el día.'
+    pair: [40, 80]
     correct: false
     explanation: 'Intercambia los precios: usar 3x + 2y = 280 da x = 40 e y = 80. Con los precios reales se recaudan 320 mil, no 280 mil.'
   - id: B
     text: '80 en preventa y 40 el día.'
+    pair: [80, 40]
     correct: true
     explanation: 'Cumple ambas condiciones: 80 + 40 = 120 y 2(80) + 3(40) = 280.'
   - id: C
     text: '160 en preventa y −40 el día.'
+    pair: [160, -40]
     correct: false
     explanation: 'Invierte la resta de los totales al sumar: usa 240 − 280 = −40 en vez de 280 − 240 = 40. Recupera x = 160; no cumple la recaudación.'
   - id: D
     text: '−40 en preventa y 160 el día.'
+    pair: [-40, 160]
     correct: false
     explanation: 'Multiplica por −2 solo el lado izquierdo de la primera ecuación: escribe −2x − 2y = −120. Al sumar obtiene y = 160 y x = −40.'

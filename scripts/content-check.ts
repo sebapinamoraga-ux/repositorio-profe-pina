@@ -16,6 +16,7 @@ import {
   mascotGallerySchema,
   mascotTemplateMdx,
 } from '../packages/content-model/src/index';
+import { verifyActivity } from '../packages/content-model/src/verify-model';
 import {
   mascotPngPath,
   usedMascotPoses,
@@ -88,6 +89,9 @@ export async function checkContent() {
   for (const path of await walk(join(root, 'activities'))) {
     if (!path.endsWith('.yaml')) continue;
     const data = activitySchema.parse(parse(await readFile(path, 'utf8')));
+    const problems = verifyActivity(data);
+    if (problems.length)
+      throw new Error(`${path}:\n- ${problems.join('\n- ')}`);
     if (activityIds.has(data.id))
       throw new Error(`Actividad duplicada: ${path}`);
     activityIds.add(data.id);

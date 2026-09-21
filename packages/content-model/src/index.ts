@@ -117,6 +117,8 @@ export const lessonSchema = z.object({
   status: z.enum(['draft', 'published']),
   slides: z.array(z.string().regex(/^[a-z0-9-]+\.mdx$/)).min(1),
 });
+/** Coeficientes [a, b, c] de la ecuación ax + by = c, en las unidades del enunciado. */
+const equationSchema = z.tuple([z.number(), z.number(), z.number()]);
 export const activitySchema = z
   .object({
     id,
@@ -129,6 +131,10 @@ export const activitySchema = z
       kind: z.enum(['original', 'oficial']),
       reference: z.string().min(1),
     }),
+    /** Sistema 2×2 del enunciado; content:check comprueba las alternativas contra él. */
+    model: z
+      .object({ equations: z.tuple([equationSchema, equationSchema]) })
+      .optional(),
     options: z
       .array(
         z.object({
@@ -136,11 +142,23 @@ export const activitySchema = z
           text: z.string().min(1),
           correct: z.boolean(),
           explanation: z.string().min(1),
+          /** Par (x, y) que representa la alternativa; obligatorio si hay `model`. */
+          pair: z.tuple([z.number(), z.number()]).optional(),
         }),
       )
       .optional(),
   })
   .superRefine((value, ctx) => {
+    if (value.model && value.options?.some((o) => !o.pair))
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Con `model`, cada alternativa debe declarar su `pair`.',
+      });
+    if (!value.model && value.options?.some((o) => o.pair))
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Un `pair` requiere declarar el `model` del enunciado.',
+      });
     if (
       value.type === 'paes' &&
       (!value.options ||
