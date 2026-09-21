@@ -1,4 +1,4 @@
-* text=auto
+* text=auto eol=lf
 *.ts text eol=lf
 *.tsx text eol=lf
 *.mdx text eol=lf
@@ -7,4 +7,5 @@
 *.yml text eol=lf
 *.json text eol=lf
 *.zip binary
+*.png binary
 *.pdf binary

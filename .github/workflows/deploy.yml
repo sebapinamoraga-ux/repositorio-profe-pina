@@ -19,6 +19,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npm run line-endings:check
       - run: npm run typecheck && npm run lint && npm run test
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

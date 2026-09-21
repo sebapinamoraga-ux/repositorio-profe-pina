@@ -18,6 +18,8 @@
     "lesson:new": "tsx scripts/new-lesson.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "line-endings:check": "tsx scripts/line-endings.ts",
+    "line-endings:fix": "tsx scripts/line-endings.ts --write",
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
