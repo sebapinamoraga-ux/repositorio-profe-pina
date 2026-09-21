@@ -30,7 +30,7 @@ npm run test:e2e
 npm run export:pdf -- --lesson sistemas-2x2
 ```
 
-El PDF aparece en `output/pdf/sistemas-2x2.pdf`: 25 diapositivas, pasos y respuestas visibles, sin notas. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión.
+El PDF aparece en `output/pdf/sistemas-2x2.pdf`: 25 diapositivas, pasos y respuestas visibles, sin notas. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión. El PDF se genera también para clases en borrador, pero solo se publica en el sitio el de las clases con `status: published` (ver [Publicación](docs/deployment.md)).
 
 Consulta también el [lenguaje visual común](docs/visual-language.md), que rige las clases y la galería.
 

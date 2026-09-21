@@ -6,6 +6,8 @@ import { createHash } from 'node:crypto';
 import { parse } from 'yaml';
 import { lessonSchema } from '../packages/content-model/src/index';
 import { walk } from './content-check';
+import { PDF_BUILD_DIR } from './build-dirs';
+process.env.AULA_OUT_DIR = PDF_BUILD_DIR;
 const at = process.argv.indexOf('--lesson');
 const id = at >= 0 ? process.argv[at + 1] : 'sistemas-2x2';
 if (!id || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id))
@@ -14,10 +16,9 @@ let expected = 0;
 for (const file of await walk(resolve('content/lessons'))) {
   if (!file.endsWith('lesson.yaml')) continue;
   const lesson = lessonSchema.parse(parse(await readFile(file, 'utf8')));
-  if (lesson.id === id && lesson.status === 'published')
-    expected = lesson.slides.length;
+  if (lesson.id === id) expected = lesson.slides.length;
 }
-if (!expected) throw new Error('Clase publicada no encontrada.');
+if (!expected) throw new Error('Clase no encontrada.');
 const server = await preview({
   configFile: resolve('apps/presenter/vite.config.ts'),
   preview: { port: 4173, host: '127.0.0.1', strictPort: true },
@@ -78,7 +79,7 @@ try {
         revision: process.env.GITHUB_SHA ?? 'local',
         buildHash: await (async () => {
           const hash = createHash('sha256');
-          for (const file of (await walk(resolve('dist'))).sort()) {
+          for (const file of (await walk(resolve(PDF_BUILD_DIR))).sort()) {
             hash.update(await readFile(file));
           }
           return hash.digest('hex');

@@ -23,7 +23,9 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "preexport:pdf": "npm run build",
+    "dist:check": "tsx scripts/check-dist.ts",
+    "publish:pdf": "tsx scripts/publish-pdf.ts",
+    "preexport:pdf": "tsx scripts/build-pdf.ts",
     "export:pdf": "tsx scripts/export-pdf.ts"
   },
   "dependencies": {

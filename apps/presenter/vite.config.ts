@@ -23,5 +23,5 @@ export default defineConfig({
     tailwind(),
   ],
   server: { fs: { allow: [resolve('.')] }, port: 5173 },
-  build: { outDir: resolve('dist'), emptyOutDir: true },
+  build: { outDir: resolve(process.env.AULA_OUT_DIR || 'dist'), emptyOutDir: true },
 });

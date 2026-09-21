@@ -12,7 +12,7 @@ Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en
 - Evitar recortes y scroll dentro del lienzo. Dividir contenido antes de reducir tipografía.
 - Ejecutar content:check, typecheck, lint, test, build y test:e2e antes de entregar.
 - Revisar visualmente diapositivas y PDF después de cambios de composición.
-- No publicar borradores. Conservar archive y atribución del prototipo.
+- No publicar borradores: dist solo contiene clases published (dist:check lo verifica) y el PDF de borradores se compila en output/pdf-site. Conservar archive y atribución del prototipo.
 - No introducir dependencias o backend sin una necesidad del hito.
 - No afirmar ensayo en proyector ni revisión docente si no se han realizado.
 

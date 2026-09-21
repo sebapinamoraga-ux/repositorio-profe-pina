@@ -29,8 +29,9 @@ jobs:
           repo="${GITHUB_REPOSITORY#*/}"
           if [[ "$repo" == *.github.io ]]; then echo "BASE_PATH=/" >> "$GITHUB_ENV"; else echo "BASE_PATH=/$repo/" >> "$GITHUB_ENV"; fi
       - run: npm run build
+      - run: npm run dist:check
       - run: npm run export:pdf -- --lesson sistemas-2x2
-      - run: mkdir -p dist/pdf && cp output/pdf/* dist/pdf/
+      - run: npm run publish:pdf
       - uses: actions/upload-artifact@v4
         with:
           name: pdf-sistemas
