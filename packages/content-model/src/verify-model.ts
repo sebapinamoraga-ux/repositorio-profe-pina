@@ -1,5 +1,15 @@
-import { satisfies, solveSystem } from '../../interactives/src/math';
+import {
+  satisfiesLinearEquation,
+  solveLinearSystem,
+  type LinearEquation,
+} from '../../interactives/src/linear-system';
 import type { Activity } from './index';
+
+const toEquation = ([a, b, c]: readonly [
+  number,
+  number,
+  number,
+]): LinearEquation => ({ a, b, c });
 
 /** Formas en que el contenido puede escribir un número: 1500, 1.500 o 1,5. */
 function spellings(value: number): string[] {
@@ -33,8 +43,9 @@ export function verifyActivity(activity: Activity): string[] {
       );
   }
   if (!model || !options) return problems;
-  const [first, second] = model.equations;
-  const solution = solveSystem(first, second);
+  const [first, second] = model.equations.map(toEquation);
+  if (!first || !second) return problems;
+  const solution = solveLinearSystem(first, second);
   if (!solution) {
     problems.push('El sistema del enunciado no tiene solución única.');
     return problems;
@@ -43,7 +54,10 @@ export function verifyActivity(activity: Activity): string[] {
   for (const option of options) {
     if (!option.pair) continue;
     const [x, y] = option.pair;
-    const holds = satisfies(first, x, y) && satisfies(second, x, y);
+    const point = { x, y };
+    const holds =
+      satisfiesLinearEquation(first, point) &&
+      satisfiesLinearEquation(second, point);
     if (option.correct && !holds)
       problems.push(
         `La alternativa correcta ${option.id} (${x}, ${y}) no cumple el sistema; la solución es (${solution.x}, ${solution.y}).`,

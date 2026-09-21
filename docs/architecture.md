@@ -6,7 +6,7 @@ La fuente de verdad es lesson.yaml y su lista explícita de archivos MDX. Vite c
 
 Context + reducer conserva pasos y valores por diapositiva durante una sesión. La URL contiene clase y slide; recargar restaura ubicación, no respuestas. El modo pdf crea un contexto de impresión para cada diapositiva, revela todo y reemplaza interacción por parámetros estáticos. Componentes compartidos no dependen de Vite ni de la aplicación.
 
-SVG representa la intersección; solveSystem y satisfies prueban los casos algebraicos. Una tolerancia de 1e-10 evita dividir por determinantes numéricamente nulos. No se pretende un solucionador simbólico general.
+SVG representa la intersección; solveLinearSystem y satisfiesLinearEquation (un único módulo, packages/interactives/src/linear-system.ts) prueban los casos algebraicos y también verifican las actividades en content:check. Una tolerancia de 1e-10 evita dividir por determinantes numéricamente nulos. No se pretende un solucionador simbólico general.
 
 El lienzo 1600×900 mantiene proporción y usa estilos centralizados. Toda revelación reserva espacio para evitar saltos. Los autores deben comprobar tanto el estado oculto como el final. El menú no se imprime. El tema claro se conserva en PDF.
 
