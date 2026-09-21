@@ -1,3 +1,6 @@
+declare module 'virtual:aula-mascots' {
+  export const mascotFiles: Record<number, string>;
+}
 declare module 'virtual:aula-catalog' {
   import type { ComponentType } from 'react';
   import type { MDXComponents } from 'mdx/types';

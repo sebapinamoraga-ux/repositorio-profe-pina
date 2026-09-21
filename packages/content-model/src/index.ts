@@ -7,6 +7,89 @@ export const phaseSchema = z.enum([
   'practica',
   'cierre',
 ]);
+export const mascotPresenceSchema = z.enum(['sutil', 'pedagogica', 'marca']);
+export const mascotPlacementSchema = z.enum([
+  'superior-derecha',
+  'inferior-derecha',
+  'lateral-derecha',
+  'junto-bloque',
+  'grafico',
+]);
+const mascotPosesByPresence = {
+  sutil: new Set([43, 46, 47, 48, 79, 81]),
+  pedagogica: new Set([
+    ...Array.from({ length: 20 }, (_, index) => index + 1),
+    68,
+    76,
+  ]),
+  marca: new Set([45]),
+} satisfies Record<z.infer<typeof mascotPresenceSchema>, Set<number>>;
+export const mascotPropsSchema = z
+  .object({
+    pose: z.number().int().min(1).max(112),
+    nivel: mascotPresenceSchema,
+    ubicacion: mascotPlacementSchema,
+    alt: z.string().min(1),
+  })
+  .superRefine((value, ctx) => {
+    if (!mascotPosesByPresence[value.nivel].has(value.pose))
+      ctx.addIssue({
+        code: 'custom',
+        path: ['pose'],
+        message: `La pose ${value.pose} no está autorizada para el nivel ${value.nivel}.`,
+      });
+  });
+export const mascotTemplateSchema = z.object({
+  id,
+  title: z.string().min(1),
+  phase: phaseSchema,
+  slideType: z.string().min(1),
+  layout: z.enum([
+    'portada',
+    'bloque',
+    'dos-columnas',
+    'grafico',
+    'pasos',
+    'alternativas',
+    'ecuacion',
+    'sintesis',
+  ]),
+  purpose: z.string().min(1),
+  eyebrow: z.string().min(1),
+  heading: z.string().min(1),
+  body: z.string().min(1),
+  calloutTitle: z.string().min(1),
+  calloutBody: z.string().min(1),
+  uso: z.enum([
+    'definicion',
+    'objetivo',
+    'procedimiento',
+    'practica',
+    'comprobacion',
+    'error',
+    'cierre',
+  ]),
+  mdx: z.string().min(1),
+  preview: z.array(z.object({ title: z.string(), text: z.string() })),
+  mascot: mascotPropsSchema,
+});
+export const mascotGallerySchema = z
+  .object({
+    version: z.number().int().positive(),
+    templates: z.array(mascotTemplateSchema).min(1),
+  })
+  .superRefine((gallery, ctx) => {
+    const ids = new Set<string>();
+    gallery.templates.forEach((template, index) => {
+      if (ids.has(template.id))
+        ctx.addIssue({
+          code: 'custom',
+          path: ['templates', index, 'id'],
+          message: `Plantilla duplicada: ${template.id}`,
+        });
+      ids.add(template.id);
+    });
+  });
 export const slideSchema = z.object({
   id,
   title: z.string().min(1),
@@ -79,3 +162,12 @@ export const activitySchema = z
 export type Lesson = z.infer<typeof lessonSchema>;
 export type Slide = z.infer<typeof slideSchema>;
 export type Activity = z.infer<typeof activitySchema>;
+export type MascotPresence = z.infer<typeof mascotPresenceSchema>;
+export type MascotPlacement = z.infer<typeof mascotPlacementSchema>;
+export type MascotProps = z.infer<typeof mascotPropsSchema>;
+export type MascotTemplate = z.infer<typeof mascotTemplateSchema>;
+
+export function mascotTemplateMdx(template: MascotTemplate): string {
+  const layout = template.layout === 'portada' ? 'portada' : 'concepto';
+  return `---\nid: ${template.id}\ntitle: ${JSON.stringify(template.heading)}\nphase: ${template.phase}\nlayout: ${layout}\nsteps: 0\nactivities: []\n---\n\n<Composicion plantilla="${template.id}">\n${template.mdx}\n</Composicion>\n`;
+}

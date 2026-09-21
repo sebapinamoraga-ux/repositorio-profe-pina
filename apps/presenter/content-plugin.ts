@@ -8,6 +8,10 @@ import {
   slideSchema,
 } from '../../packages/content-model/src/index.ts';
 import { parseFrontmatter } from '../../packages/content-model/src/frontmatter.ts';
+import {
+  mascotPngPath,
+  usedMascotPoses,
+} from '../../packages/content-model/src/used-poses.ts';
 
 async function files(root: string): Promise<string[]> {
   return (
@@ -24,24 +28,40 @@ async function files(root: string): Promise<string[]> {
 export function contentPlugin(): Plugin {
   let production = false;
   const virtual = 'virtual:aula-catalog';
+  const virtualMascots = 'virtual:aula-mascots';
   return {
     name: 'aula-content-catalog',
     configResolved(config) {
       production = config.command === 'build';
     },
     resolveId(id) {
-      if (id === virtual) return '\0' + virtual;
+      if (id === virtual || id === virtualMascots) return '\0' + id;
     },
     configureServer(server) {
       server.watcher.add(resolve('content'));
       server.watcher.on('all', (_event, file) => {
         if (!normalizePath(file).includes('/content/')) return;
-        const mod = server.moduleGraph.getModuleById('\0' + virtual);
-        if (mod) server.moduleGraph.invalidateModule(mod);
+        for (const name of [virtual, virtualMascots]) {
+          const mod = server.moduleGraph.getModuleById('\0' + name);
+          if (mod) server.moduleGraph.invalidateModule(mod);
+        }
         server.ws.send({ type: 'full-reload' });
       });
     },
     async load(id) {
+      if (id === '\0' + virtualMascots) {
+        const poses = await usedMascotPoses(resolve('content'));
+        const dir = resolve('content/assets/mascotas/png');
+        const paths = await Promise.all(
+          poses.map((pose) => mascotPngPath(dir, pose)),
+        );
+        const imports = paths.map(
+          (path, i) =>
+            `import pose${poses[i]} from ${JSON.stringify(normalizePath(path) + '?url')};`,
+        );
+        const entries = poses.map((pose) => `${pose}:pose${pose}`);
+        return `${imports.join('\n')}\nexport const mascotFiles={${entries.join(',')}};`;
+      }
       if (id !== '\0' + virtual) return;
       const imports: string[] = [];
       const lessons: string[] = [];
@@ -52,7 +72,12 @@ export function contentPlugin(): Plugin {
         if (!path.endsWith('lesson.yaml')) continue;
         this.addWatchFile(path);
         const lesson = lessonSchema.parse(parse(await readFile(path, 'utf8')));
-        if (production && lesson.status === 'draft') continue;
+        if (
+          production &&
+          lesson.status === 'draft' &&
+          process.env.AULA_INCLUDE_DRAFTS !== '1'
+        )
+          continue;
         const slides: string[] = [];
         for (const file of lesson.slides) {
           const source = normalizePath(resolve(path, '..', 'slides', file));

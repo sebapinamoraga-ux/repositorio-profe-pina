@@ -1,0 +1,468 @@
+{
+  "version": 2,
+  "templates": [
+    {
+      "id": "marca-portada",
+      "title": "Portada con identidad",
+      "phase": "inicio",
+      "slideType": "Portada y propósito",
+      "layout": "portada",
+      "purpose": "Presentar la clase y fijar su identidad sin competir con el objetivo.",
+      "eyebrow": "Inicio · 01",
+      "heading": "Dos incógnitas. Una estrategia.",
+      "body": "Una entrada clara que anuncia el foco matemático de la clase.",
+      "calloutTitle": "Objetivo de clase",
+      "calloutBody": "Resolver, representar y comprobar un sistema 2×2.",
+      "mascot": {
+        "pose": 45,
+        "nivel": "marca",
+        "ubicacion": "lateral-derecha",
+        "alt": "Profe Piña sostiene un lápiz y da la bienvenida a la clase."
+      },
+      "uso": "objetivo",
+      "preview": [],
+      "mdx": "<Objetivo titulo=\"Objetivo de clase\">\nResolver, representar y comprobar un sistema 2×2.\n</Objetivo>"
+    },
+    {
+      "id": "marca-transicion",
+      "title": "Transición de etapa",
+      "phase": "desarrollo",
+      "slideType": "Separador de sección",
+      "layout": "portada",
+      "purpose": "Marcar un cambio de ritmo entre explicación, modelado y práctica.",
+      "eyebrow": "Ahora construimos",
+      "heading": "De la idea al procedimiento.",
+      "body": "La mascota funciona como ancla visual entre momentos de la clase.",
+      "calloutTitle": "Siguiente tramo",
+      "calloutBody": "Preparar las ecuaciones para reducir una incógnita.",
+      "mascot": {
+        "pose": 45,
+        "nivel": "marca",
+        "ubicacion": "lateral-derecha",
+        "alt": "Profe Piña sostiene un lápiz en una transición de la clase."
+      },
+      "uso": "procedimiento",
+      "preview": [],
+      "mdx": "<Propiedad titulo=\"Siguiente tramo\">\nPreparar las ecuaciones para reducir una incógnita.\n</Propiedad>"
+    },
+    {
+      "id": "marca-cierre",
+      "title": "Cierre con firma",
+      "phase": "cierre",
+      "slideType": "Síntesis final",
+      "layout": "sintesis",
+      "purpose": "Cerrar la experiencia con una presencia memorable y una síntesis breve.",
+      "eyebrow": "Cierre · 20",
+      "heading": "Una solución debe cumplir ambas ecuaciones.",
+      "body": "La idea central queda visible antes de terminar la clase.",
+      "calloutTitle": "Nos llevamos",
+      "calloutBody": "Reducir, resolver y comprobar en el sistema original.",
+      "mascot": {
+        "pose": 45,
+        "nivel": "marca",
+        "ubicacion": "lateral-derecha",
+        "alt": "Profe Piña sostiene un lápiz junto a la síntesis final."
+      },
+      "uso": "cierre",
+      "preview": [
+        {
+          "title": "Preparar",
+          "text": "Coeficientes opuestos"
+        },
+        {
+          "title": "Reducir",
+          "text": "Una incógnita"
+        },
+        {
+          "title": "Comprobar",
+          "text": "Ambas ecuaciones"
+        }
+      ],
+      "mdx": "La idea central queda visible antes de terminar la clase.\n\n<Paneles columnas={3}>\n<Tarjeta titulo=\"Preparar\">\nCoeficientes opuestos\n</Tarjeta>\n<Tarjeta titulo=\"Reducir\">\nUna incógnita\n</Tarjeta>\n<Tarjeta titulo=\"Comprobar\">\nAmbas ecuaciones\n</Tarjeta>\n</Paneles>\n\n<Cierre titulo=\"Nos llevamos\">\nReducir, resolver y comprobar en el sistema original.\n</Cierre>"
+    },
+    {
+      "id": "sutil-activacion",
+      "title": "Activación amable",
+      "phase": "activacion",
+      "slideType": "Recuperación de saberes",
+      "layout": "ecuacion",
+      "purpose": "Acompañar una entrada de baja presión sin distraer del cálculo.",
+      "eyebrow": "Activación · 03",
+      "heading": "Transformar sin cambiar la solución",
+      "body": "Resuelve: 3x + 2 = 14.",
+      "calloutTitle": "Recuperemos lo que sabemos",
+      "calloutBody": "Opera en ambos miembros para conservar la equivalencia.",
+      "mascot": {
+        "pose": 43,
+        "nivel": "sutil",
+        "ubicacion": "superior-derecha",
+        "alt": "Profe Piña sostiene una taza como detalle ambiental."
+      },
+      "uso": "procedimiento",
+      "preview": [
+        {
+          "title": "Ecuación",
+          "text": "3x + 2 = 14"
+        }
+      ],
+      "mdx": "Resuelve: 3x + 2 = 14.\n\n<Tarjeta titulo=\"Ecuación\">\n3x + 2 = 14\n</Tarjeta>\n\n<Propiedad titulo=\"Recuperemos lo que sabemos\">\nOpera en ambos miembros para conservar la equivalencia.\n</Propiedad>"
+    },
+    {
+      "id": "sutil-lectura",
+      "title": "Lectura de definición",
+      "phase": "desarrollo",
+      "slideType": "Definición o principio",
+      "layout": "bloque",
+      "purpose": "Dar calidez a una pausa de lectura sin añadir una instrucción nueva.",
+      "eyebrow": "Concepto",
+      "heading": "¿Qué representa una solución?",
+      "body": "Un par ordenado que satisface simultáneamente dos condiciones.",
+      "calloutTitle": "Definición de solución",
+      "calloutBody": "Un par ordenado que satisface simultáneamente las dos ecuaciones de un sistema.",
+      "mascot": {
+        "pose": 46,
+        "nivel": "sutil",
+        "ubicacion": "inferior-derecha",
+        "alt": "Profe Piña lee un libro como apoyo discreto."
+      },
+      "uso": "definicion",
+      "preview": [],
+      "mdx": "<Definicion titulo=\"Definición de solución\">\nUn par ordenado que satisface simultáneamente las dos ecuaciones de un sistema.\n</Definicion>"
+    },
+    {
+      "id": "sutil-repaso",
+      "title": "Repaso de recursos",
+      "phase": "activacion",
+      "slideType": "Lista de herramientas previas",
+      "layout": "pasos",
+      "purpose": "Reforzar la idea de preparación antes de resolver.",
+      "eyebrow": "Antes de comenzar",
+      "heading": "Herramientas que ya tenemos",
+      "body": "Ecuaciones lineales, signos y operaciones equivalentes.",
+      "calloutTitle": "Kit de trabajo",
+      "calloutBody": "Ordena, multiplica y comprueba.",
+      "mascot": {
+        "pose": 47,
+        "nivel": "sutil",
+        "ubicacion": "superior-derecha",
+        "alt": "Profe Piña sostiene libros como señal de repaso."
+      },
+      "uso": "procedimiento",
+      "preview": [
+        {
+          "title": "1 · Preparar",
+          "text": "Elegir la incógnita que se eliminará."
+        },
+        {
+          "title": "2 · Reducir",
+          "text": "Sumar ecuaciones equivalentes."
+        },
+        {
+          "title": "3 · Comprobar",
+          "text": "Verificar ambas igualdades."
+        }
+      ],
+      "mdx": "Ecuaciones lineales, signos y operaciones equivalentes.\n\n<Paneles columnas={3}>\n<Tarjeta titulo=\"1 · Preparar\">\nElegir la incógnita que se eliminará.\n</Tarjeta>\n<Tarjeta titulo=\"2 · Reducir\">\nSumar ecuaciones equivalentes.\n</Tarjeta>\n<Tarjeta titulo=\"3 · Comprobar\">\nVerificar ambas igualdades.\n</Tarjeta>\n</Paneles>\n\n<Propiedad titulo=\"Kit de trabajo\">\nOrdena, multiplica y comprueba.\n</Propiedad>"
+    },
+    {
+      "id": "sutil-practica",
+      "title": "Práctica silenciosa",
+      "phase": "practica",
+      "slideType": "Trabajo individual",
+      "layout": "ecuacion",
+      "purpose": "Acompañar el trabajo autónomo sin sugerir la respuesta.",
+      "eyebrow": "Tu turno",
+      "heading": "Resuelve y comprueba",
+      "body": "Elige la ecuación que conviene transformar primero.",
+      "calloutTitle": "Tiempo individual",
+      "calloutBody": "Registra cada operación y verifica el par solución.",
+      "mascot": {
+        "pose": 48,
+        "nivel": "sutil",
+        "ubicacion": "inferior-derecha",
+        "alt": "Profe Piña aprende con un libro durante la práctica individual."
+      },
+      "uso": "practica",
+      "preview": [
+        {
+          "title": "Sistema",
+          "text": "3x + 2y = 18; 2x − 5y = −7"
+        }
+      ],
+      "mdx": "Elige la ecuación que conviene transformar primero.\n\n<Tarjeta titulo=\"Sistema\">\n3x + 2y = 18; 2x − 5y = −7\n</Tarjeta>\n\n<PracticaIndividual titulo=\"Tiempo individual\">\nRegistra cada operación y verifica el par solución.\n</PracticaIndividual>"
+    },
+    {
+      "id": "sutil-hito",
+      "title": "Hito de progreso",
+      "phase": "desarrollo",
+      "slideType": "Pausa y avance",
+      "layout": "sintesis",
+      "purpose": "Señalar que se completó una etapa sin convertir la mascota en contenido.",
+      "eyebrow": "Punto de control",
+      "heading": "Ya podemos eliminar una incógnita",
+      "body": "Antes de avanzar, explica por qué la operación conserva el sistema.",
+      "calloutTitle": "Hito alcanzado",
+      "calloutBody": "Ecuaciones preparadas para reducir.",
+      "mascot": {
+        "pose": 79,
+        "nivel": "sutil",
+        "ubicacion": "superior-derecha",
+        "alt": "Profe Piña sostiene una bandera como señal discreta de progreso."
+      },
+      "uso": "procedimiento",
+      "preview": [
+        {
+          "title": "Preparar",
+          "text": "Coeficientes opuestos"
+        },
+        {
+          "title": "Reducir",
+          "text": "Una incógnita"
+        },
+        {
+          "title": "Comprobar",
+          "text": "Ambas ecuaciones"
+        }
+      ],
+      "mdx": "Antes de avanzar, explica por qué la operación conserva el sistema.\n\n<Paneles columnas={3}>\n<Tarjeta titulo=\"Preparar\">\nCoeficientes opuestos\n</Tarjeta>\n<Tarjeta titulo=\"Reducir\">\nUna incógnita\n</Tarjeta>\n<Tarjeta titulo=\"Comprobar\">\nAmbas ecuaciones\n</Tarjeta>\n</Paneles>\n\n<Propiedad titulo=\"Hito alcanzado\">\nEcuaciones preparadas para reducir.\n</Propiedad>"
+    },
+    {
+      "id": "sutil-metacognicion",
+      "title": "Pregunta metacognitiva",
+      "phase": "cierre",
+      "slideType": "Reflexión breve",
+      "layout": "bloque",
+      "purpose": "Invitar a pensar sobre la estrategia sin anticipar una explicación.",
+      "eyebrow": "Piensa y explica",
+      "heading": "¿Qué decisión simplificó más el sistema?",
+      "body": "Compara tu procedimiento con otra estrategia posible.",
+      "calloutTitle": "Una pregunta para cerrar",
+      "calloutBody": "¿Qué mantendrías y qué cambiarías la próxima vez?",
+      "mascot": {
+        "pose": 81,
+        "nivel": "sutil",
+        "ubicacion": "inferior-derecha",
+        "alt": "Profe Piña aparece junto a un signo de pregunta."
+      },
+      "uso": "cierre",
+      "preview": [],
+      "mdx": "Compara tu procedimiento con otra estrategia posible.\n\n<Cierre titulo=\"Una pregunta para cerrar\">\n¿Qué mantendrías y qué cambiarías la próxima vez?\n</Cierre>"
+    },
+    {
+      "id": "pedagogica-bienvenida",
+      "title": "Consigna presentada",
+      "phase": "inicio",
+      "slideType": "Objetivo y consigna",
+      "layout": "bloque",
+      "purpose": "Dirigir la atención hacia una consigna inicial concreta.",
+      "eyebrow": "Propósito de hoy",
+      "heading": "Encontrar una estrategia justificable",
+      "body": "No basta con obtener un resultado: debemos explicar por qué funciona.",
+      "calloutTitle": "Mira aquí",
+      "calloutBody": "La comprobación forma parte de la solución.",
+      "mascot": {
+        "pose": 1,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña sonríe junto a la consigna principal."
+      },
+      "uso": "objetivo",
+      "preview": [],
+      "mdx": "No basta con obtener un resultado: debemos explicar por qué funciona.\n\n<Objetivo titulo=\"Mira aquí\">\nLa comprobación forma parte de la solución.\n</Objetivo>"
+    },
+    {
+      "id": "pedagogica-punto-clave",
+      "title": "Idea señalada",
+      "phase": "desarrollo",
+      "slideType": "Concepto clave",
+      "layout": "bloque",
+      "purpose": "Apuntar a una relación que debe verbalizarse.",
+      "eyebrow": "Idea central",
+      "heading": "Las operaciones se aplican a toda la ecuación",
+      "body": "Cada transformación debe conservar el conjunto de soluciones.",
+      "calloutTitle": "Punto clave",
+      "calloutBody": "Opera siempre en ambos miembros.",
+      "mascot": {
+        "pose": 2,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña señala la idea central de la diapositiva."
+      },
+      "uso": "procedimiento",
+      "preview": [],
+      "mdx": "Cada transformación debe conservar el conjunto de soluciones.\n\n<Propiedad titulo=\"Punto clave\">\nOpera siempre en ambos miembros.\n</Propiedad>"
+    },
+    {
+      "id": "pedagogica-comprobacion",
+      "title": "Retroalimentación positiva",
+      "phase": "practica",
+      "slideType": "Comprobación de resultado",
+      "layout": "ecuacion",
+      "purpose": "Confirmar un procedimiento correcto y destacar su evidencia.",
+      "eyebrow": "Comprobemos",
+      "heading": "El par satisface las dos ecuaciones",
+      "body": "Sustituye x = 4 e y = 3 en el sistema original.",
+      "calloutTitle": "Bien justificado",
+      "calloutBody": "Ambas igualdades son verdaderas.",
+      "mascot": {
+        "pose": 3,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña levanta el pulgar junto a una comprobación correcta."
+      },
+      "uso": "comprobacion",
+      "preview": [
+        {
+          "title": "Primera condición",
+          "text": "3(4) + 2(3) = 18"
+        },
+        {
+          "title": "Segunda condición",
+          "text": "2(4) − 5(3) = −7"
+        }
+      ],
+      "mdx": "Sustituye x = 4 e y = 3 en el sistema original.\n\n<Tarjeta titulo=\"Primera condición\">\n3(4) + 2(3) = 18\n</Tarjeta>\n\n<Tarjeta titulo=\"Segunda condición\">\n2(4) − 5(3) = −7\n</Tarjeta>\n\n<Comprobacion titulo=\"Bien justificado\">\nAmbas igualdades son verdaderas.\n</Comprobacion>"
+    },
+    {
+      "id": "pedagogica-comparacion",
+      "title": "Comparación de estrategias",
+      "phase": "desarrollo",
+      "slideType": "Dos procedimientos",
+      "layout": "dos-columnas",
+      "purpose": "Ayudar a mirar dos caminos sin declarar uno correcto de antemano.",
+      "eyebrow": "Compara",
+      "heading": "¿Cuál preparación reduce mejor?",
+      "body": "Observa los coeficientes antes de elegir una operación.",
+      "calloutTitle": "Dos caminos",
+      "calloutBody": "Compara cantidad de pasos y riesgo de error.",
+      "mascot": {
+        "pose": 5,
+        "nivel": "pedagogica",
+        "ubicacion": "lateral-derecha",
+        "alt": "Profe Piña presenta dos alternativas con ambas manos."
+      },
+      "uso": "procedimiento",
+      "preview": [
+        {
+          "title": "Camino A",
+          "text": "Preparar y sumar ecuaciones."
+        },
+        {
+          "title": "Camino B",
+          "text": "Despejar y sustituir."
+        }
+      ],
+      "mdx": "Observa los coeficientes antes de elegir una operación.\n\n<Paneles>\n<Tarjeta titulo=\"Camino A\">\nPreparar y sumar ecuaciones.\n</Tarjeta>\n<Tarjeta titulo=\"Camino B\">\nDespejar y sustituir.\n</Tarjeta>\n</Paneles>\n\n<Propiedad titulo=\"Dos caminos\">\nCompara cantidad de pasos y riesgo de error.\n</Propiedad>"
+    },
+    {
+      "id": "pedagogica-modelado",
+      "title": "Modelado paso a paso",
+      "phase": "desarrollo",
+      "slideType": "Ejemplo resuelto",
+      "layout": "pasos",
+      "purpose": "Introducir cada decisión del procedimiento en el momento oportuno.",
+      "eyebrow": "Construyamos juntos",
+      "heading": "Prepara, reduce y despeja",
+      "body": "Cada paso debe indicar qué operación se aplicó y para qué.",
+      "calloutTitle": "Siguiente decisión",
+      "calloutBody": "Multiplica la segunda ecuación por 2.",
+      "mascot": {
+        "pose": 6,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña presenta el siguiente paso de un ejemplo resuelto."
+      },
+      "uso": "procedimiento",
+      "preview": [
+        {
+          "title": "1 · Preparar",
+          "text": "Elegir la incógnita que se eliminará."
+        },
+        {
+          "title": "2 · Reducir",
+          "text": "Sumar ecuaciones equivalentes."
+        },
+        {
+          "title": "3 · Comprobar",
+          "text": "Verificar ambas igualdades."
+        }
+      ],
+      "mdx": "Cada paso debe indicar qué operación se aplicó y para qué.\n\n<Paneles columnas={3}>\n<Tarjeta titulo=\"1 · Preparar\">\nElegir la incógnita que se eliminará.\n</Tarjeta>\n<Tarjeta titulo=\"2 · Reducir\">\nSumar ecuaciones equivalentes.\n</Tarjeta>\n<Tarjeta titulo=\"3 · Comprobar\">\nVerificar ambas igualdades.\n</Tarjeta>\n</Paneles>\n\n<Propiedad titulo=\"Siguiente decisión\">\nMultiplica la segunda ecuación por 2.\n</Propiedad>"
+    },
+    {
+      "id": "pedagogica-error",
+      "title": "Error para discutir",
+      "phase": "practica",
+      "slideType": "Análisis de error",
+      "layout": "dos-columnas",
+      "purpose": "Señalar el punto exacto donde debe detenerse la discusión.",
+      "eyebrow": "Detecta el error",
+      "heading": "¿En qué paso dejó de ser equivalente?",
+      "body": "Contrasta la operación escrita con el resultado obtenido.",
+      "calloutTitle": "Detente aquí",
+      "calloutBody": "El signo cambió solo en un término.",
+      "mascot": {
+        "pose": 11,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña señala el paso que contiene un error."
+      },
+      "uso": "error",
+      "preview": [
+        {
+          "title": "Operación incompleta",
+          "text": "Se cambia solo un término."
+        },
+        {
+          "title": "Operación equivalente",
+          "text": "Se transforma todo en ambos miembros."
+        }
+      ],
+      "mdx": "Contrasta la operación escrita con el resultado obtenido.\n\n<Paneles>\n<Tarjeta titulo=\"Operación incompleta\">\nSe cambia solo un término.\n</Tarjeta>\n<Tarjeta titulo=\"Operación equivalente\">\nSe transforma todo en ambos miembros.\n</Tarjeta>\n</Paneles>\n\n<ErrorTipico titulo=\"Detente aquí\">\nEl signo cambió solo en un término.\n</ErrorTipico>"
+    },
+    {
+      "id": "pedagogica-grafico",
+      "title": "Exploración gráfica",
+      "phase": "desarrollo",
+      "slideType": "Gráfico o representación",
+      "layout": "grafico",
+      "purpose": "Vincular una explicación verbal con un punto específico del gráfico.",
+      "eyebrow": "Representación",
+      "heading": "El encuentro de dos condiciones",
+      "body": "Cada recta reúne soluciones de una ecuación; la intersección cumple ambas.",
+      "calloutTitle": "Observa la intersección",
+      "calloutBody": "El punto (4, 3) pertenece a las dos rectas.",
+      "mascot": {
+        "pose": 68,
+        "nivel": "pedagogica",
+        "ubicacion": "grafico",
+        "alt": "Profe Piña usa una lupa para destacar la intersección de dos rectas."
+      },
+      "uso": "procedimiento",
+      "preview": [],
+      "mdx": "<Paneles>\n<div>\nCada recta reúne soluciones de una ecuación; la intersección cumple ambas.\n\n<Propiedad titulo=\"Observa la intersección\">\nEl punto (4, 3) pertenece a las dos rectas.\n</Propiedad>\n</div>\n<GraficoRectas a1={1} b1={1} c1={7} a2={1} b2={-1} c2={1} max={8} descripcion=\"Dos rectas secantes en el punto (4,3).\" />\n</Paneles>"
+    },
+    {
+      "id": "pedagogica-pista",
+      "title": "Pista graduada",
+      "phase": "practica",
+      "slideType": "Ayuda sin respuesta",
+      "layout": "bloque",
+      "purpose": "Ofrecer una pista que preserve la oportunidad de resolver.",
+      "eyebrow": "Si necesitas una pista",
+      "heading": "Mira los coeficientes opuestos",
+      "body": "Busca una suma de ecuaciones que elimine una incógnita.",
+      "calloutTitle": "Una idea",
+      "calloutBody": "No despejes todavía: primero compara los coeficientes.",
+      "mascot": {
+        "pose": 76,
+        "nivel": "pedagogica",
+        "ubicacion": "junto-bloque",
+        "alt": "Profe Piña sostiene una ampolleta para ofrecer una pista."
+      },
+      "uso": "practica",
+      "preview": [],
+      "mdx": "Busca una suma de ecuaciones que elimine una incógnita.\n\n<PracticaIndividual titulo=\"Una idea\">\nNo despejes todavía: primero compara los coeficientes.\n</PracticaIndividual>"
+    }
+  ]
+}

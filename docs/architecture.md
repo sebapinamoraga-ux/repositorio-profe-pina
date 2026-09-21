@@ -8,6 +8,8 @@ Context + reducer conserva pasos y valores por diapositiva durante una sesión. 
 
 SVG representa la intersección; solveSystem y satisfies prueban los casos algebraicos. Una tolerancia de 1e-10 evita dividir por determinantes numéricamente nulos. No se pretende un solucionador simbólico general.
 
-El lienzo 1600×900 mantiene proporción y usa estilos centralizados. Toda revelación reserva espacio para evitar saltos. Los autores deben comprobar tanto el estado oculto como el final. El menú no se imprime. El tema oscuro se conserva en PDF.
+El lienzo 1600×900 mantiene proporción y usa estilos centralizados. Toda revelación reserva espacio para evitar saltos. Los autores deben comprobar tanto el estado oculto como el final. El menú no se imprime. El tema claro se conserva en PDF.
 
 Cada dependencia queda fijada en package-lock.json; usar npm ci en integración continua. Mantener Node 24.15.0 como referencia reproducible. Documentar las actualizaciones de versiones y volver a ejecutar los recorridos críticos.
+
+La gramática visual está documentada en docs/visual-language.md. Los componentes compartidos reciben el catálogo de plantillas por SlideContext, sin importar la aplicación. Composicion reserva espacio a la mascota en el flujo; el catálogo de content es la fuente de sus poses, funciones y ejemplos MDX descargables. content:check compila tanto clases como plantillas.

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Slide } from './index';
+import { mascotPropsSchema, type Slide } from './index';
 
 // Recorrer el AST de MDX: nunca interpretar etiquetas con reemplazos de texto.
 const attributeSchema = z.object({
@@ -23,6 +23,12 @@ const nodeSchema = z
   .passthrough();
 const components = new Set([
   'Definicion',
+  'Objetivo',
+  'Comprobacion',
+  'Tarjeta',
+  'Paneles',
+  'Etiquetas',
+  'Composicion',
   'Propiedad',
   'Teorema',
   'EjemploResuelto',
@@ -35,12 +41,29 @@ const components = new Set([
   'Formula',
   'PreguntaPAES',
   'GraficoSistema',
+  'GraficoDosCondiciones',
+  'GraficoRectas',
+  'MascotaProfePina',
   'div',
   'span',
 ]);
-export function validateMdxTree(tree: unknown, slide: Slide) {
+export function validateMdxTree(
+  tree: unknown,
+  slide: Slide,
+  templateIds?: ReadonlySet<string>,
+) {
   const steps = new Set<number>();
   const activities = new Set<string>();
+  let mascotCount = 0;
+  const literalAttribute = (
+    attributes: z.infer<typeof attributeSchema>[],
+    name: string,
+  ) => {
+    const value = attributes.find(
+      (attribute) => attribute.name === name,
+    )?.value;
+    return typeof value === 'string' ? value : value?.value;
+  };
   function visit(value: unknown, inStep = false) {
     const node = nodeSchema.parse(value);
     if (node.type === 'mdxjsEsm')
@@ -81,6 +104,23 @@ export function validateMdxTree(tree: unknown, slide: Slide) {
           throw new Error('PreguntaPAES requiere un id literal');
         activities.add(id);
       }
+      if (node.name === 'MascotaProfePina') {
+        mascotCount++;
+        mascotPropsSchema.parse({
+          pose: Number(literalAttribute(attributes, 'pose')),
+          nivel: literalAttribute(attributes, 'nivel'),
+          ubicacion: literalAttribute(attributes, 'ubicacion'),
+          alt: literalAttribute(attributes, 'alt'),
+        });
+      }
+      if (node.name === 'Composicion') {
+        mascotCount++;
+        const template = literalAttribute(attributes, 'plantilla');
+        if (!template || (templateIds && !templateIds.has(template)))
+          throw new Error(
+            `Plantilla de mascota desconocida: ${template ?? ''}`,
+          );
+      }
     }
     for (const child of node.children ?? [])
       visit(child, inStep || node.name === 'Paso');
@@ -94,4 +134,6 @@ export function validateMdxTree(tree: unknown, slide: Slide) {
   for (const id of slide.activities)
     if (!activities.has(id))
       throw new Error(`La actividad ${id} está declarada pero no se utiliza`);
+  if (mascotCount > 1)
+    throw new Error('Solo se permite una mascota por diapositiva');
 }

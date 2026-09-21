@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve, join, basename } from 'node:path';
 import { parse } from 'yaml';
@@ -12,7 +13,13 @@ import {
   lessonSchema,
   slideSchema,
   activitySchema,
+  mascotGallerySchema,
+  mascotTemplateMdx,
 } from '../packages/content-model/src/index';
+import {
+  mascotPngPath,
+  usedMascotPoses,
+} from '../packages/content-model/src/used-poses';
 export async function walk(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
   return (
@@ -25,8 +32,58 @@ export async function walk(dir: string): Promise<string[]> {
     )
   ).flat();
 }
+function git(...args: string[]): string | undefined {
+  try {
+    return execFileSync('git', args, { encoding: 'utf8', stdio: 'pipe' });
+  } catch {
+    return undefined;
+  }
+}
+/** Todas las PNG viven en disco; git y el sitio solo llevan las poses que el contenido usa. */
+async function checkMascotAssets(root: string) {
+  const pngDir = join(root, 'assets', 'mascotas', 'png');
+  const used = await usedMascotPoses(root);
+  const usedSet = new Set(used);
+  for (const pose of used) {
+    const path = await mascotPngPath(pngDir, pose);
+    if (git('check-ignore', '-q', path) !== undefined)
+      throw new Error(
+        `La pose ${pose} se usa pero git la ignora: añade "!content/assets/mascotas/png/${pose}-*.png" a .gitignore.`,
+      );
+  }
+  const tracked = git('ls-files', '-z', '--', 'content/assets/mascotas/png');
+  for (const file of (tracked ?? '').split('\0').filter(Boolean)) {
+    const pose = Number(/^(\d+)-/.exec(basename(file))?.[1]);
+    if (!usedSet.has(pose))
+      throw new Error(
+        `${file} está versionado pero ninguna diapositiva ni plantilla lo usa: quítalo de git (git rm --cached) y de la lista de .gitignore.`,
+      );
+  }
+}
 export async function checkContent() {
   const root = resolve('content');
+  const gallery = mascotGallerySchema.parse(
+    JSON.parse(
+      await readFile(join(root, 'galleries', 'mascot-presence.json'), 'utf8'),
+    ),
+  );
+  await checkMascotAssets(root);
+  const templateIds = new Set(gallery.templates.map((template) => template.id));
+  for (const template of gallery.templates) {
+    const source = mascotTemplateMdx(template);
+    const slide = slideSchema.parse(parseFrontmatter(source));
+    await compile(source, {
+      remarkPlugins: [
+        remarkFrontmatter,
+        () => (tree: unknown) => validateMdxTree(tree, slide, templateIds),
+        remarkMdxFrontmatter,
+        remarkMath,
+      ],
+      rehypePlugins: [
+        [rehypeKatex, { throwOnError: true, strict: 'error', trust: false }],
+      ],
+    });
+  }
   const activityIds = new Set<string>();
   for (const path of await walk(join(root, 'activities'))) {
     if (!path.endsWith('.yaml')) continue;
@@ -80,7 +137,8 @@ export async function checkContent() {
           await compile(text, {
             remarkPlugins: [
               remarkFrontmatter,
-              () => (tree: unknown) => validateMdxTree(tree, slide),
+              () => (tree: unknown) =>
+                validateMdxTree(tree, slide, templateIds),
               remarkMdxFrontmatter,
               remarkMath,
             ],

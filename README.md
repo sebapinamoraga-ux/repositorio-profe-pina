@@ -15,6 +15,8 @@ npm run dev
 
 Abrir http://127.0.0.1:5173. Flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice y F alterna pantalla completa. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
 
+El índice incluye una galería de 17 plantillas descargables y filtrables por momento de clase para incorporar la mascota con presencia sutil, pedagógica o de marca. Las reglas de autoría y el plan de crecimiento están en [Presencia de Profe Piña](docs/mascot-presence.md).
+
 ## Comprobar y exportar
 
 ```sh
@@ -28,7 +30,9 @@ npm run test:e2e
 npm run export:pdf -- --lesson sistemas-2x2
 ```
 
-El PDF aparece en `output/pdf/sistemas-2x2.pdf`: 20 diapositivas, pasos y respuestas visibles, sin notas. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión.
+El PDF aparece en `output/pdf/sistemas-2x2.pdf`: 25 diapositivas, pasos y respuestas visibles, sin notas. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión.
+
+Consulta también el [lenguaje visual común](docs/visual-language.md), que rige las clases y la galería.
 
 ## Crear una clase
 

@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useReducer,
@@ -16,11 +18,29 @@ import {
   Printer,
 } from 'lucide-react';
 import * as blocks from '@aula/pedagogical-ui';
-import { GraficoSistema } from '@aula/interactives';
+import {
+  GraficoDosCondiciones,
+  GraficoSistema,
+  GraficoRectas,
+} from '@aula/interactives';
 import { catalog, activities, type LoadedLesson } from './catalog';
 import { initialState, reducer } from '../presentation/state';
+import { mascotUrl } from './mascot-assets';
+import { mascotGallery } from './gallery';
+
+const MascotGallery = lazy(async () => {
+  const gallery = await import('./MascotGallery');
+  return { default: gallery.MascotGallery };
+});
+
 const components = {
   Definicion: blocks.Definicion,
+  Objetivo: blocks.Objetivo,
+  Comprobacion: blocks.Comprobacion,
+  Tarjeta: blocks.Tarjeta,
+  Paneles: blocks.Paneles,
+  Etiquetas: blocks.Etiquetas,
+  Composicion: blocks.Composicion,
   Propiedad: blocks.Propiedad,
   Teorema: blocks.Teorema,
   EjemploResuelto: blocks.EjemploResuelto,
@@ -33,6 +53,9 @@ const components = {
   Formula: blocks.Formula,
   PreguntaPAES: blocks.PreguntaPAES,
   GraficoSistema,
+  GraficoDosCondiciones,
+  GraficoRectas,
+  MascotaProfePina: blocks.MascotaProfePina,
 };
 const phaseNames: Record<string, string> = {
   inicio: 'Inicio',
@@ -59,7 +82,7 @@ function Frame({
     <article className={`slide layout-${slide.layout}`} data-slide={slide.id}>
       <header>
         <span className="brand">
-          p<span className="brand-dot">.</span> <span>PROFE PIÑA / AULA</span>
+          p<span className="brand-dot">.</span> <span>PROFE PIÑA</span>
         </span>
         <span className="subject">
           PAES {lesson.meta.subject.toUpperCase()} <span>•</span>{' '}
@@ -94,6 +117,12 @@ export function App() {
   const lesson =
     catalog.find((l) => l.meta.id === route.get('clase')) ?? catalog[0];
   if (!lesson) return <p>No hay clases publicadas.</p>;
+  if (route.get('galeria') === 'mascotas')
+    return (
+      <Suspense fallback={<p role="status">Cargando galería…</p>}>
+        <MascotGallery returnHref={`#clase=${lesson.meta.id}`} />
+      </Suspense>
+    );
   return <Player key={lesson.meta.id} lesson={lesson} route={route} />;
 }
 function Player({
@@ -227,6 +256,8 @@ function Player({
               values: {},
               setValue: () => {},
               activities,
+              mascotUrl,
+              templates: mascotGallery.templates,
             }}
           >
             <Frame lesson={lesson} index={i}>
@@ -254,6 +285,8 @@ function Player({
               setValue: (key, value) =>
                 dispatch({ type: 'value', slide: slide.id, key, value }),
               activities,
+              mascotUrl,
+              templates: mascotGallery.templates,
             }}
           >
             <Frame lesson={lesson} index={state.index}>
@@ -359,6 +392,13 @@ function Player({
                 {item.meta.title}
               </a>
             ))}
+            <a
+              className="gallery-link"
+              href={`#clase=${lesson.meta.id}&galeria=mascotas`}
+              onClick={() => setMenu(false)}
+            >
+              Galería de plantillas de mascota
+            </a>
             <p className="drawer-caption">
               {lesson.meta.duration} MIN · {lesson.meta.subject.toUpperCase()}
             </p>

@@ -2,13 +2,20 @@ import { createContext, useContext, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { BookOpen, Lightbulb, TriangleAlert, CheckCircle2 } from 'lucide-react';
 import katex from 'katex';
-import type { Activity } from '@aula/content-model';
+import type {
+  Activity,
+  MascotPlacement,
+  MascotPresence,
+  MascotTemplate,
+} from '@aula/content-model';
 export interface SlideRuntime {
   step: number;
   print: boolean;
   values: Record<string, string>;
   setValue: (key: string, value: string) => void;
   activities: Record<string, Activity>;
+  mascotUrl: (pose: number) => string;
+  templates?: readonly MascotTemplate[];
 }
 export const SlideContext = createContext<SlideRuntime>({
   step: 0,
@@ -16,6 +23,7 @@ export const SlideContext = createContext<SlideRuntime>({
   values: {},
   setValue: () => {},
   activities: {},
+  mascotUrl: () => '',
 });
 export const useSlide = () => useContext(SlideContext);
 type BlockProps = { titulo?: string; children: ReactNode };
@@ -39,6 +47,68 @@ function Block({ kind, titulo, children }: { kind: string } & BlockProps) {
   );
 }
 export const Definicion = (p: BlockProps) => <Block kind="definicion" {...p} />;
+export const Objetivo = (p: BlockProps) => <Block kind="objetivo" {...p} />;
+export const Comprobacion = (p: BlockProps) => (
+  <Block kind="comprobacion" {...p} />
+);
+export function Tarjeta({
+  titulo,
+  etiqueta,
+  children,
+}: BlockProps & { etiqueta?: string }) {
+  return (
+    <section className="teaching-card">
+      {etiqueta && <span className="teaching-tag">{etiqueta}</span>}
+      <h3>{titulo}</h3>
+      {children}
+    </section>
+  );
+}
+export function Paneles({
+  children,
+  columnas = 2,
+}: {
+  children: ReactNode;
+  columnas?: 2 | 3;
+}) {
+  return <div className={`teaching-panels panels-${columnas}`}>{children}</div>;
+}
+export function Etiquetas({ children }: { children: ReactNode }) {
+  return <div className="teaching-labels">{children}</div>;
+}
+export function Composicion({
+  plantilla,
+  nota,
+  children,
+}: {
+  plantilla: string;
+  nota?: string;
+  children: ReactNode;
+}) {
+  const runtime = useSlide();
+  const template = runtime.templates?.find((item) => item.id === plantilla);
+  if (!template)
+    throw new Error(`Plantilla de mascota desconocida: ${plantilla}`);
+  const wide = ['dos-columnas', 'grafico', 'sintesis'].includes(
+    template.layout,
+  );
+  return (
+    <div
+      className={`mascot-composition ${wide ? 'composition-foot' : 'composition-side'} ${template.mascot.nivel === 'marca' ? 'composition-brand' : ''}`}
+      data-template={plantilla}
+    >
+      <div className="composition-content">{children}</div>
+      <aside className="composition-companion">
+        <img
+          className={`composition-mascot mascot-level-${template.mascot.nivel}`}
+          src={runtime.mascotUrl(template.mascot.pose)}
+          alt={template.mascot.alt}
+        />
+        {nota && <p>{nota}</p>}
+      </aside>
+    </div>
+  );
+}
 export const Propiedad = (p: BlockProps) => <Block kind="propiedad" {...p} />;
 export const Teorema = ({
   hipotesis,
@@ -74,6 +144,27 @@ export const Cierre = (p: BlockProps) => (
 export const Columnas = ({ children }: { children: ReactNode }) => (
   <div className="columns">{children}</div>
 );
+export function MascotaProfePina({
+  pose,
+  nivel,
+  ubicacion,
+  alt,
+}: {
+  pose: number;
+  nivel: MascotPresence;
+  ubicacion: MascotPlacement;
+  alt: string;
+}) {
+  const src = useSlide().mascotUrl(pose);
+  if (!src) return null;
+  return (
+    <img
+      className={`slide-mascot mascot-level-${nivel} mascot-position-${ubicacion}`}
+      src={src}
+      alt={alt}
+    />
+  );
+}
 export function Paso({ n, children }: { n: number; children: ReactNode }) {
   const { step, print } = useSlide();
   const reduced = useReducedMotion();

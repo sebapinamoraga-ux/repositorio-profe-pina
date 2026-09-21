@@ -15,3 +15,6 @@ Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en
 - No publicar borradores. Conservar archive y atribución del prototipo.
 - No introducir dependencias o backend sin una necesidad del hito.
 - No afirmar ensayo en proyector ni revisión docente si no se han realizado.
+
+- Aplicar docs/visual-language.md a toda clase y plantilla: azul solo en definiciones formales; objetivos y procedimientos neutros, práctica y errores ocres, comprobaciones verdes.
+- Preferir Composicion con un ID de la galería para reservar espacio a la mascota; mantener una por lámina y validar las plantillas descargables.

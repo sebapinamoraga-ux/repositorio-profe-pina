@@ -4,15 +4,30 @@ Una clase contiene lesson.yaml y slides/\*.mdx. El manifiesto especifica ID esta
 
 El frontmatter de cada MDX tiene id, title, phase, layout, steps y activities. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio.
 
+La portada conserva el título principal y presenta directamente un bloque **Objetivo de clase**. No añade subtítulo descriptivo, duración ni una ruta temática del tipo “Ecuaciones → Sistemas → Modelamiento”; esos datos pertenecen al plan de la clase, no al lienzo proyectado.
+
 Escribe Markdown normal y matemáticas en línea con `$...$`. Para ecuaciones centrales, coloca cada delimitador `$$` en su propia línea y deja una línea vacía después del cierre. Escapa los signos monetarios como `\$2.000`. Cada diapositiva es un archivo, evitando dobles escapes de cadenas TypeScript. Usa etiquetas en español: Definicion, Propiedad, Teorema, EjemploResuelto, PracticaGuiada, ErrorTipico, PracticaIndividual, Cierre y Columnas.
 
 ```mdx
 <Paso n={1}>
-  <Propiedad titulo="Comprobación">$2(4)+3=11$.</Propiedad>
+  <Comprobacion titulo="Comprobación">$2(4)+3=11$.</Comprobacion>
 </Paso>
 ```
 
 `steps` debe coincidir con el máximo paso y la secuencia debe empezar en 1. Un mismo paso puede revelar varios fragmentos. No anidar pasos. No insertar estilos por diapositiva ni JavaScript arbitrario.
+
+La integración preferida es `Composicion plantilla="pedagogica-modelado"`, que reserva espacio para contenido y mascota. `MascotaProfePina` queda para composiciones existentes con espacio verificado. Cada diapositiva admite como máximo una. Declara siempre una descripción alternativa que explique su función, no solo su apariencia.
+
+```mdx
+<MascotaProfePina
+  pose={68}
+  nivel="pedagogica"
+  ubicacion="grafico"
+  alt="Profe Piña usa una lupa para destacar la intersección de las rectas."
+/>
+```
+
+Los niveles y poses autorizados son: marca (45), pedagógica (01–20, 68 y 76) y sutil (43, 46, 47, 48, 79 y 81). Consulta [Presencia de la mascota](mascot-presence.md) antes de elegir nivel y ubicación.
 
 Teorema recibe hipotesis y conclusion como texto. Formula recibe tex para notación dinámica. GraficoSistema recibe sumaInicial y sumaEstatica; usa un rango de 3 a 9 y la segunda ecuación x−y=1. El control conserva su estado al salir de la diapositiva y permite restablecerlo.
 
@@ -20,4 +35,25 @@ PreguntaPAES recibe id y paso. Declara el ID también en activities del frontmat
 
 La tipografía base es 31–32 px en el lienzo; no encoger para meter más texto. Separar un desarrollo en varias diapositivas. Cada página debe sostener una idea principal y caber completa sin scroll. Validar toda ecuación y verificar soluciones en el sistema original.
 
-La clase incluida dura 80 minutos: inicio 5, activación 8, concepto 7, modelado 15, práctica guiada 13, comparación 6, contexto 11, práctica individual 10, cierre 5. Las diapositivas 18 y 19 comparten el tiempo de discusión del problema contextual.
+La clase incluida dura 80 minutos y conserva el título, el objetivo y el ejemplo de las compras. Distribución docente (no se proyecta):
+
+| Tramo | Diapositivas | Minutos |
+| :--- | :--- | ---: |
+| Inicio y modelación de ambas compras | apertura a signos | 13 |
+| Definición y métodos | definicion a metodos | 7 |
+| Comparación del ejemplo por los tres métodos | idea a error | 20 |
+| Pausa en parejas y solución por reducción | comparar a elegir | 12 |
+| Registro de igualación y sustitución | modelar | 0 |
+| Intersección y tres casos de solución | grafico a caso-vacio | 13 |
+| Ticket: planteamiento, alternativas, solución y error | contexto a distractores | 10 |
+| Percepción del aprendizaje y de las presentaciones | cierre | 5 |
+
+La lámina `modelar` queda como registro para consulta: se pasa sin revisarla durante la clase. En el ticket, dar seis minutos de trabajo antes de mostrar las alternativas; dedicar cuatro minutos a contrastar, resolver y discutir el error. La actividad es de elaboración propia, no una pregunta oficial PAES.
+
+`GraficoRectas` representa dos ecuaciones generales a partir de sus coeficientes, con una ventana del primer cuadrante y una descripción accesible. Es estático y distingue la segunda recta con trazo discontinuo para hacer visible la coincidencia. Los sistemas específicos se declaran exclusivamente en el contenido.
+
+## Diseño compartido
+
+Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Usa Objetivo para el propósito de clase; Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.
+
+La galería permite filtrar por nivel y momento y descargar una diapositiva MDX válida. Guarda el archivo en slides, adapta su contenido y añade el nombre a lesson.yaml. También puedes crear un borrador con una plantilla: `npm run lesson:new -- --id nueva-clase --plantilla pedagogica-modelado`. Las ayudas son ejemplos editables, no contenido curricular listo para publicar.

@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { activitySchema, slideSchema } from './index';
+import { activitySchema, mascotPropsSchema, slideSchema } from './index';
 it('rechaza diapositivas sin fases válidas', () => {
   expect(
     slideSchema.safeParse({
@@ -27,6 +27,24 @@ it('rechaza una pregunta sin alternativa correcta', () => {
         correct: false,
         explanation: 'Error',
       })),
+    }).success,
+  ).toBe(false);
+});
+it('limita las poses según el nivel de presencia', () => {
+  expect(
+    mascotPropsSchema.safeParse({
+      pose: 45,
+      nivel: 'marca',
+      ubicacion: 'lateral-derecha',
+      alt: 'Profe Piña sostiene un lápiz.',
+    }).success,
+  ).toBe(true);
+  expect(
+    mascotPropsSchema.safeParse({
+      pose: 45,
+      nivel: 'sutil',
+      ubicacion: 'superior-derecha',
+      alt: 'Profe Piña sostiene un lápiz.',
     }).success,
   ).toBe(false);
 });

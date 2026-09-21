@@ -4,5 +4,27 @@ output/
 tmp/
 test-results/
 playwright-report/
+design-proposals/
+# Mascota: toda la colección vive en el disco local; git solo versiona los PNG de las poses usadas.
+# Al usar una pose nueva, añade su línea "!" (content:check lo exige).
+content/assets/mascotas/*
+!content/assets/mascotas/README.md
+!content/assets/mascotas/png/
+content/assets/mascotas/png/*
+!content/assets/mascotas/png/1-*.png
+!content/assets/mascotas/png/2-*.png
+!content/assets/mascotas/png/3-*.png
+!content/assets/mascotas/png/5-*.png
+!content/assets/mascotas/png/6-*.png
+!content/assets/mascotas/png/11-*.png
+!content/assets/mascotas/png/43-*.png
+!content/assets/mascotas/png/45-*.png
+!content/assets/mascotas/png/46-*.png
+!content/assets/mascotas/png/47-*.png
+!content/assets/mascotas/png/48-*.png
+!content/assets/mascotas/png/68-*.png
+!content/assets/mascotas/png/76-*.png
+!content/assets/mascotas/png/79-*.png
+!content/assets/mascotas/png/81-*.png
 .env*
 !.env.example
