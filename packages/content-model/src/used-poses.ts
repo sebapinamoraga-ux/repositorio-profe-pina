@@ -1,6 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { mascotGallerySchema } from './index';
+import { mascotGallerySchema } from './index.ts';
 
 async function mdxFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
