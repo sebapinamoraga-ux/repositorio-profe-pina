@@ -1,20 +1,27 @@
 ---
 id: distractores
-title: '¿Qué nos dicen las otras respuestas?'
-phase: practica
+title: 'Ticket: un error que cambia el resultado'
+phase: cierre
 layout: concepto
-steps: 1
+steps: 2
 activities: []
 ---
 
-<ErrorTipico titulo="Analizar es más que marcar">
-En el problema de las entradas, obtuvimos $2a=20$.
+<ErrorTipico titulo="El factor también multiplica el miembro derecho">
+Al multiplicar $x+y=120$ por $-2$, alguien escribe:
 
-- **5:** dividir por 4 en lugar del coeficiente restante, 2.
-- **20:** confundir entradas escolares con adultas.
-- **30:** responder con el total de entradas.
+$$
+-2x-2y=-120
+$$
 
+Al sumar con $2x+3y=280$, obtiene $y=160$ y luego $x=-40$.
 </ErrorTipico>
+
 <Paso n={1}>
-**10 adultas y 20 escolares** satisfacen cantidad y recaudación. Una sola condición no basta.
+**Corrección:** $-2(120)=-240$, por eso $y=40$ y $x=80$.
+</Paso>
+<Paso n={2}>
+El par $(-40,160)$ suma 120, pero $2(-40)+3(160)=400\ne280$.
+
+**Comprobar solo la cantidad total no basta.**
 </Paso>

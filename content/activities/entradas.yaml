@@ -1,34 +1,26 @@
 id: entradas
 type: paes
-prompt: En una función se venden 30 entradas. La entrada adulta cuesta $4.000 y la escolar $2.000. Se recaudan $80.000. ¿Cuántas entradas adultas se vendieron?
-answer: B · 10 entradas adultas.
-solution: 'a + e = 30 y 4a + 2e = 80 (miles de pesos). Al restar dos veces la primera ecuación de la segunda, 2a = 20. Luego a = 10 y e = 20. Comprobación: 40.000 + 40.000 = 80.000.'
-skills: [Resolver problemas, Modelar]
+prompt: 'En el aniversario se vendieron 120 entradas a $2.000 en preventa y $3.000 el día del evento; se recaudaron $280.000. ¿Cuántas se vendieron en cada modalidad?'
+answer: B · 80 en preventa y 40 el día del evento.
+solution: 'Con x para preventa e y para el día: x + y = 120 y 2x + 3y = 280, en miles de pesos. Reducción da y = 40 y x = 80.'
+skills: [Modelar, Resolver problemas, Argumentar]
 source:
   kind: original
-  reference: Elaboración propia para esta clase; alineada con M1, Admisión 2027.
+  reference: Elaboración propia para tercero medio; contexto de aniversario escolar.
 options:
-  - {
-      id: A,
-      text: '5',
-      correct: false,
-      explanation: Dividir 20 por 4 olvida que el coeficiente restante es 2.,
-    }
-  - {
-      id: B,
-      text: '10',
-      correct: true,
-      explanation: Satisface las ecuaciones de cantidad y recaudación.,
-    }
-  - {
-      id: C,
-      text: '20',
-      correct: false,
-      explanation: Corresponde a las entradas escolares.,
-    }
-  - {
-      id: D,
-      text: '30',
-      correct: false,
-      explanation: Confunde el total de entradas con las adultas.,
-    }
+  - id: A
+    text: '40 en preventa y 80 el día.'
+    correct: false
+    explanation: 'Intercambia los precios: usar 3x + 2y = 280 da x = 40 e y = 80. Con los precios reales se recaudan 320 mil, no 280 mil.'
+  - id: B
+    text: '80 en preventa y 40 el día.'
+    correct: true
+    explanation: 'Cumple ambas condiciones: 80 + 40 = 120 y 2(80) + 3(40) = 280.'
+  - id: C
+    text: '160 en preventa y −40 el día.'
+    correct: false
+    explanation: 'Invierte la resta de los totales al sumar: usa 240 − 280 = −40 en vez de 280 − 240 = 40. Recupera x = 160; no cumple la recaudación.'
+  - id: D
+    text: '−40 en preventa y 160 el día.'
+    correct: false
+    explanation: 'Multiplica por −2 solo el lado izquierdo de la primera ecuación: escribe −2x − 2y = −120. Al sumar obtiene y = 160 y x = −40.'

@@ -1,32 +1,34 @@
 ---
 id: preparar
-title: '¿Y si todavía no son opuestos?'
+title: 'Sumar elimina una incógnita'
 phase: desarrollo
 layout: resolucion
 steps: 2
 activities: []
 ---
 
+<Composicion plantilla="pedagogica-modelado" nota="Sumamos miembro a miembro: los coeficientes de x son opuestos.">
+<Tarjeta titulo="Ecuaciones preparadas">
+
 $$
-\begin{cases}2x+y=11\\x+2y=10\end{cases}
+\begin{array}{rrrrr}&-4x&-6y&=&-10.200\\+&4x&+y&=&6.700\\\hline\end{array}
 $$
 
-
+</Tarjeta>
 <Paso n={1}>
-Multiplicamos **toda la primera ecuación por $-2$**:
 
 $$
--4x-2y=-22
+\underbrace{-4x+4x}_{0}+\underbrace{-6y+y}_{-5y}=-10.200+6.700
 $$
-
 
 </Paso>
 <Paso n={2}>
-El sistema equivalente conserva la segunda ecuación:
+<Propiedad titulo="Una ecuación con una incógnita">
 
 $$
-\begin{cases}-4x-2y=-22\\x+2y=10\end{cases}
+-5y=-3.500\quad\Rightarrow\quad y=700
 $$
 
-
+</Propiedad>
 </Paso>
+</Composicion>

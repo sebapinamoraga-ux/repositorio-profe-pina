@@ -1,25 +1,37 @@
 ---
 id: activar
-title: 'Transformar sin cambiar la solución'
+title: 'Una compra admite distintos precios'
 phase: activacion
 layout: concepto
-steps: 2
+steps: 1
 activities: []
 ---
 
-<PracticaGuiada titulo="Recuperemos lo que sabemos">
-  Resuelve: $3x+2=14$.
-</PracticaGuiada>
+<Etiquetas>
+<span>$x$: precio del sándwich</span>
+<span>$y$: precio del jugo</span>
+<span>Precios en pesos</span>
+</Etiquetas>
+
+$$
+2x+3y=5.100
+$$
+
+¿Podemos conocer ambos precios con esta única condición?
+
 <Paso n={1}>
+<Paneles>
+<Tarjeta titulo="Opción 1">
+$x=1.200$; $y=900$.
 
-$$
-3x=12 \quad\Rightarrow\quad x=4
-$$
+$2(1.200)+3(900)=5.100$.
+</Tarjeta>
+<Tarjeta titulo="Opción 2">
+$x=1.500$; $y=700$.
 
-</Paso>
-<Paso n={2}>
-  <Propiedad titulo="Equivalencia">
-    Sumar la misma cantidad o multiplicar por un número distinto de cero **en
-    ambos miembros** conserva la solución.
-  </Propiedad>
+$2(1.500)+3(700)=5.100$.
+</Tarjeta>
+</Paneles>
+
+**Ambos pares cumplen:** una ecuación no determina aquí un único par de precios.
 </Paso>
