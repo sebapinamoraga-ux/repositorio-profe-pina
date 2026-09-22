@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+converted=()
+for argument in "$@"; do
+  if [[ "$argument" == /* ]]; then
+    converted+=("$(wslpath -w "$argument")")
+  else
+    converted+=("$argument")
+  fi
+done
+
+exec /mnt/f/NodeJS/node.exe "${converted[@]}"
