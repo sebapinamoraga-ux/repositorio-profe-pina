@@ -40,6 +40,8 @@ const components = {
   Tarjeta: blocks.Tarjeta,
   Paneles: blocks.Paneles,
   Etiquetas: blocks.Etiquetas,
+  Etiqueta: blocks.Etiqueta,
+  Asociacion: blocks.Asociacion,
   Composicion: blocks.Composicion,
   Propiedad: blocks.Propiedad,
   Teorema: blocks.Teorema,

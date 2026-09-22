@@ -28,6 +28,8 @@ const components = new Set([
   'Tarjeta',
   'Paneles',
   'Etiquetas',
+  'Etiqueta',
+  'Asociacion',
   'Composicion',
   'Propiedad',
   'Teorema',
@@ -87,6 +89,20 @@ export function validateMdxTree(
           throw new Error(`Atributo no permitido: ${attr.name}`);
       }
       const attributes = node.attributes ?? [];
+      if (
+        node.name === 'Tarjeta' ||
+        node.name === 'Etiqueta' ||
+        node.name === 'Asociacion'
+      ) {
+        const tone = literalAttribute(attributes, 'tono');
+        if (
+          tone !== undefined &&
+          (!/^[1-4]$/.test(tone) || !Number.isInteger(Number(tone)))
+        )
+          throw new Error(`Tono de asociación fuera de 1..4: ${tone}`);
+        if (node.name === 'Asociacion' && tone === undefined)
+          throw new Error('Asociacion requiere un tono literal de 1..4');
+      }
       if (node.name === 'Paso' || node.name === 'PreguntaPAES') {
         const name = node.name === 'Paso' ? 'n' : 'paso';
         const attr = attributes.find((a) => a.name === name)?.value;

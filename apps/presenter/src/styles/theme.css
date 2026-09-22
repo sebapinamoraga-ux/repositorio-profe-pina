@@ -11,10 +11,20 @@
   --panel: #fffdfa;
   --blue: #1f55cf;
   --blue-soft: #e7efff;
+  --objective: #76509e;
+  --objective-soft: #f3eafa;
+  --procedure: #6f6659;
+  --procedure-soft: #f1eee7;
   --yellow: #8a5a00;
   --yellow-soft: #fff1bd;
   --success: #216e4e;
   --success-soft: #e4f4ed;
+  --reflection: #9b455d;
+  --reflection-soft: #fae9ed;
+  --association-1-soft: #dcf2f0;
+  --association-2-soft: #f9e8d9;
+  --association-3-soft: #eae8f5;
+  --association-4-soft: #f2e8ec;
   --shadow: #17223b24;
 }
 * {
@@ -271,6 +281,30 @@ a {
 }
 .katex {
   font-size: 1.1em;
+}
+.association-tone-1,
+.katex .asoc-1 {
+  --association-soft: var(--association-1-soft);
+}
+.association-tone-2,
+.katex .asoc-2 {
+  --association-soft: var(--association-2-soft);
+}
+.association-tone-3,
+.katex .asoc-3 {
+  --association-soft: var(--association-3-soft);
+}
+.association-tone-4,
+.katex .asoc-4 {
+  --association-soft: var(--association-4-soft);
+}
+.association-inline,
+.katex [class*='asoc-'] {
+  padding: 0 0.13em;
+  border-radius: 5px;
+  background: var(--association-soft);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .layout-portada h1 {
   font-size: 76px;
@@ -1134,21 +1168,37 @@ a {
   }
 }
 
-/* Gramática visual docente: el azul de los bloques significa definición. */
+/* Gramática visual docente: una familia cromática por función pedagógica. */
 .block .block-label {
   color: var(--muted);
 }
-.block-definicion {
+.block-objetivo {
+  background: var(--objective-soft);
+  border-color: #c6aee0;
+  border-left-color: var(--objective);
+}
+.block-objetivo .block-label {
+  color: var(--objective);
+}
+.block-definicion,
+.block-teorema {
   background: var(--blue-soft);
   border-color: #9bb7ef;
   border-left-color: var(--blue);
 }
-.block-definicion .block-label {
+.block-definicion .block-label,
+.block-teorema .block-label {
   color: var(--blue);
 }
 .block-propiedad,
-.block-cierre {
-  border-left-color: var(--muted);
+.block-ejemplo {
+  background: var(--procedure-soft);
+  border-color: #c9c0b3;
+  border-left-color: var(--procedure);
+}
+.block-propiedad .block-label,
+.block-ejemplo .block-label {
+  color: var(--procedure);
 }
 .block-comprobacion {
   background: var(--success-soft);
@@ -1170,6 +1220,14 @@ a {
 .block-error .block-label {
   color: var(--yellow);
 }
+.block-cierre {
+  background: var(--reflection-soft);
+  border-color: #d9a7b5;
+  border-left-color: var(--reflection);
+}
+.block-cierre .block-label {
+  color: var(--reflection);
+}
 .teaching-panels {
   display: grid;
   gap: 24px;
@@ -1183,9 +1241,13 @@ a {
 }
 .teaching-card {
   padding: 20px 24px;
-  border: 1px solid #cec8bb;
+  border: 1px solid #c9c0b3;
   border-radius: 16px;
-  background: var(--panel);
+  background: var(--procedure-soft);
+}
+.teaching-card[class*='association-tone-'],
+.teaching-labels > [class*='association-tone-'] {
+  background: var(--association-soft);
 }
 .teaching-card h3 {
   margin: 0 0 14px;
@@ -1274,6 +1336,14 @@ a {
 .template-callout b {
   color: var(--muted);
 }
+.template-slide[data-use='objetivo'] .template-callout {
+  background: var(--objective-soft);
+  border-color: #c6aee0;
+  border-left-color: var(--objective);
+}
+.template-slide[data-use='objetivo'] .template-callout b {
+  color: var(--objective);
+}
 .template-slide[data-use='definicion'] .template-callout {
   background: var(--blue-soft);
   border-color: #9bb7ef;
@@ -1299,6 +1369,22 @@ a {
 .template-slide[data-use='practica'] .template-callout b,
 .template-slide[data-use='error'] .template-callout b {
   color: var(--yellow);
+}
+.template-slide[data-use='procedimiento'] .template-callout {
+  background: var(--procedure-soft);
+  border-color: #c9c0b3;
+  border-left-color: var(--procedure);
+}
+.template-slide[data-use='procedimiento'] .template-callout b {
+  color: var(--procedure);
+}
+.template-slide[data-use='cierre'] .template-callout {
+  background: var(--reflection-soft);
+  border-color: #d9a7b5;
+  border-left-color: var(--reflection);
+}
+.template-slide[data-use='cierre'] .template-callout b {
+  color: var(--reflection);
 }
 .gallery-download {
   display: inline-block;
@@ -1334,14 +1420,6 @@ a {
   color: var(--muted);
 }
 
-.template-slide[data-use='procedimiento'] .template-callout {
-  background: var(--panel);
-  border-color: #cec8bb;
-  border-left-color: var(--muted);
-}
-.template-slide[data-use='procedimiento'] .template-callout b {
-  color: var(--muted);
-}
 .composition-foot .composition-companion p {
   font-size: 31px;
 }

@@ -95,3 +95,29 @@ it('valida referencias y cuenta mascotas incorporadas mediante plantillas', () =
     ),
   ).toThrow('una mascota');
 });
+
+it('limita las asociaciones pedagógicas a cuatro tonos literales', () => {
+  const association = (name: string, value: string) => ({
+    type: 'mdxJsxTextElement',
+    name,
+    attributes: [{ type: 'mdxJsxAttribute', name: 'tono', value: { value } }],
+  });
+  expect(() =>
+    validateMdxTree(
+      { type: 'root', children: [association('Etiqueta', '2')] },
+      { ...slide, steps: 0 },
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(
+      { type: 'root', children: [association('Tarjeta', '5')] },
+      { ...slide, steps: 0 },
+    ),
+  ).toThrow('1..4');
+  expect(() =>
+    validateMdxTree(
+      { type: 'root', children: [association('Asociacion', 'variable')] },
+      { ...slide, steps: 0 },
+    ),
+  ).toThrow('1..4');
+});

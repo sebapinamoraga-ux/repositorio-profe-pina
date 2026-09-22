@@ -2,7 +2,7 @@
 
 Motor de proyección 16:9 con MDX y una clase de Sistemas 2×2 de 80 minutos. El primer hito prioriza reducción, práctica guiada y errores frecuentes.
 
-[Repositorio](https://github.com/sebapinamoraga-ux/repositorio-profe-pina) · [Presentación web](https://sebapinamoraga-ux.github.io/repositorio-profe-pina/) · [PDF con respuestas](https://sebapinamoraga-ux.github.io/repositorio-profe-pina/pdf/sistemas-2x2.pdf)
+[Repositorio](https://github.com/sebapinamoraga-ux/repositorio-profe-pina) · [Sitio público](https://sebapinamoraga-ux.github.io/repositorio-profe-pina/). La clase y su PDF aparecen allí solo cuando su estado es `published`.
 
 ## Inicio
 

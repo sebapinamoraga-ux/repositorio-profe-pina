@@ -8,13 +8,13 @@ activities: []
 ---
 
 <Etiquetas>
-<span>$x$: precio del sándwich</span>
-<span>$y$: precio del jugo</span>
-<span>Precios en pesos</span>
+<Etiqueta tono={1}>$x$: precio del sándwich</Etiqueta>
+<Etiqueta tono={2}>$y$: precio del jugo</Etiqueta>
+<Etiqueta>Precios en pesos</Etiqueta>
 </Etiquetas>
 
 $$
-2x+3y=5.100
+\htmlClass{asoc-1}{2x}+\htmlClass{asoc-2}{3y}=\htmlClass{asoc-3}{5.100}
 $$
 
 ¿Podemos conocer ambos precios con esta única condición?
@@ -22,12 +22,12 @@ $$
 <Paso n={1}>
 <Paneles>
 <Tarjeta titulo="Opción 1">
-$x=1.200$; $y=900$.
+<Asociacion tono={1}>$x=1.200$</Asociacion>; <Asociacion tono={2}>$y=900$</Asociacion>.
 
 $2(1.200)+3(900)=5.100$.
 </Tarjeta>
 <Tarjeta titulo="Opción 2">
-$x=1.500$; $y=700$.
+<Asociacion tono={1}>$x=1.500$</Asociacion>; <Asociacion tono={2}>$y=700$</Asociacion>.
 
 $2(1.500)+3(700)=5.100$.
 </Tarjeta>

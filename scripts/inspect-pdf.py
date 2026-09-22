@@ -6,11 +6,14 @@ from PIL import Image, ImageOps, ImageDraw
 
 root = Path(__file__).resolve().parent.parent
 source = root / 'output/pdf/sistemas-2x2.pdf'
+manifest = root / 'content/lessons/m1/algebra/sistemas-2x2/lesson.yaml'
 target = root / 'output/qa/pdf'
 target.mkdir(parents=True, exist_ok=True)
 document = PdfReader(source)
 rendered = pdfium.PdfDocument(str(source))
-assert len(document.pages) == 20, f'Expected 20 pages, got {len(document.pages)}'
+slides_block = manifest.read_text(encoding='utf8').split('\nslides:\n', 1)[1]
+expected = sum(line.startswith('  - ') for line in slides_block.splitlines())
+assert len(document.pages) == expected, f'Expected {expected} pages, got {len(document.pages)}'
 for i, page in enumerate(document.pages):
     assert abs(float(page.mediabox.width) / float(page.mediabox.height) - 16 / 9) < .01
     text = page.extract_text()

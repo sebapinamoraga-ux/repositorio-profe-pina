@@ -8,6 +8,7 @@ import type {
   MascotPresence,
   MascotTemplate,
 } from '@aula/content-model';
+import { katexOptions } from '@aula/content-model';
 export interface SlideRuntime {
   step: number;
   print: boolean;
@@ -51,13 +52,17 @@ export const Objetivo = (p: BlockProps) => <Block kind="objetivo" {...p} />;
 export const Comprobacion = (p: BlockProps) => (
   <Block kind="comprobacion" {...p} />
 );
+export type AssociationTone = 1 | 2 | 3 | 4;
+const associationClass = (tone?: AssociationTone) =>
+  tone === undefined ? '' : ` association-tone-${tone}`;
 export function Tarjeta({
   titulo,
   etiqueta,
+  tono,
   children,
-}: BlockProps & { etiqueta?: string }) {
+}: BlockProps & { etiqueta?: string; tono?: AssociationTone }) {
   return (
-    <section className="teaching-card">
+    <section className={`teaching-card${associationClass(tono)}`}>
       {etiqueta && <span className="teaching-tag">{etiqueta}</span>}
       <h3>{titulo}</h3>
       {children}
@@ -75,6 +80,28 @@ export function Paneles({
 }
 export function Etiquetas({ children }: { children: ReactNode }) {
   return <div className="teaching-labels">{children}</div>;
+}
+export function Etiqueta({
+  tono,
+  children,
+}: {
+  tono?: AssociationTone;
+  children: ReactNode;
+}) {
+  return <span className={associationClass(tono).trim()}>{children}</span>;
+}
+export function Asociacion({
+  tono,
+  children,
+}: {
+  tono: AssociationTone;
+  children: ReactNode;
+}) {
+  return (
+    <span className={`association-inline${associationClass(tono)}`}>
+      {children}
+    </span>
+  );
 }
 export function Composicion({
   plantilla,
@@ -188,8 +215,7 @@ export function Formula({ tex }: { tex: string }) {
       className="formula"
       dangerouslySetInnerHTML={{
         __html: katex.renderToString(tex, {
-          throwOnError: true,
-          trust: false,
+          ...katexOptions,
           displayMode: true,
         }),
       }}

@@ -11,7 +11,7 @@ objectives:
   - Resolver sistemas por reducción, comprobar el par solución e interpretar el resultado.
 skills: [Resolver problemas, Modelar, Representar, Argumentar]
 curriculum: [m1-2027-sistemas]
-status: draft
+status: published
 tramos:
   - label: Inicio y modelación de ambas compras
     from: apertura

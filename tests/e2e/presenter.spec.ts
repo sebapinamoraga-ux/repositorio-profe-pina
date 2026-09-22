@@ -52,6 +52,49 @@ test('monedas y fórmulas centrales se distinguen', async ({ page }) => {
     page.locator('[data-slide="individual"] .katex-display'),
   ).toHaveCount(1);
 });
+test('asociaciones pedagógicas conservan fondos sutiles entre láminas', async ({
+  page,
+}) => {
+  await page.goto('/#clase=sistemas-2x2&modo=pdf');
+  const concept = page.locator('[data-slide="concepto"]');
+  const activation = page.locator('[data-slide="activar"]');
+  const colors = [
+    'rgb(220, 242, 240)',
+    'rgb(249, 232, 217)',
+    'rgb(234, 232, 245)',
+  ];
+  for (const [index, color] of colors.entries()) {
+    const tone = index + 1;
+    await expect(concept.locator(`.katex .asoc-${tone}`)).toHaveCSS(
+      'background-color',
+      color,
+    );
+    await expect(activation.locator(`.katex .asoc-${tone}`).first()).toHaveCSS(
+      'background-color',
+      color,
+    );
+  }
+  for (const tone of [1, 2]) {
+    await expect(
+      concept.locator(`.teaching-labels .association-tone-${tone}`),
+    ).toHaveCSS('background-color', colors[tone - 1] ?? '');
+    await expect(
+      concept.locator(`.teaching-card.association-tone-${tone}`),
+    ).toHaveCSS('background-color', colors[tone - 1] ?? '');
+    await expect(
+      activation
+        .locator(`.association-inline.association-tone-${tone}`)
+        .first(),
+    ).toHaveCSS('background-color', colors[tone - 1] ?? '');
+  }
+  await expect(concept.locator('.teaching-card.association-tone-1')).toHaveCSS(
+    'border-top-color',
+    'rgb(201, 192, 179)',
+  );
+  await expect(
+    activation.locator('.association-inline.association-tone-1').first(),
+  ).toHaveCSS('text-decoration-line', 'none');
+});
 test('navegación por pasos y respuesta explícita', async ({ page }) => {
   await page.goto('/#clase=sistemas-2x2&slide=paes');
   await expect(
@@ -113,10 +156,24 @@ test('tema claro y tres niveles de mascota llegan a la clase y al PDF', async ({
   ).toHaveText('Sistema de ecuaciones lineales de 2x2');
   await expect(
     page.locator('[data-slide="apertura"] .block-objetivo'),
-  ).toHaveCSS('background-color', 'rgb(255, 253, 250)');
+  ).toHaveCSS('background-color', 'rgb(243, 234, 250)');
   await expect(
     page.locator('[data-slide="definicion"] .block-definicion'),
   ).toHaveCSS('background-color', 'rgb(231, 239, 255)');
+  await expect(page.locator('[data-slide="idea"] .block-propiedad')).toHaveCSS(
+    'background-color',
+    'rgb(241, 238, 231)',
+  );
+  await expect(
+    page.locator('[data-slide="contexto"] .block-individual'),
+  ).toHaveCSS('background-color', 'rgb(255, 241, 189)');
+  await expect(
+    page.locator('[data-slide="elegir"] .block-comprobacion'),
+  ).toHaveCSS('background-color', 'rgb(228, 244, 237)');
+  await expect(page.locator('[data-slide="cierre"] .block-cierre')).toHaveCSS(
+    'background-color',
+    'rgb(250, 233, 237)',
+  );
   const cover = page.locator('[data-slide="apertura"]');
   await expect(cover).toContainText('Objetivo de clase');
   await expect(cover).not.toContainText('Nuestro propósito');
@@ -150,6 +207,23 @@ test('galería ofrece plantillas filtrables y vuelve a la clase', async ({
   await expect(
     page.locator('.gallery-feature .template-slide'),
   ).not.toContainText('PROFE PIÑA / AULA');
+  const galleryCallout = page.locator(
+    '.gallery-feature .template-slide .template-callout',
+  );
+  await expect(galleryCallout).toHaveCSS(
+    'background-color',
+    'rgb(243, 234, 250)',
+  );
+  await page.locator('.gallery-card').nth(1).click();
+  await expect(galleryCallout).toHaveCSS(
+    'background-color',
+    'rgb(241, 238, 231)',
+  );
+  await page.locator('.gallery-card').nth(2).click();
+  await expect(galleryCallout).toHaveCSS(
+    'background-color',
+    'rgb(250, 233, 237)',
+  );
   await expect
     .poll(() =>
       page

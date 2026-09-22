@@ -4,17 +4,23 @@ Decisión acordada el 21-09-2026, aplicada a Sistemas 2×2 y obligatoria para nu
 
 ## Significado de los bloques
 
-| Función | Componente | Apariencia |
-| :--- | :--- | :--- |
-| Definición formal | Definicion | Azul: uso exclusivo para una definición matemática explícita. |
-| Objetivo | Objetivo | Fondo neutro; no es una definición. |
-| Procedimiento, relación, ejemplo | Tarjeta, Propiedad, EjemploResuelto | Fondo neutro y jerarquía de pasos. |
-| Práctica y ayuda | PracticaGuiada, PracticaIndividual | Ocre; consigna y condiciones de trabajo. |
-| Error | ErrorTipico | Ocre, etiqueta de error y evidencia del fallo. |
-| Verificación o resultado contrastado | Comprobacion | Verde suave, con evidencia algebraica o comparación explícita. |
-| Reflexión | Cierre | Neutro; preguntas breves y espacio para responder. |
+| Función                              | Componente                          | Apariencia                                                                                                                            |
+| :----------------------------------- | :---------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| Definición formal                    | Definicion, Teorema                 | Azul: uso exclusivo para una definición o enunciado matemático formal. Las definiciones de métodos también pertenecen a esta familia. |
+| Objetivo                             | Objetivo                            | Violeta suave; orienta el aprendizaje esperado sin confundirse con una definición.                                                    |
+| Procedimiento, relación, ejemplo     | Tarjeta, Propiedad, EjemploResuelto | Piedra cálida y jerarquía de pasos.                                                                                                   |
+| Práctica y ayuda                     | PracticaGuiada, PracticaIndividual  | Ocre; consigna y condiciones de trabajo.                                                                                              |
+| Error                                | ErrorTipico                         | Ocre, etiqueta de error y evidencia del fallo.                                                                                        |
+| Verificación o resultado contrastado | Comprobacion                        | Verde suave, con evidencia algebraica o comparación explícita.                                                                        |
+| Reflexión                            | Cierre                              | Rosa suave; preguntas breves y espacio para responder.                                                                                |
 
-Los encabezados e iconos comunican la función aun sin distinguir el color. Un resultado intermedio no es una comprobación. No usar Definicion como caja decorativa, para incógnitas, objetivos, consignas o conclusiones. El azul de rectas, navegación o texto no representa un bloque de definición.
+Los encabezados e iconos comunican la función aun sin distinguir el color. Un resultado intermedio no es una comprobación. No usar Definicion como caja decorativa, para incógnitas, objetivos, consignas o conclusiones. El azul de rectas, navegación o texto no representa un bloque de definición. Los seis fondos funcionales son suaves; el color organiza, pero nunca sustituye el nombre del bloque.
+
+## Asociaciones pedagógicas locales
+
+La paleta de asociaciones conecta un mismo referente dentro de una secuencia sin alterar la función del bloque. Usa cuatro fondos reservados: agua `#dcf2f0`, durazno `#f9e8d9`, lila `#eae8f5` y rosa grisáceo `#f2e8ec`. La correspondencia es local a cada secuencia y debe mantenerse estable entre sus láminas; por ejemplo, si `x` representa sándwiches con el tono 1, ese tono acompaña a `x`, a «2 sándwiches» y al término `2x`.
+
+La asociación se expresa solo mediante el fondo. No cambia tipografía, color de texto, borde ni subrayado. No comunica corrección, error ni tipo de bloque, y no reemplaza los colores funcionales de la tabla anterior. Como regla de legibilidad, mostrar como máximo tres tonos de asociación en una misma lámina; el cuarto queda disponible cuando el contenido realmente lo requiera.
 
 ## Patrones de composición reutilizables
 
@@ -26,7 +32,7 @@ Los encabezados e iconos comunican la función aun sin distinguir el color. Un r
 - **Comparación como registro:** dos paneles simétricos, pasos equivalentes alineados y resultado compartido. Puede pasarse sin explicación oral; el documento mantiene el desarrollo.
 - **Cierre:** preguntar por el aprendizaje y por la experiencia con la presentación; no confundir reflexión con definición.
 
-`Paneles columnas={2|3}` organiza tarjetas; `Tarjeta` acepta `titulo` y una `etiqueta` opcional. `Etiquetas` conserva referencias breves. Se usan los mismos componentes en clases y archivos descargados de la galería.
+`Paneles columnas={2|3}` organiza tarjetas; `Tarjeta` acepta `titulo`, una `etiqueta` opcional y un `tono` de asociación entre 1 y 4. `Etiquetas` conserva referencias breves y `Etiqueta` permite asociarlas. `Asociacion` aplica el mismo fondo a una expresión breve en el texto. Se usan los mismos componentes en clases y archivos descargados de la galería.
 
 ## Mascota dentro de la composición
 
@@ -36,7 +42,7 @@ Una mascota como máximo por lámina, incluida la incorporada mediante Composici
 
 ## Decisiones concretas de Sistemas 2×2
 
-Se mantienen 25 láminas y 80 minutos. Las láminas 03 y 04 siguen separadas: la primera traduce la compra y la segunda contrasta dos pares posibles; comparten las etiquetas de variables y unidades. Se retira la pregunta sobre 2x. La 06 se titula «Sistema de ecuaciones lineales de 2x2» y conserva la definición formal azul. Las 07, 10, 12, 14 y 16 aplican los patrones anteriores. La portada conserva título y objetivo, ahora en un bloque neutro.
+Se mantienen 25 láminas y 80 minutos. Las láminas 03 y 04 siguen separadas: la primera traduce la compra y la segunda contrasta dos pares posibles; comparten las etiquetas de variables y unidades. Se retira la pregunta sobre 2x. La 06 se titula «Dos ecuaciones, dos incógnitas» y contiene la definición formal «Sistema de ecuaciones lineales de 2x2» en azul. La 07 presenta reducción, sustitución e igualación como definiciones formales de los métodos, también azules. Las 10, 12, 14 y 16 aplican los patrones anteriores. La portada conserva título y objetivo en violeta suave.
 
 Plantillas incorporadas: pedagogica-punto-clave (03), pedagogica-modelado (10 y 12), pedagogica-pista (14), pedagogica-comprobacion (15), pedagogica-comparacion (16), sutil-practica (21) y sutil-metacognicion (25). La portada conserva su presencia de marca. El uso se decide por su función, no por intentar mostrar todas las poses.
 

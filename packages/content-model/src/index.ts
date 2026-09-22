@@ -1,4 +1,5 @@
 import { z } from 'zod';
+export { katexOptions, katexStrict, katexTrust } from './katex-trust.ts';
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 export const phaseSchema = z.enum([
   'inicio',

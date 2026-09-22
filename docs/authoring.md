@@ -16,6 +16,20 @@ Escribe Markdown normal y matemáticas en línea con `$...$`. Para ecuaciones ce
 
 `steps` debe coincidir con el máximo paso y la secuencia debe empezar en 1. Un mismo paso puede revelar varios fragmentos. No anidar pasos. No insertar estilos por diapositiva ni JavaScript arbitrario.
 
+Para conectar visualmente un mismo referente, usa `tono={1}`, `tono={2}`, `tono={3}` o `tono={4}` en `Etiqueta`, `Tarjeta` y `Asociacion`. Conserva la correspondencia durante toda la secuencia y no uses el tono para indicar acierto, error o función del bloque.
+
+```mdx
+<Etiquetas>
+  <Etiqueta tono={1}>$x$: precio del sándwich</Etiqueta>
+</Etiquetas>
+<Tarjeta titulo="2 sándwiches" tono={1}>
+  $2x$
+</Tarjeta>
+<Asociacion tono={1}>$x=1.200$</Asociacion>
+```
+
+En una ecuación central, la única extensión HTML autorizada de KaTeX es `\htmlClass{asoc-N}{...}`, con `N` entre 1 y 4. La clase solo añade el fondo reservado: `\htmlClass{asoc-1}{2x}`. No se permiten otras clases, enlaces ni estilos HTML dentro de una fórmula.
+
 La integración preferida es `Composicion plantilla="pedagogica-modelado"`, que reserva espacio para contenido y mascota. `MascotaProfePina` queda para composiciones existentes con espacio verificado. Cada diapositiva admite como máximo una. Declara siempre una descripción alternativa que explique su función, no solo su apariencia.
 
 ```mdx
