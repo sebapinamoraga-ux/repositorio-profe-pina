@@ -5,6 +5,7 @@ tmp/
 test-results/
 playwright-report/
 design-proposals/
+.sites-runtime/
 # Mascota: toda la colección vive en el disco local; git solo versiona los PNG de las poses usadas.
 # Al usar una pose nueva, añade su línea "!" (content:check lo exige).
 content/assets/mascotas/*
