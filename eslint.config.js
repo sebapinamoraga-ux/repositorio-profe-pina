@@ -8,6 +8,7 @@ export default tseslint.config(
       'archive/**',
       'output/**',
       'tmp/**',
+      '.sites-runtime/**',
     ],
   },
   ...tseslint.configs.recommended,
