@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { mascotPropsSchema, type Slide } from './index';
+import { missingParams, parseLiteral, type ParamValue } from './interactive-params';
 
 // Recorrer el AST de MDX: nunca interpretar etiquetas con reemplazos de texto.
 const attributeSchema = z.object({
@@ -50,6 +51,7 @@ const components = new Set([
   'RectaIntervalos',
   'DiagramaSagital',
   'MaquinaFuncion',
+  'ExploradorCuadratica',
   'MascotaProfePina',
   'div',
   'span',
@@ -120,58 +122,25 @@ export function validateMdxTree(
           throw new Error('No anidar bloques Paso');
       }
       if (node.name === 'GraficoFuncion') {
-        const names = new Set(attributes.map((attr) => attr.name));
         const tipo = literalAttribute(attributes, 'tipo');
-        const required: Record<string, string[]> = {
-          afin: ['m', 'n'],
-          cuadratica: ['a', 'b', 'c'],
-          circunferencia: ['h', 'k', 'r'],
-        };
-        const coefficients = tipo === undefined ? undefined : required[tipo];
-        if (!coefficients)
+        if (tipo !== 'afin' && tipo !== 'cuadratica' && tipo !== 'circunferencia')
           throw new Error(
             `GraficoFuncion requiere tipo afin, cuadratica o circunferencia: ${tipo ?? ''}`,
           );
-        for (const name of [
-          ...coefficients,
-          'xMin',
-          'xMax',
-          'yMin',
-          'yMax',
-          'etiqueta',
-          'descripcion',
-        ])
-          if (!names.has(name))
-            throw new Error(`GraficoFuncion requiere el atributo ${name}`);
       }
-      const requiredByComponent: Record<string, string[]> = {
-        GraficoComparacion: [
-          'm1',
-          'n1',
-          'm2',
-          'n2',
-          'xMin',
-          'xMax',
-          'yMin',
-          'yMax',
-          'etiqueta1',
-          'etiqueta2',
-          'descripcion',
-        ],
-        RectaIntervalos: ['min', 'max', 'intervalos', 'descripcion'],
-        DiagramaSagital: [
-          'entradas',
-          'salidas',
-          'flechas',
-          'tituloEntradas',
-          'tituloSalidas',
-          'descripcion',
-        ],
-        MaquinaFuncion: ['entrada', 'regla', 'salida', 'descripcion'],
-      };
-      for (const name of requiredByComponent[node.name] ?? [])
-        if (!attributes.some((attr) => attr.name === name))
-          throw new Error(`${node.name} requiere el atributo ${name}`);
+      // Los obligatorios de cada interactivo salen del mismo registro que usa el editor.
+      if (node.name !== 'PreguntaPAES' && node.name !== 'MascotaProfePina') {
+        const values: Record<string, ParamValue> = {};
+        for (const attr of attributes) {
+          const raw = typeof attr.value === 'string' ? attr.value : attr.value?.value;
+          const value = parseLiteral(attr.value) ?? raw;
+          if (attr.name && value !== undefined) values[attr.name] = value;
+        }
+        const present = new Set(attributes.flatMap((attr) => (attr.name ? [attr.name] : [])));
+        const missing = missingParams(node.name, present, values);
+        if (missing[0])
+          throw new Error(`${node.name} requiere el atributo ${missing[0]}`);
+      }
       if (node.name === 'PreguntaPAES') {
         const id = attributes.find((a) => a.name === 'id')?.value;
         if (typeof id !== 'string')

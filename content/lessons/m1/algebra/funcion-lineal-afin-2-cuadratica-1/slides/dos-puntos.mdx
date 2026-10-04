@@ -1,0 +1,55 @@
+---
+id: dos-puntos
+title: 'De dos puntos a la expresión'
+phase: desarrollo
+layout: resolucion
+steps: 3
+activities: []
+---
+
+<Etiquetas>
+<Etiqueta tono={3}>$x$: kilómetros</Etiqueta>
+<Etiqueta tono={3}>$R(x)$: precio en pesos</Etiqueta>
+<Etiqueta>Puntos: $(2;\ 2.000)$ y $(6;\ 3.600)$</Etiqueta>
+</Etiquetas>
+
+<Columnas>
+<div>
+<Tarjeta titulo="1 · Pendiente">
+
+$$
+m=\frac{3.600-2.000}{6-2}=\frac{1.600}{4}=400
+$$
+
+**\$400 por cada km.**
+</Tarjeta>
+<Paso n={1}>
+<Tarjeta titulo="2 · Coeficiente de posición, con (6; 3.600)">
+
+$$
+3.600=400\cdot 6+n\ \Rightarrow\ n=1.200
+$$
+
+</Tarjeta>
+</Paso>
+</div>
+<div>
+<Paso n={2}>
+<Tarjeta titulo="3 · Expresión">
+
+$$
+R(x)=400x+1.200
+$$
+
+Cargo fijo de **\$1.200** y **\$400** por km.
+</Tarjeta>
+</Paso>
+<Paso n={3}>
+<Comprobacion titulo="Comprobación con ambas boletas">
+$R(2)=400\cdot 2+1.200=2.000$ ✓
+
+$R(6)=400\cdot 6+1.200=3.600$ ✓
+</Comprobacion>
+</Paso>
+</div>
+</Columnas>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
 import { useAula } from '../store/AulaProvider';
+import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
 import type { View } from '../store/schema';
 
@@ -25,7 +26,8 @@ function usePublishedPdf(id: string, enabled: boolean) {
 
 export function PdfView({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data } = useAula();
-  const deck = deckFor(data, data.lessonId);
+  const content = useContent();
+  const deck = deckFor(content, data.lessonId);
   const { meta, slides } = deck;
   const local = deck.origin === 'edited';
   const published = usePublishedPdf(
@@ -60,10 +62,9 @@ export function PdfView({ onNavigate }: { onNavigate: (view: View) => void }) {
       </header>
       {local && (
         <p className="pdf-note">
-          Esta clase tiene cambios guardados en este navegador. La vista y la
-          impresión los incluyen; el PDF oficial se genera con{' '}
-          <code>npm run export:pdf -- --lesson {meta.id}</code> después de
-          copiar la exportación MDX al repositorio.
+          Esta clase tiene cambios sin guardar en el repositorio. La vista y la
+          impresión los incluyen; el PDF oficial se publica cuando guardas los
+          cambios y la clase está publicada.
         </p>
       )}
       {!slides.length ? (

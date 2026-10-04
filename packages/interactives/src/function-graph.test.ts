@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cortesVerticales,
+  expresionCuadratica,
   fallaRectaVertical,
   marcasEje,
   muestrearCurva,
@@ -63,5 +64,17 @@ describe('gráfico de funciones', () => {
       validarCurva({ tipo: 'circunferencia', h: 0, k: 0, r: 0 }),
     ).toThrow();
     expect(() => validarCurva({ tipo: 'afin', m: Number.NaN, n: 0 })).toThrow();
+  });
+});
+
+describe('expresionCuadratica', () => {
+  it('omite términos nulos y coeficientes 1', () => {
+    expect(expresionCuadratica(1, 0, 0)).toBe('x²');
+    expect(expresionCuadratica(-1, 0, 3)).toBe('−x² + 3');
+    expect(expresionCuadratica(0.5, -2, -1)).toBe('0,5x² − 2x − 1');
+  });
+  it('con a = 0 escribe la recta y con todo nulo escribe 0', () => {
+    expect(expresionCuadratica(0, 1, 2)).toBe('x + 2');
+    expect(expresionCuadratica(0, 0, 0)).toBe('0');
   });
 });

@@ -1,40 +1,29 @@
-import { readFile, readdir } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import { normalizePath, type Plugin } from 'vite';
-import { parse } from 'yaml';
+import { stringify } from 'yaml';
 import {
-  lessonSchema,
-  activitySchema,
-  slideSchema,
-} from '../../packages/content-model/src/index.ts';
-import { parseFrontmatter } from '../../packages/content-model/src/frontmatter.ts';
+  ACTIVITIES_DIR,
+  GALLERY_PATH,
+  PLANNING_DIR,
+  parseContentFiles,
+} from '../../packages/content-model/src/content-files.ts';
+import { readContentFiles } from '../../packages/content-model/src/read-content.ts';
 import {
   mascotPngPath,
   usedMascotPoses,
 } from '../../packages/content-model/src/used-poses.ts';
 
-async function files(root: string): Promise<string[]> {
-  return (
-    await Promise.all(
-      (await readdir(root, { withFileTypes: true })).map((entry) =>
-        entry.isDirectory()
-          ? files(join(root, entry.name))
-          : Promise.resolve([join(root, entry.name)]),
-      ),
-    )
-  ).flat();
-}
-/** El catálogo se genera en build: los MDX de borradores nunca entran en el bundle público. */
+/**
+ * El contenido se empaqueta en build: los archivos de texto (para leerlos igual que desde
+ * GitHub) y cada lámina precompilada. Los borradores nunca entran en el bundle público.
+ */
 export function contentPlugin(): Plugin {
   let production = false;
-  const includeLesson = (status: string) =>
-    !production ||
-    status !== 'draft' ||
-    process.env.AULA_INCLUDE_DRAFTS === '1';
+  const includeDrafts = () =>
+    !production || process.env.AULA_INCLUDE_DRAFTS === '1';
   const virtual = 'virtual:aula-catalog';
   const virtualMascots = 'virtual:aula-mascots';
-  const virtualSources = 'virtual:aula-sources';
-  const names = [virtual, virtualMascots, virtualSources];
+  const names = [virtual, virtualMascots];
   return {
     name: 'aula-content-catalog',
     configResolved(config) {
@@ -68,62 +57,57 @@ export function contentPlugin(): Plugin {
         const entries = poses.map((pose) => `${pose}:pose${pose}`);
         return `${imports.join('\n')}\nexport const mascotFiles={${entries.join(',')}};`;
       }
-      if (id === '\0' + virtualSources) {
-        // El editor del navegador parte del MDX fuente; se carga aparte y con las mismas reglas de borradores.
-        const sources: Record<string, { file: string; text: string }[]> = {};
-        for (const path of (await files(resolve('content/lessons'))).sort()) {
-          if (!path.endsWith('lesson.yaml')) continue;
-          this.addWatchFile(path);
-          const lesson = lessonSchema.parse(parse(await readFile(path, 'utf8')));
-          if (!includeLesson(lesson.status)) continue;
-          sources[lesson.id] = await Promise.all(
-            lesson.slides.map(async (file) => {
-              const source = resolve(path, '..', 'slides', file);
-              this.addWatchFile(source);
-              const text = await readFile(source, 'utf8');
-              return { file, text: text.replaceAll('\r\n', '\n') };
-            }),
-          );
-        }
-        return `export const lessonSources=${JSON.stringify(sources)};`;
-      }
       if (id !== '\0' + virtual) return;
-      const imports: string[] = [];
-      const lessons: string[] = [];
-      const activities: Record<string, unknown> = {};
-      const usedActivities = new Set<string>();
-      let counter = 0;
-      for (const path of (await files(resolve('content/lessons'))).sort()) {
-        if (!path.endsWith('lesson.yaml')) continue;
-        this.addWatchFile(path);
-        const lesson = lessonSchema.parse(parse(await readFile(path, 'utf8')));
-        if (!includeLesson(lesson.status)) continue;
-        const slides: string[] = [];
-        for (const file of lesson.slides) {
-          const source = normalizePath(resolve(path, '..', 'slides', file));
-          const metadata = slideSchema.parse(
-            parseFrontmatter(await readFile(source, 'utf8')),
-          );
-          for (const activityId of metadata.activities)
-            usedActivities.add(activityId);
-          const name = `slide${counter++}`;
-          imports.push(`import * as ${name} from ${JSON.stringify(source)};`);
-          slides.push(`{...${name}.frontmatter,Content:${name}.default}`);
+      const all = await readContentFiles(resolve('.'));
+      for (const path of all.keys()) this.addWatchFile(resolve(path));
+      const bundle = parseContentFiles(all);
+      const lessons = bundle.lessons.filter(
+        (lesson) => includeDrafts() || lesson.meta.status !== 'draft',
+      );
+      const included = new Set(lessons.map((lesson) => lesson.meta.id));
+      const used = new Set(
+        lessons.flatMap((l) => l.slides.flatMap((s) => s.slide.activities)),
+      );
+      const files: Record<string, string> = {};
+      for (const [path, text] of all) {
+        if (path === GALLERY_PATH || path.startsWith('content/lessons/')) continue;
+        if (path.startsWith(`${ACTIVITIES_DIR}/`)) {
+          const activity = Object.entries(bundle.activityPaths).find(
+            ([, p]) => p === path,
+          )?.[0];
+          if (!includeDrafts() && (!activity || !used.has(activity))) continue;
         }
-        lessons.push(
-          `{meta:${JSON.stringify(lesson)},slides:[${slides.join(',')}]}`,
-        );
+        if (path.startsWith(`${PLANNING_DIR}/`) && !includeDrafts()) {
+          // En el sitio público la planificación solo nombra clases publicadas.
+          const planning = bundle.planningPath === path ? bundle.planning : null;
+          if (!planning) continue;
+          files[path] = stringify({
+            units: planning.units
+              .map((unit) => ({
+                ...unit,
+                lessons: unit.lessons.filter((l) => included.has(l.id)),
+              }))
+              .filter((unit) => unit.lessons.length),
+          });
+          continue;
+        }
+        files[path] = text;
       }
-      for (const path of await files(resolve('content/activities'))) {
-        if (!path.endsWith('.yaml')) continue;
-        this.addWatchFile(path);
-        const activity = activitySchema.parse(
-          parse(await readFile(path, 'utf8')),
-        );
-        if (!production || usedActivities.has(activity.id))
-          activities[activity.id] = activity;
+      const imports: string[] = [];
+      const compiled: string[] = [];
+      let counter = 0;
+      for (const lesson of lessons) {
+        files[lesson.path] = lesson.text;
+        for (const slide of lesson.slides) {
+          files[slide.path] = slide.text;
+          const name = `slide${counter++}`;
+          imports.push(
+            `import ${name} from ${JSON.stringify(normalizePath(resolve(slide.path)))};`,
+          );
+          compiled.push(`${JSON.stringify(slide.path)}:${name}`);
+        }
       }
-      return `${imports.join('\n')}\nexport const rawCatalog=[${lessons.join(',')}];\nexport const rawActivities=${JSON.stringify(activities)};`;
+      return `${imports.join('\n')}\nexport const buildFiles=${JSON.stringify(files)};\nexport const compiledSlides={${compiled.join(',')}};`;
     },
   };
 }

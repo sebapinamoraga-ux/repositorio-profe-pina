@@ -1,11 +1,15 @@
 import type { ComponentType } from 'react';
 import type { MDXComponents } from 'mdx/types';
 import type { Lesson, Slide } from '@aula/content-model';
-import { catalog, type LoadedLesson } from '../app/catalog';
-import { splitSource } from './mdx';
-import type { EditedSlide, LibraryEntry, TeacherData } from './schema';
+import type {
+  ContentBundle,
+  LessonEntry,
+} from '@aula/content-model/content-files';
+import { buildBundle, compiledFor } from '../content/build';
+import { libraryOf, type Library } from '../content/library';
 
-export { skeleton, slideFromTemplate, splitSource, toMdx } from './mdx';
+export { skeleton, slideFromTemplate, toMdx } from './mdx';
+export { editableSlides } from '../content/ops';
 
 export type CompiledContent = ComponentType<{ components: MDXComponents }>;
 export type SlideBody =
@@ -22,54 +26,57 @@ export interface LessonMeta {
   objectives: string[];
   prerequisites: string[];
   tramos: NonNullable<Lesson['tramos']>;
-  /** Estado en el repositorio; null si la clase solo existe en este navegador. */
+  /** Estado en el repositorio; null si la clase aún no tiene lesson.yaml. */
   repoStatus: Lesson['status'] | null;
 }
 
 export interface Deck {
   meta: LessonMeta;
   slides: DeckSlide[];
-  /** repo: láminas compiladas sin cambios · edited: hay una versión local · empty: por preparar. */
+  /** repo: tal como está en el repositorio · edited: con cambios sin guardar · empty: por preparar. */
   origin: 'repo' | 'edited' | 'empty';
 }
 
-export const repoLessons = new Map<string, LoadedLesson>(
-  catalog.map((lesson) => [lesson.meta.id, lesson]),
-);
-export const repoMetas: readonly Lesson[] = catalog.map((lesson) => lesson.meta);
-
-function compiledSlide(lessonId: string, slideId: string) {
-  return repoLessons
-    .get(lessonId)
-    ?.slides.find((slide) => slide.id === slideId)?.Content;
+/** Lo que necesita un deck: el contenido efectivo, su biblioteca y los archivos pendientes. */
+export interface ContentView {
+  bundle: ContentBundle;
+  library: Library;
+  pending?: readonly string[];
 }
 
-export function lessonMeta(
-  id: string,
-  entry: LibraryEntry | undefined,
-): LessonMeta {
-  const repo = repoLessons.get(id)?.meta;
-  const objectives = repo ? [...repo.objectives] : [];
-  if (entry?.objective) {
-    if (objectives.length) objectives[0] = entry.objective;
-    else objectives.push(entry.objective);
-  }
+/** Contenido empaquetado con el sitio (en producción, solo clases publicadas). */
+export const buildView: ContentView = {
+  bundle: buildBundle,
+  library: libraryOf(buildBundle),
+};
+
+export function lessonEntry(view: ContentView, id: string): LessonEntry | undefined {
+  return view.bundle.lessons.find((lesson) => lesson.meta.id === id);
+}
+
+export function lessonMeta(view: ContentView, id: string): LessonMeta {
+  const lesson = lessonEntry(view, id)?.meta;
+  const entry = view.library.entries.find((item) => item.id === id);
   return {
     id,
-    title: entry?.title || repo?.title || 'Clase',
-    subject: repo?.subject ?? 'm1',
-    axis: repo?.axis ?? 'Álgebra y funciones',
-    duration: entry?.duration ?? repo?.duration ?? 80,
-    objectives,
-    prerequisites: repo?.prerequisites ?? [],
-    tramos: repo?.tramos ?? [],
-    repoStatus: repo?.status ?? null,
+    title: lesson?.title || entry?.title || 'Clase',
+    subject: lesson?.subject ?? 'm1',
+    axis: lesson?.axis ?? 'Álgebra y funciones',
+    duration: lesson?.duration ?? entry?.duration ?? 80,
+    objectives: lesson
+      ? [...lesson.objectives]
+      : entry?.objective
+        ? [entry.objective]
+        : [],
+    prerequisites: lesson?.prerequisites ?? [],
+    tramos: lesson?.tramos ?? [],
+    repoStatus: lesson?.status ?? null,
   };
 }
 
-export function editedToDeck(slides: readonly EditedSlide[]): DeckSlide[] {
-  return slides.map(({ body, origin, ...slide }) => {
-    const Content = origin && compiledSlide(origin.lessonId, origin.slideId);
+export function deckSlides(lesson: LessonEntry): DeckSlide[] {
+  return lesson.slides.map(({ slide, body, path, text }) => {
+    const Content = compiledFor(path, text);
     return {
       ...slide,
       body: Content ? { kind: 'compiled', Content } : { kind: 'source', body },
@@ -77,62 +84,43 @@ export function editedToDeck(slides: readonly EditedSlide[]): DeckSlide[] {
   });
 }
 
-export function deckFor(data: TeacherData, id: string): Deck {
-  const meta = lessonMeta(
-    id,
-    data.library.find((entry) => entry.id === id),
-  );
-  const edits = data.edits[id];
-  if (edits) return { meta, slides: editedToDeck(edits), origin: 'edited' };
-  const repo = repoLessons.get(id);
-  if (repo)
-    return {
-      meta,
-      slides: repo.slides.map(({ Content, ...slide }) => ({
-        ...slide,
-        body: { kind: 'compiled', Content },
-      })),
-      origin: 'repo',
-    };
-  return { meta, slides: [], origin: 'empty' };
+/** Láminas editadas (aún sin archivo) como deck para la vista previa. */
+export function editedToDeck(
+  slides: readonly (Slide & { body: string })[],
+): DeckSlide[] {
+  return slides.map(({ body, ...slide }) => ({
+    ...slide,
+    body: { kind: 'source', body },
+  }));
 }
 
-/** Deck público: solo el catálogo del repositorio, sin ediciones locales. */
-export function repoDeck(id: string): Deck | null {
-  const repo = repoLessons.get(id);
-  if (!repo) return null;
+export function hasPending(view: ContentView, id: string) {
+  const lesson = lessonEntry(view, id);
+  return Boolean(
+    lesson && view.pending?.some((path) => path.startsWith(`${lesson.dir}/`)),
+  );
+}
+
+export function deckFor(view: ContentView, id: string): Deck {
+  const meta = lessonMeta(view, id);
+  const lesson = lessonEntry(view, id);
+  if (!lesson) return { meta, slides: [], origin: 'empty' };
   return {
-    meta: lessonMeta(id, undefined),
-    slides: repo.slides.map(({ Content, ...slide }) => ({
-      ...slide,
-      body: { kind: 'compiled', Content },
-    })),
-    origin: 'repo',
+    meta,
+    slides: deckSlides(lesson),
+    origin: hasPending(view, id) ? 'edited' : 'repo',
   };
 }
 
-export function hasSlides(data: TeacherData, id: string) {
-  return Boolean(data.edits[id]?.length) || repoLessons.has(id);
+/** Deck público: solo el contenido del build, sin cambios pendientes. */
+export function repoDeck(id: string): Deck | null {
+  const lesson = lessonEntry(buildView, id);
+  if (!lesson) return null;
+  return deckFor(buildView, id);
 }
 
-/** Copia editable de las láminas de una clase del repositorio, a partir de su MDX fuente. */
-export async function repoSourceSlides(lessonId: string): Promise<EditedSlide[]> {
-  const { lessonSources } = await import('virtual:aula-sources');
-  const files = lessonSources[lessonId] ?? [];
-  return files.map(({ text }) => {
-    const { slide, body } = splitSource(text);
-    return { ...slide, body, origin: { lessonId, slideId: slide.id } };
-  });
-}
-
-/** Láminas de partida: las ediciones locales si existen; si no, el MDX del repositorio. */
-export async function editableSlides(
-  data: TeacherData,
-  lessonId: string,
-): Promise<EditedSlide[]> {
-  const local = data.edits[lessonId];
-  if (local) return local.map((slide) => ({ ...slide }));
-  return repoSourceSlides(lessonId);
+export function hasSlides(view: ContentView, id: string) {
+  return Boolean(lessonEntry(view, id)?.slides.length);
 }
 
 export const PHASE_NAMES: Record<Slide['phase'], string> = {

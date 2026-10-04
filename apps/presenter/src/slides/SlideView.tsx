@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import * as blocks from '@aula/pedagogical-ui';
-import { activities } from '../app/catalog';
+import { useActivities } from '../app/catalog';
 import { mascotGallery } from '../app/gallery';
 import { mascotUrl } from '../app/mascot-assets';
 import {
@@ -82,6 +82,7 @@ export function SlideView({
   setValue?: (key: string, value: string) => void;
   contentKey?: string;
 }) {
+  const activities = useActivities();
   const slide = slides[index];
   if (!slide) return null;
   return (

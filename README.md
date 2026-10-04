@@ -16,7 +16,7 @@ npm run dev
 Abrir http://127.0.0.1:5173 y elegir un rol:
 
 - **Estudiante**: repaso en el celular, sin cuenta, con temas claro, oscuro y alto contraste, y respuesta anónima a la votación de la clase.
-- **Docente**: Clase de hoy, Biblioteca, Presentar, Editor, Galería, Cursos e historial y Vista PDF. En esta etapa es un bloqueo local, sin cuenta; todo se guarda en el navegador.
+- **Docente**: Clase de hoy, Biblioteca, Presentar, Editor, Actividades y PAES, Galería, Cursos e historial, Vista PDF y Conexión. Las clases, actividades y la planificación se editan aquí y se guardan en este repositorio desde cualquier dispositivo conectado (ver [Editar desde la app](docs/authoring.md#editar-desde-la-app)). Cursos, sesiones y comentarios quedan en el navegador. El acceso es un bloqueo local, sin cuenta.
 - **Control remoto**: avanza la proyección abierta en otra pestaña o ventana del mismo navegador.
 
 En el presentador, flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice, F alterna pantalla completa, N anota un comentario de mejora y R muestra el ritmo de la clase. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
@@ -36,7 +36,7 @@ npm run test:e2e
 npm run export:pdf -- --lesson sistemas-2x2
 ```
 
-El PDF aparece en `output/pdf/sistemas-2x2.pdf`: 25 diapositivas, pasos y respuestas visibles, sin notas. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión. El PDF se genera también para clases en borrador, pero solo se publica en el sitio el de las clases con `status: published` (ver [Publicación](docs/deployment.md)).
+El PDF aparece en `output/pdf/sistemas-2x2.pdf`: una página por diapositiva, pasos y respuestas visibles, sin notas. `npm run export:pdf -- --published` exporta todas las clases publicadas (lo usa CI). El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión. El PDF se genera también para clases en borrador, pero solo se publica en el sitio el de las clases con `status: published` (ver [Publicación](docs/deployment.md)).
 
 Consulta también el [lenguaje visual común](docs/visual-language.md), que rige las clases y la galería.
 
@@ -46,7 +46,7 @@ Consulta también el [lenguaje visual común](docs/visual-language.md), que rige
 npm run lesson:new -- --id mi-nueva-clase
 ```
 
-Se crea un borrador en `content/lessons/m1/algebra`. Edita el manifiesto y las diapositivas, comprueba el contenido y cambia `status` a `published` cuando esté listo. Consulta [Autoría](docs/authoring.md), [Arquitectura](docs/architecture.md) y [Publicación](docs/deployment.md).
+Se crea un borrador en `content/lessons/m1/algebra`. Edita el manifiesto y las diapositivas, comprueba el contenido y cambia `status` a `published` cuando esté listo. También puedes crear y preparar clases desde la Biblioteca de la app. Consulta [Autoría](docs/authoring.md), [Arquitectura](docs/architecture.md) y [Publicación](docs/deployment.md).
 
 El repositorio conserva el ZIP de origen en `archive/`. El motor nuevo reemplaza su parser manual; las demos originales no se publican.
 

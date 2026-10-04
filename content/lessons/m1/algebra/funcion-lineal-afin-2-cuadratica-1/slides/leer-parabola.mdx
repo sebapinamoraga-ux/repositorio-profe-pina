@@ -1,0 +1,40 @@
+---
+id: leer-parabola
+title: 'Leer una parábola'
+phase: practica
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+<PracticaGuiada titulo="Individual · 3 minutos">
+1. ¿Hacia dónde abre? ¿Qué signo tiene $a$?
+2. ¿Dónde corta el eje $y$? ¿Cuánto vale $c$?
+3. Estima dónde corta el eje $x$ y cuál es su punto más alto.
+</PracticaGuiada>
+
+<Paso n={1}>
+Abre **hacia abajo**: $a<0$.
+</Paso>
+<Paso n={2}>
+Corta el eje $y$ en $(0;\ 3)$: $c=3$.
+</Paso>
+<Paso n={3}>
+Corta el eje $x$ en $-1$ y $3$; punto más alto: $(1;\ 4)$.
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={-1}
+  b={2}
+  c={3}
+  xMin={-3}
+  xMax={5}
+  yMin={-4}
+  yMax={6}
+  etiqueta="Parábola de f"
+  descripcion="Parábola que abre hacia abajo, corta el eje y en (0; 3), el eje x en −1 y 3, y tiene su punto más alto en (1; 4)."
+/>
+</Columnas>

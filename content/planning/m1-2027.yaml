@@ -1,0 +1,13 @@
+# Planificación de unidades: orden de la biblioteca docente. Se edita desde la app (Biblioteca).
+# Las clases con lesson.yaml toman de ahí su título y objetivo; aquí basta el identificador.
+units:
+  - id: u3
+    title: Sistemas de ecuaciones lineales
+    lessons:
+      - id: sistemas-2x2
+  - id: u2
+    title: Funciones
+    lessons:
+      - id: funcion-lineal-afin-1
+      - id: funcion-lineal-afin-2-cuadratica-1
+      - id: funcion-cuadratica-2

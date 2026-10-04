@@ -1,93 +1,67 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
-import { parse } from 'yaml';
-import { lessonSchema } from '@aula/content-model';
-import { ORIGINAL_LESSON_ID, reconcileRepo, seedTeacherData } from './seed';
+import { ORIGINAL_LESSON_ID, seedTeacherData } from './seed';
 import { slugify, teacherReducer } from './teacher';
 import { parseTeacherData } from './persist';
 import { teacherDataSchema } from './schema';
 
-const root = resolve('content/lessons/m1/algebra');
-const repo = readdirSync(root)
-  .filter((dir) => readdirSync(join(root, dir)).includes('lesson.yaml'))
-  .map((dir) =>
-    lessonSchema.parse(parse(readFileSync(join(root, dir, 'lesson.yaml'), 'utf8'))),
-  );
-const seed = seedTeacherData(repo);
+const seed = seedTeacherData();
 
-describe('siembra de la biblioteca', () => {
-  it('incluye las clases del repositorio y las planificadas por preparar', () => {
+describe('datos docentes privados', () => {
+  it('la siembra es válida y no trae contenido: las clases vienen del repositorio', () => {
     expect(teacherDataSchema.safeParse(seed).success).toBe(true);
-    const sistemas = seed.library.find((e) => e.id === ORIGINAL_LESSON_ID);
-    expect(sistemas?.status).toBe('lista');
-    expect(seed.library.find((e) => e.id === 'que-es-funcion')?.status).toBe(
-      'por-preparar',
-    );
-    expect(seed.library.some((e) => e.id === 'prueba-autoria')).toBe(false);
-    expect(seed.units.map((u) => u.id)).toEqual(['u1', 'u2', 'u3', 'u4']);
+    expect(seed.lessonId).toBe(ORIGINAL_LESSON_ID);
+    expect(Object.keys(seed)).not.toContain('library');
   });
-  it('no vuelve a agregar una clase del repositorio que la docente quitó', () => {
-    const removed = teacherReducer(seed, {
-      type: 'removeLesson',
-      id: 'funcion-lineal-afin-1',
-    });
-    expect(reconcileRepo(removed, repo)).toBe(removed);
-  });
-  it('datos dañados se respaldan y se parte de la siembra', () => {
-    expect(parseTeacherData('{"version":9}', repo).library.length).toBe(
-      seed.library.length,
-    );
-  });
-});
 
-describe('unidades y clases', () => {
-  it('la clase original no se elimina, ni con su unidad', () => {
-    expect(teacherReducer(seed, { type: 'removeLesson', id: ORIGINAL_LESSON_ID })).toBe(seed);
-    expect(teacherReducer(seed, { type: 'removeUnit', id: 'u3', targetId: null })).toBe(seed);
+  it('la versión 1 conserva notas y cursos y deja biblioteca y ediciones para migrar', () => {
+    const v1 = {
+      version: 1,
+      units: [{ id: 'u1', title: 'Unidad' }],
+      library: [
+        {
+          id: 'nueva',
+          unitId: 'u1',
+          title: 'Nueva',
+          objective: '',
+          duration: 80,
+          status: 'en-preparacion',
+          local: true,
+        },
+      ],
+      seenRepo: [],
+      edits: {
+        nueva: [
+          {
+            id: 'portada',
+            title: 'Portada',
+            phase: 'inicio',
+            layout: 'portada',
+            steps: 0,
+            activities: [],
+            body: '\nHola\n',
+            origin: null,
+          },
+        ],
+      },
+      notes: [],
+      courses: seed.courses,
+      sessions: [],
+      activeSession: null,
+      lessonId: 'nueva',
+    };
+    const data = parseTeacherData(JSON.stringify(v1));
+    expect(data.version).toBe(2);
+    expect(data.courses).toEqual(seed.courses);
+    expect(data.lessonId).toBe('nueva');
+    expect(data.legacy?.library.map((entry) => entry.id)).toEqual(['nueva']);
+    expect(data.legacy?.edits.nueva?.[0]?.body).toBe('\nHola\n');
+    expect(teacherReducer(data, { type: 'clearLegacy' }).legacy).toBeUndefined();
   });
-  it('eliminar una unidad puede mover sus clases a otra', () => {
-    const next = teacherReducer(seed, { type: 'removeUnit', id: 'u4', targetId: 'u1' });
-    expect(next.units.some((u) => u.id === 'u4')).toBe(false);
-    expect(next.library.filter((e) => e.unitId === 'u1').length).toBe(4);
+
+  it('datos dañados se reemplazan por la siembra', () => {
+    expect(parseTeacherData('{no es json')).toEqual(seed);
   });
-  it('eliminar una unidad con sus clases borra también sus ediciones', () => {
-    const edited = teacherReducer(seed, {
-      type: 'prepareLesson',
-      id: 'cuadratica-grafico',
-      slides: [],
-    });
-    const next = teacherReducer(edited, { type: 'removeUnit', id: 'u4', targetId: null });
-    expect(next.library.some((e) => e.unitId === 'u4')).toBe(false);
-    expect(next.edits['cuadratica-grafico']).toBeUndefined();
-    expect(next.lessonId).toBe(ORIGINAL_LESSON_ID);
-  });
-  it('agregar una clase la deja al final de su unidad', () => {
-    const next = teacherReducer(seed, {
-      type: 'addLesson',
-      unitId: 'u1',
-      id: 'dominio',
-      title: 'Dominio y recorrido',
-      objective: '',
-    });
-    expect(next.library.findIndex((e) => e.id === 'dominio')).toBe(1);
-    expect(next.library.find((e) => e.id === 'dominio')?.status).toBe('por-preparar');
-  });
-  it('subir y bajar solo dentro de la unidad', () => {
-    const up = teacherReducer(seed, { type: 'moveLesson', id: 'pendiente-posicion', delta: -1 });
-    expect(up.library.filter((e) => e.unitId === 'u2').map((e) => e.id)[0]).toBe(
-      'pendiente-posicion',
-    );
-    expect(teacherReducer(seed, { type: 'moveLesson', id: 'que-es-funcion', delta: -1 })).toBe(seed);
-  });
-  it('mover a otra unidad conserva las unidades contiguas', () => {
-    const next = teacherReducer(seed, {
-      type: 'setLessonUnit',
-      id: 'que-es-funcion',
-      unitId: 'u4',
-    });
-    expect(next.library.at(-1)?.id).toBe('que-es-funcion');
-  });
+
   it('los identificadores nuevos son únicos y legibles', () => {
     expect(slugify('¿Qué es una función?', new Set(['que-es-una-funcion']))).toBe(
       'que-es-una-funcion-2',

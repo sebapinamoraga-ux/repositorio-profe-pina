@@ -1,0 +1,26 @@
+id: afin-dos-puntos
+type: paes
+prompt: 'Una función afín f cumple f(2) = 7 y f(5) = 16. ¿Cuál es la expresión de f?'
+answer: A · f(x) = 3x + 1
+solution: 'm = (16 − 7) / (5 − 2) = 9 / 3 = 3. Luego 7 = 3 · 2 + n, así que n = 1 y f(x) = 3x + 1. Comprobación: f(2) = 7 y f(5) = 16.'
+skills: [Representar, Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; función afín a partir de dos puntos.
+options:
+  - id: A
+    text: 'f(x) = 3x + 1'
+    correct: true
+    explanation: 'm = 9 / 3 = 3 y n = 7 − 3 · 2 = 1. Cumple f(2) = 7 y f(5) = 16.'
+  - id: B
+    text: 'f(x) = 3x + 7'
+    correct: false
+    explanation: 'Toma f(2) = 7 como coeficiente de posición, pero n es el valor en x = 0, no en x = 2: aquí f(2) = 13.'
+  - id: C
+    text: 'f(x) = (1/3)x + 19/3'
+    correct: false
+    explanation: 'Invierte el cociente: la pendiente es el cambio en y dividido por el cambio en x, 9 / 3, no 3 / 9. Aquí f(5) = 8.'
+  - id: D
+    text: 'f(x) = 9x − 11'
+    correct: false
+    explanation: 'Usa el cambio en y, 9, como pendiente sin dividir por el cambio en x, 3. Cumple f(2) = 7, pero f(5) = 34.'

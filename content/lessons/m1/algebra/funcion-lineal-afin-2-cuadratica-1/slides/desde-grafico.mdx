@@ -1,0 +1,42 @@
+---
+id: desde-grafico
+title: 'Desde el gráfico a la expresión'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+El **Plan Paseo** solo se conoce por su gráfico.
+
+<Paso n={1}>
+**Leer $n$:** corta el eje $y$ en $(0;\ 2.000)$, así que $n=2.000$.
+</Paso>
+<Paso n={2}>
+**Contar $m$:** de $x=0$ a $x=4$ sube $1.000$, así que $m=1.000:4=250$.
+
+$$
+P(x)=250x+2.000
+$$
+
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={250}
+  n={2000}
+  xMin={-0.5}
+  xMax={8}
+  yMin={0}
+  yMax={4500}
+  paso={1}
+  pasoY={500}
+  ejeX="km"
+  ejeY="$"
+  puntosX={[0, 4]}
+  etiqueta="Plan Paseo"
+  descripcion="Recta del Plan Paseo que pasa por (0; 2.000) y (4; 3.000)."
+/>
+</Columnas>

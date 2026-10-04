@@ -189,6 +189,54 @@ export const activitySchema = z
     )
       ctx.addIssue({ code: 'custom', message: 'Alternativas duplicadas.' });
   });
+/** Referencia curricular (content/curriculum): el editor ofrece sus ejes y habilidades. */
+export const curriculumSchema = z
+  .object({
+    id,
+    subject: z.string().optional(),
+    axis: z.string().optional(),
+    source: z.string().optional(),
+    knowledge: z.array(z.string()).optional(),
+    skills: z.array(z.string()).optional(),
+  })
+  .passthrough();
+/** Marca docente de una clase en la biblioteca; «por preparar» se deduce de que no exista lesson.yaml. */
+export const lessonMarkSchema = z.enum(['lista', 'en-preparacion', 'por-preparar']);
+export const plannedLessonSchema = z.object({
+  id,
+  /** Título y objetivo de una clase aún sin lesson.yaml; si existe, manda lesson.yaml. */
+  title: z.string().optional(),
+  objective: z.string().optional(),
+  mark: lessonMarkSchema.optional(),
+});
+/** Planificación de unidades (content/planning): el orden de la biblioteca docente. */
+export const planningSchema = z
+  .object({
+    units: z.array(
+      z.object({
+        id: z.string().min(1),
+        title: z.string(),
+        lessons: z.array(plannedLessonSchema).default([]),
+      }),
+    ),
+  })
+  .superRefine((planning, ctx) => {
+    const units = new Set<string>();
+    const lessons = new Set<string>();
+    for (const unit of planning.units) {
+      if (units.has(unit.id))
+        ctx.addIssue({ code: 'custom', message: `Unidad duplicada: ${unit.id}` });
+      units.add(unit.id);
+      for (const lesson of unit.lessons) {
+        if (lessons.has(lesson.id))
+          ctx.addIssue({
+            code: 'custom',
+            message: `Clase planificada dos veces: ${lesson.id}`,
+          });
+        lessons.add(lesson.id);
+      }
+    }
+  });
 export type Lesson = z.infer<typeof lessonSchema>;
 export type Slide = z.infer<typeof slideSchema>;
 export type Activity = z.infer<typeof activitySchema>;
@@ -196,6 +244,11 @@ export type MascotPresence = z.infer<typeof mascotPresenceSchema>;
 export type MascotPlacement = z.infer<typeof mascotPlacementSchema>;
 export type MascotProps = z.infer<typeof mascotPropsSchema>;
 export type MascotTemplate = z.infer<typeof mascotTemplateSchema>;
+export type MascotGallery = z.infer<typeof mascotGallerySchema>;
+export type Curriculum = z.infer<typeof curriculumSchema>;
+export type LessonMark = z.infer<typeof lessonMarkSchema>;
+export type PlannedLesson = z.infer<typeof plannedLessonSchema>;
+export type Planning = z.infer<typeof planningSchema>;
 
 export function mascotTemplateMdx(template: MascotTemplate): string {
   const layout = template.layout === 'portada' ? 'portada' : 'concepto';

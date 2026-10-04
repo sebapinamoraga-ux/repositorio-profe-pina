@@ -1,6 +1,19 @@
 import { createProcessor } from '@mdx-js/mdx';
 import remarkMath from 'remark-math';
 import { z } from 'zod';
+import {
+  INTERACTIVE_SPECS,
+  parseLiteral,
+  printAttribute,
+  type ParamValue,
+} from '@aula/content-model/interactive-params';
+
+/** Atributo literal de un interactivo, con el rango de `nombre=valor` en el MDX. */
+export interface ParamAttr {
+  value: ParamValue;
+  start: number;
+  end: number;
+}
 
 /**
  * Campos editables de una lámina, con su rango exacto en el MDX. Editar un campo reemplaza
@@ -10,7 +23,16 @@ export type Field =
   | { kind: 'text'; group: string; label: string; start: number; end: number; value: string }
   | { kind: 'attr'; group: string; label: string; start: number; end: number; value: string }
   | { kind: 'template'; group: string; label: string; start: number; end: number; value: string }
-  | { kind: 'fixed'; group: string; label: string; value: string };
+  | { kind: 'fixed'; group: string; label: string; value: string }
+  | {
+      kind: 'params';
+      group: string;
+      label: string;
+      component: string;
+      /** Dónde insertar un atributo nuevo (tras el último, o tras el nombre). */
+      insertAt: number;
+      attrs: Record<string, ParamAttr>;
+    };
 
 const pointSchema = z.object({ offset: z.number().optional() }).passthrough();
 const positionSchema = z.object({ start: pointSchema, end: pointSchema }).optional();
@@ -75,6 +97,7 @@ const FIXED: Record<string, string> = {
   RectaIntervalos: 'Recta numérica',
   DiagramaSagital: 'Diagrama sagital',
   MaquinaFuncion: 'Máquina de función',
+  ExploradorCuadratica: 'Gráfico interactivo',
   MascotaProfePina: 'Mascota',
 };
 const PRESENCE: Record<string, string> = {
@@ -147,6 +170,17 @@ export function extractFields(body: string): Field[] {
           : label
             ? `${group ? `${group} › ` : ''}${label}`
             : group;
+      const params = INTERACTIVE_SPECS[name] ? paramsOf(child) : null;
+      if (params) {
+        out.push({
+          kind: 'params',
+          group: inner || (FIXED[name] ?? name),
+          label: FIXED[name] ?? name,
+          component: name,
+          ...params,
+        });
+        continue;
+      }
       if (FIXED[name]) {
         const label = FIXED[name] ?? name;
         out.push({
@@ -181,4 +215,45 @@ export function extractFields(body: string): Field[] {
 
 export function spliceField(body: string, field: { start: number; end: number }, value: string) {
   return body.slice(0, field.start) + value + body.slice(field.end);
+}
+
+/** Atributos de un interactivo si todos son literales; si alguno es una expresión, null. */
+function paramsOf(node: MdxNode): { insertAt: number; attrs: Record<string, ParamAttr> } | null {
+  const begin = node.position?.start.offset;
+  if (begin === undefined) return null;
+  const attrs: Record<string, ParamAttr> = {};
+  let insertAt = begin + 1 + (node.name ?? '').length;
+  for (const attr of node.attributes ?? []) {
+    const start = attr.position?.start.offset;
+    const end = attr.position?.end.offset;
+    if (attr.type !== 'mdxJsxAttribute' || !attr.name || start === undefined || end === undefined)
+      return null;
+    const value = parseLiteral(attr.value);
+    if (value === null) return null;
+    attrs[attr.name] = { value, start, end };
+    insertAt = Math.max(insertAt, end);
+  }
+  return { insertAt, attrs };
+}
+
+/**
+ * Cambia, agrega o quita (`undefined`) un atributo de un interactivo sin tocar el resto.
+ * Después de cada cambio hay que volver a leer los campos: los rangos se desplazan.
+ */
+export function setParam(
+  body: string,
+  field: { insertAt: number; attrs: Record<string, ParamAttr> },
+  name: string,
+  value: ParamValue | undefined,
+): string {
+  const current = field.attrs[name];
+  if (current) {
+    if (value !== undefined)
+      return body.slice(0, current.start) + printAttribute(name, value) + body.slice(current.end);
+    let from = current.start;
+    while (from > 0 && /\s/.test(body[from - 1] ?? '')) from--;
+    return body.slice(0, from) + body.slice(current.end);
+  }
+  if (value === undefined) return body;
+  return `${body.slice(0, field.insertAt)} ${printAttribute(name, value)}${body.slice(field.insertAt)}`;
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { activities } from '../app/catalog';
+import type { Lesson } from '@aula/content-model';
 import { mascotGallery } from '../app/gallery';
-import { lessonMeta, repoLessons, toMdx } from '../store/deck';
-import type { EditedSlide, TeacherData } from '../store/schema';
+import { useContent } from '../content/ContentProvider';
+import { hasPending, lessonEntry, toMdx } from '../store/deck';
+import type { EditedSlide } from '../store/schema';
 
 /** Revisión de una clase con las reglas de content:check, más los avisos del reparto de tiempo. */
 export interface LessonIssues {
@@ -11,44 +12,47 @@ export interface LessonIssues {
   perSlide: (string | null)[];
   bad: number[];
   errors: number;
-  /** Avisos de la clase: tramos que no calzan con las láminas (lesson.yaml se ajusta al publicar). */
+  /** Problemas de lesson.yaml (campos vacíos, tramos que no calzan…): bloquean el guardado. */
+  lessonErrors: string[];
   warnings: string[];
-}
-
-interface Plan {
-  duration: number;
-  tramos: { label: string; from: string; to: string; minutes: number }[];
 }
 
 /** Cada texto de lámina se compila una vez; editar una lámina no vuelve a revisar las demás. */
 const slideCache = new Map<string, Promise<string | null>>();
 
-function checkText(text: string) {
-  let promise = slideCache.get(text);
+function checkText(text: string, activityIds: readonly string[]) {
+  const key = `${activityIds.join(',')}\0${text}`;
+  let promise = slideCache.get(key);
   if (!promise) {
     promise = import('@aula/content-model/check-source').then(
       async ({ checkSlideSource }) =>
         (
           await checkSlideSource(text, {
             templateIds: new Set(mascotGallery.templates.map((t) => t.id)),
-            activityIds: new Set(Object.keys(activities)),
+            activityIds: new Set(activityIds),
           })
         ).error,
     );
-    slideCache.set(text, promise);
+    slideCache.set(key, promise);
+    if (slideCache.size > 500) {
+      const oldest = slideCache.keys().next().value;
+      if (oldest !== undefined) slideCache.delete(oldest);
+    }
   }
   return promise;
 }
 
 export async function checkSlides(
   slides: readonly EditedSlide[],
-  plan: Plan,
+  lesson: Lesson | null,
+  activityIds: readonly string[],
+  lessonErrors: readonly string[] = [],
 ): Promise<LessonIssues> {
   const { verifyLessonPlan } = await import('@aula/content-model/verify-plan');
   const seen = new Set<string>();
   const perSlide = await Promise.all(
     slides.map(async (slide) => {
-      const error = await checkText(toMdx(slide));
+      const error = await checkText(toMdx(slide), activityIds);
       if (error) return error;
       if (seen.has(slide.id)) return `ID duplicado ${slide.id}`;
       seen.add(slide.id);
@@ -56,23 +60,17 @@ export async function checkSlides(
     }),
   );
   const bad = perSlide.flatMap((error, i) => (error ? [i] : []));
-  const warnings = plan.tramos.length
-    ? verifyLessonPlan({
-        id: 'clase',
-        title: 'Clase',
-        subject: 'm1',
-        axis: '',
-        duration: plan.duration,
-        prerequisites: ['-'],
-        objectives: ['-'],
-        skills: ['-'],
-        curriculum: ['clase'],
-        status: 'draft',
-        slides: slides.map((slide) => `${slide.id}.mdx`),
-        tramos: plan.tramos,
-      })
+  const plan = lesson
+    ? verifyLessonPlan({ ...lesson, slides: slides.map((s) => `${s.id}.mdx`) })
     : [];
-  return { count: slides.length, perSlide, bad, errors: bad.length, warnings };
+  return {
+    count: slides.length,
+    perSlide,
+    bad,
+    errors: bad.length + lessonErrors.length,
+    lessonErrors: [...lessonErrors],
+    warnings: plan,
+  };
 }
 
 const clean = (count: number): LessonIssues => ({
@@ -80,38 +78,58 @@ const clean = (count: number): LessonIssues => ({
   perSlide: Array.from({ length: count }, () => null),
   bad: [],
   errors: 0,
+  lessonErrors: [],
   warnings: [],
 });
 
-/** null mientras se revisa. Las clases del repositorio sin cambios ya pasaron content:check. */
+/**
+ * null mientras se revisa. Lo que está en el repositorio sin cambios ya pasó content:check;
+ * se revisa lo que tiene cambios sin guardar (o las láminas que entrega el editor).
+ */
 export function useLessonIssues(
-  data: TeacherData,
   lessonId: string,
   slidesOverride?: readonly EditedSlide[],
 ): LessonIssues | null {
-  const edits = slidesOverride ?? data.edits[lessonId];
-  const meta = lessonMeta(
-    lessonId,
-    data.library.find((item) => item.id === lessonId),
-  );
-  const key = edits ? JSON.stringify([edits, meta.duration, meta.tramos]) : null;
+  const content = useContent();
+  const lesson = lessonEntry(content, lessonId);
+  const pending = hasPending(content, lessonId);
+  const slides =
+    slidesOverride ??
+    (pending && lesson
+      ? lesson.slides.map(({ slide, body }) => ({ ...slide, body }))
+      : undefined);
+  const lessonErrors = lesson
+    ? content.bundle.problems
+        .filter((problem) => problem.path === lesson.path)
+        .map((problem) => problem.message)
+    : [];
+  const activityIds = Object.keys(content.bundle.activities).sort();
+  const key = slides
+    ? JSON.stringify([slides, lesson?.meta ?? null, lessonErrors, activityIds])
+    : null;
   const [result, setResult] = useState<{
+    key: string;
     lessonId: string;
     issues: LessonIssues;
   } | null>(null);
   // `key` resume láminas y plan; el efecto toma los valores vigentes desde la ref.
-  const input = useRef({ edits, meta, lessonId });
+  const input = useRef({ slides, lesson, lessonId, lessonErrors, activityIds });
   useEffect(() => {
-    input.current = { edits, meta, lessonId };
+    input.current = { slides, lesson, lessonId, lessonErrors, activityIds };
   });
   useEffect(() => {
-    const { edits: slides, meta: plan, lessonId: id } = input.current;
-    if (!key || !slides) return;
+    const current = input.current;
+    if (!key || !current.slides) return;
     let active = true;
     // Breve espera para no revisar en cada tecla.
     const timer = setTimeout(() => {
-      void checkSlides(slides, plan).then((issues) => {
-        if (active) setResult({ lessonId: id, issues });
+      void checkSlides(
+        current.slides ?? [],
+        current.lesson?.meta ?? null,
+        current.activityIds,
+        current.lessonErrors,
+      ).then((issues) => {
+        if (active) setResult({ key, lessonId: current.lessonId, issues });
       });
     }, 250);
     return () => {
@@ -119,12 +137,9 @@ export function useLessonIssues(
       clearTimeout(timer);
     };
   }, [key]);
-  if (!edits) {
-    const repo = repoLessons.get(lessonId);
-    return repo ? clean(repo.slides.length) : null;
-  }
+  if (!slides) return lesson ? clean(lesson.slides.length) : null;
   // Mientras se revisa un cambio, se conserva el último resultado de esta clase.
-  return result?.lessonId === lessonId && result.issues.count === edits.length
+  return result?.lessonId === lessonId && result.issues.count === slides.length
     ? result.issues
     : null;
 }

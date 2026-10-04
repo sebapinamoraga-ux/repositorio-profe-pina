@@ -2,7 +2,7 @@
 
 Una clase contiene lesson.yaml y slides/\*.mdx. El manifiesto especifica ID estable, título, asignatura, eje, duración, prerrequisitos, objetivos observables, habilidades, referencias curriculares, estado y orden. La referencia inicial es m1-2027-sistemas; crear otra referencia al cambiar de conocimiento.
 
-El frontmatter de cada MDX tiene id, title, phase, layout, steps y activities. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio.
+El frontmatter de cada MDX tiene id, title, phase, layout, steps y activities, en ese orden, con el título entre comillas simples; el `id` coincide con el nombre del archivo. content:check exige esa forma para que la app y el código escriban lo mismo. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio.
 
 La portada conserva el título principal y presenta directamente un bloque **Objetivo de clase**. No añade subtítulo descriptivo, duración ni una ruta temática del tipo “Ecuaciones → Sistemas → Modelamiento”; esos datos pertenecen al plan de la clase, no al lienzo proyectado.
 
@@ -61,18 +61,39 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 `GraficoComparacion` dibuja dos funciones afines en un mismo plano (`m1`, `n1`, `m2`, `n2`, ventana, `pasoX`, `pasoY`, `ejeX`, `ejeY`, `etiqueta1`, `etiqueta2`, `descripcion`). Marca su intersección, que es la solución del sistema, con guías hacia los ejes; con `resaltarMenor` pinta sobre el eje x el tramo en que cada función toma el menor valor. `marcarInterseccion={false}` oculta el punto y `rotularInterseccion={false}` lo muestra sin sus coordenadas, para estimarlo antes de resolver el sistema.
 
+`ExploradorCuadratica` es interactivo: dibuja $y=ax^2+bx+c$ con controles para `a` y `c` (b queda fijo). Recibe `id` (clave de estado), `b`, `aInicial` (distinto de 0), `cInicial`, `aEstatico` y `cEstatico` (los valores del PDF), la ventana y `descripcion`; opcionalmente `aMin`, `aMax`, `aPaso`, `cMin`, `cMax`, `cPaso`, `paso` y `pasoY`. La curva inicial queda discontinua como referencia cuando cambian los parámetros, el corte $(0; c)$ se marca y «Restablecer» vuelve a los valores iniciales. Con `a = 0` dibuja la recta y lo advierte en la leyenda.
+
 `MaquinaFuncion` muestra una función como máquina: `entrada`, `regla` y `salida` (textos breves) y `descripcion`.
 
 `DiagramaSagital` dibuja dos conjuntos (`entradas`, `salidas`, `tituloEntradas`, `tituloSalidas`) unidos por `flechas` escritas como `'3 → 9'`, con hasta seis elementos por conjunto. Las entradas sin imagen o con más de una se destacan en ocre junto con sus flechas, y las salidas que nadie alcanza quedan atenuadas: así se ven a la vez el dominio, el recorrido y por qué una relación no es función. content:check exige todos sus atributos y el componente rechaza flechas hacia elementos que no existen.
 
 `RectaIntervalos` representa uno o dos intervalos en una recta numérica (`min`, `max`, `paso`, `intervalos`, `etiquetas`, `descripcion`). Los intervalos se escriben en notación escolar con punto y coma entre extremos para no confundirlos con la coma decimal: `intervalos={['[0; 7,5[', ']7,5; +∞[']}`. `tonos` elige el color de cada intervalo (1 o 2) para mantener la correspondencia con otros gráficos. Un extremo cerrado se dibuja con círculo lleno, uno abierto con círculo vacío y el infinito con flecha; un extremo infinito cerrado se rechaza.
 
-## Editar en el navegador
+## Editar desde la app
 
-El editor de la app (rol Docente → Editor) modifica una copia local de la clase y la revisa con las reglas de content:check. Nunca escribe en el repositorio. «Exportar a MDX» descarga un ZIP con lesson.yaml y slides/*.mdx: copia la carpeta en content/lessons/m1/algebra/, ejecuta `npm run content:check` y revisa el diff. Exportar no cambia `status`; publicar sigue siendo cambiarlo a mano tras la revisión y el ensayo en proyector. La marca «Lista / En preparación / Por preparar» de la biblioteca es solo docente y local.
+Todo lo que se describe arriba también se edita desde la app (rol Docente), en cualquier dispositivo, y queda guardado en el repositorio. La primera vez en cada dispositivo, conecta la app en **Conexión**:
+
+1. En GitHub abre *Settings → Developer settings → Fine-grained personal access tokens → Generate new token*.
+2. Ponle un nombre (por ejemplo «Aula · tablet») y una fecha de vencimiento.
+3. En *Repository access* elige *Only select repositories* y marca solo este repositorio.
+4. En *Repository permissions* da **Contents: Read and write**. Opcional: **Actions: Read-only**, para ver en la app si la publicación terminó.
+5. Copia el token y pégalo en Conexión. Si pierdes el dispositivo, revócalo en GitHub.
+
+Sin conexión la app muestra el contenido publicado y no permite editar.
+
+- **Biblioteca**: unidades, orden y clases planificadas (`content/planning/*.yaml`); preparar una clase desde la estructura base o desde otra clase; duplicar y eliminar. La marca «Lista / En preparación» también se guarda en la planificación; «Por preparar» significa que la clase aún no tiene lesson.yaml. Las clases del repositorio que la planificación no ubica aparecen en «Sin unidad».
+- **Datos de la clase** (Biblioteca → ⋯, o desde el editor): título, asignatura, eje, duración, objetivos, conocimientos previos, habilidades, referencias curriculares, tramos y estado. Pasar a «Publicada» pide confirmación: al guardar, la clase aparece en el sitio público.
+- **Editor**: láminas (título, momento, diseño, pasos, identificador, orden), el texto de cada bloque y los parámetros de interactivos, preguntas PAES y mascota como formulario. El MDX completo queda en «MDX de la lámina» para lo que el formulario no cubre.
+- **Actividades y PAES**: enunciado, alternativas con la correcta y sus explicaciones, respuesta, solución, habilidades, fuente y el sistema 2×2 que comprueba las alternativas. Cada actividad se comprueba antes de aplicarse.
+
+Cada cambio queda pendiente en ese navegador (la barra superior los cuenta) hasta pulsar **Guardar en el repositorio**. Guardar revisa todo con las reglas de content:check —si algo falla, no se guarda y se indica qué— y crea un único commit en `main`. GitHub Actions vuelve a verificar y publica en unos minutos; si la verificación falla, el sitio sigue con la versión anterior y la barra lo avisa. Si otro dispositivo cambió los mismos archivos, la app muestra las diferencias y pregunta qué versión conservar. Sin red, el guardado espera y se envía al reconectar. «Copia ZIP» descarga lesson.yaml y slides/*.mdx como respaldo; no hace falta para publicar.
+
+La mascota solo puede usar poses cuya imagen esté en el repositorio (las de la galería). Para usar una pose nueva, agrega su PNG y su línea `!` en `.gitignore` desde el código.
+
+Un interactivo nuevo necesita, además del componente, su ficha en `packages/content-model/src/interactive-params.ts` (parámetros, tipo y obligatorios): el formulario del editor y content:check la usan, así que lo que el formulario permite siempre compila.
 
 ## Diseño compartido
 
 Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Usa Objetivo para el propósito de clase; Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.
 
-La galería permite filtrar por nivel y momento y descargar una diapositiva MDX válida. Guarda el archivo en slides, adapta su contenido y añade el nombre a lesson.yaml. También puedes crear un borrador con una plantilla: `npm run lesson:new -- --id nueva-clase --plantilla pedagogica-modelado`. Las ayudas son ejemplos editables, no contenido curricular listo para publicar.
+La galería permite filtrar por nivel y momento, agregar la plantilla al final de la clase activa (desde la app) o descargar una diapositiva MDX válida. Si la descargas, guarda el archivo en slides, adapta su contenido y añade el nombre a lesson.yaml. También puedes crear un borrador con una plantilla: `npm run lesson:new -- --id nueva-clase --plantilla pedagogica-modelado`. Las ayudas son ejemplos editables, no contenido curricular listo para publicar.

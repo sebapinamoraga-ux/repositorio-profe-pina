@@ -1,0 +1,32 @@
+---
+id: modelar-tabla
+title: 'Modelar desde una tabla'
+phase: practica
+layout: ejercicio
+steps: 3
+activities: []
+---
+
+<PracticaGuiada titulo="Individual · 3 minutos">
+Cuenta del agua según el consumo. Encuentra $C(x)$ e interpreta $m$ y $n$.
+
+$$
+\begin{array}{c|c|c|c}
+x\ (\text{m}^3) & 10 & 15 & 20\\ \hline
+C(x)\ (\text{pesos}) & 9.500 & 13.250 & 17.000
+\end{array}
+$$
+
+</PracticaGuiada>
+
+<Paso n={1}>
+Cada **5 m³** el cobro sube **\$3.750**: el cambio es constante, así que es afín y $m=3.750:5=750$.
+</Paso>
+<Paso n={2}>
+$9.500=750\cdot 10+n\Rightarrow n=2.000$. Entonces $C(x)=750x+2.000$.
+</Paso>
+<Paso n={3}>
+<Comprobacion titulo="Comprobación e interpretación">
+$C(20)=750\cdot 20+2.000=17.000$ ✓. Se pagan **\$750 por m³** y un cargo fijo de **\$2.000**.
+</Comprobacion>
+</Paso>

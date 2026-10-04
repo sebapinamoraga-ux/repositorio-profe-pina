@@ -2,7 +2,7 @@
 
 ## Etapa 2 · Desde enero de 2027
 
-Esta etapa comienza después de diciembre de 2026. Hasta entonces, el hito actual no incorpora cuentas, almacenamiento remoto ni dependencias de Firebase.
+Esta etapa comienza después de diciembre de 2026. Hasta entonces, el hito actual no incorpora cuentas ni dependencias de Firebase. El contenido de las clases (que es público) ya se edita desde la app y se sincroniza entre dispositivos a través del propio repositorio de GitHub; esta etapa se ocupa de los datos privados del docente, que nunca van al repositorio.
 
 ### Cursos e historial docente
 

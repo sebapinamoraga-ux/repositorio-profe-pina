@@ -1,9 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { useOnline, useViewportWidth } from '../app/route';
+import { ActivitiesContext } from '../app/catalog';
+import { useViewportWidth } from '../app/route';
+import { useContent } from '../content/ContentProvider';
 import { useAula } from '../store/AulaProvider';
 import type { View } from '../store/schema';
 import { Brand } from '../ui/Brand';
 import { useUi } from '../ui/UiProvider';
+import { SaveBar, SyncPill } from './SaveBar';
 import { Today } from './Today';
 
 const Library = lazy(async () => ({
@@ -24,15 +27,23 @@ const Courses = lazy(async () => ({
 const PdfView = lazy(async () => ({
   default: (await import('./PdfView')).PdfView,
 }));
+const Activities = lazy(async () => ({
+  default: (await import('./Activities')).Activities,
+}));
+const Connection = lazy(async () => ({
+  default: (await import('./Connection')).Connection,
+}));
 
 const NAV: [View, string][] = [
   ['hoy', 'Clase de hoy'],
   ['biblioteca', 'Biblioteca de clases'],
   ['presentar', 'Presentar'],
   ['editor', 'Editor'],
+  ['actividades', 'Actividades y PAES'],
   ['galeria', 'Galería de mascota'],
   ['cursos', 'Cursos e historial'],
   ['pdf', 'Vista PDF'],
+  ['conexion', 'Conexión'],
 ];
 const SHORT_NAV: [View, string][] = [
   ['hoy', 'Hoy'],
@@ -45,24 +56,6 @@ const SHORT_NAV: [View, string][] = [
 export interface TeacherNav {
   view: View;
   onNavigate: (view: View) => void;
-}
-
-/** Píldora de guardado: en la etapa A no hay sincronización, solo el almacenamiento del navegador. */
-function SavePill({ compact = false }: { compact?: boolean }) {
-  const online = useOnline();
-  const label = online
-    ? 'Guardado en este navegador'
-    : 'Sin conexión · guardado en este navegador';
-  return (
-    <span
-      className={`save-pill ${online ? '' : 'is-offline'}`}
-      aria-label={label}
-      title={label}
-    >
-      <span aria-hidden="true" className="save-dot" />
-      {!compact && label}
-    </span>
-  );
 }
 
 function Account({
@@ -83,7 +76,7 @@ function Account({
           <span>Acceso local</span>
         </span>
       </div>
-      <SavePill />
+      <SyncPill />
       <div className="account-actions">
         <button type="button" className="btn btn-paper" onClick={onChangeRole}>
           Cambiar rol
@@ -103,6 +96,7 @@ export function TeacherShell({
   onLock,
 }: TeacherNav & { onChangeRole: () => void; onLock: () => void }) {
   const { data } = useAula();
+  const content = useContent();
   const { confirm } = useUi();
   const width = useViewportWidth();
   const [account, setAccount] = useState(false);
@@ -129,7 +123,7 @@ export function TeacherShell({
     if (
       await confirm({
         title: '¿Bloquear el acceso docente en este navegador?',
-        body: 'Tus clases, cursos y comentarios quedan guardados aquí.',
+        body: 'Tus cursos, comentarios y cambios sin guardar quedan en este navegador.',
         ok: 'Bloquear',
       })
     )
@@ -140,7 +134,7 @@ export function TeacherShell({
     onNavigate(next);
   };
 
-  const content = (() => {
+  const page = (() => {
     switch (view) {
       case 'hoy':
         return <Today onNavigate={go} />;
@@ -156,6 +150,10 @@ export function TeacherShell({
         return <Courses onNavigate={go} />;
       case 'pdf':
         return <PdfView onNavigate={go} />;
+      case 'actividades':
+        return <Activities onNavigate={go} />;
+      case 'conexion':
+        return <Connection onNavigate={go} />;
     }
   })();
 
@@ -223,7 +221,7 @@ export function TeacherShell({
             </nav>
           )}
           <div className="topbar-end">
-            <SavePill compact={mid} />
+            <SyncPill compact={mid} />
             <button
               type="button"
               className="avatar avatar-button"
@@ -269,9 +267,12 @@ export function TeacherShell({
         tabIndex={-1}
         className={`teacher-content ${view === 'presentar' || view === 'editor' ? 'is-fixed' : ''}`}
       >
-        <Suspense fallback={<p className="app-loading">Cargando…</p>}>
-          {content}
-        </Suspense>
+        {!presenting && <SaveBar onNavigate={go} />}
+        <ActivitiesContext.Provider value={content.bundle.activities}>
+          <Suspense fallback={<p className="app-loading">Cargando…</p>}>
+            {page}
+          </Suspense>
+        </ActivitiesContext.Provider>
       </div>
       {narrow && (
         <nav aria-label="Navegación docente" className="bottom-bar">

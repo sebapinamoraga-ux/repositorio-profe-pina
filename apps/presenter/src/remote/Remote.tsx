@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, List, RotateCcw, X } from 'lucide-react';
 import { useAula } from '../store/AulaProvider';
+import { useContent } from '../content/ContentProvider';
 import { deckFor, pad2, PHASE_NAMES } from '../store/deck';
 import { Brand } from '../ui/Brand';
 import { Modal } from '../ui/Modal';
@@ -8,10 +9,11 @@ import { useUi } from '../ui/UiProvider';
 
 /** Control remoto: envía pasos a la pestaña que proyecta. Sin proyección abierta, no hay a quién enviarlos. */
 export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
-  const { data, live, send, presenterOnline } = useAula();
+  const { live, send, presenterOnline } = useAula();
   const ui = useUi();
   const [index, setIndex] = useState(false);
-  const { meta, slides } = deckFor(data, live.lessonId);
+  const content = useContent();
+  const { meta, slides } = deckFor(content, live.lessonId);
   const at = Math.min(live.index, Math.max(0, slides.length - 1));
   const slide = slides[at];
   const step = slide ? (live.steps[slide.id] ?? 0) : 0;

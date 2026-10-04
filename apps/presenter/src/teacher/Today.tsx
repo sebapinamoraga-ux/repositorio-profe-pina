@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Lightbulb } from 'lucide-react';
 import { useRoute, useViewportWidth } from '../app/route';
+import { useContent } from '../content/ContentProvider';
 import { useAula } from '../store/AulaProvider';
 import { deckFor, pad2 } from '../store/deck';
 import type { View } from '../store/schema';
@@ -16,9 +17,10 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data, dispatch } = useAula();
   const { replace } = useRoute();
   const width = useViewportWidth();
-  const deck = deckFor(data, data.lessonId);
+  const content = useContent();
+  const deck = deckFor(content, data.lessonId);
   const { meta, slides } = deck;
-  const entry = data.library.find((item) => item.id === data.lessonId);
+  const entry = content.library.entries.find((item) => item.id === data.lessonId);
   const [courseId, setCourseId] = useState(data.courses[0]?.id ?? '');
   const session = data.activeSession;
   const notes = pendingNotes(data, data.lessonId);

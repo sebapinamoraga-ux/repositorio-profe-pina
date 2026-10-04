@@ -1,17 +1,15 @@
 import { z } from 'zod';
-import { slideSchema } from '@aula/content-model';
+import { lessonMarkSchema, slideSchema } from '@aula/content-model';
 
-/** Datos docentes guardados en este navegador. Cambiar la forma exige subir `version` y migrar. */
+/**
+ * Datos docentes privados guardados en este navegador (notas, cursos, sesiones). El contenido
+ * de las clases vive en el repositorio. Cambiar la forma exige subir `version` y migrar.
+ */
 export const STORAGE_KEY = 'profe-pina-aula-v1';
 export const ROLE_KEY = 'profe-pina-aula-rol';
 export const UNLOCK_KEY = 'profe-pina-aula-acceso';
 
-export const lessonMarkSchema = z.enum([
-  'lista',
-  'en-preparacion',
-  'por-preparar',
-]);
-export type LessonMark = z.infer<typeof lessonMarkSchema>;
+export { lessonMarkSchema, type LessonMark } from '@aula/content-model';
 
 export const unitSchema = z.object({ id: z.string().min(1), title: z.string() });
 export type Unit = z.infer<typeof unitSchema>;
@@ -23,18 +21,17 @@ export const libraryEntrySchema = z.object({
   objective: z.string(),
   duration: z.number().positive(),
   status: lessonMarkSchema,
+  local: z.boolean().optional(),
 });
-export type LibraryEntry = z.infer<typeof libraryEntrySchema>;
+/** Biblioteca de la etapa A (v1): solo se lee para migrarla al repositorio. */
+export type LegacyLibraryEntry = z.infer<typeof libraryEntrySchema>;
 
-/** Lámina editada en el navegador: frontmatter + cuerpo MDX. `origin` apunta a la lámina compilada idéntica. */
+/** Lámina en edición: frontmatter + cuerpo MDX. */
 export const editedSlideSchema = slideSchema.extend({
   body: z.string(),
-  origin: z
-    .object({ lessonId: z.string(), slideId: z.string() })
-    .nullable()
-    .default(null),
+  origin: z.unknown().optional(),
 });
-export type EditedSlide = z.infer<typeof editedSlideSchema>;
+export type EditedSlide = z.infer<typeof slideSchema> & { body: string };
 
 export const noteSourceSchema = z.enum(['presentador', 'cierre', 'editor']);
 export const noteSchema = z.object({
@@ -85,18 +82,36 @@ export const sessionSchema = activeSessionSchema.extend({
 });
 export type Session = z.infer<typeof sessionSchema>;
 
-export const teacherDataSchema = z.object({
-  version: z.literal(1),
-  units: z.array(unitSchema),
-  library: z.array(libraryEntrySchema),
-  /** Clases del repositorio ya incorporadas: las nuevas se agregan una vez y luego se respetan las decisiones locales. */
-  seenRepo: z.array(z.string()),
-  edits: z.record(z.array(editedSlideSchema)),
+const privateData = {
   notes: z.array(noteSchema),
   courses: z.array(courseSchema),
   sessions: z.array(sessionSchema),
   activeSession: activeSessionSchema.nullable(),
   lessonId: z.string(),
+};
+
+/** Etapa A: biblioteca y ediciones también vivían en el navegador. */
+export const teacherDataV1Schema = z.object({
+  version: z.literal(1),
+  units: z.array(unitSchema),
+  library: z.array(libraryEntrySchema),
+  seenRepo: z.array(z.string()),
+  edits: z.record(z.array(editedSlideSchema)),
+  ...privateData,
+});
+
+/** Lo que la versión 1 tenía en el navegador y aún no se lleva al repositorio. */
+export const legacyContentSchema = z.object({
+  units: z.array(unitSchema),
+  library: z.array(libraryEntrySchema),
+  edits: z.record(z.array(editedSlideSchema)),
+});
+export type LegacyContent = z.infer<typeof legacyContentSchema>;
+
+export const teacherDataSchema = z.object({
+  version: z.literal(2),
+  ...privateData,
+  legacy: legacyContentSchema.optional(),
 });
 export type TeacherData = z.infer<typeof teacherDataSchema>;
 
@@ -110,6 +125,8 @@ export const viewSchema = z.enum([
   'galeria',
   'cursos',
   'pdf',
+  'actividades',
+  'conexion',
 ]);
 export type View = z.infer<typeof viewSchema>;
 export const roleStateSchema = z.object({
