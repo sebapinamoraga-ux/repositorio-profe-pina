@@ -9,7 +9,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { repoMetas } from './deck';
 import { initialLive, liveReducer, type LiveAction, type LiveState } from './live';
 import { deviceId, loadTeacherData, parseTeacherData, saveTeacherData } from './persist';
 import { STORAGE_KEY, type TeacherData } from './schema';
@@ -54,7 +53,7 @@ function randomCode() {
 }
 
 export function AulaProvider({ children }: { children: ReactNode }) {
-  const [data, dispatch] = useReducer(teacherReducer, repoMetas, loadTeacherData);
+  const [data, dispatch] = useReducer(teacherReducer, undefined, loadTeacherData);
   const [live, liveDispatch] = useReducer(liveReducer, data.lessonId, (id) =>
     initialLive(id, randomCode()),
   );
@@ -79,7 +78,7 @@ export function AulaProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const listener = (event: StorageEvent) => {
       if (event.key !== STORAGE_KEY || event.newValue === null) return;
-      dispatch({ type: 'replace', data: parseTeacherData(event.newValue, repoMetas) });
+      dispatch({ type: 'replace', data: parseTeacherData(event.newValue) });
     };
     window.addEventListener('storage', listener);
     return () => window.removeEventListener('storage', listener);

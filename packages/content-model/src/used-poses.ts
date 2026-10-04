@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { mascotGallerySchema } from './index.ts';
+import { usedPosesFromSources } from './poses.ts';
 
 async function mdxFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -17,9 +18,7 @@ async function mdxFiles(dir: string): Promise<string[]> {
   ).flat();
 }
 
-/** Poses que aparecen en la galería o en alguna diapositiva: las únicas que el sitio y git necesitan. */
 export async function usedMascotPoses(contentRoot: string): Promise<number[]> {
-  const poses = new Set<number>();
   const gallery = mascotGallerySchema.parse(
     JSON.parse(
       await readFile(
@@ -28,13 +27,12 @@ export async function usedMascotPoses(contentRoot: string): Promise<number[]> {
       ),
     ),
   );
-  for (const template of gallery.templates) poses.add(template.mascot.pose);
-  for (const file of await mdxFiles(join(contentRoot, 'lessons')))
-    for (const match of (await readFile(file, 'utf8')).matchAll(
-      /\bpose=(?:\{\s*(\d+)\s*\}|"(\d+)")/g,
-    ))
-      poses.add(Number(match[1] ?? match[2]));
-  return [...poses].sort((a, b) => a - b);
+  const texts = await Promise.all(
+    (await mdxFiles(join(contentRoot, 'lessons'))).map((file) =>
+      readFile(file, 'utf8'),
+    ),
+  );
+  return usedPosesFromSources(gallery, texts);
 }
 
 /** Ruta del único PNG `N-descripcion.png` de una pose. */

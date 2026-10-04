@@ -2,27 +2,49 @@ name: Verificar y publicar Aula
 on:
   push:
     branches: [main]
+    paths-ignore: ['docs/**', '**/*.md']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Guardados seguidos desde la app: se verifica solo el último commit de la rama.
+    concurrency:
+      group: build-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - name: Alcance del cambio
+        id: scope
+        shell: bash
+        run: |
+          before="${{ github.event.before }}"
+          changed=""
+          if [[ "${{ github.event_name }}" == "push" && -n "$before" && ! "$before" =~ ^0+$ ]] && git cat-file -e "$before^{commit}" 2>/dev/null; then
+            changed="$(git diff --name-only "$before" "${{ github.sha }}")"
+          fi
+          # Un commit que solo toca content/ (lo que guarda la app) se valida con content:check,
+          # build, dist:check y PDF; las pruebas de código no dependen de él.
+          if [[ -n "$changed" ]] && ! grep -qv '^content/' <<< "$changed"; then
+            echo "content_only=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "content_only=false" >> "$GITHUB_OUTPUT"
+          fi
       - run: npm run line-endings:check
-      - run: npm run typecheck && npm run lint && npm run test
+      - if: steps.scope.outputs.content_only != 'true'
+        run: npm run typecheck && npm run lint && npm run test
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - if: steps.scope.outputs.content_only != 'true'
+        run: npm run test:e2e
       - name: Ruta de Pages
         shell: bash
         run: |
@@ -30,11 +52,11 @@ jobs:
           if [[ "$repo" == *.github.io ]]; then echo "BASE_PATH=/" >> "$GITHUB_ENV"; else echo "BASE_PATH=/$repo/" >> "$GITHUB_ENV"; fi
       - run: npm run build
       - run: npm run dist:check
-      - run: npm run export:pdf -- --lesson sistemas-2x2
+      - run: npm run export:pdf -- --published
       - run: npm run publish:pdf
       - uses: actions/upload-artifact@v4
         with:
-          name: pdf-sistemas
+          name: pdf-publicados
           path: output/pdf/
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
@@ -44,6 +66,10 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    # Nunca se corta un despliegue en curso; el último que termina queda publicado.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write

@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { lessonSources } from 'virtual:aula-sources';
-import { splitSource } from '../store/mdx';
-import { extractFields, spliceField } from './mdx-fields';
+import { resolve } from 'node:path';
+import { parseContentFiles } from '@aula/content-model/content-files';
+import { readContentFiles } from '@aula/content-model/read-content';
+import { INTERACTIVE_SPECS } from '@aula/content-model/interactive-params';
+import { extractFields, setParam, spliceField } from './mdx-fields';
 import { makeZip, readZip } from './zip';
 
-const bodies = Object.values(lessonSources)
-  .flat()
-  .map(({ text }) => splitSource(text).body);
+/** El contenido del repositorio, leído como lo lee el build. */
+const buildBundle = parseContentFiles(await readContentFiles(resolve('.')));
+
+const bodies = buildBundle.lessons.flatMap((lesson) =>
+  lesson.slides.map((slide) => slide.body),
+);
 
 describe('campos editables del MDX', () => {
   it('cada rango corresponde exactamente a su valor en todas las láminas del repositorio', () => {
     for (const body of bodies) {
       for (const field of extractFields(body)) {
-        if (field.kind === 'fixed') continue;
+        if (field.kind === 'fixed' || field.kind === 'params') continue;
         expect(body.slice(field.start, field.end)).toBe(field.value);
         expect(spliceField(body, field, field.value)).toBe(body);
       }
@@ -30,13 +35,42 @@ describe('campos editables del MDX', () => {
       '\n<Objetivo titulo="Meta de hoy">\n  Texto con $x+y=3$.\n</Objetivo>\n',
     );
   });
-  it('los componentes con parámetros fijos no se editan como texto', () => {
-    const fields = extractFields(
-      '\n<MascotaProfePina pose={45} nivel="marca" ubicacion="lateral-derecha" alt="Hola" />\n',
+  it('la mascota y los interactivos se editan como parámetros', () => {
+    const body =
+      '\n<MascotaProfePina pose={45} nivel="marca" ubicacion="lateral-derecha" alt="Hola" />\n';
+    const [field] = extractFields(body);
+    if (field?.kind !== 'params') throw new Error('Se esperaba un formulario de parámetros');
+    expect(field.component).toBe('MascotaProfePina');
+    expect(field.attrs.pose?.value).toBe(45);
+    expect(setParam(body, field, 'pose', 46)).toBe(body.replace('{45}', '{46}'));
+    expect(setParam(body, field, 'alt', 'Dice "hola"')).toContain(`alt={'Dice "hola"'}`);
+  });
+
+  it('todos los interactivos del repositorio se leen como parámetros y se reescriben igual', () => {
+    let seen = 0;
+    for (const body of bodies)
+      for (const field of extractFields(body)) {
+        if (field.kind === 'fixed')
+          expect(INTERACTIVE_SPECS[field.label] ?? null, field.value).toBeNull();
+        if (field.kind !== 'params') continue;
+        seen++;
+        for (const [name, attr] of Object.entries(field.attrs))
+          expect(setParam(body, field, name, attr.value), `${field.component}.${name}`).toBe(body);
+      }
+    expect(seen).toBeGreaterThan(20);
+  });
+
+  it('agrega y quita atributos sin tocar el resto', () => {
+    const body = '\n<GraficoFuncion tipo="afin" m={2} n={1} />\n';
+    const [field] = extractFields(body);
+    if (field?.kind !== 'params') throw new Error('Faltan parámetros');
+    const added = setParam(body, field, 'puntosX', [0, 1]);
+    expect(added).toBe('\n<GraficoFuncion tipo="afin" m={2} n={1} puntosX={[0, 1]} />\n');
+    const [again] = extractFields(added);
+    if (again?.kind !== 'params') throw new Error('Faltan parámetros');
+    expect(setParam(added, again, 'm', undefined)).toBe(
+      '\n<GraficoFuncion tipo="afin" n={1} puntosX={[0, 1]} />\n',
     );
-    expect(fields).toEqual([
-      { kind: 'fixed', group: 'Mascota', label: 'Mascota', value: 'Pose 45 · Marca' },
-    ]);
   });
 });
 

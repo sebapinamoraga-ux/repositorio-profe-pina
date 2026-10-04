@@ -2241,3 +2241,274 @@ textarea.input {
   opacity: 0.45;
   cursor: default;
 }
+
+/* Contenido en el repositorio: cambios sin guardar, formularios y conexión */
+.teacher-content.is-fixed {
+  display: flex;
+  flex-direction: column;
+}
+.teacher-content.is-fixed > main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.save-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: grid;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--ocre-soft);
+  border-bottom: 1px solid var(--ocre-line);
+  font-size: 15px;
+}
+.save-bar.is-saved {
+  background: var(--ok-soft);
+  border-color: var(--ok-line);
+}
+.save-bar.is-invalid,
+.save-bar.is-conflicts,
+.save-bar.is-error {
+  background: var(--err-soft);
+  border-color: var(--err-line);
+}
+.save-bar-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.save-bar-main > .row {
+  flex-wrap: wrap;
+}
+.save-bar-status {
+  margin: 0;
+  line-height: 1.4;
+}
+.save-message {
+  min-height: 36px;
+  width: min(340px, 100%);
+  font-size: 14px;
+}
+.save-bar-files {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 2px;
+  font-size: 14px;
+}
+.save-bar-files.is-error {
+  color: var(--err);
+}
+.save-pill.is-pending {
+  color: var(--ocre);
+}
+.save-pill.is-pending .save-dot {
+  background: var(--ocre);
+  border-color: var(--ocre);
+}
+.text-error {
+  color: var(--err);
+}
+.lesson-dialog,
+.activity-dialog,
+.conflict-dialog {
+  width: min(760px, 100%);
+}
+.lesson-form {
+  display: grid;
+  gap: 14px;
+}
+.list-field {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line-3);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.list-field legend {
+  padding: 0 4px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--muted);
+}
+.list-row,
+.option-row,
+.equation-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+.list-row input,
+.option-row > input,
+.option-edit > input,
+.tramo-row input,
+.tramo-row select,
+.equation-row input,
+.param-form input:not([type='checkbox']),
+.param-form select,
+.param-form textarea {
+  min-height: 40px;
+  width: 100%;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+}
+.equation-row input {
+  width: 88px;
+  flex: none;
+}
+.option-edit {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-4);
+}
+.check-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 15px;
+  color: var(--ink);
+}
+.check-row input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.tramo-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 72px 36px;
+  gap: 6px;
+  align-items: center;
+}
+.tramo-head {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 650;
+}
+@media (max-width: 640px) {
+  .tramo-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .tramo-head {
+    display: none;
+  }
+}
+.param-form {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.param-form legend {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.param-form [aria-invalid='true'] {
+  border-color: var(--err);
+}
+.conflict {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-4);
+}
+.conflict h3 {
+  margin: 0;
+  font-size: 17px;
+}
+.diff {
+  margin: 0;
+  max-height: 260px;
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid var(--line-3);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.diff-add {
+  background: var(--ok-soft);
+}
+.diff-del {
+  background: var(--err-soft);
+}
+.diff-same {
+  color: var(--muted);
+}
+.connection {
+  max-width: 760px;
+}
+.connection-card p {
+  margin: 0;
+}
+.steps-list {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+  line-height: 1.45;
+}
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.list-field .link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-self: start;
+}
+.list-row textarea,
+.option-edit > textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+  resize: vertical;
+}
+.pair-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+}
+.pair-row input {
+  width: 88px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.save-bar-main > .row {
+  justify-content: flex-end;
+}
+.save-message {
+  flex: 1 1 220px;
+}

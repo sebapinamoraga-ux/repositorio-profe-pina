@@ -15,7 +15,6 @@ import { useUi } from '../ui/UiProvider';
 import { ReadContext, readComponents } from './read-components';
 import { useRepaso, type StudentTheme } from './repaso';
 
-type Sources = Record<string, { file: string; text: string }[]>;
 interface SlideInfo {
   mascot: { pose: number; nivel: string; alt: string } | null;
   firstStep: number;
@@ -78,13 +77,12 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
   const index = Math.min(progress.index, Math.max(0, slides.length - 1));
   const slide = slides[index];
 
-  const [sources, setSources] = useState<Sources | null>(null);
-  useEffect(() => {
-    void import('virtual:aula-sources').then((module) => setSources(module.lessonSources));
-  }, []);
   const infos = useMemo(
-    () => (sources?.[lessonId] ?? []).map(({ text }) => slideInfo(text)),
-    [sources, lessonId],
+    () =>
+      (catalog.find((lesson) => lesson.meta.id === lessonId)?.slides ?? []).map(
+        ({ text }) => slideInfo(text),
+      ),
+    [lessonId],
   );
   const info = infos[index];
 

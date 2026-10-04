@@ -1,23 +1,23 @@
-import type { Lesson } from '@aula/content-model';
-import { reconcileRepo, seedTeacherData } from './seed';
+import { seedTeacherData } from './seed';
 import {
   ROLE_KEY,
   STORAGE_KEY,
   UNLOCK_KEY,
   roleStateSchema,
   teacherDataSchema,
+  teacherDataV1Schema,
   type RoleState,
   type TeacherData,
 } from './schema';
 
-function read(key: string): string | null {
+export function read(key: string): string | null {
   try {
     return localStorage.getItem(key);
   } catch {
     return null;
   }
 }
-function write(key: string, value: string | null) {
+export function write(key: string, value: string | null) {
   try {
     if (value === null) localStorage.removeItem(key);
     else localStorage.setItem(key, value);
@@ -26,25 +26,40 @@ function write(key: string, value: string | null) {
   }
 }
 
-/** Datos inválidos o de otra versión no se pierden: se respaldan y se parte de la siembra. */
-export function parseTeacherData(
-  raw: string | null,
-  repo: readonly Lesson[],
-): TeacherData {
+/**
+ * Datos inválidos o de otra versión no se pierden: se respaldan y se parte de la siembra.
+ * La versión 1 guardaba también biblioteca y ediciones: quedan en `legacy` hasta llevarlas
+ * al repositorio.
+ */
+export function parseTeacherData(raw: string | null): TeacherData {
   if (raw) {
     try {
-      const parsed = teacherDataSchema.safeParse(JSON.parse(raw));
-      if (parsed.success) return reconcileRepo(parsed.data, repo);
+      const json: unknown = JSON.parse(raw);
+      const parsed = teacherDataSchema.safeParse(json);
+      if (parsed.success) return parsed.data;
+      const v1 = teacherDataV1Schema.safeParse(json);
+      if (v1.success) {
+        write(`${STORAGE_KEY}-respaldo-v1`, raw);
+        const { units, library, edits } = v1.data;
+        return {
+          version: 2,
+          notes: v1.data.notes,
+          courses: v1.data.courses,
+          sessions: v1.data.sessions,
+          activeSession: v1.data.activeSession,
+          lessonId: v1.data.lessonId,
+          legacy: { units, library, edits },
+        };
+      }
     } catch {
       /* JSON dañado: se respalda abajo. */
     }
     write(`${STORAGE_KEY}-respaldo`, raw);
   }
-  return seedTeacherData(repo);
+  return seedTeacherData();
 }
 
-export const loadTeacherData = (repo: readonly Lesson[]) =>
-  parseTeacherData(read(STORAGE_KEY), repo);
+export const loadTeacherData = () => parseTeacherData(read(STORAGE_KEY));
 export const saveTeacherData = (data: TeacherData) =>
   write(STORAGE_KEY, JSON.stringify(data));
 

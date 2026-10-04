@@ -9,6 +9,14 @@ import { ArrowDown, ArrowUp, Download, Trash2, X } from 'lucide-react';
 import { phaseSchema } from '@aula/content-model';
 import { mascotGallery } from '../app/gallery';
 import { TemplateSlide } from '../app/MascotGallery';
+import { useContent } from '../content/ContentProvider';
+import {
+  createLesson,
+  editableSlides,
+  findLesson,
+  planningWrites,
+  writeSlides,
+} from '../content/ops';
 import { buildExport } from '../editor/export';
 import type { Field } from '../editor/mdx-fields';
 import { makeZip } from '../editor/zip';
@@ -16,22 +24,70 @@ import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
 import { useAula } from '../store/AulaProvider';
 import {
-  editedToDeck,
+  deckSlides,
+  hasPending,
   lessonMeta,
   pad2,
   PHASE_NAMES,
-  repoLessons,
-  repoSourceSlides,
   skeleton,
   slideFromTemplate,
   toMdx,
 } from '../store/deck';
-import { ORIGINAL_LESSON_ID } from '../store/seed';
 import type { EditedSlide, Note, View } from '../store/schema';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { useLessonIssues } from './issues';
+import { LessonDialog } from './LessonForm';
 import { makeNote } from './notes';
+import { ParamFields } from './ParamForm';
+import { ConnectHint } from './SaveBar';
+
+const SLIDE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Identificador de lámina: se edita libre y se aplica al salir del campo si es válido y único. */
+function SlideIdField({
+  value,
+  taken,
+  onCommit,
+}: {
+  value: string;
+  taken: readonly string[];
+  onCommit: (id: string) => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const text = draft ?? value;
+  const problem =
+    draft === null || draft === value
+      ? null
+      : !SLIDE_ID.test(draft)
+        ? 'Usa minúsculas, números y guiones.'
+        : taken.includes(draft)
+          ? 'Ya hay una lámina con ese identificador.'
+          : null;
+  const commit = () => {
+    if (draft !== null && draft !== value && !problem) onCommit(draft);
+    setDraft(null);
+  };
+  return (
+    <label className="field">
+      Identificador
+      <input
+        className="mono"
+        value={text}
+        aria-invalid={problem ? true : undefined}
+        onChange={(event) =>
+          setDraft(event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))
+        }
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') commit();
+          if (event.key === 'Escape') setDraft(null);
+        }}
+      />
+      {problem && <span className="field-note text-error">{problem}</span>}
+    </label>
+  );
+}
 
 type FieldsModule = typeof import('../editor/mdx-fields');
 
@@ -121,28 +177,16 @@ function NoteItem({
 
 export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data, dispatch, snap } = useAula();
+  const content = useContent();
   const ui = useUi();
   const { width, ref: rootRef } = useElementWidth();
   const layout = width >= 1100 ? 'wide' : width >= 700 ? 'mid' : 'narrow';
   const lessonId = data.lessonId;
-  const entry = data.library.find((item) => item.id === lessonId);
-  const meta = lessonMeta(lessonId, entry);
-  const edits = data.edits[lessonId];
-  const hasEdits = Boolean(edits);
-  const isRepo = repoLessons.has(lessonId);
-
-  const [base, setBase] = useState<{ lessonId: string; slides: EditedSlide[] } | null>(null);
-  useEffect(() => {
-    if (hasEdits || !isRepo) return;
-    let alive = true;
-    void repoSourceSlides(lessonId).then((slides) => {
-      if (alive) setBase({ lessonId, slides });
-    });
-    return () => {
-      alive = false;
-    };
-  }, [lessonId, hasEdits, isRepo]);
-  const slides = edits ?? (base?.lessonId === lessonId ? base.slides : null);
+  const meta = lessonMeta(content, lessonId);
+  const lesson = findLesson(content.bundle, lessonId);
+  const pendingHere = hasPending(content, lessonId);
+  const slides = useMemo(() => (lesson ? editableSlides(lesson) : null), [lesson]);
+  const [details, setDetails] = useState(false);
 
   const [fieldsModule, setFieldsModule] = useState<FieldsModule | null>(null);
   useEffect(() => {
@@ -157,11 +201,11 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   const [draft, setDraft] = useState('');
   const [draftScope, setDraftScope] = useState<'slide' | 'lesson'>('slide');
   const [showApplied, setShowApplied] = useState(false);
-  const issues = useLessonIssues(data, lessonId, slides ?? undefined);
+  const issues = useLessonIssues(lessonId, pendingHere ? (slides ?? undefined) : undefined);
 
   const index = slides ? Math.min(selected, Math.max(0, slides.length - 1)) : 0;
   const slide = slides?.[index];
-  const deck = useMemo(() => (slides ? editedToDeck(slides) : []), [slides]);
+  const deck = useMemo(() => (lesson ? deckSlides(lesson) : []), [lesson]);
   const deferredDeck = useDeferredValue(deck);
 
   const fields = useMemo<Field[] | 'error' | null>(() => {
@@ -174,10 +218,11 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   }, [fieldsModule, slide]);
 
   if (!slides) {
-    if (isRepo) return <p className="app-loading">Cargando el MDX de la clase…</p>;
+    const entry = content.library.entries.find((item) => item.id === lessonId);
     return (
       <main className="page">
         <div className="empty-card editor-empty">
+          {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
           <p className="kicker">Editor</p>
           <h1>{meta.title}</h1>
           <p>Esta clase está por preparar. Parte de la estructura base o de otra clase.</p>
@@ -185,12 +230,21 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             <button
               type="button"
               className="btn btn-ink"
+              disabled={!content.canEdit}
               onClick={() =>
-                dispatch({
-                  type: 'prepareLesson',
-                  id: lessonId,
-                  slides: skeleton(meta.title, mascotGallery.templates),
-                })
+                content.edit([
+                  ...createLesson(content.bundle, {
+                    id: lessonId,
+                    title: meta.title,
+                    objective: entry?.objective ?? '',
+                    slides: skeleton(meta.title, mascotGallery.templates),
+                  }),
+                  ...planningWrites(content.bundle, content.files, {
+                    type: 'updateLesson',
+                    id: lessonId,
+                    patch: { title: undefined, objective: undefined, mark: 'en-preparacion' },
+                  }),
+                ])
               }
             >
               Preparar con la estructura base
@@ -204,16 +258,15 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     );
   }
 
-  const commit = (next: EditedSlide[]) =>
-    dispatch({ type: 'setEdits', lessonId, slides: next });
+  const commit = (next: EditedSlide[]) => {
+    if (!content.canEdit) {
+      ui.toast('Conecta la app con GitHub (Conexión) para editar.');
+      return;
+    }
+    content.edit(writeSlides(content.bundle, lessonId, next));
+  };
   const update = (i: number, patch: Partial<EditedSlide>) =>
-    commit(
-      slides.map((item, k) =>
-        k === i
-          ? { ...item, ...patch, origin: patch.body !== undefined ? null : item.origin }
-          : item,
-      ),
-    );
+    commit(slides.map((item, k) => (k === i ? { ...item, ...patch } : item)));
   const pick = (i: number) => {
     setSelected(i);
     setPreview(null);
@@ -239,7 +292,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   };
   const remove = () => {
     if (!slide || slides.length < 2) return;
-    const undo = snap(['edits']);
+    const undo = content.snap();
     commit(slides.filter((_, k) => k !== index));
     ui.toast(`Lámina ${pad2(index + 1)} «${slide.title}» eliminada`, undo);
   };
@@ -253,9 +306,10 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     pick(index + 1);
   };
   const restore = () => {
-    const undo = snap(['edits']);
-    dispatch({ type: 'restoreOriginal', lessonId });
-    ui.toast('Clase original restaurada', undo);
+    if (!lesson) return;
+    const undo = content.snap();
+    content.discard(content.pending.filter((path) => path.startsWith(`${lesson.dir}/`)));
+    ui.toast('Se descartaron los cambios sin guardar de esta clase', undo);
   };
 
   const notes = data.notes.filter((note) => note.lessonId === lessonId);
@@ -315,11 +369,23 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             <p className="editor-lesson-title">{meta.title}</p>
           </>
         )}
-        <button type="button" className="btn btn-small" onClick={() => setExporting(true)}>
-          <Download size={16} aria-hidden="true" />
-          Exportar a MDX
-        </button>
+        <div className="row">
+          <button type="button" className="btn btn-small" onClick={() => setDetails(true)}>
+            Datos de la clase
+          </button>
+          <button type="button" className="btn btn-small" onClick={() => setExporting(true)}>
+            <Download size={16} aria-hidden="true" />
+            Copia ZIP
+          </button>
+        </div>
       </div>
+      {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
+      {issues && issues.lessonErrors.length > 0 && (
+        <button type="button" className="editor-alert is-error" onClick={() => setDetails(true)}>
+          <b>Datos de la clase: {issues.lessonErrors.length} por corregir</b>
+          <span>Abrir datos de la clase →</span>
+        </button>
+      )}
       {issues && issues.bad.length > 0 && (
         <button type="button" className="editor-alert is-error" onClick={() => nextBad !== undefined && pick(nextBad)}>
           <b>
@@ -411,9 +477,32 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       lastGroup = field.group;
       const change = (value: string) => {
         const current = fieldsModule?.extractFields(slide.body)[k];
-        if (!current || current.kind === 'fixed' || !fieldsModule) return;
+        if (!current || current.kind === 'fixed' || current.kind === 'params' || !fieldsModule)
+          return;
         update(index, { body: fieldsModule.spliceField(slide.body, current, value) });
       };
+      if (field.kind === 'params')
+        return (
+          <div key={`${k}-${field.group}-${field.label}`} className={`field-block ${newGroup && k ? 'is-new-group' : ''}`}>
+            {newGroup && field.group && <p className="field-group">{field.group}</p>}
+            <ParamFields
+              field={field}
+              activities={content.bundle.activities}
+              steps={slide.steps}
+              onChange={(name, value) => {
+                const current = fieldsModule?.extractFields(slide.body)[k];
+                if (!current || current.kind !== 'params' || !fieldsModule) return;
+                const body = fieldsModule.setParam(slide.body, current, name, value);
+                const patch: Partial<EditedSlide> = { body };
+                if (current.component === 'PreguntaPAES' && name === 'id' && typeof value === 'string')
+                  patch.activities = [
+                    ...new Set([...slide.activities.filter((a) => a !== current.attrs.id?.value), value]),
+                  ];
+                update(index, patch);
+              }}
+            />
+          </div>
+        );
       return (
         <div key={`${k}-${field.group}-${field.label}`} className={`field-block ${newGroup && k ? 'is-new-group' : ''}`}>
           {newGroup && field.group && <p className="field-group">{field.group}</p>}
@@ -543,18 +632,12 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               </button>
             </div>
           </div>
-          <label className="field">
-            Identificador
-            <input
-              className="mono"
-              value={slide.id}
-              onChange={(event) =>
-                update(index, {
-                  id: event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-                })
-              }
-            />
-          </label>
+          <SlideIdField
+            key={`${lessonId}-${index}`}
+            value={slide.id}
+            taken={slides.filter((_, k) => k !== index).map((s) => s.id)}
+            onCommit={(id) => update(index, { id })}
+          />
         </div>
       </div>
       <div className="props-fields">
@@ -583,20 +666,20 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
         >
           Descargar .mdx
         </a>
-        {lessonId === ORIGINAL_LESSON_ID && hasEdits && (
+        {pendingHere && (
           <button type="button" className="btn" onClick={restore}>
-            Restaurar clase original
+            Descartar cambios de esta clase
           </button>
         )}
       </div>
-      <p className="muted small props-note">Los cambios se guardan en este navegador.</p>
+      <p className="muted small props-note">
+        Los cambios quedan pendientes en este navegador hasta que los guardes en el
+        repositorio.
+      </p>
     </section>
   );
 
-  const exportData = exporting ? buildExport(entry, lessonId, slides) : null;
-  const slideProblems = issues
-    ? issues.bad.map((k) => `Lámina ${pad2(k + 1)} (${slides[k]?.id ?? ''}): ${issues.perSlide[k] ?? ''}`)
-    : [];
+  const exportData = exporting && lesson ? buildExport(content.files, lesson) : null;
 
   return (
     <main ref={rootRef} className={`editor is-${layout}`}>
@@ -769,11 +852,12 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           </div>
         </Modal>
       )}
+      {details && <LessonDialog lessonId={lessonId} onClose={() => setDetails(false)} />}
       {exportData && (
-        <Modal label="Exportar a MDX" onClose={() => setExporting(false)}>
+        <Modal label="Copia ZIP" onClose={() => setExporting(false)}>
           <div className="modal-head">
             <div>
-              <p className="kicker">Exportar a MDX</p>
+              <p className="kicker">Copia de respaldo</p>
               <h2>{meta.title}</h2>
             </div>
             <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setExporting(false)}>
@@ -782,25 +866,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           </div>
           <p className="muted modal-lead">
             Descarga un ZIP con <code>lesson.yaml</code> y {slides.length} archivos{' '}
-            <code>.mdx</code>. Para publicar: copia la carpeta en{' '}
-            <code>content/lessons/m1/algebra/{exportData.folder}/</code>, ejecuta{' '}
-            <code>npm run content:check</code> y revisa. El estado (
-            <code>{meta.repoStatus ?? 'draft'}</code>) no cambia al exportar.
+            <code>.mdx</code>, tal como están en la app (incluye los cambios sin guardar).
+            No hace falta para publicar: «Guardar en el repositorio» ya lo hace.
           </p>
-          {slideProblems.length + exportData.problems.length > 0 ? (
-            <div className="alert alert-warn export-problems">
-              <b>content:check rechazaría esta exportación hasta corregir:</b>
-              <ul>
-                {[...slideProblems, ...exportData.problems].map((problem) => (
-                  <li key={problem}>{problem}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="alert alert-ok">
-              {issues ? 'Revisión sin problemas.' : 'Revisando las láminas…'}
-            </p>
-          )}
           <div className="modal-actions">
             <button type="button" className="btn" onClick={() => setExporting(false)}>
               Cancelar

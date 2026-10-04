@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useViewportWidth } from '../app/route';
 import { useAula } from '../store/AulaProvider';
+import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
 import type { View } from '../store/schema';
 import { nowParts, uid } from '../store/teacher';
@@ -9,6 +10,7 @@ import { makeNote } from './notes';
 
 export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data, dispatch, snap } = useAula();
+  const content = useContent();
   const ui = useUi();
   const width = useViewportWidth();
   const [editing, setEditing] = useState<string | null>(null);
@@ -22,7 +24,7 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
     data.courses.find((c) => c.id === id)?.nombre ?? 'Curso eliminado';
 
   const start = (courseId: string) => {
-    const deck = deckFor(data, data.lessonId);
+    const deck = deckFor(content, data.lessonId);
     const t = nowParts();
     dispatch({
       type: 'startSession',

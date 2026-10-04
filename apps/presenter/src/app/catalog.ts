@@ -1,28 +1,14 @@
-import type { ComponentType } from 'react';
-import type { MDXComponents } from 'mdx/types';
-import {
-  lessonSchema,
-  slideSchema,
-  activitySchema,
-  type Lesson,
-  type Slide,
-  type Activity,
-} from '@aula/content-model';
-import { rawCatalog, rawActivities } from 'virtual:aula-catalog';
-export interface LoadedLesson {
-  meta: Lesson;
-  slides: (Slide & { Content: ComponentType<{ components: MDXComponents }> })[];
-}
-export const catalog: LoadedLesson[] = rawCatalog.map((lesson) => ({
-  meta: lessonSchema.parse(lesson.meta),
-  slides: lesson.slides.map((slide) => ({
-    ...slideSchema.parse(slide),
-    Content: slide.Content,
-  })),
-}));
-export const activities: Record<string, Activity> = Object.fromEntries(
-  Object.entries(rawActivities).map(([id, item]) => [
-    id,
-    activitySchema.parse(item),
-  ]),
-);
+import { createContext, useContext } from 'react';
+import type { Activity } from '@aula/content-model';
+import { buildBundle } from '../content/build';
+
+/** Clases y actividades empaquetadas con el sitio: lo que ve el estudiante. */
+export const catalog = buildBundle.lessons;
+export const activities: Record<string, Activity> = buildBundle.activities;
+
+/**
+ * Actividades con que se dibujan las láminas. Por defecto las del build; la parte docente
+ * entrega las del contenido efectivo (con borradores y cambios sin guardar).
+ */
+export const ActivitiesContext = createContext<Record<string, Activity>>(activities);
+export const useActivities = () => useContext(ActivitiesContext);

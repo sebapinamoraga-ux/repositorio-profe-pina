@@ -15,6 +15,10 @@ Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en
 - Revisar visualmente diapositivas y PDF después de cambios de composición.
 - No publicar borradores: dist solo contiene clases published (dist:check lo verifica) y el PDF de borradores se compila en output/pdf-site. Conservar archive y atribución del prototipo.
 - No introducir dependencias o backend sin una necesidad del hito.
+- El contenido se edita también desde la app, que guarda en `main` con la API de GitHub. Lo que escribe la app debe pasar `checkContentFiles` (el mismo código que content:check); las reglas nuevas de contenido van en packages/content-model para que rijan en ambos lados.
+- Datos privados del docente (cursos, sesiones, comentarios, votaciones) nunca van al repositorio.
+- No manejar tokens de GitHub: la docente los crea y pega en Conexión. Las pruebas usan el GitHub falso de packages/content-repo.
+- La planificación de unidades vive en content/planning; el frontmatter de las láminas usa la forma canónica de `toMdx`; cada interactivo nuevo necesita su ficha en interactive-params.ts.
 - No afirmar ensayo en proyector ni revisión docente si no se han realizado.
 
 - Aplicar docs/visual-language.md a toda clase y plantilla: definiciones formales azules, objetivos violetas, procedimientos piedra, práctica y errores ocres, comprobaciones verdes y reflexión rosa.

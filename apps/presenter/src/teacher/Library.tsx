@@ -1,14 +1,37 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ChevronDown, ChevronUp, RefreshCw, Settings2, Trash2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Settings2, Trash2, X } from 'lucide-react';
 import { mascotGallery } from '../app/gallery';
+import { useContent } from '../content/ContentProvider';
+import {
+  UNPLANNED_UNIT,
+  type LibraryEntry,
+  type PlanningAction,
+} from '../content/library';
+import {
+  createLesson,
+  editableSlides,
+  findLesson,
+  planningWrites,
+  removeLessonFiles,
+  writeLesson,
+} from '../content/ops';
 import { useAula } from '../store/AulaProvider';
-import { editableSlides, hasSlides, repoMetas, skeleton } from '../store/deck';
+import { hasSlides, lessonEntry, skeleton } from '../store/deck';
 import { ORIGINAL_LESSON_ID } from '../store/seed';
-import type { LessonMark, LibraryEntry, TeacherData, View } from '../store/schema';
+import type { LessonMark, View } from '../store/schema';
 import { pendingNotes, slugify, uid } from '../store/teacher';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { useLessonIssues } from './issues';
+import { LessonDialog } from './LessonForm';
+import { ConnectHint } from './SaveBar';
+
+/** Aplica cambios de la planificación sobre el contenido efectivo. */
+function usePlanning() {
+  const content = useContent();
+  return (...actions: PlanningAction[]) =>
+    content.edit(planningWrites(content.bundle, content.files, ...actions));
+}
 
 type Filter = 'todas' | LessonMark;
 const FILTERS: [Filter, string][] = [
@@ -23,13 +46,8 @@ const MARK: Record<LessonMark, string> = {
   'por-preparar': 'Por preparar',
 };
 
-function slideCount(data: TeacherData, id: string, count: number | undefined) {
-  return count ?? data.edits[id]?.length ?? 0;
-}
-
 function LessonRow({
   entry,
-  data,
   organizing,
   first,
   last,
@@ -38,10 +56,10 @@ function LessonRow({
   onMenu,
   onEditing,
   onPrepare,
+  onDetails,
   onNavigate,
 }: {
   entry: LibraryEntry;
-  data: TeacherData;
   organizing: boolean;
   first: boolean;
   last: boolean;
@@ -50,14 +68,20 @@ function LessonRow({
   onMenu: (open: boolean) => void;
   onEditing: (open: boolean) => void;
   onPrepare: () => void;
+  onDetails: () => void;
   onNavigate: (view: View) => void;
 }) {
-  const { dispatch, snap } = useAula();
+  const { data, dispatch } = useAula();
+  const content = useContent();
+  const planning = usePlanning();
+  const { library, canEdit } = content;
   const ui = useUi();
-  const has = hasSlides(data, entry.id);
-  const issues = useLessonIssues(data, entry.id);
-  const count = slideCount(data, entry.id, issues?.count);
+  const has = hasSlides(content, entry.id);
+  const issues = useLessonIssues(entry.id);
+  const count = issues?.count ?? lessonEntry(content, entry.id)?.slides.length ?? 0;
   const original = entry.id === ORIGINAL_LESSON_ID;
+  const planned = entry.unitId !== UNPLANNED_UNIT.id;
+  const firstUnit = library.units.find((u) => u.id !== UNPLANNED_UNIT.id)?.id ?? 'u1';
   const active = data.lessonId === entry.id;
   const notes = pendingNotes(data, entry.id).length;
   const blocked = !issues || issues.errors > 0;
@@ -80,18 +104,67 @@ function LessonRow({
     dispatch({ type: 'openLesson', id: entry.id });
     onNavigate(view);
   };
-  const duplicate = async () => {
-    const slides = await editableSlides(data, entry.id);
-    let id = `${entry.id}-copia`;
-    for (let k = 2; data.library.some((item) => item.id === id); k++)
-      id = `${entry.id}-copia-${k}`;
-    dispatch({ type: 'duplicateLesson', id: entry.id, newId: id, slides });
+  const setTitle = (title: string) =>
+    findLesson(content.bundle, entry.id)
+      ? content.edit(writeLesson(content.bundle, entry.id, { title }))
+      : planning({ type: 'updateLesson', id: entry.id, patch: { title } });
+  const setObjective = (objective: string) => {
+    const lesson = findLesson(content.bundle, entry.id);
+    if (!lesson)
+      return planning({ type: 'updateLesson', id: entry.id, patch: { objective } });
+    const objectives = [...lesson.meta.objectives];
+    objectives[0] = objective;
+    content.edit(writeLesson(content.bundle, entry.id, { objectives }));
+  };
+  // La marca vive en la planificación: una clase «Sin unidad» entra a la primera unidad.
+  const setMark = (mark: LessonMark) => {
+    planning(
+      ...(planned
+        ? []
+        : [{ type: 'addLesson' as const, unitId: firstUnit, lesson: { id: entry.id } }]),
+      { type: 'updateLesson', id: entry.id, patch: { mark } },
+    );
     onMenu(false);
-    ui.toast(`«${entry.title}» duplicada como «${entry.title} (copia)»`);
+  };
+  const duplicate = () => {
+    const lesson = findLesson(content.bundle, entry.id);
+    if (!lesson) return;
+    const taken = new Set([
+      ...library.entries.map((item) => item.id),
+      ...content.bundle.lessons.map((item) => item.meta.id),
+    ]);
+    let id = `${entry.id}-copia`;
+    for (let k = 2; taken.has(id); k++) id = `${entry.id}-copia-${k}`;
+    const title = `${entry.title} (copia)`;
+    content.edit([
+      ...createLesson(content.bundle, {
+        id,
+        title,
+        objective: entry.objective,
+        slides: editableSlides(lesson),
+        base: lesson.meta,
+      }),
+      ...planningWrites(content.bundle, content.files, {
+        type: 'addLesson',
+        unitId: planned ? entry.unitId : firstUnit,
+        lesson: { id },
+        after: entry.id,
+      }),
+    ]);
+    onMenu(false);
+    ui.toast(`«${entry.title}» duplicada como «${title}»`);
   };
   const remove = () => {
-    const undo = snap(['library', 'edits', 'lessonId', 'units']);
-    dispatch({ type: 'removeLesson', id: entry.id });
+    const undo = content.snap();
+    content.edit([
+      ...removeLessonFiles(content.bundle, content.files, entry.id),
+      ...planningWrites(content.bundle, content.files, {
+        type: 'removeLesson',
+        id: entry.id,
+      }),
+    ]);
+    if (data.lessonId === entry.id)
+      dispatch({ type: 'openLesson', id: ORIGINAL_LESSON_ID });
     onMenu(false);
     ui.toast(
       has ? `«${entry.title}» eliminada` : `«${entry.title}» quitada de la biblioteca`,
@@ -111,9 +184,7 @@ function LessonRow({
                 Título
                 <input
                   value={entry.title}
-                  onChange={(event) =>
-                    dispatch({ type: 'updateLesson', id: entry.id, patch: { title: event.target.value } })
-                  }
+                  onChange={(event) => setTitle(event.target.value)}
                 />
               </label>
               <label className="field">
@@ -121,13 +192,7 @@ function LessonRow({
                 <textarea
                   rows={2}
                   value={entry.objective}
-                  onChange={(event) =>
-                    dispatch({
-                      type: 'updateLesson',
-                      id: entry.id,
-                      patch: { objective: event.target.value },
-                    })
-                  }
+                  onChange={(event) => setObjective(event.target.value)}
                 />
               </label>
             </div>
@@ -166,14 +231,18 @@ function LessonRow({
                   aria-label={`Mover «${entry.title}» a otra unidad`}
                   value={entry.unitId}
                   onChange={(event) => {
-                    const undo = snap(['library']);
-                    dispatch({ type: 'setLessonUnit', id: entry.id, unitId: event.target.value });
-                    const k = data.units.findIndex((u) => u.id === event.target.value);
+                    const undo = content.snap();
+                    planning({ type: 'setLessonUnit', id: entry.id, unitId: event.target.value });
+                    const k = library.units.findIndex((u) => u.id === event.target.value);
                     ui.toast(`«${entry.title}» movida a la unidad ${k + 1}`, undo);
                   }}
                 >
-                  {data.units.map((unit, k) => (
-                    <option key={unit.id} value={unit.id}>
+                  {library.units.map((unit, k) => (
+                    <option
+                      key={unit.id}
+                      value={unit.id}
+                      disabled={unit.id === UNPLANNED_UNIT.id}
+                    >
                       {k + 1} · {unit.title}
                     </option>
                   ))}
@@ -183,8 +252,8 @@ function LessonRow({
                 type="button"
                 className="square-btn"
                 aria-label={`Subir «${entry.title}»`}
-                disabled={first}
-                onClick={() => dispatch({ type: 'moveLesson', id: entry.id, delta: -1 })}
+                disabled={first || !planned}
+                onClick={() => planning({ type: 'moveLesson', id: entry.id, delta: -1 })}
               >
                 <ChevronUp size={18} aria-hidden="true" />
               </button>
@@ -192,8 +261,8 @@ function LessonRow({
                 type="button"
                 className="square-btn"
                 aria-label={`Bajar «${entry.title}»`}
-                disabled={last}
-                onClick={() => dispatch({ type: 'moveLesson', id: entry.id, delta: 1 })}
+                disabled={last || !planned}
+                onClick={() => planning({ type: 'moveLesson', id: entry.id, delta: 1 })}
               >
                 <ChevronDown size={18} aria-hidden="true" />
               </button>
@@ -214,7 +283,7 @@ function LessonRow({
             </button>
           ) : (
             <div className="row">
-              {!has && (
+              {!has && canEdit && (
                 <button type="button" className="btn btn-small btn-ink" onClick={onPrepare}>
                   Preparar
                 </button>
@@ -233,15 +302,17 @@ function LessonRow({
                   Presentar
                 </button>
               )}
-              <button
-                type="button"
-                className="square-btn more-btn"
-                aria-expanded={menuOpen}
-                aria-label={`Más acciones para ${entry.title}`}
-                onClick={() => onMenu(!menuOpen)}
-              >
-                ⋯
-              </button>
+              {canEdit && (
+                <button
+                  type="button"
+                  className="square-btn more-btn"
+                  aria-expanded={menuOpen}
+                  aria-label={`Más acciones para ${entry.title}`}
+                  onClick={() => onMenu(!menuOpen)}
+                >
+                  ⋯
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -259,7 +330,19 @@ function LessonRow({
             Editar título y objetivo
           </button>
           {has && (
-            <button type="button" className="btn btn-small" onClick={() => void duplicate()}>
+            <button
+              type="button"
+              className="btn btn-small"
+              onClick={() => {
+                onDetails();
+                onMenu(false);
+              }}
+            >
+              Datos de la clase
+            </button>
+          )}
+          {has && (
+            <button type="button" className="btn btn-small" onClick={duplicate}>
               Duplicar
             </button>
           )}
@@ -270,10 +353,7 @@ function LessonRow({
                 className="btn btn-small btn-ok-soft"
                 disabled={blocked}
                 aria-describedby={issues?.errors ? `why-${entry.id}` : undefined}
-                onClick={() => {
-                  dispatch({ type: 'updateLesson', id: entry.id, patch: { status: 'lista' } });
-                  onMenu(false);
-                }}
+                onClick={() => setMark('lista')}
               >
                 Marcar como lista
               </button>
@@ -289,10 +369,7 @@ function LessonRow({
             <button
               type="button"
               className="btn btn-small"
-              onClick={() => {
-                dispatch({ type: 'updateLesson', id: entry.id, patch: { status: 'en-preparacion' } });
-                onMenu(false);
-              }}
+              onClick={() => setMark('en-preparacion')}
             >
               Volver a preparación
             </button>
@@ -318,19 +395,33 @@ function PrepareDialog({
   onNavigate: (view: View) => void;
 }) {
   const { data, dispatch } = useAula();
-  const sources = data.library.filter((item) => hasSlides(data, item.id));
+  const content = useContent();
+  const sources = content.library.entries.filter((item) => hasSlides(content, item.id));
   const [mode, setMode] = useState<'base' | 'other'>('base');
   const [source, setSource] = useState(
     (sources.find((item) => item.id === data.lessonId) ?? sources[0])?.id ?? '',
   );
-  const [busy, setBusy] = useState(false);
-  const confirm = async () => {
-    setBusy(true);
-    const slides =
-      mode === 'other' && source
-        ? await editableSlides(data, source)
-        : skeleton(entry.title, mascotGallery.templates);
-    dispatch({ type: 'prepareLesson', id: entry.id, slides });
+  const confirm = () => {
+    const from = mode === 'other' ? findLesson(content.bundle, source) : undefined;
+    const slides = from
+      ? editableSlides(from)
+      : skeleton(entry.title, mascotGallery.templates);
+    // lesson.yaml pasa a ser la fuente del título y el objetivo.
+    content.edit([
+      ...createLesson(content.bundle, {
+        id: entry.id,
+        title: entry.title,
+        objective: entry.objective,
+        slides,
+        base: from?.meta,
+      }),
+      ...planningWrites(content.bundle, content.files, {
+        type: 'updateLesson',
+        id: entry.id,
+        patch: { title: undefined, objective: undefined, mark: 'en-preparacion' },
+      }),
+    ]);
+    dispatch({ type: 'openLesson', id: entry.id });
     onClose();
     onNavigate('editor');
   };
@@ -387,7 +478,7 @@ function PrepareDialog({
         <button type="button" className="btn" onClick={onClose}>
           Cancelar
         </button>
-        <button type="button" className="btn btn-ink" disabled={busy} onClick={() => void confirm()}>
+        <button type="button" className="btn btn-ink" onClick={confirm}>
           Crear y abrir en editor
         </button>
       </div>
@@ -396,25 +487,43 @@ function PrepareDialog({
 }
 
 function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => void }) {
-  const { data, dispatch, snap } = useAula();
+  const content = useContent();
+  const { library } = content;
   const ui = useUi();
-  const k = data.units.findIndex((u) => u.id === unitId);
-  const unit = data.units[k];
-  const lessons = data.library.filter((entry) => entry.unitId === unitId);
+  const k = library.units.findIndex((u) => u.id === unitId);
+  const unit = library.units[k];
+  const lessons = library.entries.filter((entry) => entry.unitId === unitId);
   const hasOriginal = lessons.some((entry) => entry.id === ORIGINAL_LESSON_ID);
-  const targets = data.units.filter((u) => u.id !== unitId);
+  const targets = library.units.filter(
+    (u) => u.id !== unitId && u.id !== UNPLANNED_UNIT.id,
+  );
   const [mode, setMode] = useState<'move' | 'all'>(targets.length ? 'move' : 'all');
   const [target, setTarget] = useState(targets[0]?.id ?? '');
   if (!unit) return null;
   const confirm = () => {
-    const undo = snap(['units', 'library', 'edits', 'lessonId']);
+    const undo = content.snap();
     if (mode === 'move' && target) {
-      dispatch({ type: 'removeUnit', id: unitId, targetId: target });
-      const n = data.units.findIndex((u) => u.id === target) + 1;
+      content.edit(
+        planningWrites(content.bundle, content.files, {
+          type: 'removeUnit',
+          id: unitId,
+          targetId: target,
+        }),
+      );
+      const n = library.units.findIndex((u) => u.id === target) + 1;
       ui.toast(`Unidad «${unit.title}» eliminada; sus clases pasaron a la unidad ${n}`, undo);
     } else {
       if (hasOriginal) return;
-      dispatch({ type: 'removeUnit', id: unitId, targetId: null });
+      content.edit([
+        ...lessons.flatMap((entry) =>
+          removeLessonFiles(content.bundle, content.files, entry.id),
+        ),
+        ...planningWrites(content.bundle, content.files, {
+          type: 'removeUnit',
+          id: unitId,
+          targetId: null,
+        }),
+      ]);
       ui.toast(`Unidad «${unit.title}» y sus clases eliminadas`, undo);
     }
     onClose();
@@ -450,7 +559,7 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
           >
             {targets.map((u) => (
               <option key={u.id} value={u.id}>
-                Unidad {data.units.indexOf(u) + 1} · {u.title}
+                Unidad {library.units.indexOf(u) + 1} · {u.title}
               </option>
             ))}
           </select>
@@ -484,13 +593,16 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
 }
 
 export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
-  const { data, dispatch, snap } = useAula();
+  const content = useContent();
+  const { library, canEdit } = content;
+  const planning = usePlanning();
   const ui = useUi();
   const [filter, setFilter] = useState<Filter>('todas');
   const [organizing, setOrganizing] = useState(false);
   const [menu, setMenu] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [prepare, setPrepare] = useState<string | null>(null);
+  const [details, setDetails] = useState<string | null>(null);
   const [removeUnit, setRemoveUnit] = useState<string | null>(null);
   const [addFor, setAddFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -500,6 +612,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
   const addRef = useRef<HTMLInputElement>(null);
   const unitRef = useRef<HTMLInputElement>(null);
   const shown: Filter = organizing ? 'todas' : filter;
+  const editable = organizing && canEdit;
 
   useEffect(() => {
     if (addFor) addRef.current?.focus();
@@ -512,8 +625,19 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
     event.preventDefault();
     const title = newTitle.trim();
     if (!title) return;
-    const id = slugify(title, new Set(data.library.map((entry) => entry.id)));
-    dispatch({ type: 'addLesson', unitId, id, title, objective: newObjective });
+    const id = slugify(
+      title,
+      new Set([
+        ...library.entries.map((entry) => entry.id),
+        ...content.bundle.lessons.map((lesson) => lesson.meta.id),
+      ]),
+    );
+    const objective = newObjective.trim();
+    planning({
+      type: 'addLesson',
+      unitId,
+      lesson: { id, title, ...(objective ? { objective } : {}) },
+    });
     setAddFor(null);
     setNewTitle('');
     setNewObjective('');
@@ -523,32 +647,22 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
     event.preventDefault();
     if (!unitTitle.trim()) return;
     const id = uid('u');
-    dispatch({ type: 'addUnit', id, title: unitTitle });
+    planning({ type: 'addUnit', id, title: unitTitle });
     setUnitAdding(false);
     setUnitTitle('');
     setAddFor(id);
     setFilter('todas');
   };
 
-  const syncRepo = async () => {
-    const ok = await ui.confirm({
-      title: '¿Actualizar la biblioteca desde el repositorio?',
-      body: 'Las unidades, el orden, los títulos y los estados vuelven a los de la planificación y las clases del repositorio; las clases que quitaste reaparecen y las que ya no están en la planificación desaparecen. Se conservan tus notas, cursos, sesiones y las clases creadas o editadas en este navegador.',
-      ok: 'Actualizar',
-    });
-    if (!ok) return;
-    const undo = snap(['units', 'library', 'seenRepo', 'lessonId']);
-    dispatch({ type: 'syncFromRepo', repo: repoMetas });
-    ui.toast('Biblioteca actualizada desde el repositorio', undo);
-  };
-
-  const units = data.units.map((unit, k) => {
-    const all = data.library.filter((entry) => entry.unitId === unit.id);
+  const units = library.units.map((unit, k) => {
+    const all = library.entries.filter((entry) => entry.unitId === unit.id);
     const items = all.filter((entry) => shown === 'todas' || entry.status === shown);
     return { unit, k, all, items };
   });
   const visible = shown === 'todas' ? units : units.filter((u) => u.items.length);
-  const prepareEntry = prepare ? data.library.find((entry) => entry.id === prepare) : undefined;
+  const prepareEntry = prepare
+    ? library.entries.find((entry) => entry.id === prepare)
+    : undefined;
 
   return (
     <main className="page">
@@ -578,12 +692,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                 ))}
               </div>
             )}
-            {!organizing && (
-              <button type="button" className="btn btn-small" onClick={syncRepo}>
-                <RefreshCw size={18} aria-hidden="true" />
-                Actualizar desde el repositorio
-              </button>
-            )}
+            {canEdit && (
             <button
               type="button"
               className={`btn btn-small ${organizing ? 'btn-ink' : ''}`}
@@ -597,13 +706,15 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
               <Settings2 size={18} aria-hidden="true" />
               {organizing ? 'Listo' : 'Organizar'}
             </button>
+            )}
           </div>
         </header>
+        {!canEdit && <ConnectHint onNavigate={onNavigate} />}
         {organizing && (
           <p role="status" className="alert alert-info">
             Modo organizar: cambia el nombre y el orden de las unidades, mueve clases entre
-            unidades o elimínalas. Los cambios se guardan al instante y cada eliminación se
-            puede deshacer.
+            unidades o elimínalas. Cada eliminación se puede deshacer; los cambios quedan
+            pendientes hasta que los guardes en el repositorio.
           </p>
         )}
         {visible.length === 0 && (
@@ -619,7 +730,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
           return (
             <section key={unit.id} aria-label={`Unidad ${k + 1} · ${unit.title}`} className="unit">
               <div className="unit-head">
-                {organizing ? (
+                {editable && unit.id !== UNPLANNED_UNIT.id ? (
                   <>
                     <div className="unit-rename">
                       <span className="unit-n">Unidad {k + 1}</span>
@@ -628,7 +739,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                         aria-label={`Nombre de la unidad ${k + 1}`}
                         value={unit.title}
                         onChange={(event) =>
-                          dispatch({ type: 'renameUnit', id: unit.id, title: event.target.value })
+                          planning({ type: 'renameUnit', id: unit.id, title: event.target.value })
                         }
                       />
                     </div>
@@ -638,7 +749,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                         className="square-btn"
                         aria-label={`Subir unidad ${k + 1}`}
                         disabled={k === 0}
-                        onClick={() => dispatch({ type: 'moveUnit', id: unit.id, delta: -1 })}
+                        onClick={() => planning({ type: 'moveUnit', id: unit.id, delta: -1 })}
                       >
                         <ChevronUp size={18} aria-hidden="true" />
                       </button>
@@ -646,8 +757,8 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                         type="button"
                         className="square-btn"
                         aria-label={`Bajar unidad ${k + 1}`}
-                        disabled={k === data.units.length - 1}
-                        onClick={() => dispatch({ type: 'moveUnit', id: unit.id, delta: 1 })}
+                        disabled={k === library.units.filter((u) => u.id !== UNPLANNED_UNIT.id).length - 1}
+                        onClick={() => planning({ type: 'moveUnit', id: unit.id, delta: 1 })}
                       >
                         <ChevronDown size={18} aria-hidden="true" />
                       </button>
@@ -659,8 +770,8 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                             setRemoveUnit(unit.id);
                             return;
                           }
-                          const undo = snap(['units']);
-                          dispatch({ type: 'removeUnit', id: unit.id, targetId: null });
+                          const undo = content.snap();
+                          planning({ type: 'removeUnit', id: unit.id, targetId: null });
                           ui.toast(`Unidad «${unit.title}» eliminada`, undo);
                         }}
                       >
@@ -690,8 +801,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                   <LessonRow
                     key={entry.id}
                     entry={entry}
-                    data={data}
-                    organizing={organizing}
+                    organizing={editable}
                     first={i === 0}
                     last={i === siblings.length - 1}
                     menuOpen={menu === entry.id}
@@ -699,6 +809,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                     onMenu={(open) => setMenu(open ? entry.id : null)}
                     onEditing={(open) => setEditing(open ? entry.id : null)}
                     onPrepare={() => setPrepare(entry.id)}
+                    onDetails={() => setDetails(entry.id)}
                     onNavigate={onNavigate}
                   />
                 );
@@ -746,7 +857,9 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                   </div>
                 </form>
               ) : (
-                shown === 'todas' && (
+                shown === 'todas' &&
+                canEdit &&
+                unit.id !== UNPLANNED_UNIT.id && (
                   <button
                     type="button"
                     className="add-dashed"
@@ -765,10 +878,11 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
           );
         })}
         {shown === 'todas' &&
+          canEdit &&
           (unitAdding ? (
             <form className="add-form add-unit" onSubmit={submitUnit}>
               <label className="field">
-                Nombre de la unidad {data.units.length + 1}
+                Nombre de la unidad {library.units.length + 1}
                 <input
                   ref={unitRef}
                   value={unitTitle}
@@ -813,6 +927,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
         />
       )}
       {removeUnit && <RemoveUnitDialog unitId={removeUnit} onClose={() => setRemoveUnit(null)} />}
+      {details && <LessonDialog lessonId={details} onClose={() => setDetails(null)} />}
     </main>
   );
 }

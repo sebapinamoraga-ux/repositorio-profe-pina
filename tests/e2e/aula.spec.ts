@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+import { connectFakeGitHub } from './fake-github';
 
 const unlock = (page: Page) =>
   page.addInitScript(() => localStorage.setItem('profe-pina-aula-acceso', '1'));
@@ -25,7 +26,9 @@ test('la entrada muestra los tres roles y la parte docente pide desbloqueo local
 
 test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ page }) => {
   await unlock(page);
+  const fake = await connectFakeGitHub(page);
   await page.goto('/#rol=docente&vista=biblioteca');
+  await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await expect(page.getByRole('heading', { name: 'Tus clases' })).toBeVisible();
   // La prueba crea su propia clase: no depende de la planificación de seed.ts.
   await page.getByRole('button', { name: /^\+ Agregar clase a la unidad/ }).last().click();
@@ -51,12 +54,25 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   await expect(page.locator('.thumb')).toHaveCount(5);
   await page.getByRole('button', { name: 'Clases', exact: true }).or(page.getByRole('button', { name: 'Biblioteca de clases' })).first().click();
   await expect(row).toContainText('En preparación');
+
+  // Todo queda en un solo commit: la planificación y la carpeta de la clase nueva.
+  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
+  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  const files = fake.files();
+  expect(files['content/lessons/m1/algebra/clase-de-prueba/lesson.yaml']).toContain('status: draft');
+  expect(
+    Object.keys(files).filter((p) => p.startsWith('content/lessons/m1/algebra/clase-de-prueba/slides/')),
+  ).toHaveLength(5);
+  expect(files['content/planning/m1-2027.yaml']).toContain('- id: clase-de-prueba');
+  expect(fake.headCommit()?.message).toMatch(/^Aula: /);
 });
 
-test('editor: cambiar un título, revisar con content:check y exportar a MDX', async ({ page }) => {
+test('editor: cambiar un título, revisar con content:check y descargar la copia ZIP', async ({ page }) => {
   await unlock(page);
+  await connectFakeGitHub(page);
   await page.setViewportSize({ width: 1500, height: 900 });
   await page.goto('/#rol=docente&vista=editor');
+  await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await expect(page.locator('.thumb')).toHaveCount(25);
   const objective = page.locator('.field-block', { hasText: 'Objetivo' }).getByRole('textbox').first();
   await objective.fill('Meta de hoy');
@@ -69,7 +85,8 @@ test('editor: cambiar un título, revisar con content:check y exportar a MDX', a
   await page.getByRole('button', { name: 'Menos pasos' }).click();
   await expect(page.locator('.editor-check')).toContainText('sin problemas');
 
-  await page.getByRole('button', { name: 'Exportar a MDX' }).click();
+  await expect(page.locator('.save-bar')).toContainText('1 cambio sin guardar');
+  await page.getByRole('button', { name: 'Copia ZIP' }).click();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Descargar ZIP' }).click();
   const download = await downloadPromise;
@@ -81,8 +98,9 @@ test('editor: cambiar un título, revisar con content:check y exportar a MDX', a
   expect(zip).toContain('status: published');
   expect(zip).toContain('<Objetivo titulo="Meta de hoy">');
 
-  await page.getByRole('button', { name: 'Restaurar clase original' }).click();
+  await page.getByRole('button', { name: 'Descartar cambios de esta clase' }).click();
   await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Objetivo de clase');
+  await expect(page.locator('.save-bar')).toHaveCount(0);
 });
 
 test('comentario desde el presentador aparece pendiente en el editor', async ({ page }) => {
@@ -184,19 +202,12 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
 
-test('biblioteca: actualizar desde el repositorio recupera una clase quitada', async ({ page }) => {
+test('sin conexión con GitHub la biblioteca es de solo lectura y explica cómo conectar', async ({ page }) => {
   await unlock(page);
   await page.goto('/#rol=docente&vista=biblioteca');
-  const title = 'Función lineal y afín (parte 1)';
-  const row = page.locator('.lesson-row', { hasText: title });
-  await expect(row).toHaveCount(1);
-  await page.getByRole('button', { name: 'Organizar' }).click();
-  await page.getByRole('button', { name: `Eliminar «${title}»` }).click();
-  await page.getByRole('button', { name: 'Listo' }).click();
-  await expect(row).toHaveCount(0);
-  await page.getByRole('button', { name: 'Actualizar desde el repositorio' }).click();
-  await page.getByRole('button', { name: 'Actualizar', exact: true }).click();
-  await expect(row).toHaveCount(1);
-  await page.reload();
-  await expect(row).toHaveCount(1);
+  await expect(page.locator('.lesson-row', { hasText: 'Función lineal y afín (parte 1)' })).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Organizar' })).toHaveCount(0);
+  await expect(page.getByText(/conecta la app con GitHub/)).toBeVisible();
+  await page.getByRole('main').getByRole('button', { name: 'Conexión' }).click();
+  await expect(page.getByRole('heading', { name: 'Contenido en GitHub' })).toBeVisible();
 });

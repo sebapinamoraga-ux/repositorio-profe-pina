@@ -14,7 +14,8 @@ import {
   Vote,
   X,
 } from 'lucide-react';
-import { activities } from '../app/catalog';
+import { useActivities } from '../app/catalog';
+import { useContent } from '../content/ContentProvider';
 import { readRoute, useRoute, useViewportWidth } from '../app/route';
 import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
@@ -61,6 +62,8 @@ function Qr({ text }: { text: string }) {
 
 export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data, dispatch, live, send, setPresenting } = useAula();
+  const content = useContent();
+  const activities = useActivities();
   const { route, replace } = useRoute();
   const ui = useUi();
   const width = useViewportWidth();
@@ -71,12 +74,12 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
   // Un enlace con #clase=… abre esa clase si existe en la biblioteca o en el repositorio.
   const urlLesson = route.get('clase');
   const lessonId =
-    urlLesson && hasSlides(data, urlLesson) ? urlLesson : data.lessonId;
+    urlLesson && hasSlides(content, urlLesson) ? urlLesson : data.lessonId;
   useEffect(() => {
     if (lessonId !== data.lessonId) dispatch({ type: 'openLesson', id: lessonId });
   }, [lessonId, data.lessonId, dispatch]);
 
-  const deck = deckFor(data, lessonId);
+  const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
   const slidesRef = useRef(slides);
   useEffect(() => {

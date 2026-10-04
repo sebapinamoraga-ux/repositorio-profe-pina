@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { lessonSources } from 'virtual:aula-sources';
+import { resolve } from 'node:path';
+import { parseContentFiles } from '@aula/content-model/content-files';
+import { readContentFiles } from '@aula/content-model/read-content';
 import { mascotGallery } from '../app/gallery';
 import { skeleton, splitSource, toMdx } from './mdx';
 
+/** El contenido del repositorio, leído como lo lee el build. */
+const buildBundle = parseContentFiles(await readContentFiles(resolve('.')));
+
 describe('MDX de las láminas', () => {
   it('separar y volver a escribir reproduce cada archivo del repositorio', () => {
-    const files = Object.values(lessonSources).flat();
+    const files = buildBundle.lessons.flatMap((lesson) => lesson.slides);
     expect(files.length).toBeGreaterThan(20);
     for (const { text } of files) {
       const { slide, body } = splitSource(text);

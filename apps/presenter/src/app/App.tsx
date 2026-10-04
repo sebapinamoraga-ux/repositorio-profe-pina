@@ -1,11 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { PrintDeck } from '../slides/PrintDeck';
+import { ContentProvider, useContent } from '../content/ContentProvider';
 import { AulaProvider } from '../store/AulaProvider';
-import { deckFor, repoDeck, repoMetas } from '../store/deck';
+import { deckFor, repoDeck } from '../store/deck';
 import {
   isUnlocked,
   loadRoleState,
-  loadTeacherData,
   saveRoleState,
   setUnlocked,
 } from '../store/persist';
@@ -17,7 +17,7 @@ import {
   type View,
 } from '../store/schema';
 import { UiProvider } from '../ui/UiProvider';
-import { catalog } from './catalog';
+import { ActivitiesContext, catalog } from './catalog';
 import { readRoute, useRoute } from './route';
 import { Landing } from '../roles/Landing';
 import { Access } from '../roles/Access';
@@ -46,12 +46,24 @@ function initialRole(route: URLSearchParams): RoleState {
 function PrintRoute({ route }: { route: URLSearchParams }) {
   const id = route.get('clase') ?? catalog[0]?.meta.id;
   if (!id) return <p>No hay clases publicadas.</p>;
-  const deck =
-    route.get('fuente') === 'local'
-      ? deckFor(loadTeacherData(repoMetas), id)
-      : repoDeck(id);
+  const deck = repoDeck(id);
   if (!deck || !deck.slides.length) return <p>No hay clases publicadas.</p>;
   return <PrintDeck deck={deck} autoPrint={route.get('imprimir') === '1'} />;
+}
+
+/** Impresión con el contenido efectivo de este navegador (borradores y cambios sin guardar). */
+function LocalPrintRoute({ route }: { route: URLSearchParams }) {
+  const content = useContent();
+  const id = route.get('clase') ?? '';
+  if (content.connection && content.mode === 'build')
+    return <p className="app-loading">Cargando el contenido…</p>;
+  const deck = deckFor(content, id);
+  if (!deck.slides.length) return <p>Esta clase aún no tiene láminas.</p>;
+  return (
+    <ActivitiesContext.Provider value={content.bundle.activities}>
+      <PrintDeck deck={deck} autoPrint={route.get('imprimir') === '1'} />
+    </ActivitiesContext.Provider>
+  );
 }
 
 function Roles() {
@@ -141,11 +153,14 @@ function Roles() {
 
 export function App() {
   const { route } = useRoute();
-  if (route.get('modo') === 'pdf') return <PrintRoute route={route} />;
+  const local = route.get('fuente') === 'local';
+  if (route.get('modo') === 'pdf' && !local) return <PrintRoute route={route} />;
   return (
     <UiProvider>
       <AulaProvider>
-        <Roles />
+        <ContentProvider>
+          {route.get('modo') === 'pdf' ? <LocalPrintRoute route={route} /> : <Roles />}
+        </ContentProvider>
       </AulaProvider>
     </UiProvider>
   );
