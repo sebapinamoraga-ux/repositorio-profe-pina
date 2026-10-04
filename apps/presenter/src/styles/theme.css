@@ -1118,6 +1118,14 @@ a {
   .graph-controls {
     display: none;
   }
+  /* Chrome rasteriza las sombras difusas en el PDF y los visores antiguos las
+     muestran pixeladas o como rectángulos grises; export:pdf lo verifica. */
+  *,
+  *::before,
+  *::after {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   * {

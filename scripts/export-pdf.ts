@@ -63,6 +63,27 @@ try {
       .screenshot({
         path: `output/qa/slide-${String(i + 1).padStart(2, '0')}.png`,
       });
+  await page.emulateMedia({ media: 'print' });
+  const shadowed = await page.locator('.print-deck').evaluate((deck) => {
+    const found = new Set<string>();
+    for (const el of [deck, ...deck.querySelectorAll('*')])
+      for (const pseudo of [null, '::before', '::after']) {
+        const style = getComputedStyle(el, pseudo);
+        if (
+          style.boxShadow !== 'none' ||
+          style.textShadow !== 'none' ||
+          /blur|drop-shadow/.test(style.filter)
+        )
+          found.add(
+            el.closest('.slide')?.getAttribute('data-slide') ?? 'fuera',
+          );
+      }
+    return [...found];
+  });
+  if (shadowed.length)
+    throw new Error(
+      `Sombras o desenfoques en el PDF (se ven mal en visores antiguos): ${shadowed.join(', ')}`,
+    );
   await page.pdf({
     path: `output/pdf/${id}.pdf`,
     preferCSSPageSize: true,

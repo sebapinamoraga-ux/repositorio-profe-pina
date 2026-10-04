@@ -8,7 +8,7 @@ Context + reducer conserva pasos y valores por diapositiva durante una sesión. 
 
 SVG representa la intersección; solveLinearSystem y satisfiesLinearEquation (un único módulo, packages/interactives/src/linear-system.ts) prueban los casos algebraicos y también verifican las actividades en content:check. Una tolerancia de 1e-10 evita dividir por determinantes numéricamente nulos. No se pretende un solucionador simbólico general.
 
-El lienzo 1600×900 mantiene proporción y usa estilos centralizados. Toda revelación reserva espacio para evitar saltos. Los autores deben comprobar tanto el estado oculto como el final. El menú no se imprime. El tema claro se conserva en PDF.
+El lienzo 1600×900 mantiene proporción y usa estilos centralizados. Toda revelación reserva espacio para evitar saltos. Los autores deben comprobar tanto el estado oculto como el final. El menú no se imprime. El tema claro se conserva en PDF. El PDF no lleva sombras ni desenfoques: Chrome los convierte en mapas de bits con máscaras de transparencia que los visores antiguos muestran pixelados o como rectángulos grises; `@media print` los anula y `export:pdf` falla si alguno sobrevive.
 
 Cada dependencia queda fijada en package-lock.json; usar npm ci en integración continua. Mantener Node 24.15.0 como referencia reproducible. Documentar las actualizaciones de versiones y volver a ejecutar los recorridos críticos.
 
