@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
+// La parte docente tiene un bloqueo local (etapa A); las pruebas entran ya desbloqueadas.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem('profe-pina-aula-acceso', '1'),
+  );
+});
 test('clicker conserva navegación después de tocar botones y el menú', async ({
   page,
 }) => {
@@ -258,7 +264,7 @@ for (const viewport of [
 ])
   test(`lienzo visible ${viewport.width}`, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto('/');
+    await page.goto('/#rol=docente&vista=presentar');
     const box = await page.locator('.slide').boundingBox();
     expect(box).not.toBeNull();
     if (box) {

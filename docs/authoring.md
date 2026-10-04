@@ -67,6 +67,10 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 `RectaIntervalos` representa uno o dos intervalos en una recta numérica (`min`, `max`, `paso`, `intervalos`, `etiquetas`, `descripcion`). Los intervalos se escriben en notación escolar con punto y coma entre extremos para no confundirlos con la coma decimal: `intervalos={['[0; 7,5[', ']7,5; +∞[']}`. `tonos` elige el color de cada intervalo (1 o 2) para mantener la correspondencia con otros gráficos. Un extremo cerrado se dibuja con círculo lleno, uno abierto con círculo vacío y el infinito con flecha; un extremo infinito cerrado se rechaza.
 
+## Editar en el navegador
+
+El editor de la app (rol Docente → Editor) modifica una copia local de la clase y la revisa con las reglas de content:check. Nunca escribe en el repositorio. «Exportar a MDX» descarga un ZIP con lesson.yaml y slides/*.mdx: copia la carpeta en content/lessons/m1/algebra/, ejecuta `npm run content:check` y revisa el diff. Exportar no cambia `status`; publicar sigue siendo cambiarlo a mano tras la revisión y el ensayo en proyector. La marca «Lista / En preparación / Por preparar» de la biblioteca es solo docente y local.
+
 ## Diseño compartido
 
 Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Usa Objetivo para el propósito de clase; Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.

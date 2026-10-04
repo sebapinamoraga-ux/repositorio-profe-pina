@@ -13,3 +13,7 @@ declare module 'virtual:aula-catalog' {
   }[];
   export const rawActivities: Record<string, unknown>;
 }
+declare module 'virtual:aula-sources' {
+  /** MDX fuente de cada clase del catálogo, en el orden de lesson.yaml. */
+  export const lessonSources: Record<string, { file: string; text: string }[]>;
+}

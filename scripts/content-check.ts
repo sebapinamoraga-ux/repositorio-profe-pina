@@ -2,11 +2,6 @@ import { execFileSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve, join, basename } from 'node:path';
 import { parse } from 'yaml';
-import { compile } from '@mdx-js/mdx';
-import remarkFrontmatter from 'remark-frontmatter';
-import remarkMdxFrontmatter from 'remark-mdx-frontmatter';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 import { validateMdxTree } from '../packages/content-model/src/validate-mdx';
 import { parseFrontmatter } from '../packages/content-model/src/frontmatter';
 import {
@@ -15,8 +10,11 @@ import {
   activitySchema,
   mascotGallerySchema,
   mascotTemplateMdx,
-  katexOptions,
 } from '../packages/content-model/src/index';
+import {
+  checkSourceLines,
+  compileChecked,
+} from '../packages/content-model/src/check-source';
 import { verifyActivity } from '../packages/content-model/src/verify-model';
 import { verifyLessonPlan } from '../packages/content-model/src/verify-plan';
 import {
@@ -63,33 +61,7 @@ async function checkMascotAssets(root: string) {
       );
   }
 }
-/** rehype-katex registra fórmulas inválidas como mensajes; convertirlos en fallos evita publicarlas. */
-export async function compileChecked(
-  source: string,
-  validate: (tree: unknown) => void,
-) {
-  const file = await compile(source, {
-    remarkPlugins: [
-      remarkFrontmatter,
-      () => (tree: unknown) => validate(tree),
-      remarkMdxFrontmatter,
-      remarkMath,
-    ],
-    rehypePlugins: [[rehypeKatex, katexOptions]],
-  });
-  const formulas = file.messages.filter(
-    (message) => message.source === 'rehype-katex',
-  );
-  if (formulas.length)
-    throw new Error(
-      formulas
-        .map(
-          (message) =>
-            `Fórmula inválida${message.line ? ` (línea ${message.line})` : ''}: ${message.cause instanceof Error ? message.cause.message : message.reason}`,
-        )
-        .join('\n'),
-    );
-}
+export { compileChecked };
 export async function checkContent() {
   const root = resolve('content');
   const gallery = mascotGallerySchema.parse(
@@ -150,10 +122,7 @@ export async function checkContent() {
         const slidePath = join(path, '..', 'slides', file);
         try {
           const text = await readFile(slidePath, 'utf8');
-          for (const line of text.split('\n')) {
-            if (line.includes('$$') && line.trim() !== '$$')
-              throw new Error('Coloca cada delimitador $$ en su propia línea.');
-          }
+          checkSourceLines(text);
           const slide = slideSchema.parse(parseFrontmatter(text));
           if (slideIds.has(slide.id))
             throw new Error(`ID duplicado ${slide.id}`);

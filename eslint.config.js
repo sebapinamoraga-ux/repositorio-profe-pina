@@ -9,6 +9,7 @@ export default tseslint.config(
       'output/**',
       'tmp/**',
       '.sites-runtime/**',
+      'design_handoff_aula_profe_pina/**',
     ],
   },
   ...tseslint.configs.recommended,

@@ -47,7 +47,7 @@ function TemplateContent({ template }: { template: MascotTemplate }) {
   );
 }
 
-function TemplateSlide({
+export function TemplateSlide({
   template,
   compact = false,
 }: {
@@ -94,7 +94,17 @@ function TemplateSlide({
   );
 }
 
-export function MascotGallery({ returnHref }: { returnHref: string }) {
+export function MascotGallery({
+  returnHref,
+  onReturn,
+  onUse,
+}: {
+  returnHref: string;
+  onReturn?: () => void;
+  /** Agrega la plantilla como lámina nueva de la clase activa. */
+  onUse?: (template: MascotTemplate) => Promise<string>;
+}) {
+  const [added, setAdded] = useState('');
   const [phase, setPhase] = useState('todas');
   const [presence, setPresence] = useState<MascotPresence | 'todas'>('todas');
   const [selectedId, setSelectedId] = useState(
@@ -115,8 +125,16 @@ export function MascotGallery({ returnHref }: { returnHref: string }) {
   return (
     <main className="template-gallery">
       <header className="gallery-header">
-        <a className="gallery-back" href={returnHref}>
-          <ArrowLeft size={20} /> Volver a la clase
+        <a
+          className="gallery-back"
+          href={returnHref}
+          onClick={(event) => {
+            if (!onReturn) return;
+            event.preventDefault();
+            onReturn();
+          }}
+        >
+          <ArrowLeft size={20} aria-hidden="true" /> Volver a la clase
         </a>
         <div>
           <p className="gallery-kicker">
@@ -188,13 +206,24 @@ export function MascotGallery({ returnHref }: { returnHref: string }) {
                 <dd>Pose {String(selected.mascot.pose).padStart(2, '0')}</dd>
               </div>
             </dl>
-            <a
-              className="gallery-download"
-              download={`${selected.id}.mdx`}
-              href={`data:text/plain;charset=utf-8,${encodeURIComponent(mascotTemplateMdx(selected))}`}
-            >
-              Descargar plantilla
-            </a>
+            <div className="gallery-actions">
+              <a
+                className="gallery-download"
+                download={`${selected.id}.mdx`}
+                href={`data:text/plain;charset=utf-8,${encodeURIComponent(mascotTemplateMdx(selected))}`}
+              >
+                Descargar plantilla
+              </a>
+              {onUse && (
+                <button
+                  type="button"
+                  className="gallery-use"
+                  onClick={() => void onUse(selected).then(setAdded)}
+                >
+                  Agregar a la clase
+                </button>
+              )}
+            </div>
             <p className="gallery-instructions">
               Incluye composición, mascota y contenido de ejemplo. Adapta el
               contenido, guarda el archivo en las diapositivas de tu clase y
@@ -204,6 +233,7 @@ export function MascotGallery({ returnHref }: { returnHref: string }) {
               Vista esquemática. Comprueba la composición final con tu contenido
               y todos sus pasos revelados.
             </p>
+            {added && <p className="gallery-added">{added}</p>}
           </div>
           <TemplateSlide template={selected} />
         </section>

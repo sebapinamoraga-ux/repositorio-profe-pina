@@ -66,16 +66,6 @@ button {
 a {
   text-decoration: none;
 }
-.player {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 80px;
-}
-.stage {
-  position: relative;
-}
 .slide {
   position: relative;
   width: 1600px;
@@ -574,137 +564,6 @@ a {
   border: 1px solid var(--line);
   border-radius: 8px;
 }
-.toolbar {
-  position: fixed;
-  bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fffdfa;
-  border: 1px solid var(--line);
-  padding: 8px 12px;
-  border-radius: 14px;
-  box-shadow: 0 12px 50px #17223b38;
-}
-.toolbar button,
-.toolbar a {
-  height: 42px;
-  min-width: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: transparent;
-}
-.toolbar button:hover,
-.toolbar a:hover {
-  background: var(--blue-soft);
-}
-.toolbar .next {
-  background: var(--blue);
-  color: #fff;
-}
-.position {
-  font-size: 15px;
-  min-width: 54px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-.position span {
-  color: var(--muted);
-}
-.toolbar-divider {
-  height: 22px;
-  width: 1px;
-  background: var(--line);
-  margin: 0 7px;
-}
-.step-label {
-  color: var(--muted);
-  font-size: 12px;
-  min-width: 110px;
-  margin-left: 8px;
-}
-.progress {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--yellow), var(--blue));
-}
-.drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  background: #000b;
-  z-index: 10;
-}
-.drawer {
-  height: 100%;
-  width: 520px;
-  max-width: 100vw;
-  background: #fbf8f1;
-  border-right: 1px solid var(--line);
-  padding: 38px;
-  overflow: auto;
-}
-.drawer h2 {
-  font-size: 34px;
-  margin: 10px 0 26px;
-}
-.drawer .close {
-  float: right;
-  background: transparent;
-}
-.lesson-link {
-  display: block;
-  padding: 16px;
-  background: #fffdfa;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  font-size: 20px;
-}
-.drawer-caption {
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: var(--muted);
-  margin-top: 25px;
-}
-.drawer ol {
-  list-style: none;
-  padding: 0;
-}
-.drawer li button {
-  width: 100%;
-  background: transparent;
-  text-align: left;
-  display: flex;
-  gap: 15px;
-  padding: 12px;
-  font-size: 15px;
-  border-radius: 6px;
-}
-.drawer li button.active {
-  background: var(--blue-soft);
-  color: var(--blue);
-}
-.drawer li span {
-  color: var(--muted);
-}
-.help {
-  font-size: 12px;
-  color: var(--muted);
-}
-.gallery-link {
-  display: block;
-  margin-top: 10px;
-  padding: 14px 16px;
-  border-radius: 8px;
-  background: var(--yellow-soft);
-  border: 1px solid #dfc36a;
-  color: var(--yellow);
-  font-weight: 650;
-}
-
 .slide-mascot {
   position: absolute;
   z-index: 1;
@@ -1282,16 +1141,6 @@ a {
   }
 }
 @media (max-width: 750px) {
-  .step-label {
-    display: none;
-  }
-  .toolbar {
-    gap: 2px;
-    padding: 6px;
-  }
-  .toolbar-divider {
-    margin: 0 3px;
-  }
   .template-gallery {
     padding-inline: 14px;
   }

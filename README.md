@@ -13,7 +13,13 @@ npm ci
 npm run dev
 ```
 
-Abrir http://127.0.0.1:5173. Flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice y F alterna pantalla completa. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
+Abrir http://127.0.0.1:5173 y elegir un rol:
+
+- **Estudiante**: repaso en el celular, sin cuenta, con temas claro, oscuro y alto contraste, y respuesta anónima a la votación de la clase.
+- **Docente**: Clase de hoy, Biblioteca, Presentar, Editor, Galería, Cursos e historial y Vista PDF. En esta etapa es un bloqueo local, sin cuenta; todo se guarda en el navegador.
+- **Control remoto**: avanza la proyección abierta en otra pestaña o ventana del mismo navegador.
+
+En el presentador, flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice, F alterna pantalla completa, N anota un comentario de mejora y R muestra el ritmo de la clase. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
 
 El índice incluye una galería de 17 plantillas descargables y filtrables por momento de clase para incorporar la mascota con presencia sutil, pedagógica o de marca. Las reglas de autoría y el plan de crecimiento están en [Presencia de Profe Piña](docs/mascot-presence.md).
 
