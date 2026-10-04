@@ -1,4 +1,5 @@
-import { ORIGINAL_LESSON_ID } from './seed';
+import type { Lesson } from '@aula/content-model';
+import { ORIGINAL_LESSON_ID, seedTeacherData } from './seed';
 import type {
   ActiveSession,
   Course,
@@ -17,6 +18,7 @@ export type TeacherAction =
   | { type: 'openLesson'; id: string }
   | { type: 'setEdits'; lessonId: string; slides: EditedSlide[] }
   | { type: 'restoreOriginal'; lessonId: string }
+  | { type: 'syncFromRepo'; repo: readonly Lesson[] }
   | {
       type: 'prepareLesson';
       id: string;
@@ -89,6 +91,46 @@ function withoutLesson(data: TeacherData, ids: ReadonlySet<string>) {
   };
 }
 
+/**
+ * Rehace unidades y biblioteca desde la planificación y las clases del repositorio. Conserva
+ * notas, cursos, sesiones, láminas editadas y las clases creadas en este navegador.
+ */
+export function syncFromRepo(
+  data: TeacherData,
+  repo: readonly Lesson[],
+): TeacherData {
+  const fresh = seedTeacherData(repo);
+  const known = new Set(fresh.library.map((entry) => entry.id));
+  let units = fresh.units;
+  let library = fresh.library.map(
+    (entry): LibraryEntry =>
+      entry.status === 'por-preparar' && data.edits[entry.id]
+        ? { ...entry, status: 'en-preparacion' }
+        : entry,
+  );
+  for (const entry of data.library) {
+    if (known.has(entry.id)) continue;
+    if (!units.some((unit) => unit.id === entry.unitId))
+      units = [
+        ...units,
+        data.units.find((unit) => unit.id === entry.unitId) ?? {
+          id: entry.unitId,
+          title: 'Creadas en este navegador',
+        },
+      ];
+    library = insertInUnit(library, entry);
+  }
+  return {
+    ...data,
+    units,
+    library,
+    seenRepo: fresh.seenRepo,
+    lessonId: library.some((entry) => entry.id === data.lessonId)
+      ? data.lessonId
+      : fresh.lessonId,
+  };
+}
+
 export function teacherReducer(
   data: TeacherData,
   action: TeacherAction,
@@ -110,6 +152,8 @@ export function teacherReducer(
       delete edits[action.lessonId];
       return { ...data, edits };
     }
+    case 'syncFromRepo':
+      return syncFromRepo(data, action.repo);
     case 'prepareLesson':
       return {
         ...data,

@@ -119,3 +119,59 @@ describe('cursos e historial', () => {
     expect(data.sessions[0]).toMatchObject({ id: 's1', end: '11:35', votes: [{ total: 5 }] });
   });
 });
+
+describe('actualizar desde el repositorio', () => {
+  it('rehace títulos, orden y unidades, y recupera clases quitadas', () => {
+    let local = teacherReducer(seed, {
+      type: 'renameUnit',
+      id: 'u1',
+      title: 'Otra',
+    });
+    local = teacherReducer(local, {
+      type: 'updateLesson',
+      id: 'que-es-funcion',
+      patch: { title: 'Título local' },
+    });
+    local = teacherReducer(local, {
+      type: 'removeLesson',
+      id: 'funcion-lineal-afin-1',
+    });
+    local = teacherReducer(local, {
+      type: 'moveLesson',
+      id: 'pendiente-posicion',
+      delta: -1,
+    });
+    const next = teacherReducer(local, { type: 'syncFromRepo', repo });
+    expect(next.units).toEqual(seed.units);
+    expect(next.library).toEqual(seed.library);
+  });
+  it('conserva notas, cursos, láminas editadas y clases creadas en el navegador', () => {
+    let local = teacherReducer(seed, {
+      type: 'prepareLesson',
+      id: 'cuadratica-grafico',
+      slides: [],
+    });
+    local = teacherReducer(local, {
+      type: 'addUnit',
+      id: 'u-local',
+      title: 'Repaso',
+    });
+    local = teacherReducer(local, {
+      type: 'addLesson',
+      unitId: 'u-local',
+      id: 'repaso-final',
+      title: 'Repaso final',
+      objective: '',
+    });
+    local = teacherReducer(local, { type: 'removeCourse', id: 'c1' });
+    const next = teacherReducer(local, { type: 'syncFromRepo', repo });
+    expect(next.edits['cuadratica-grafico']).toEqual([]);
+    expect(
+      next.library.find((e) => e.id === 'cuadratica-grafico')?.status,
+    ).toBe('en-preparacion');
+    expect(next.units.at(-1)).toEqual({ id: 'u-local', title: 'Repaso' });
+    expect(next.library.at(-1)?.id).toBe('repaso-final');
+    expect(next.courses).toEqual(local.courses);
+    expect(next.lessonId).toBe('cuadratica-grafico');
+  });
+});

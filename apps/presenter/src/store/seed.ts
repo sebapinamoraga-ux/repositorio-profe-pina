@@ -12,32 +12,17 @@ interface PlannedLesson {
 }
 
 const UNITS: Unit[] = [
-  { id: 'u1', title: 'Concepto de función' },
-  { id: 'u2', title: 'Funciones lineales y afines' },
-  { id: 'u3', title: 'Sistemas de ecuaciones lineales' },
-  { id: 'u4', title: 'Función cuadrática' },
+  { id: 'u1', title: 'Sistemas de ecuaciones lineales' },
+  { id: 'u2', title: 'Funciones' },
 ];
 
 /** Clases planificadas (Plan.md). Las que tienen lesson.yaml usan su identificador del repositorio. */
 const PLANNED: PlannedLesson[] = [
   {
-    id: 'que-es-funcion',
-    unit: 'u1',
-    title: '¿Qué es una función?',
-    objective:
-      'Reconocer una relación que asigna a cada entrada una única salida, en tablas, diagramas y contextos.',
-  },
-  {
     id: 'funcion-lineal-afin-1',
     unit: 'u2',
     title: 'Función lineal y función afín',
     objective: 'Distinguir f(x) = mx de f(x) = mx + n y evaluarlas.',
-  },
-  {
-    id: 'pendiente-posicion',
-    unit: 'u2',
-    title: 'Pendiente y coeficiente de posición',
-    objective: 'Interpretar m y n en la expresión y en el gráfico.',
   },
   {
     id: 'funcion-lineal-afin-2-cuadratica-1',
@@ -47,41 +32,17 @@ const PLANNED: PlannedLesson[] = [
       'Encontrar la expresión de una función afín y reconocer la función cuadrática.',
   },
   {
-    id: 'graficos-lineales',
-    unit: 'u2',
-    title: 'Gráficos de funciones lineales y afines',
-    objective: 'Pasar de la expresión al gráfico y del gráfico a la expresión.',
-  },
-  {
-    id: 'contextos-lineales',
-    unit: 'u2',
-    title: 'Contextos con funciones lineales y afines',
-    objective: 'Modelar situaciones e interpretar los parámetros.',
-  },
-  {
     id: ORIGINAL_LESSON_ID,
-    unit: 'u3',
+    unit: 'u1',
     title: 'Sistemas de ecuaciones lineales',
     objective: '',
   },
   {
-    id: 'cuadratica-grafico',
-    unit: 'u4',
-    title: 'Función cuadrática y su gráfico',
-    objective: 'Reconocer la expresión, la parábola y su concavidad.',
-  },
-  {
     id: 'funcion-cuadratica-2',
-    unit: 'u4',
+    unit: 'u2',
     title: 'Vértice, ceros y máximo de la parábola',
     objective:
       'Vértice, ceros, discriminante y problemas de máximo o mínimo.',
-  },
-  {
-    id: 'contextos-cuadraticos',
-    unit: 'u4',
-    title: 'Contextos con funciones cuadráticas',
-    objective: 'Modelar situaciones de máximo o mínimo.',
   },
 ];
 

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { ChevronDown, ChevronUp, Settings2, Trash2, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, RefreshCw, Settings2, Trash2, X } from 'lucide-react';
 import { mascotGallery } from '../app/gallery';
 import { useAula } from '../store/AulaProvider';
-import { editableSlides, hasSlides, skeleton } from '../store/deck';
+import { editableSlides, hasSlides, repoMetas, skeleton } from '../store/deck';
 import { ORIGINAL_LESSON_ID } from '../store/seed';
 import type { LessonMark, LibraryEntry, TeacherData, View } from '../store/schema';
 import { pendingNotes, slugify, uid } from '../store/teacher';
@@ -530,6 +530,18 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
     setFilter('todas');
   };
 
+  const syncRepo = async () => {
+    const ok = await ui.confirm({
+      title: '¿Actualizar la biblioteca desde el repositorio?',
+      body: 'Las unidades, el orden, los títulos y los estados vuelven a los de la planificación y las clases del repositorio; las clases que quitaste reaparecen. Se conservan tus notas, cursos, sesiones, láminas editadas y las clases creadas en este navegador.',
+      ok: 'Actualizar',
+    });
+    if (!ok) return;
+    const undo = snap(['units', 'library', 'seenRepo', 'lessonId']);
+    dispatch({ type: 'syncFromRepo', repo: repoMetas });
+    ui.toast('Biblioteca actualizada desde el repositorio', undo);
+  };
+
   const units = data.units.map((unit, k) => {
     const all = data.library.filter((entry) => entry.unitId === unit.id);
     const items = all.filter((entry) => shown === 'todas' || entry.status === shown);
@@ -565,6 +577,12 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                   </button>
                 ))}
               </div>
+            )}
+            {!organizing && (
+              <button type="button" className="btn btn-small" onClick={syncRepo}>
+                <RefreshCw size={18} aria-hidden="true" />
+                Actualizar desde el repositorio
+              </button>
             )}
             <button
               type="button"

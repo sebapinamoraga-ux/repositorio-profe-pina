@@ -178,3 +178,24 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await page.getByRole('button', { name: 'Clase de hoy' }).click();
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
+
+test('biblioteca: actualizar desde el repositorio recupera una clase quitada', async ({
+  page,
+}) => {
+  await unlock(page);
+  await page.goto('/#rol=docente&vista=biblioteca');
+  const row = page.locator('.lesson-row', { hasText: '¿Qué es una función?' });
+  await page.getByRole('button', { name: 'Organizar' }).click();
+  await page
+    .getByRole('button', { name: 'Eliminar «¿Qué es una función?»' })
+    .click();
+  await page.getByRole('button', { name: 'Listo' }).click();
+  await expect(row).toHaveCount(0);
+  await page
+    .getByRole('button', { name: 'Actualizar desde el repositorio' })
+    .click();
+  await page.getByRole('button', { name: 'Actualizar', exact: true }).click();
+  await expect(row).toHaveCount(1);
+  await page.reload();
+  await expect(row).toHaveCount(1);
+});
