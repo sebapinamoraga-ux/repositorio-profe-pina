@@ -7,6 +7,12 @@ import {
   type Point,
 } from './linear-system';
 
+export { GraficoFuncion } from './GraficoFuncion';
+export { GraficoComparacion } from './GraficoComparacion';
+export { RectaIntervalos } from './RectaIntervalos';
+export { DiagramaSagital } from './DiagramaSagital';
+export { MaquinaFuncion } from './MaquinaFuncion';
+
 const formatNumber = (value: number) =>
   new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 }).format(value);
 

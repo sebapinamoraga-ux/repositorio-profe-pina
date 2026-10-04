@@ -1,0 +1,39 @@
+---
+id: planes-graficos
+title: 'Volvemos al desafío: graficamos ambos planes'
+phase: practica
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+Ya conocemos ambas funciones: $L(x)=500x$ y $B(x)=300x+1.500$. Las graficamos en el **mismo plano**.
+
+<Paso n={1}>
+**Plan Libre** parte en $0$ y sube \$500 por km. **Plan Base** parte en \$1.500 y sube \$300 por km.
+</Paso>
+<Paso n={2}>
+A los 5 km, la recta de Libre está **más abajo**; a los 10 km, la de Base. ¿Qué ocurre entre medio?
+</Paso>
+</div>
+<GraficoComparacion
+  m1={500}
+  n1={0}
+  m2={300}
+  n2={1500}
+  xMin={0}
+  xMax={12}
+  yMin={0}
+  yMax={6000}
+  pasoX={1}
+  pasoY={1000}
+  ejeX="distancia (km)"
+  ejeY="precio ($)"
+  etiqueta1="Plan Libre"
+  etiqueta2="Plan Base"
+  marcarInterseccion={false}
+  descripcion="Las rectas L(x) = 500x, que parte en el origen, y B(x) = 300x + 1.500, que parte en 1.500, en el mismo plano."
+/>
+</Columnas>

@@ -1,0 +1,49 @@
+---
+id: pendiente
+title: 'La pendiente es el cambio por cada unidad de x'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+
+$$
+g(x)=2x+3
+$$
+
+$$
+\begin{array}{c|c|c|c|c}
+x & 0 & 1 & 2 & 3\\ \hline
+g(x) & 3 & 5 & 7 & 9
+\end{array}
+$$
+
+<Paso n={1}>
+Cada vez que $x$ aumenta en $1$, $g(x)$ aumenta en $2$: ese aumento constante es la **pendiente**, $m=2$.
+</Paso>
+<Paso n={2}>
+Con dos puntos, $(0,3)$ y $(3,9)$:
+
+$$
+m=\frac{y_2-y_1}{x_2-x_1}=\frac{9-3}{3-0}=2
+$$
+
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={2}
+  n={3}
+  xMin={-1}
+  xMax={4}
+  yMin={0}
+  yMax={10}
+  puntosX={[0, 3]}
+  pendienteEn={1}
+  etiqueta="g(x) = 2x + 3"
+  descripcion="Recta g(x) = 2x + 3 con un triángulo de pendiente: al avanzar 1 en x, sube 2 en y."
+/>
+</Columnas>

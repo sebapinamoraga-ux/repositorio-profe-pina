@@ -45,6 +45,11 @@ const components = new Set([
   'GraficoSistema',
   'GraficoDosCondiciones',
   'GraficoRectas',
+  'GraficoFuncion',
+  'GraficoComparacion',
+  'RectaIntervalos',
+  'DiagramaSagital',
+  'MaquinaFuncion',
   'MascotaProfePina',
   'div',
   'span',
@@ -114,6 +119,59 @@ export function validateMdxTree(
         if (node.name === 'Paso' && inStep)
           throw new Error('No anidar bloques Paso');
       }
+      if (node.name === 'GraficoFuncion') {
+        const names = new Set(attributes.map((attr) => attr.name));
+        const tipo = literalAttribute(attributes, 'tipo');
+        const required: Record<string, string[]> = {
+          afin: ['m', 'n'],
+          cuadratica: ['a', 'b', 'c'],
+          circunferencia: ['h', 'k', 'r'],
+        };
+        const coefficients = tipo === undefined ? undefined : required[tipo];
+        if (!coefficients)
+          throw new Error(
+            `GraficoFuncion requiere tipo afin, cuadratica o circunferencia: ${tipo ?? ''}`,
+          );
+        for (const name of [
+          ...coefficients,
+          'xMin',
+          'xMax',
+          'yMin',
+          'yMax',
+          'etiqueta',
+          'descripcion',
+        ])
+          if (!names.has(name))
+            throw new Error(`GraficoFuncion requiere el atributo ${name}`);
+      }
+      const requiredByComponent: Record<string, string[]> = {
+        GraficoComparacion: [
+          'm1',
+          'n1',
+          'm2',
+          'n2',
+          'xMin',
+          'xMax',
+          'yMin',
+          'yMax',
+          'etiqueta1',
+          'etiqueta2',
+          'descripcion',
+        ],
+        RectaIntervalos: ['min', 'max', 'intervalos', 'descripcion'],
+        DiagramaSagital: [
+          'entradas',
+          'salidas',
+          'flechas',
+          'tituloEntradas',
+          'tituloSalidas',
+          'descripcion',
+        ],
+        MaquinaFuncion: ['entrada', 'regla', 'salida', 'descripcion'],
+      };
+      for (const name of requiredByComponent[node.name] ?? [])
+        if (!attributes.some((attr) => attr.name === name))
+          throw new Error(`${node.name} requiere el atributo ${name}`);
       if (node.name === 'PreguntaPAES') {
         const id = attributes.find((a) => a.name === 'id')?.value;
         if (typeof id !== 'string')

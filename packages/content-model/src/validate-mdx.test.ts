@@ -121,3 +121,84 @@ it('limita las asociaciones pedagógicas a cuatro tonos literales', () => {
     ),
   ).toThrow('1..4');
 });
+const grafico = (attrs: Record<string, string>) => ({
+  type: 'root',
+  children: [
+    {
+      type: 'mdxJsxFlowElement',
+      name: 'GraficoFuncion',
+      attributes: Object.entries(attrs).map(([name, value]) => ({
+        type: 'mdxJsxAttribute',
+        name,
+        value: { value },
+      })),
+    },
+  ],
+});
+const sinPasos: Slide = { ...slide, steps: 0 };
+const ventana = {
+  xMin: '-1',
+  xMax: '4',
+  yMin: '-1',
+  yMax: '8',
+  etiqueta: 'f(x) = 2x + 1',
+  descripcion: 'Recta.',
+};
+it('acepta GraficoFuncion con los coeficientes de su tipo', () => {
+  expect(() =>
+    validateMdxTree(
+      grafico({ tipo: 'afin', m: '2', n: '1', ...ventana }),
+      sinPasos,
+    ),
+  ).not.toThrow();
+});
+it('rechaza GraficoFuncion sin un coeficiente o con un tipo desconocido', () => {
+  expect(() =>
+    validateMdxTree(
+      grafico({ tipo: 'cuadratica', a: '1', b: '0', ...ventana }),
+      sinPasos,
+    ),
+  ).toThrow('atributo c');
+  expect(() =>
+    validateMdxTree(grafico({ tipo: 'seno', ...ventana }), sinPasos),
+  ).toThrow('tipo');
+});
+const componente = (name: string, attrs: string[]) => ({
+  type: 'root',
+  children: [
+    {
+      type: 'mdxJsxFlowElement',
+      name,
+      attributes: attrs.map((attr) => ({
+        type: 'mdxJsxAttribute',
+        name: attr,
+        value: { value: '1' },
+      })),
+    },
+  ],
+});
+it('exige los atributos de GraficoComparacion y RectaIntervalos', () => {
+  expect(() =>
+    validateMdxTree(
+      componente('RectaIntervalos', ['min', 'max', 'descripcion']),
+      sinPasos,
+    ),
+  ).toThrow('intervalos');
+  expect(() =>
+    validateMdxTree(
+      componente('RectaIntervalos', [
+        'min',
+        'max',
+        'intervalos',
+        'descripcion',
+      ]),
+      sinPasos,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(
+      componente('GraficoComparacion', ['m1', 'n1', 'm2', 'n2']),
+      sinPasos,
+    ),
+  ).toThrow('xMin');
+});

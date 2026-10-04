@@ -419,6 +419,139 @@ a {
 .graph-caption span:last-child {
   color: var(--yellow);
 }
+.graph-caption span.graph-caption-primary {
+  color: var(--blue);
+}
+.graph-axis {
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+.graph-slope {
+  stroke: var(--yellow);
+}
+.graph-slope-label {
+  fill: var(--yellow);
+  font-weight: 750;
+}
+.comparison-band-1 {
+  fill: var(--blue);
+  opacity: 0.4;
+}
+.comparison-band-2 {
+  fill: var(--yellow);
+  opacity: 0.5;
+}
+.number-line svg {
+  width: 100%;
+  height: auto;
+  max-height: 175px;
+}
+.number-line-axis {
+  stroke: var(--muted);
+  stroke-width: 3;
+}
+.number-line-label {
+  fill: var(--ink);
+}
+.number-line-label-strong {
+  font-weight: 750;
+}
+.interval-stroke-1 {
+  stroke: var(--blue);
+}
+.interval-stroke-2 {
+  stroke: var(--yellow);
+}
+.interval-fill-1 {
+  fill: var(--blue);
+}
+.interval-fill-2 {
+  fill: var(--yellow);
+}
+.interval-open {
+  fill: #fbf8f1;
+  stroke-width: 5;
+}
+.interval-open-1 {
+  stroke: var(--blue);
+}
+.interval-open-2 {
+  stroke: var(--yellow);
+}
+.sagittal svg,
+.machine svg {
+  width: 100%;
+  height: auto;
+}
+.sagittal-title,
+.machine-label {
+  fill: var(--muted);
+  font-weight: 700;
+}
+.sagittal-set-1,
+.machine-io-1 {
+  fill: var(--association-1-soft);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+.sagittal-set-2,
+.machine-io-2 {
+  fill: var(--association-2-soft);
+  stroke: var(--line);
+  stroke-width: 2;
+}
+.machine-rule {
+  fill: var(--procedure-soft);
+  stroke: var(--procedure);
+  stroke-width: 3;
+}
+.sagittal-item,
+.machine-text {
+  fill: var(--ink);
+  font-weight: 650;
+}
+.sagittal-item-muted {
+  fill: var(--muted);
+  opacity: 0.6;
+}
+.sagittal-item-bad {
+  fill: var(--yellow);
+  font-weight: 800;
+}
+.sagittal-arrow {
+  stroke: var(--ink);
+}
+.sagittal-arrow-bad {
+  stroke: var(--yellow);
+}
+.sagittal-head {
+  fill: var(--ink);
+}
+.sagittal-head-bad {
+  fill: var(--yellow);
+}
+.interval-text-1,
+.interval-text-2 {
+  font-weight: 700;
+}
+.interval-text-1 {
+  fill: var(--blue);
+}
+.interval-text-2 {
+  fill: var(--yellow);
+}
+.graph-function .graph-slope-label,
+.graph-function .graph-axis-label,
+.graph-function .graph-point-label {
+  paint-order: stroke;
+  stroke: #fbf8f1;
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+.graph-curve {
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
 .graph-controls {
   font-size: 17px;
   display: flex;

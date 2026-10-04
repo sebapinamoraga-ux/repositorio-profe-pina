@@ -1,0 +1,72 @@
+id: funcion-lineal-afin-1
+title: Función lineal y afín (parte 1)
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites:
+  - Valorizar expresiones algebraicas.
+  - Reconocer proporcionalidad directa.
+  - Ubicar pares ordenados en el plano cartesiano.
+  - Resolver sistemas de ecuaciones 2×2 e inecuaciones de primer grado.
+objectives:
+  - Reconocer si una relación es función, valorizarla e identificar su dominio y recorrido.
+  - Distinguir una función lineal de una función afín a partir de su expresión, su tabla y su gráfico.
+  - Representar funciones lineales y afines mediante tablas y gráficos.
+  - Interpretar la pendiente y el coeficiente de posición en situaciones de contexto.
+  - Comparar dos funciones afines con un sistema y una inecuación para decidir en qué intervalo conviene cada una.
+skills: [Representar, Modelar, Resolver problemas, Argumentar]
+curriculum: [m1-2027-funcion-lineal-afin]
+status: draft
+tramos:
+  - label: 'Inicio: dos planes de arriendo'
+    from: apertura
+    to: desafio
+    minutes: 6
+  - label: 'Concepto de función: definición, dominio, recorrido y valorización'
+    from: funcion
+    to: valorizar
+    minutes: 14
+  - label: Función lineal y función afín
+    from: lineal
+    to: clasificar
+    minutes: 12
+  - label: Pendiente y su signo
+    from: pendiente
+    to: signo-pendiente
+    minutes: 10
+  - label: Interpretar m y n en contexto
+    from: interpretar
+    to: interpretar
+    minutes: 5
+  - label: 'Desafío: gráficos, intersección, sistema e intervalos'
+    from: planes-graficos
+    to: planes-intervalos
+    minutes: 19
+  - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
+    from: ticket-paes
+    to: ticket-paes
+    minutes: 10
+  - label: Cierre y anticipo de la parte 2
+    from: cierre
+    to: cierre
+    minutes: 4
+slides:
+  - apertura.mdx
+  - desafio.mdx
+  - funcion.mdx
+  - es-funcion.mdx
+  - recta-vertical.mdx
+  - valorizar.mdx
+  - lineal.mdx
+  - afin.mdx
+  - clasificar.mdx
+  - pendiente.mdx
+  - signo-pendiente.mdx
+  - interpretar.mdx
+  - planes-graficos.mdx
+  - planes-interseccion.mdx
+  - planes-asociacion.mdx
+  - planes-sistema.mdx
+  - planes-intervalos.mdx
+  - ticket-paes.mdx
+  - cierre.mdx

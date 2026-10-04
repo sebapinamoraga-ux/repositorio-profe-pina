@@ -22,6 +22,11 @@ import {
   GraficoDosCondiciones,
   GraficoSistema,
   GraficoRectas,
+  GraficoFuncion,
+  GraficoComparacion,
+  RectaIntervalos,
+  DiagramaSagital,
+  MaquinaFuncion,
 } from '@aula/interactives';
 import { catalog, activities, type LoadedLesson } from './catalog';
 import { initialState, reducer } from '../presentation/state';
@@ -57,6 +62,11 @@ const components = {
   GraficoSistema,
   GraficoDosCondiciones,
   GraficoRectas,
+  GraficoFuncion,
+  GraficoComparacion,
+  RectaIntervalos,
+  DiagramaSagital,
+  MaquinaFuncion,
   MascotaProfePina: blocks.MascotaProfePina,
 };
 const phaseNames: Record<string, string> = {

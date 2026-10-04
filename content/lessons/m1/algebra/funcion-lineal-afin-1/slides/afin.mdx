@@ -1,0 +1,41 @@
+---
+id: afin
+title: 'Función afín: un valor inicial más un cambio constante'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Definicion titulo="Función afín">
+$f(x)=mx+n$, con $m\ne 0$. $m$: **pendiente**; $n$: **coeficiente de posición**.
+</Definicion>
+
+<Paso n={1}>
+**Plan Base:** $B(x)=300x+1.500$ corta el eje $y$ en $(0;\,1.500)$, el precio con **0 km**.
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Caso particular">
+Si $n=0$, es lineal y proporcional.
+</Comprobacion>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={300}
+  n={1500}
+  xMin={-0.5}
+  xMax={5}
+  yMin={0}
+  yMax={3000}
+  paso={1}
+  pasoY={500}
+  ejeX="km"
+  ejeY="$"
+  marcarCorteY
+  etiqueta="Plan Base: B(x) = 300x + 1.500"
+  descripcion="Recta B(x) = 300x + 1.500 que corta el eje y en (0; 1.500)."
+/>
+</Columnas>

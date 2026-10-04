@@ -1,0 +1,45 @@
+---
+id: es-funcion
+title: '¿Es función? Cada entrada, una sola salida'
+phase: desarrollo
+layout: dos-columnas
+steps: 4
+activities: []
+---
+
+<Columnas>
+<div>
+<Paso n={1}>
+**Sí es función:** estudiante → su RUT. Cada estudiante tiene uno solo.
+</Paso>
+<Paso n={3}>
+**Sí es función:** número → su cuadrado. $3$ y $-3$ comparten imagen: está permitido.
+
+<DiagramaSagital
+  entradas={['−3', '2', '3']}
+  salidas={['4', '9']}
+  flechas={['−3 → 9', '2 → 4', '3 → 9']}
+  tituloEntradas="Número"
+  tituloSalidas="Su cuadrado"
+  descripcion="Diagrama sagital: −3 y 3 van a 9, y 2 va a 4. Cada número tiene una sola flecha."
+/>
+</Paso>
+</div>
+<div>
+<Paso n={2}>
+**No es función:** persona → sus teléfonos. Alguien puede tener dos.
+</Paso>
+<Paso n={4}>
+**No es función:** cantidad de días → el mes. La entrada $30$ tiene **dos** salidas.
+
+<DiagramaSagital
+  entradas={['28', '30']}
+  salidas={['febrero', 'abril', 'junio']}
+  flechas={['28 → febrero', '30 → abril', '30 → junio']}
+  tituloEntradas="Días"
+  tituloSalidas="Mes"
+  descripcion="Diagrama sagital: 28 va a febrero; 30 va a abril y también a junio, por eso no es función."
+/>
+</Paso>
+</div>
+</Columnas>

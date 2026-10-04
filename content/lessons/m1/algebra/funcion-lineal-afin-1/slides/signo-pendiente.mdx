@@ -1,0 +1,37 @@
+---
+id: signo-pendiente
+title: 'El signo de m decide si la recta sube o baja'
+phase: desarrollo
+layout: dos-columnas
+steps: 0
+activities: []
+---
+
+<Columnas>
+<GraficoFuncion
+  tipo="afin"
+  m={2}
+  n={1}
+  xMin={-1}
+  xMax={5}
+  yMin={-1}
+  yMax={7}
+  puntosX={[0, 1, 2]}
+  etiqueta="m = 2 > 0: creciente"
+  descripcion="Recta f(x) = 2x + 1, creciente: sube de izquierda a derecha."
+/>
+<GraficoFuncion
+  tipo="afin"
+  m={-1}
+  n={4}
+  xMin={-1}
+  xMax={5}
+  yMin={-1}
+  yMax={7}
+  puntosX={[0, 1, 2, 3]}
+  etiqueta="m = −1 < 0: decreciente"
+  descripcion="Recta h(x) = −x + 4, decreciente: baja de izquierda a derecha."
+/>
+</Columnas>
+
+$f(x)=2x+1$ sube de izquierda a derecha; $h(x)=-x+4$ baja. Si $m=0$, la recta es **horizontal** y la función es **constante**.

@@ -1,0 +1,26 @@
+id: estacionamiento
+type: paes
+prompt: 'El cobro de un estacionamiento, en pesos, es C(t) = 800 + 25t, donde t es la cantidad de minutos. ¿Cuál de las siguientes afirmaciones es verdadera?'
+answer: B · Por 40 minutos se pagan $1.800.
+solution: 'C(40) = 800 + 25 · 40 = 1.800. Además, m = 25 es el aumento por minuto y n = 800 ≠ 0 es el cargo fijo: C es afín.'
+skills: [Representar, Resolver problemas, Argumentar]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; contexto de estacionamiento.
+options:
+  - id: A
+    text: 'El cobro aumenta $800 por cada minuto.'
+    correct: false
+    explanation: 'Confunde los coeficientes: 800 es el coeficiente de posición (cargo fijo); lo que aumenta por minuto es la pendiente, 25.'
+  - id: B
+    text: 'Por 40 minutos se pagan $1.800.'
+    correct: true
+    explanation: 'C(40) = 800 + 25 · 40 = 800 + 1.000 = 1.800.'
+  - id: C
+    text: 'C es una función lineal.'
+    correct: false
+    explanation: 'Una función lineal tiene coeficiente de posición 0 y pasa por el origen. Aquí C(0) = 800, así que C es afín.'
+  - id: D
+    text: 'El cobro disminuye a medida que pasan los minutos.'
+    correct: false
+    explanation: 'La pendiente es positiva (25 > 0): la función es creciente y el cobro aumenta con los minutos.'

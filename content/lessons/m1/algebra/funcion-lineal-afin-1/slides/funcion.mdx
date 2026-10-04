@@ -1,0 +1,38 @@
+---
+id: funcion
+title: 'Función, dominio y recorrido'
+phase: desarrollo
+layout: dos-columnas
+steps: 1
+activities: []
+---
+
+<Columnas>
+<div>
+<Definicion titulo="Función">
+Asigna a **cada** valor $x$ de entrada **un único** valor de salida $f(x)$.
+</Definicion>
+
+- **Dominio:** los valores que **puede tomar** $x$, es decir, las entradas.
+- **Recorrido:** los valores que **toma** $f(x)$, es decir, las salidas.
+
+</div>
+<div>
+<MaquinaFuncion
+  entrada="3 km"
+  regla="× 500"
+  salida="$1.500"
+  descripcion="Máquina del Plan Libre: entra 3 km, la regla multiplica por 500 y sale $1.500."
+/>
+<Paso n={1}>
+<DiagramaSagital
+  entradas={['1', '2', '3']}
+  salidas={['500', '1.000', '1.500']}
+  flechas={['1 → 500', '2 → 1.000', '3 → 1.500']}
+  tituloEntradas="Distancias (km)"
+  tituloSalidas="Precios ($)"
+  descripcion="Diagrama sagital del Plan Libre: 1 km va a 500, 2 km a 1.000 y 3 km a 1.500. Cada distancia tiene una sola flecha."
+/>
+</Paso>
+</div>
+</Columnas>

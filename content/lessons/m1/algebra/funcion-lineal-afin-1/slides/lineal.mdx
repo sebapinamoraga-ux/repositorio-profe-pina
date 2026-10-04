@@ -1,0 +1,43 @@
+---
+id: lineal
+title: 'Función lineal: un cambio constante desde el origen'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Definicion titulo="Función lineal">
+Es de la forma $f(x)=mx$, con $m\ne 0$. Modela una **proporcionalidad directa** de constante $m$.
+</Definicion>
+
+**Plan Libre:** $L(x)=500x$.
+
+<Paso n={1}>
+Para $x\ne 0$, el cociente $L(x)/x$ es siempre $500$: precio y distancia son directamente proporcionales.
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Sin cargo fijo">
+$L(0)=0$: la recta **pasa por el origen**.
+</Comprobacion>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={500}
+  n={0}
+  xMin={0}
+  xMax={5}
+  yMin={0}
+  yMax={3000}
+  paso={1}
+  pasoY={500}
+  ejeX="km"
+  ejeY="$"
+  puntosX={[0, 1, 2, 3]}
+  etiqueta="Plan Libre: L(x) = 500x"
+  descripcion="Recta L(x) = 500x que parte en el origen, con los puntos (0; 0), (1; 500), (2; 1.000) y (3; 1.500)."
+/>
+</Columnas>

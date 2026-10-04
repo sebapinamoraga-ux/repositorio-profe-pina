@@ -1,0 +1,39 @@
+---
+id: recta-vertical
+title: 'Leer un gráfico: la prueba de la recta vertical'
+phase: desarrollo
+layout: dos-columnas
+steps: 0
+activities: []
+---
+
+<Columnas>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={0}
+  c={-2}
+  xMin={-4}
+  xMax={4}
+  yMin={-3}
+  yMax={5}
+  rectaVertical={1}
+  etiqueta="Sí es función"
+  descripcion="Parábola y = x² − 2. La recta vertical x = 1 la corta en un solo punto, (1; −1)."
+/>
+<GraficoFuncion
+  tipo="circunferencia"
+  h={0}
+  k={1}
+  r={3}
+  xMin={-4}
+  xMax={4}
+  yMin={-3}
+  yMax={5}
+  rectaVertical={1}
+  etiqueta="No es función"
+  descripcion="Circunferencia de centro (0; 1) y radio 3. La recta vertical x = 1 la corta en dos puntos."
+/>
+</Columnas>
+
+Si **alguna** recta vertical corta el gráfico en dos o más puntos, ese $x$ tendría dos imágenes: **no es función**.

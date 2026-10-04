@@ -1,0 +1,39 @@
+---
+id: planes-interseccion
+title: 'Las rectas se cortan: ahí cuestan lo mismo'
+phase: practica
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+Las rectas se **intersectan** en un punto. En esa distancia, ambos planes cobran **el mismo precio**.
+
+<Paso n={1}>
+Antes del cruce, la recta de Libre está más abajo; después, la de Base.
+</Paso>
+<Paso n={2}>
+En el gráfico solo podemos estimarlo: **entre 7 y 8 km**, con un precio entre \$3.000 y \$4.000. ¿Cómo encontrarlo con exactitud?
+</Paso>
+</div>
+<GraficoComparacion
+  m1={500}
+  n1={0}
+  m2={300}
+  n2={1500}
+  xMin={0}
+  xMax={12}
+  yMin={0}
+  yMax={6000}
+  pasoX={1}
+  pasoY={1000}
+  ejeX="distancia (km)"
+  ejeY="precio ($)"
+  etiqueta1="Plan Libre"
+  etiqueta2="Plan Base"
+  rotularInterseccion={false}
+  descripcion="Las rectas de ambos planes se cortan en un punto entre 7 y 8 km, marcado con guías hacia los ejes."
+/>
+</Columnas>

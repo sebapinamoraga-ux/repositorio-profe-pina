@@ -57,6 +57,16 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 `GraficoRectas` representa dos ecuaciones generales a partir de sus coeficientes, con una ventana del primer cuadrante y una descripción accesible. Es estático y distingue la segunda recta con trazo discontinuo para hacer visible la coincidencia. Los sistemas específicos se declaran exclusivamente en el contenido.
 
+`GraficoFuncion` dibuja una sola curva estática en una ventana con los cuatro cuadrantes. Recibe `tipo` (`afin` con `m` y `n`; `cuadratica` con `a`, `b` y `c`; `circunferencia` con `h`, `k` y `r`), los límites `xMin`, `xMax`, `yMin` e `yMax`, una `etiqueta` y una `descripcion`. Opcionalmente, `paso` (grilla, 1 por defecto), `puntosX` (marca y rotula los puntos de la tabla) y `rectaVertical` (recta discontinua y sus cortes). La circunferencia usa la misma escala en ambos ejes; las funciones ocupan todo el lienzo. Para funciones afines también acepta `pasoY` (grilla vertical propia), `ejeX` y `ejeY` (nombres de los ejes), `marcarCorteY` (punto (0, n) rotulado) y `pendienteEn` (triángulo +1 en x, +m en y desde ese valor). La matemática vive en `packages/interactives/src/function-graph.ts` y content:check exige los coeficientes del tipo elegido.
+
+`GraficoComparacion` dibuja dos funciones afines en un mismo plano (`m1`, `n1`, `m2`, `n2`, ventana, `pasoX`, `pasoY`, `ejeX`, `ejeY`, `etiqueta1`, `etiqueta2`, `descripcion`). Marca su intersección, que es la solución del sistema, con guías hacia los ejes; con `resaltarMenor` pinta sobre el eje x el tramo en que cada función toma el menor valor. `marcarInterseccion={false}` oculta el punto y `rotularInterseccion={false}` lo muestra sin sus coordenadas, para estimarlo antes de resolver el sistema.
+
+`MaquinaFuncion` muestra una función como máquina: `entrada`, `regla` y `salida` (textos breves) y `descripcion`.
+
+`DiagramaSagital` dibuja dos conjuntos (`entradas`, `salidas`, `tituloEntradas`, `tituloSalidas`) unidos por `flechas` escritas como `'3 → 9'`, con hasta seis elementos por conjunto. Las entradas sin imagen o con más de una se destacan en ocre junto con sus flechas, y las salidas que nadie alcanza quedan atenuadas: así se ven a la vez el dominio, el recorrido y por qué una relación no es función. content:check exige todos sus atributos y el componente rechaza flechas hacia elementos que no existen.
+
+`RectaIntervalos` representa uno o dos intervalos en una recta numérica (`min`, `max`, `paso`, `intervalos`, `etiquetas`, `descripcion`). Los intervalos se escriben en notación escolar con punto y coma entre extremos para no confundirlos con la coma decimal: `intervalos={['[0; 7,5[', ']7,5; +∞[']}`. `tonos` elige el color de cada intervalo (1 o 2) para mantener la correspondencia con otros gráficos. Un extremo cerrado se dibuja con círculo lleno, uno abierto con círculo vacío y el infinito con flecha; un extremo infinito cerrado se rechaza.
+
 ## Diseño compartido
 
 Aplica el [lenguaje visual](visual-language.md) antes de elegir bloques. Usa Objetivo para el propósito de clase; Definicion solo para definiciones formales. Las reglas son comunes a todas las plantillas.

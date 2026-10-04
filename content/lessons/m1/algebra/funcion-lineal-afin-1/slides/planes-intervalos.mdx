@@ -1,0 +1,34 @@
+---
+id: planes-intervalos
+title: '¿En qué intervalos conviene cada plan?'
+phase: practica
+layout: concepto
+steps: 2
+activities: []
+---
+
+<Paso n={1}>
+**Libre es más barato** si $L(x)<B(x)$: $\;500x<300x+1.500 \Rightarrow 200x<1.500 \Rightarrow x<7{,}5$.
+
+<RectaIntervalos
+  min={0}
+  max={12}
+  intervalos={['[0; 7,5[']}
+  etiquetas={['conviene Libre']}
+  descripcion="Recta numérica de 0 a 12 con el intervalo [0; 7,5[: círculo lleno en 0 y círculo vacío en 7,5."
+/>
+</Paso>
+<Paso n={2}>
+**Base es más barato** si $L(x)>B(x)$: $\;500x>300x+1.500 \Rightarrow 200x>1.500 \Rightarrow x>7{,}5$.
+
+<RectaIntervalos
+  min={0}
+  max={12}
+  intervalos={[']7,5; +∞[']}
+  etiquetas={['conviene Base']}
+  tonos={[2]}
+  descripcion="Recta numérica de 0 a 12 con el intervalo ]7,5; +∞[: círculo vacío en 7,5 y flecha hacia la derecha."
+/>
+
+En $x=7{,}5$ km cuestan lo mismo. Libre parte en 0 porque $x\ge 0$.
+</Paso>

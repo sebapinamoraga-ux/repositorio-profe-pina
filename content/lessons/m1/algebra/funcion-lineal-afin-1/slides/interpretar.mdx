@@ -1,0 +1,49 @@
+---
+id: interpretar
+title: 'Qué significan m y n en un contexto'
+phase: practica
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Etiquetas>
+<Etiqueta tono={1}>$x$: kilómetros</Etiqueta>
+<Etiqueta tono={2}>$B(x)$: precio en pesos</Etiqueta>
+</Etiquetas>
+
+$$
+\htmlClass{asoc-2}{B(x)}=\underbrace{300}_{m}\,\htmlClass{asoc-1}{x}+\underbrace{1.500}_{n}
+$$
+
+<Paso n={1}>
+<Tarjeta titulo="Pendiente m = 300">
+Sube **\$300 por cada km**: es la tasa de cambio.
+</Tarjeta>
+</Paso>
+<Paso n={2}>
+<Tarjeta titulo="Coeficiente de posición n = 1.500">
+Precio con **0 km**: el cargo fijo.
+</Tarjeta>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={300}
+  n={1500}
+  xMin={-0.5}
+  xMax={5}
+  yMin={0}
+  yMax={3500}
+  paso={1}
+  pasoY={500}
+  ejeX="km"
+  ejeY="$"
+  marcarCorteY
+  pendienteEn={2}
+  etiqueta="B(x) = 300x + 1.500"
+  descripcion="Recta B(x) = 300x + 1.500: corta el eje y en 1.500 y sube 300 por cada kilómetro."
+/>
+</Columnas>
