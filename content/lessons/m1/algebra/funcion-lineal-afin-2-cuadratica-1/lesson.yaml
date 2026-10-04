@@ -1,0 +1,73 @@
+id: funcion-lineal-afin-2-cuadratica-1
+title: Función lineal y afín (parte 2) y función cuadrática (parte 1)
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites:
+  - Calcular la pendiente con dos puntos e interpretar m y n (función lineal y afín, parte 1).
+  - Resolver ecuaciones de primer grado y sistemas 2×2.
+  - Valorizar expresiones con potencias.
+  - Ubicar pares ordenados en el plano cartesiano.
+objectives:
+  - Determinar la expresión de una función afín a partir de dos puntos, de un punto y la pendiente, o de su gráfico.
+  - Modelar una situación con una función afín a partir de una tabla o un enunciado, e interpretar m y n.
+  - Reconocer una función cuadrática en su expresión y su tabla, y distinguirla de una afín porque sus variaciones no son constantes.
+  - Relacionar el signo de a con la concavidad de la parábola y el valor de c con su intersección con el eje Y.
+skills: [Representar, Modelar, Resolver problemas, Argumentar]
+curriculum: [m1-2027-funcion-lineal-afin, m1-2027-funcion-cuadratica]
+status: draft
+tramos:
+  - label: 'Inicio: un tercer plan de arriendo'
+    from: apertura
+    to: plan-ruta
+    minutes: 5
+  - label: 'De dos puntos, o de un punto y la pendiente, a la expresión'
+    from: dos-puntos
+    to: punto-pendiente
+    minutes: 13
+  - label: 'Desde el gráfico a la expresión'
+    from: desde-grafico
+    to: errores-grafico
+    minutes: 8
+  - label: 'Comparar planes y modelar desde una tabla'
+    from: comparar-planes
+    to: modelar-tabla
+    minutes: 10
+  - label: 'Puente: el ingreso de la empresa'
+    from: ingreso-tabla
+    to: ingreso-tabla
+    minutes: 5
+  - label: 'La función cuadrática: a, b, c, la parábola y el efecto de a y c'
+    from: cuadratica
+    to: efecto-a-c
+    minutes: 20
+  - label: 'Leer una parábola'
+    from: leer-parabola
+    to: leer-parabola
+    minutes: 6
+  - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
+    from: ticket-paes
+    to: ticket-paes-cuadratica
+    minutes: 9
+  - label: 'Cierre y pregunta abierta para la parte 2'
+    from: cierre
+    to: cierre
+    minutes: 4
+slides:
+  - apertura.mdx
+  - plan-ruta.mdx
+  - dos-puntos.mdx
+  - punto-pendiente.mdx
+  - desde-grafico.mdx
+  - errores-grafico.mdx
+  - comparar-planes.mdx
+  - modelar-tabla.mdx
+  - ingreso-tabla.mdx
+  - cuadratica.mdx
+  - identificar-abc.mdx
+  - parabola.mdx
+  - efecto-a-c.mdx
+  - leer-parabola.mdx
+  - ticket-paes.mdx
+  - ticket-paes-cuadratica.mdx
+  - cierre.mdx

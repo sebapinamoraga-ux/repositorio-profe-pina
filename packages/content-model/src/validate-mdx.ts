@@ -50,6 +50,7 @@ const components = new Set([
   'RectaIntervalos',
   'DiagramaSagital',
   'MaquinaFuncion',
+  'ExploradorCuadratica',
   'MascotaProfePina',
   'div',
   'span',
@@ -168,6 +169,19 @@ export function validateMdxTree(
           'descripcion',
         ],
         MaquinaFuncion: ['entrada', 'regla', 'salida', 'descripcion'],
+        ExploradorCuadratica: [
+          'id',
+          'b',
+          'aInicial',
+          'cInicial',
+          'aEstatico',
+          'cEstatico',
+          'xMin',
+          'xMax',
+          'yMin',
+          'yMax',
+          'descripcion',
+        ],
       };
       for (const name of requiredByComponent[node.name] ?? [])
         if (!attributes.some((attr) => attr.name === name))

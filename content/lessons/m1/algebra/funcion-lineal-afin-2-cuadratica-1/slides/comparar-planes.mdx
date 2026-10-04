@@ -1,0 +1,54 @@
+---
+id: comparar-planes
+title: '¿Cuándo conviene el Plan Ruta?'
+phase: practica
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+<Etiquetas>
+<Etiqueta tono={3}>Ruta: $R(x)=400x+1.200$</Etiqueta>
+<Etiqueta tono={2}>Base: $B(x)=300x+1.500$</Etiqueta>
+</Etiquetas>
+
+<Paso n={1}>
+
+$$
+\begin{aligned}
+400x+1.200&=300x+1.500\\
+100x&=300\ \Rightarrow\ x=3
+\end{aligned}
+$$
+
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$R(3)=2.400$ y $B(3)=2.400$ ✓
+</Comprobacion>
+</Paso>
+<Paso n={3}>
+**Ruta** es más barato con **menos de 3 km**; **Base**, con **más de 3 km**.
+</Paso>
+</div>
+<GraficoComparacion
+  m1={400}
+  n1={1200}
+  m2={300}
+  n2={1500}
+  xMin={0}
+  xMax={6}
+  yMin={0}
+  yMax={4000}
+  pasoX={1}
+  pasoY={500}
+  ejeX="distancia (km)"
+  ejeY="precio ($)"
+  etiqueta1="Plan Ruta"
+  etiqueta2="Plan Base"
+  resaltarMenor
+  descripcion="Las rectas R(x) = 400x + 1.200 y B(x) = 300x + 1.500 se cortan en (3; 2.400). Antes de 3 km, Ruta queda más abajo; después, Base."
+/>
+</Columnas>

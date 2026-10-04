@@ -12,6 +12,7 @@ export { GraficoComparacion } from './GraficoComparacion';
 export { RectaIntervalos } from './RectaIntervalos';
 export { DiagramaSagital } from './DiagramaSagital';
 export { MaquinaFuncion } from './MaquinaFuncion';
+export { ExploradorCuadratica } from './ExploradorCuadratica';
 
 const formatNumber = (value: number) =>
   new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 }).format(value);

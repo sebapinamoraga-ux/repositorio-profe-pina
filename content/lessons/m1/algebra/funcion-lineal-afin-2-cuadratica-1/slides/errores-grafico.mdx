@@ -1,0 +1,40 @@
+---
+id: errores-grafico
+title: 'Leer bien la pendiente y el signo de n'
+phase: practica
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+**Individual · 2 min.** Encuentra $g(x)$.
+
+<Paso n={1}>
+$n=-3$ y, de $x=0$ a $x=2$, sube $4$: $m=4:2=2$. Entonces $g(x)=2x-3$.
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$g(2)=2\cdot 2-3=1$ ✓
+</Comprobacion>
+</Paso>
+<Paso n={3}>
+<ErrorTipico titulo="Errores frecuentes">
+$m=2:4$ invierte el cociente; $2x+3$ cambia el signo de $n$.
+</ErrorTipico>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={2}
+  n={-3}
+  xMin={-1}
+  xMax={4}
+  yMin={-4}
+  yMax={5}
+  puntosX={[0, 2]}
+  etiqueta="Recta de g"
+  descripcion="Recta de g que corta el eje y en (0; −3) y pasa por (2; 1)."
+/>
+</Columnas>

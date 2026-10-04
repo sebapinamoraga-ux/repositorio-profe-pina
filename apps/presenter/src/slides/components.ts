@@ -1,6 +1,7 @@
 import * as blocks from '@aula/pedagogical-ui';
 import {
   DiagramaSagital,
+  ExploradorCuadratica,
   GraficoComparacion,
   GraficoDosCondiciones,
   GraficoFuncion,
@@ -39,6 +40,7 @@ export const mdxComponents = {
   GraficoComparacion,
   RectaIntervalos,
   DiagramaSagital,
+  ExploradorCuadratica,
   MaquinaFuncion,
   MascotaProfePina: blocks.MascotaProfePina,
 };

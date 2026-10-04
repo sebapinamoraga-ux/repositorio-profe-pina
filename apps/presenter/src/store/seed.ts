@@ -40,6 +40,13 @@ const PLANNED: PlannedLesson[] = [
     objective: 'Interpretar m y n en la expresión y en el gráfico.',
   },
   {
+    id: 'funcion-lineal-afin-2-cuadratica-1',
+    unit: 'u2',
+    title: 'Función afín desde datos y primera mirada a la cuadrática',
+    objective:
+      'Encontrar la expresión de una función afín y reconocer la función cuadrática.',
+  },
+  {
     id: 'graficos-lineales',
     unit: 'u2',
     title: 'Gráficos de funciones lineales y afines',
@@ -64,11 +71,11 @@ const PLANNED: PlannedLesson[] = [
     objective: 'Reconocer la expresión, la parábola y su concavidad.',
   },
   {
-    id: 'parabola-puntos',
+    id: 'funcion-cuadratica-2',
     unit: 'u4',
-    title: 'Puntos importantes de la parábola',
+    title: 'Vértice, ceros y máximo de la parábola',
     objective:
-      'Vértice, ceros, intersección con el eje Y y eje de simetría.',
+      'Vértice, ceros, discriminante y problemas de máximo o mínimo.',
   },
   {
     id: 'contextos-cuadraticos',

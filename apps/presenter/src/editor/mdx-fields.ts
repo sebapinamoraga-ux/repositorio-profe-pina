@@ -75,6 +75,7 @@ const FIXED: Record<string, string> = {
   RectaIntervalos: 'Recta numérica',
   DiagramaSagital: 'Diagrama sagital',
   MaquinaFuncion: 'Máquina de función',
+  ExploradorCuadratica: 'Gráfico interactivo',
   MascotaProfePina: 'Mascota',
 };
 const PRESENCE: Record<string, string> = {

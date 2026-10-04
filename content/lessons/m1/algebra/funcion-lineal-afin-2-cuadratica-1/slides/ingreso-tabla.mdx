@@ -1,0 +1,42 @@
+---
+id: ingreso-tabla
+title: 'El ingreso de la empresa'
+phase: desarrollo
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+Para los tours de un día, la empresa observó que si cobra $\htmlClass{asoc-4}{x}$ **miles de pesos**, arrienda $40-2\htmlClass{asoc-4}{x}$ **bicicletas**.
+
+<Etiquetas>
+<Etiqueta tono={4}>$x$: precio (miles de pesos)</Etiqueta>
+</Etiquetas>
+
+<Paso n={1}>
+Ingreso = precio × cantidad:
+
+$$
+I(\htmlClass{asoc-4}{x})=\htmlClass{asoc-4}{x}\,(40-2\htmlClass{asoc-4}{x})
+$$
+
+</Paso>
+</div>
+<div>
+<Paso n={2}>
+
+$$
+\begin{array}{c|c|c|c|c|c|c}
+x & 0 & 1 & 2 & 3 & 4 & 5\\ \hline
+I(x) & 0 & 38 & 72 & 102 & 128 & 150
+\end{array}
+$$
+
+</Paso>
+<Paso n={3}>
+Las variaciones son $38,\ 34,\ 30,\ 26,\ 22$: **no son constantes**. $I$ no es afín y su gráfico **no es una recta**.
+</Paso>
+</div>
+</Columnas>

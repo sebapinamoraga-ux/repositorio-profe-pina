@@ -1,0 +1,65 @@
+id: funcion-cuadratica-2
+title: Función cuadrática (parte 2)
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites:
+  - Reconocer la función cuadrática y relacionar a con la concavidad y c con el corte en el eje Y (parte 1).
+  - Factorizar por factor común, diferencia de cuadrados y trinomios.
+  - Operar con raíces cuadradas.
+objectives:
+  - Encontrar los ceros de una función cuadrática por factorización o con la fórmula general, y usar el discriminante para anticipar cuántos tiene.
+  - Determinar el vértice y el eje de simetría de una parábola, y decidir si el vértice es un máximo o un mínimo.
+  - Reconocer cómo b desplaza el vértice y leer el vértice en la forma canónica f(x) = a(x − h)² + k.
+  - Esbozar una parábola a partir de sus puntos importantes y resolver problemas de máximo o mínimo en contexto.
+skills: [Representar, Modelar, Resolver problemas, Argumentar]
+curriculum: [m1-2027-funcion-cuadratica]
+status: draft
+tramos:
+  - label: 'Inicio: el precio que da el mayor ingreso'
+    from: apertura
+    to: precio-optimo
+    minutes: 5
+  - label: 'Repaso de la parte 1'
+    from: repaso
+    to: repaso
+    minutes: 5
+  - label: 'Ceros por factorización'
+    from: ceros-factorizacion
+    to: ceros-factorizacion
+    minutes: 10
+  - label: 'Fórmula general y discriminante'
+    from: formula-general
+    to: formula-general
+    minutes: 15
+  - label: 'Simetría y vértice'
+    from: vertice
+    to: vertice
+    minutes: 13
+  - label: 'Efecto de b y forma canónica (breve)'
+    from: parametro-b-canonica
+    to: parametro-b-canonica
+    minutes: 7
+  - label: 'Esbozar la parábola y cerrar el contexto'
+    from: esbozo-ingreso
+    to: esbozo-ingreso
+    minutes: 12
+  - label: 'Ticket tipo PAES'
+    from: ticket-paes
+    to: ticket-paes
+    minutes: 9
+  - label: 'Cierre'
+    from: cierre
+    to: cierre
+    minutes: 4
+slides:
+  - apertura.mdx
+  - precio-optimo.mdx
+  - repaso.mdx
+  - ceros-factorizacion.mdx
+  - formula-general.mdx
+  - vertice.mdx
+  - parametro-b-canonica.mdx
+  - esbozo-ingreso.mdx
+  - ticket-paes.mdx
+  - cierre.mdx

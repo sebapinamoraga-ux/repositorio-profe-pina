@@ -158,3 +158,26 @@ export function tramosMenor(
     { desde: corte.x, hasta: xMax, menor: menorEn((corte.x + xMax) / 2) },
   ];
 }
+
+const formatoCoeficiente = (value: number) =>
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(value);
+
+/** Escribe ax² + bx + c omitiendo términos nulos y coeficientes 1; con a = 0 queda la recta bx + c. */
+export function expresionCuadratica(a: number, b: number, c: number): string {
+  const terminos = [
+    { coef: a, parte: 'x²' },
+    { coef: b, parte: 'x' },
+    { coef: c, parte: '' },
+  ].filter((termino) => termino.coef !== 0);
+  if (terminos.length === 0) return '0';
+  return terminos
+    .map(({ coef, parte }, index) => {
+      const absoluto = Math.abs(coef);
+      const numero =
+        absoluto === 1 && parte !== '' ? '' : formatoCoeficiente(absoluto);
+      const signo =
+        index === 0 ? (coef < 0 ? '−' : '') : coef < 0 ? ' − ' : ' + ';
+      return `${signo}${numero}${parte}`;
+    })
+    .join('');
+}
