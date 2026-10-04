@@ -533,7 +533,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
   const syncRepo = async () => {
     const ok = await ui.confirm({
       title: '¿Actualizar la biblioteca desde el repositorio?',
-      body: 'Las unidades, el orden, los títulos y los estados vuelven a los de la planificación y las clases del repositorio; las clases que quitaste reaparecen. Se conservan tus notas, cursos, sesiones, láminas editadas y las clases creadas en este navegador.',
+      body: 'Las unidades, el orden, los títulos y los estados vuelven a los de la planificación y las clases del repositorio; las clases que quitaste reaparecen y las que ya no están en la planificación desaparecen. Se conservan tus notas, cursos, sesiones y las clases creadas o editadas en este navegador.',
       ok: 'Actualizar',
     });
     if (!ok) return;

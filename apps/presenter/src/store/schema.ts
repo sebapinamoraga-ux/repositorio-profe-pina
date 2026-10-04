@@ -23,6 +23,8 @@ export const libraryEntrySchema = z.object({
   objective: z.string(),
   duration: z.number().positive(),
   status: lessonMarkSchema,
+  /** Creada en este navegador: «Actualizar desde el repositorio» la conserva. */
+  local: z.boolean().optional(),
 });
 export type LibraryEntry = z.infer<typeof libraryEntrySchema>;
 

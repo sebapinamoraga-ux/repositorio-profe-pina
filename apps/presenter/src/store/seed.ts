@@ -4,20 +4,32 @@ import type { Course, LibraryEntry, TeacherData, Unit } from './schema';
 /** La clase base del proyecto: no se elimina ni se quita de la biblioteca. */
 export const ORIGINAL_LESSON_ID = 'sistemas-2x2';
 
-interface PlannedLesson {
+export interface PlannedLesson {
   id: string;
   unit: string;
   title: string;
   objective: string;
 }
 
+export interface Planning {
+  units: Unit[];
+  lessons: PlannedLesson[];
+}
+
+// Los identificadores de unidad son estables: una unidad nueva recibe un id nuevo.
 const UNITS: Unit[] = [
-  { id: 'u1', title: 'Sistemas de ecuaciones lineales' },
+  { id: 'u3', title: 'Sistemas de ecuaciones lineales' },
   { id: 'u2', title: 'Funciones' },
 ];
 
 /** Clases planificadas (Plan.md). Las que tienen lesson.yaml usan su identificador del repositorio. */
 const PLANNED: PlannedLesson[] = [
+  {
+    id: ORIGINAL_LESSON_ID,
+    unit: 'u3',
+    title: 'Sistemas de ecuaciones lineales',
+    objective: '',
+  },
   {
     id: 'funcion-lineal-afin-1',
     unit: 'u2',
@@ -32,12 +44,6 @@ const PLANNED: PlannedLesson[] = [
       'Encontrar la expresión de una función afín y reconocer la función cuadrática.',
   },
   {
-    id: ORIGINAL_LESSON_ID,
-    unit: 'u1',
-    title: 'Sistemas de ecuaciones lineales',
-    objective: '',
-  },
-  {
     id: 'funcion-cuadratica-2',
     unit: 'u2',
     title: 'Vértice, ceros y máximo de la parábola',
@@ -45,6 +51,8 @@ const PLANNED: PlannedLesson[] = [
       'Vértice, ceros, discriminante y problemas de máximo o mínimo.',
   },
 ];
+
+export const PLANNING: Planning = { units: UNITS, lessons: PLANNED };
 
 /** Las clases de prueba del repositorio no entran en la biblioteca. */
 const NOT_SEEDED = new Set(['prueba-autoria']);
@@ -75,9 +83,12 @@ export function entryFromRepo(lesson: Lesson, unitId: string): LibraryEntry {
   };
 }
 
-export function seedTeacherData(repo: readonly Lesson[]): TeacherData {
+export function seedTeacherData(
+  repo: readonly Lesson[],
+  planning: Planning = PLANNING,
+): TeacherData {
   const byId = new Map(repo.map((lesson) => [lesson.id, lesson]));
-  const library = PLANNED.map((item): LibraryEntry => {
+  const library = planning.lessons.map((item): LibraryEntry => {
     const lesson = byId.get(item.id);
     return lesson
       ? entryFromRepo(lesson, item.unit)
@@ -92,7 +103,7 @@ export function seedTeacherData(repo: readonly Lesson[]): TeacherData {
   });
   const data: TeacherData = {
     version: 1,
-    units: UNITS,
+    units: planning.units,
     library,
     seenRepo: [],
     edits: {},

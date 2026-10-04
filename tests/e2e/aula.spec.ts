@@ -27,25 +27,30 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   await unlock(page);
   await page.goto('/#rol=docente&vista=biblioteca');
   await expect(page.getByRole('heading', { name: 'Tus clases' })).toBeVisible();
+  // La prueba crea su propia clase: no depende de la planificación de seed.ts.
+  await page.getByRole('button', { name: /^\+ Agregar clase a la unidad/ }).last().click();
+  await page.getByLabel('Título de la clase').fill('Clase de prueba');
+  await page.getByRole('button', { name: 'Agregar clase', exact: true }).click();
+  const row = page.locator('.lesson-row', { hasText: 'Clase de prueba' });
+  await expect(row).toContainText('Por preparar');
   await page.getByRole('button', { name: 'Por preparar', exact: true }).click();
   await expect(page.locator('.lesson-row.mark-lista')).toHaveCount(0);
   await page.getByRole('button', { name: 'Todas', exact: true }).click();
 
   await page.getByRole('button', { name: 'Organizar' }).click();
   await expect(page.getByRole('button', { name: 'Eliminar «Sistemas de ecuaciones lineales»' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Eliminar «¿Qué es una función?»' }).click();
-  await expect(page.locator('.lesson-row', { hasText: '¿Qué es una función?' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Eliminar «Clase de prueba»' }).click();
+  await expect(row).toHaveCount(0);
   await page.getByRole('button', { name: 'Deshacer' }).click();
-  await expect(page.locator('.lesson-row', { hasText: '¿Qué es una función?' })).toHaveCount(1);
+  await expect(row).toHaveCount(1);
   await page.getByRole('button', { name: 'Listo' }).click();
 
-  const row = page.locator('.lesson-row', { hasText: '¿Qué es una función?' });
   await row.getByRole('button', { name: 'Preparar' }).click();
   await page.getByRole('dialog', { name: 'Preparar clase' }).getByRole('button', { name: 'Crear y abrir en editor' }).click();
   await expect(page).toHaveURL(/vista=editor/);
   await expect(page.locator('.thumb')).toHaveCount(5);
   await page.getByRole('button', { name: 'Clases', exact: true }).or(page.getByRole('button', { name: 'Biblioteca de clases' })).first().click();
-  await expect(page.locator('.lesson-row', { hasText: '¿Qué es una función?' })).toContainText('En preparación');
+  await expect(row).toContainText('En preparación');
 });
 
 test('editor: cambiar un título, revisar con content:check y exportar a MDX', async ({ page }) => {
@@ -179,21 +184,17 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
 
-test('biblioteca: actualizar desde el repositorio recupera una clase quitada', async ({
-  page,
-}) => {
+test('biblioteca: actualizar desde el repositorio recupera una clase quitada', async ({ page }) => {
   await unlock(page);
   await page.goto('/#rol=docente&vista=biblioteca');
-  const row = page.locator('.lesson-row', { hasText: '¿Qué es una función?' });
+  const title = 'Función lineal y afín (parte 1)';
+  const row = page.locator('.lesson-row', { hasText: title });
+  await expect(row).toHaveCount(1);
   await page.getByRole('button', { name: 'Organizar' }).click();
-  await page
-    .getByRole('button', { name: 'Eliminar «¿Qué es una función?»' })
-    .click();
+  await page.getByRole('button', { name: `Eliminar «${title}»` }).click();
   await page.getByRole('button', { name: 'Listo' }).click();
   await expect(row).toHaveCount(0);
-  await page
-    .getByRole('button', { name: 'Actualizar desde el repositorio' })
-    .click();
+  await page.getByRole('button', { name: 'Actualizar desde el repositorio' }).click();
   await page.getByRole('button', { name: 'Actualizar', exact: true }).click();
   await expect(row).toHaveCount(1);
   await page.reload();

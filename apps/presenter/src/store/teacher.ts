@@ -1,5 +1,10 @@
 import type { Lesson } from '@aula/content-model';
-import { ORIGINAL_LESSON_ID, seedTeacherData } from './seed';
+import {
+  ORIGINAL_LESSON_ID,
+  PLANNING,
+  seedTeacherData,
+  type Planning,
+} from './seed';
 import type {
   ActiveSession,
   Course,
@@ -93,13 +98,15 @@ function withoutLesson(data: TeacherData, ids: ReadonlySet<string>) {
 
 /**
  * Rehace unidades y biblioteca desde la planificación y las clases del repositorio. Conserva
- * notas, cursos, sesiones, láminas editadas y las clases creadas en este navegador.
+ * notas, cursos, sesiones y las clases creadas o editadas en este navegador; las que salieron
+ * de la planificación sin láminas propias desaparecen.
  */
 export function syncFromRepo(
   data: TeacherData,
   repo: readonly Lesson[],
+  planning: Planning = PLANNING,
 ): TeacherData {
-  const fresh = seedTeacherData(repo);
+  const fresh = seedTeacherData(repo, planning);
   const known = new Set(fresh.library.map((entry) => entry.id));
   let units = fresh.units;
   let library = fresh.library.map(
@@ -109,7 +116,7 @@ export function syncFromRepo(
         : entry,
   );
   for (const entry of data.library) {
-    if (known.has(entry.id)) continue;
+    if (known.has(entry.id) || !(entry.local || data.edits[entry.id])) continue;
     if (!units.some((unit) => unit.id === entry.unitId))
       units = [
         ...units,
@@ -174,6 +181,7 @@ export function teacherReducer(
         id: action.newId,
         title: `${source.title} (copia)`,
         status: 'en-preparacion',
+        local: true,
       });
       return {
         ...data,
@@ -198,6 +206,7 @@ export function teacherReducer(
           objective: action.objective.trim(),
           duration: 80,
           status: 'por-preparar',
+          local: true,
         }),
       };
     case 'removeLesson':
