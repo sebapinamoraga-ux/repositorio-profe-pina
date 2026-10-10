@@ -27,7 +27,7 @@ tramos:
     minutes: 13
   - label: 'Desde el gráfico a la expresión'
     from: desde-grafico
-    to: errores-grafico
+    to: errores-grafico-frecuentes
     minutes: 8
   - label: 'Comparar planes y modelar desde una tabla'
     from: comparar-planes
@@ -60,6 +60,7 @@ slides:
   - punto-pendiente.mdx
   - desde-grafico.mdx
   - errores-grafico.mdx
+  - errores-grafico-frecuentes.mdx
   - comparar-planes.mdx
   - modelar-tabla.mdx
   - ingreso-tabla.mdx
