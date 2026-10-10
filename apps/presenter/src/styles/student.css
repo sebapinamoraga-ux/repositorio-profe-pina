@@ -545,6 +545,9 @@
   background: var(--s-soft);
   color: var(--s-accent);
 }
+.s-index-group {
+  margin: 14px 12px 4px;
+}
 .s-seen {
   font-size: 13px;
   font-weight: 700;
@@ -785,10 +788,27 @@
   flex-wrap: wrap;
   font-size: 16px;
 }
+.read-body .graph-controls label {
+  flex: 1 1 100%;
+  display: grid;
+  grid-template-columns: 5.5em minmax(0, 1fr);
+  white-space: nowrap;
+}
 .read-body .graph-controls input {
   max-width: none;
   width: 100%;
   height: 44px;
+}
+/* El halo de los rótulos toma el fondo del tema, para que se lean también en oscuro. */
+.read-body .graph-function .graph-slope-label,
+.read-body .graph-function .graph-axis-label,
+.read-body .graph-function .graph-point-label {
+  stroke: var(--s-bg);
+}
+.read-body .graph-axis-label,
+.read-body .graph-axis-title,
+.read-body .graph-point-label {
+  fill: var(--s-ink);
 }
 .read-body .graph-controls button {
   min-height: 44px;

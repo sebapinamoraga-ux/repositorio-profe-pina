@@ -142,6 +142,15 @@ test('25 diapositivas exportables sin recortes ni controles', async ({
   expect(overflow).toEqual([]);
   await expect(page.locator('.answer')).toBeVisible();
 });
+test('las láminas de repaso no se proyectan ni salen en el PDF', async ({ page }) => {
+  await page.goto('/#clase=funcion-cuadratica-2&modo=pdf');
+  await expect(page.locator('.slide')).toHaveCount(19);
+  await expect(page.locator('[data-slide="explorar-b"]')).toHaveCount(0);
+  await page.goto('/#clase=funcion-cuadratica-2&slide=cierre');
+  await expect(page.locator('.slide')).toHaveAttribute('data-slide', 'cierre');
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.slide')).toHaveAttribute('data-slide', 'cierre');
+});
 test('tema claro y tres niveles de mascota llegan a la clase y al PDF', async ({
   page,
 }) => {

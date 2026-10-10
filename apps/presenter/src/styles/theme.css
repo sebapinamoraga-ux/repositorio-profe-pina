@@ -383,7 +383,8 @@ a {
   stroke: var(--yellow);
   stroke-width: 6;
 }
-.graph-probe {
+.graph-probe,
+.graph-vertex {
   fill: var(--blue);
   stroke: #fbf8f1;
   stroke-width: 4;

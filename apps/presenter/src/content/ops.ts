@@ -200,7 +200,7 @@ export function removeActivity(bundle: ContentBundle, id: string): FileWrite[] {
 /** Láminas que usan una actividad. */
 export function activityUses(bundle: ContentBundle, id: string) {
   return bundle.lessons.flatMap((lesson) =>
-    lesson.slides
+    [...lesson.slides, ...lesson.repaso]
       .filter((file) => file.slide.activities.includes(id))
       .map((file) => ({ lesson: lesson.meta, slide: file.slide })),
   );

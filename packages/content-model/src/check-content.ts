@@ -75,12 +75,13 @@ export async function checkContentFiles(
     for (const problem of verifyLessonPlan(meta)) add(path, problem);
     if (ids.has(meta.id)) add(path, `Identificador de clase duplicado: ${meta.id}`);
     ids.add(meta.id);
-    if (new Set(meta.slides).size !== meta.slides.length)
-      add(path, 'Archivo de diapositiva repetido.');
+    const listed = [...meta.slides, ...(meta.repaso ?? [])];
+    if (new Set(listed).size !== listed.length)
+      add(path, 'Archivo de diapositiva repetido (en slides o repaso).');
     for (const ref of meta.curriculum)
       if (!curriculum.has(ref)) add(path, `Referencia curricular desconocida: ${ref}`);
     const slideIds = new Set<string>();
-    for (const file of lesson.slides) {
+    for (const file of [...lesson.slides, ...lesson.repaso]) {
       const { slide, text } = file;
       try {
         if (`${slide.id}.mdx` !== file.file)

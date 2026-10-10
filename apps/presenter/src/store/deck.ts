@@ -33,6 +33,8 @@ export interface LessonMeta {
 export interface Deck {
   meta: LessonMeta;
   slides: DeckSlide[];
+  /** Láminas solo para el repaso del estudiante: no se proyectan ni salen en el PDF. */
+  repaso: DeckSlide[];
   /** repo: tal como está en el repositorio · edited: con cambios sin guardar · empty: por preparar. */
   origin: 'repo' | 'edited' | 'empty';
 }
@@ -74,8 +76,11 @@ export function lessonMeta(view: ContentView, id: string): LessonMeta {
   };
 }
 
-export function deckSlides(lesson: LessonEntry): DeckSlide[] {
-  return lesson.slides.map(({ slide, body, path, text }) => {
+export function deckSlides(
+  lesson: LessonEntry,
+  list: 'slides' | 'repaso' = 'slides',
+): DeckSlide[] {
+  return lesson[list].map(({ slide, body, path, text }) => {
     const Content = compiledFor(path, text);
     return {
       ...slide,
@@ -104,10 +109,11 @@ export function hasPending(view: ContentView, id: string) {
 export function deckFor(view: ContentView, id: string): Deck {
   const meta = lessonMeta(view, id);
   const lesson = lessonEntry(view, id);
-  if (!lesson) return { meta, slides: [], origin: 'empty' };
+  if (!lesson) return { meta, slides: [], repaso: [], origin: 'empty' };
   return {
     meta,
     slides: deckSlides(lesson),
+    repaso: deckSlides(lesson, 'repaso'),
     origin: hasPending(view, id) ? 'edited' : 'repo',
   };
 }

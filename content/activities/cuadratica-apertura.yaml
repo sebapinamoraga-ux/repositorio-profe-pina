@@ -1,0 +1,26 @@
+id: cuadratica-apertura
+type: paes
+prompt: '¿Cuál de estas parábolas abre hacia abajo y es la más cerrada?'
+answer: C · y = −3x² + 1
+solution: 'Abre hacia abajo cuando a < 0, así que quedan B, C y D. La más cerrada es la de mayor |a|: |−3| = 3 es mayor que |−½| y que |−1|.'
+skills: [Representar, Argumentar]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; repaso del efecto de a en la parábola.
+options:
+  - id: A
+    text: 'y = 3x² + 1'
+    correct: false
+    explanation: '|3| es grande, pero a = 3 > 0: la parábola abre hacia arriba.'
+  - id: B
+    text: 'y = −½x² + 1'
+    correct: false
+    explanation: 'Abre hacia abajo, pero |−½| es el menor valor de |a|: es la más abierta.'
+  - id: C
+    text: 'y = −3x² + 1'
+    correct: true
+    explanation: 'a = −3 < 0 abre hacia abajo, y |−3| = 3 es el mayor |a| de las que abren hacia abajo.'
+  - id: D
+    text: 'y = −x² + 3'
+    correct: false
+    explanation: 'El 3 es c y solo mueve el corte con el eje y; la apertura depende de |a| = 1, que es menor que 3.'
