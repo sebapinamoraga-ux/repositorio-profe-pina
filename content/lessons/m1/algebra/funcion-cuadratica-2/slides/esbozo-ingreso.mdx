@@ -1,10 +1,38 @@
 ---
 id: esbozo-ingreso
-title: 'Esbozar la parábola y responder'
+title: 'Esbozar la parábola'
 phase: practica
 layout: resolucion
-steps: 0
+steps: 4
 activities: []
 ---
 
-Esqueleto por escribir: concavidad, corte con Y, vértice y ceros. Respuesta al inicio: precio de 10.000 pesos e ingreso máximo de 200.000 pesos.
+<Columnas>
+<div>
+<Tarjeta titulo="Cuatro datos para esbozar I(x) = −2x² + 40x">
+<Paso n={1}>**1 · Concavidad:** $a=-2<0$, abre hacia abajo.</Paso>
+<Paso n={2}>**2 · Corte con el eje $y$:** $(0;\ 0)$.</Paso>
+<Paso n={3}>**3 · Ceros:** $x=0$ y $x=20$.</Paso>
+<Paso n={4}>**4 · Vértice:** $(10;\ 200)$, un máximo.</Paso>
+</Tarjeta>
+
+Se unen con una curva **simétrica** respecto de $x=10$.
+</div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={-2}
+  b={40}
+  c={0}
+  xMin={0}
+  xMax={20}
+  yMin={-20}
+  yMax={220}
+  paso={5}
+  pasoY={50}
+  ejeX="precio"
+  ejeY="ingreso"
+  puntosX={[0, 10, 20]}
+  etiqueta="Ingreso I (miles de pesos)"
+  descripcion="Parábola del ingreso I que abre hacia abajo, corta el eje x en 0 y 20 y tiene su máximo en (10; 200)."
+/>
+</Columnas>

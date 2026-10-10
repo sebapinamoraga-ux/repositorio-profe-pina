@@ -1,0 +1,41 @@
+---
+id: formula-practica
+title: 'Comprobar y practicar la fórmula'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Comprobacion titulo="Comprobación de 2x² − 3x − 2 = 0">
+$2\cdot 2^2-3\cdot 2-2=8-6-2=0$ ✓
+
+$2\left(-\tfrac{1}{2}\right)^2-3\left(-\tfrac{1}{2}\right)-2=\tfrac{1}{2}+\tfrac{3}{2}-2=0$ ✓
+</Comprobacion>
+
+<ErrorTipico titulo="Error frecuente">
+Con $b=-3$, el numerador empieza en $-b=+3$, **no** en $-3$.
+</ErrorTipico>
+</div>
+<div>
+<PracticaGuiada titulo="Tu turno · 3 minutos">
+Resuelve $x^2+2x-8=0$ con la fórmula general y comprueba.
+</PracticaGuiada>
+
+<Paso n={1}>
+
+$\Delta=2^2-4\cdot 1\cdot(-8)=36$
+
+$$
+x=\frac{-2\pm 6}{2}\ \Rightarrow\ x=2\ \text{o}\ x=-4
+$$
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$2^2+2\cdot 2-8=0$ ✓ y $(-4)^2+2(-4)-8=16-8-8=0$ ✓
+</Comprobacion>
+</Paso>
+</div>
+</Columnas>

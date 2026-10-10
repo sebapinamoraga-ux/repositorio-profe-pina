@@ -1,0 +1,26 @@
+id: cuadratica-maximo
+type: paes
+prompt: 'La altura h, en metros, de una pelota lanzada hacia arriba es h(t) = −5t² + 20t, donde t son los segundos desde el lanzamiento. ¿Cuál es la altura máxima que alcanza la pelota?'
+answer: D · 20 m
+solution: 'Como a = −5 < 0, el vértice es un máximo. t del vértice = −20/(2 · (−5)) = 2 segundos y h(2) = −5 · 4 + 20 · 2 = −20 + 40 = 20 metros.'
+skills: [Modelar, Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; máximo de una función cuadrática en contexto.
+options:
+  - id: A
+    text: '2 m'
+    correct: false
+    explanation: '2 es el tiempo t del vértice en que se alcanza el máximo, en segundos; la altura máxima es h(2) = 20 m.'
+  - id: B
+    text: '10 m'
+    correct: false
+    explanation: 'Divide 20 por 2 sin usar la fórmula del vértice: t del vértice = −20/(2 · (−5)) = 2 y h(2) = 20 m.'
+  - id: C
+    text: '40 m'
+    correct: false
+    explanation: 'Calcula solo 20t con t = 2 y olvida el término −5t²: h(2) = −20 + 40 = 20 m.'
+  - id: D
+    text: '20 m'
+    correct: true
+    explanation: 't del vértice = −20/(2 · (−5)) = 2 y h(2) = −5 · 2² + 20 · 2 = 20 m; como a < 0, es la altura máxima.'

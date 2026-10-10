@@ -1,0 +1,40 @@
+---
+id: vertice-formula
+title: 'El vértice sin calcular los ceros'
+phase: desarrollo
+layout: resolucion
+steps: 3
+activities: []
+---
+
+<Definicion titulo="Vértice de una parábola">
+En $f(x)=ax^2+bx+c$: $x_v=-\frac{b}{2a}$, $\ y_v=f(x_v)$. **Máximo** si $a<0$; **mínimo** si $a>0$.
+</Definicion>
+
+<Paneles>
+<Tarjeta titulo="I(x) = −2x² + 40x">
+<Paso n={1}>
+
+$$
+x_v=-\frac{40}{2\cdot(-2)}=10
+$$
+
+$I(10)=200$: **máximo** $(10;\ 200)$, como por simetría.
+</Paso>
+</Tarjeta>
+<Tarjeta titulo="f(x) = x² − 4x + 3">
+<Paso n={2}>
+
+$$
+x_v=-\frac{-4}{2\cdot 1}=2
+$$
+
+$f(2)=4-8+3=-1$: **mínimo** $(2;\ -1)$.
+</Paso>
+<Paso n={3}>
+<Comprobacion titulo="Comprobación">
+Punto medio de los ceros $1$ y $3$: $2$ ✓
+</Comprobacion>
+</Paso>
+</Tarjeta>
+</Paneles>

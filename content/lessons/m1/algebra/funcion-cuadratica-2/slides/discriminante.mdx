@@ -1,0 +1,56 @@
+---
+id: discriminante
+title: '¿Cuántos ceros? El discriminante'
+phase: desarrollo
+layout: concepto
+steps: 3
+activities: []
+---
+
+<Paneles columnas={3}>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={-4}
+  c={3}
+  xMin={0}
+  xMax={4}
+  yMin={-2}
+  yMax={4}
+  etiqueta="f(x) = x² − 4x + 3"
+  descripcion="Parábola de f que abre hacia arriba y corta el eje x en 1 y 3."
+/>
+<Paso n={1}>$\Delta=16-12=4$: **dos ceros**.</Paso>
+</div>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={-4}
+  c={4}
+  xMin={0}
+  xMax={4}
+  yMin={-2}
+  yMax={4}
+  etiqueta="g(x) = x² − 4x + 4"
+  descripcion="Parábola de g que abre hacia arriba y toca el eje x solo en 2."
+/>
+<Paso n={2}>$\Delta=16-16=0$: **un cero**.</Paso>
+</div>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={-4}
+  c={5}
+  xMin={0}
+  xMax={4}
+  yMin={-2}
+  yMax={4}
+  etiqueta="h(x) = x² − 4x + 5"
+  descripcion="Parábola de h que abre hacia arriba y no corta el eje x."
+/>
+<Paso n={3}>$\Delta=16-20=-4$: **sin ceros**.</Paso>
+</div>
+</Paneles>

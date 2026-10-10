@@ -1,10 +1,51 @@
 ---
 id: formula-general
-title: 'Fórmula general y discriminante'
+title: 'Fórmula general'
 phase: desarrollo
 layout: resolucion
-steps: 0
+steps: 2
 activities: []
 ---
 
-Esqueleto por escribir: uso de la fórmula general; discriminante mayor, igual o menor que 0, cada caso con su gráfico.
+<Definicion titulo="Fórmula general">
+Las soluciones de $ax^2+bx+c=0$, con $a\ne 0$, son
+
+$$
+x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+$$
+
+El número $\Delta=b^2-4ac$ se llama **discriminante**.
+</Definicion>
+
+<Columnas>
+<div>
+Resuelve $2x^2-3x-2=0$.
+
+<Etiquetas>
+<Etiqueta>$a=2$</Etiqueta>
+<Etiqueta>$b=-3$</Etiqueta>
+<Etiqueta>$c=-2$</Etiqueta>
+</Etiquetas>
+
+<Paso n={1}>
+
+$$
+\Delta=(-3)^2-4\cdot 2\cdot(-2)=9+16=25
+$$
+
+</Paso>
+</div>
+<div>
+<Paso n={2}>
+
+$$
+x=\frac{3\pm\sqrt{25}}{2\cdot 2}=\frac{3\pm 5}{4}
+$$
+
+$$
+x=2\quad\text{o}\quad x=-\tfrac{1}{2}
+$$
+
+</Paso>
+</div>
+</Columnas>

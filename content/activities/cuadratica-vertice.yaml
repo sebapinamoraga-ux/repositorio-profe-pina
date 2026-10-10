@@ -1,0 +1,26 @@
+id: cuadratica-vertice
+type: paes
+prompt: '¿Cuál es el vértice de la parábola de f(x) = x² − 6x + 5?'
+answer: A · (3; −4)
+solution: 'Con a = 1 y b = −6, x del vértice = −b/(2a) = 6/2 = 3. Luego f(3) = 9 − 18 + 5 = −4, así que el vértice es (3; −4).'
+skills: [Representar, Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; vértice de la función cuadrática.
+options:
+  - id: A
+    text: '(3; −4)'
+    correct: true
+    explanation: 'x del vértice = −(−6)/(2 · 1) = 3 y f(3) = 9 − 18 + 5 = −4.'
+  - id: B
+    text: '(−3; 32)'
+    correct: false
+    explanation: 'Omite el signo menos de −b/(2a): toma x del vértice = −3, y f(−3) = 9 + 18 + 5 = 32.'
+  - id: C
+    text: '(3; 4)'
+    correct: false
+    explanation: 'x del vértice = 3 es correcto, pero f(3) = 9 − 18 + 5 = −4, no 4: hay un error de signo al valorizar.'
+  - id: D
+    text: '(6; 5)'
+    correct: false
+    explanation: 'Usa −b = 6 sin dividir por 2a; además, f(6) = 36 − 36 + 5 = 5 no es el punto más bajo, porque f(3) = −4 < 5.'

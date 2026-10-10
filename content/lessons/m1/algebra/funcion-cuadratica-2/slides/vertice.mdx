@@ -3,8 +3,51 @@ id: vertice
 title: 'Simetría y vértice'
 phase: desarrollo
 layout: dos-columnas
-steps: 0
+steps: 3
 activities: []
 ---
 
-Esqueleto por escribir: el punto medio entre los ceros da xᵥ = 10; luego xᵥ = −b/(2a) e yᵥ = f(xᵥ); máximo o mínimo según el signo de a.
+<Columnas>
+<div>
+La parábola es **simétrica**: $I(5)=I(15)=150$.
+
+<Paso n={1}>
+Su eje pasa por el **punto medio de los ceros**:
+
+$$
+x_v=\frac{0+20}{2}=10
+$$
+
+</Paso>
+<Paso n={2}>
+
+$$
+y_v=I(10)=10\cdot 20=200
+$$
+
+**Vértice:** $(10;\ 200)$.
+</Paso>
+<Paso n={3}>
+<Propiedad titulo="¿Máximo o mínimo?">
+$a=-2<0$: es el **punto más alto**, un **máximo**.
+</Propiedad>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={-2}
+  b={40}
+  c={0}
+  xMin={0}
+  xMax={20}
+  yMin={-20}
+  yMax={220}
+  paso={5}
+  pasoY={50}
+  ejeX="precio"
+  ejeY="ingreso"
+  puntosX={[0, 5, 10, 15, 20]}
+  etiqueta="Ingreso I (miles de pesos)"
+  descripcion="Parábola del ingreso I que corta el eje x en 0 y 20, pasa por (5; 150) y (15; 150), y tiene su vértice en (10; 200)."
+/>
+</Columnas>

@@ -1,0 +1,26 @@
+id: cuadratica-discriminante
+type: paes
+prompt: '¿Para qué valor de k la ecuación x² + 6x + k = 0 tiene exactamente una solución?'
+answer: B · k = 9
+solution: 'Tiene una sola solución cuando Δ = 0: 6² − 4 · 1 · k = 36 − 4k = 0, así que k = 9. Comprobación: x² + 6x + 9 = (x + 3)², que solo se anula en x = −3.'
+skills: [Argumentar, Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; discriminante de la ecuación cuadrática.
+options:
+  - id: A
+    text: 'k = 6'
+    correct: false
+    explanation: 'Copia el valor de b. Con k = 6, Δ = 36 − 24 = 12 > 0: la ecuación tiene dos soluciones.'
+  - id: B
+    text: 'k = 9'
+    correct: true
+    explanation: 'Δ = 36 − 4k = 0 da k = 9, y x² + 6x + 9 = (x + 3)² tiene la única solución x = −3.'
+  - id: C
+    text: 'k = 3'
+    correct: false
+    explanation: 'Divide b por 2 pero no lo eleva al cuadrado. Con k = 3, Δ = 36 − 12 = 24 > 0: hay dos soluciones.'
+  - id: D
+    text: 'k = 36'
+    correct: false
+    explanation: 'Iguala k a b² y olvida el 4 de 4ac. Con k = 36, Δ = 36 − 144 = −108 < 0: no hay soluciones reales.'

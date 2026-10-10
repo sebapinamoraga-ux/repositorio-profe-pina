@@ -1,10 +1,63 @@
 ---
 id: parametro-b-canonica
-title: 'El efecto de b y la forma canónica'
+title: 'El efecto de b en y = x² + bx'
 phase: desarrollo
-layout: dos-columnas
-steps: 0
+layout: concepto
+steps: 1
 activities: []
 ---
 
-Esqueleto por escribir: b cambia xᵥ = −b/(2a); en f(x) = a(x − h)² + k el vértice es (h, k). Una lámina con interactivo y un ítem; la exploración completa va al repaso del estudiante.
+<Paneles columnas={3}>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={-2}
+  c={0}
+  xMin={-3}
+  xMax={3}
+  yMin={-2}
+  yMax={4}
+  puntosX={[1]}
+  etiqueta="y = x² − 2x"
+  descripcion="Parábola y = x² − 2x con vértice en (1; −1)."
+/>
+$b=-2$: vértice $(1;\ -1)$
+</div>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={0}
+  c={0}
+  xMin={-3}
+  xMax={3}
+  yMin={-2}
+  yMax={4}
+  puntosX={[0]}
+  etiqueta="y = x²"
+  descripcion="Parábola y = x² con vértice en (0; 0)."
+/>
+$b=0$: vértice $(0;\ 0)$
+</div>
+<div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={2}
+  c={0}
+  xMin={-3}
+  xMax={3}
+  yMin={-2}
+  yMax={4}
+  puntosX={[-1]}
+  etiqueta="y = x² + 2x"
+  descripcion="Parábola y = x² + 2x con vértice en (−1; −1)."
+/>
+$b=2$: vértice $(-1;\ -1)$
+</div>
+</Paneles>
+
+<Paso n={1}>
+$b$ no cambia la forma: **mueve el vértice**, porque $x_v=-\frac{b}{2a}$.
+</Paso>
