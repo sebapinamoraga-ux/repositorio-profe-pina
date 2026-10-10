@@ -3,8 +3,40 @@ id: precio-optimo
 title: 'Para comenzar... ¿qué precio da el mayor ingreso?'
 phase: inicio
 layout: concepto
-steps: 0
+steps: 1
 activities: []
 ---
 
-Esqueleto por escribir: retomar I(x) = −2x² + 40x de la clase anterior y dejar la pregunta abierta hasta el final.
+<Etiquetas>
+<Etiqueta tono={4}>$x$: precio (miles de pesos)</Etiqueta>
+<Etiqueta>$I(x)$: ingreso (miles de pesos)</Etiqueta>
+</Etiquetas>
+
+<Columnas>
+<div>
+Si la empresa cobra $\htmlClass{asoc-4}{x}$ miles de pesos por un tour, arrienda $40-2\htmlClass{asoc-4}{x}$ bicicletas:
+
+$$
+I(\htmlClass{asoc-4}{x})=\htmlClass{asoc-4}{x}\,(40-2\htmlClass{asoc-4}{x})=-2\htmlClass{asoc-4}{x}^2+40\htmlClass{asoc-4}{x}
+$$
+
+$$
+\begin{array}{c|c|c|c|c|c|c}
+x & 0 & 1 & 2 & 3 & 4 & 5\\ \hline
+I(x) & 0 & 38 & 72 & 102 & 128 & 150
+\end{array}
+$$
+
+</div>
+<div>
+<PracticaGuiada titulo="Votación rápida · 1 minuto">
+Si la empresa sigue subiendo el precio, el ingreso...
+
+**A.** sube siempre. **B.** sube y después baja. **C.** se queda en $150$.
+</PracticaGuiada>
+
+<Paso n={1}>
+Lo responderemos al final de la clase, con la parábola de $I$.
+</Paso>
+</div>
+</Columnas>

@@ -26,27 +26,27 @@ tramos:
     minutes: 5
   - label: 'Ceros por factorización'
     from: ceros-factorizacion
-    to: ceros-factorizacion
+    to: ceros-trinomio
     minutes: 10
   - label: 'Fórmula general y discriminante'
     from: formula-general
-    to: formula-general
+    to: discriminante-practica
     minutes: 15
   - label: 'Simetría y vértice'
     from: vertice
-    to: vertice
+    to: vertice-formula
     minutes: 13
   - label: 'Efecto de b y forma canónica (breve)'
     from: parametro-b-canonica
-    to: parametro-b-canonica
+    to: forma-canonica
     minutes: 7
   - label: 'Esbozar la parábola y cerrar el contexto'
     from: esbozo-ingreso
-    to: esbozo-ingreso
+    to: respuesta-ingreso
     minutes: 12
   - label: 'Ticket tipo PAES'
     from: ticket-paes
-    to: ticket-paes
+    to: ticket-paes-maximo
     minutes: 9
   - label: 'Cierre'
     from: cierre
@@ -57,9 +57,18 @@ slides:
   - precio-optimo.mdx
   - repaso.mdx
   - ceros-factorizacion.mdx
+  - ceros-trinomio.mdx
   - formula-general.mdx
+  - formula-practica.mdx
+  - discriminante.mdx
+  - discriminante-practica.mdx
   - vertice.mdx
+  - vertice-formula.mdx
   - parametro-b-canonica.mdx
+  - forma-canonica.mdx
   - esbozo-ingreso.mdx
+  - respuesta-ingreso.mdx
   - ticket-paes.mdx
+  - ticket-paes-discriminante.mdx
+  - ticket-paes-maximo.mdx
   - cierre.mdx
