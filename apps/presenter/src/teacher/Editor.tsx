@@ -12,9 +12,11 @@ import { TemplateSlide } from '../app/MascotGallery';
 import { useContent } from '../content/ContentProvider';
 import {
   createLesson,
+  editableRepaso,
   editableSlides,
   findLesson,
   planningWrites,
+  writeRepaso,
   writeSlides,
 } from '../content/ops';
 import { buildExport } from '../editor/export';
@@ -26,6 +28,7 @@ import { useAula } from '../store/AulaProvider';
 import {
   deckSlides,
   hasPending,
+  type DeckSlide,
   lessonMeta,
   pad2,
   PHASE_NAMES,
@@ -43,6 +46,13 @@ import { ParamFields } from './ParamForm';
 import { ConnectHint } from './SaveBar';
 
 const SLIDE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** Lista que se edita: las láminas de la clase o las del repaso del estudiante. */
+type Section = 'slides' | 'repaso';
+
+/** Número visible: 01, 02… en la clase; R1, R2… en el repaso. */
+const slideNumber = (section: Section, k: number) =>
+  section === 'repaso' ? `R${k + 1}` : pad2(k + 1);
 
 /** Identificador de lámina: se edita libre y se aplica al salir del campo si es válido y único. */
 function SlideIdField({
@@ -186,6 +196,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   const lesson = findLesson(content.bundle, lessonId);
   const pendingHere = hasPending(content, lessonId);
   const slides = useMemo(() => (lesson ? editableSlides(lesson) : null), [lesson]);
+  const repaso = useMemo(() => editableRepaso(lesson), [lesson]);
   const [details, setDetails] = useState(false);
 
   const [fieldsModule, setFieldsModule] = useState<FieldsModule | null>(null);
@@ -193,20 +204,28 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     void import('../editor/mdx-fields').then(setFieldsModule);
   }, []);
 
+  const [section, setSection] = useState<Section>('slides');
   const [selected, setSelected] = useState(0);
   const [preview, setPreview] = useState<number | null>(null);
   const [propsOpen, setPropsOpen] = useState(false);
-  const [picker, setPicker] = useState(false);
+  const [picker, setPicker] = useState<Section | null>(null);
   const [exporting, setExporting] = useState(false);
   const [draft, setDraft] = useState('');
   const [draftScope, setDraftScope] = useState<'slide' | 'lesson'>('slide');
   const [showApplied, setShowApplied] = useState(false);
   const issues = useLessonIssues(lessonId, pendingHere ? (slides ?? undefined) : undefined);
+  const repasoIssues = useLessonIssues(lessonId, pendingHere ? repaso : undefined, 'repaso');
 
-  const index = slides ? Math.min(selected, Math.max(0, slides.length - 1)) : 0;
-  const slide = slides?.[index];
+  // Si el repaso queda vacío, la selección vuelve a las láminas de la clase.
+  const listName: Section = section === 'repaso' && repaso.length ? 'repaso' : 'slides';
+  const current = listName === 'repaso' ? repaso : (slides ?? []);
+  const index = Math.min(selected, Math.max(0, current.length - 1));
+  const slide = current[index];
   const deck = useMemo(() => (lesson ? deckSlides(lesson) : []), [lesson]);
-  const deferredDeck = useDeferredValue(deck);
+  const repasoDeck = useMemo(() => (lesson ? deckSlides(lesson, 'repaso') : []), [lesson]);
+  const currentDeck = listName === 'repaso' ? repasoDeck : deck;
+  const deferredDeck = useDeferredValue(currentDeck);
+  const listIssues = listName === 'repaso' ? repasoIssues : issues;
 
   const fields = useMemo<Field[] | 'error' | null>(() => {
     if (!fieldsModule || !slide) return null;
@@ -258,23 +277,31 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     );
   }
 
-  const commit = (next: EditedSlide[]) => {
+  const all = [...slides, ...repaso];
+  const commitTo = (target: Section, next: EditedSlide[]) => {
     if (!content.canEdit) {
       ui.toast('Conecta la app con GitHub (Conexión) para editar.');
       return;
     }
-    content.edit(writeSlides(content.bundle, lessonId, next));
+    content.edit(
+      target === 'repaso'
+        ? writeRepaso(content.bundle, lessonId, next)
+        : writeSlides(content.bundle, lessonId, next),
+    );
   };
+  const commit = (next: EditedSlide[]) => commitTo(listName, next);
   const update = (i: number, patch: Partial<EditedSlide>) =>
-    commit(slides.map((item, k) => (k === i ? { ...item, ...patch } : item)));
-  const pick = (i: number) => {
+    commit(current.map((item, k) => (k === i ? { ...item, ...patch } : item)));
+  const pick = (target: Section, i: number) => {
+    setSection(target);
     setSelected(i);
     setPreview(null);
   };
+  const number = slideNumber(listName, index);
   const move = (delta: -1 | 1) => {
     const j = index + delta;
-    if (j < 0 || j >= slides.length) return;
-    const next = [...slides];
+    if (j < 0 || j >= current.length) return;
+    const next = [...current];
     const a = next[index];
     const b = next[j];
     if (!a || !b) return;
@@ -285,25 +312,34 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   };
   const duplicate = () => {
     if (!slide) return;
-    const next = [...slides];
-    next.splice(index + 1, 0, { ...slide, id: uniqueId(`${slide.id}-copia`, slides) });
+    const next = [...current];
+    next.splice(index + 1, 0, { ...slide, id: uniqueId(`${slide.id}-copia`, all) });
     commit(next);
-    pick(index + 1);
+    pick(listName, index + 1);
   };
+  // La clase conserva al menos una lámina; el repaso puede quedar vacío.
+  const canRemove = listName === 'repaso' || slides.length > 1;
   const remove = () => {
-    if (!slide || slides.length < 2) return;
+    if (!slide || !canRemove) return;
     const undo = content.snap();
-    commit(slides.filter((_, k) => k !== index));
-    ui.toast(`Lámina ${pad2(index + 1)} «${slide.title}» eliminada`, undo);
+    commit(current.filter((_, k) => k !== index));
+    ui.toast(
+      `${listName === 'repaso' ? 'Lámina de repaso' : 'Lámina'} ${number} «${slide.title}» eliminada`,
+      undo,
+    );
   };
+  // Una lámina nueva va después de la seleccionada, o al final si se elige en la otra lista.
+  const insertAt = (target: Section) =>
+    target === listName ? index + 1 : (target === 'repaso' ? repaso : slides).length;
   const addFromTemplate = (templateId: string) => {
     const template = mascotGallery.templates.find((t) => t.id === templateId);
-    if (!template) return;
-    const next = [...slides];
-    next.splice(index + 1, 0, slideFromTemplate(template, uniqueId(template.id, slides)));
-    commit(next);
-    setPicker(false);
-    pick(index + 1);
+    if (!template || !picker) return;
+    const at = insertAt(picker);
+    const next = [...(picker === 'repaso' ? repaso : slides)];
+    next.splice(at, 0, slideFromTemplate(template, uniqueId(template.id, all)));
+    commitTo(picker, next);
+    setPicker(null);
+    pick(picker, at);
   };
   const restore = () => {
     if (!lesson) return;
@@ -318,14 +354,18 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
   const slideNotes = slide ? notes.filter((note) => note.slideId === slide.id && visible(note)) : [];
   const lessonNotes = notes.filter((note) => !note.slideId && visible(note));
   const orphanNotes = notes.filter(
-    (note) => note.slideId && !slides.some((s) => s.id === note.slideId) && visible(note),
+    (note) => note.slideId && !all.some((s) => s.id === note.slideId) && visible(note),
   );
   const applied = notes.length - pending.length;
   const notedIndexes = slides
     .map((s, k) => (pending.some((note) => note.slideId === s.id) ? k : -1))
     .filter((k) => k >= 0);
-  const nextNoted = notedIndexes.find((k) => k > index) ?? notedIndexes[0];
-  const nextBad = issues ? (issues.bad.find((k) => k > index) ?? issues.bad[0]) : undefined;
+  /** Siguiente posición de una lista a partir de la selección. */
+  const nextIn = (target: Section, indexes: readonly number[]) =>
+    indexes.find((k) => target !== listName || k > index) ?? indexes[0];
+  const nextNoted = nextIn('slides', notedIndexes);
+  const nextBad = issues ? nextIn('slides', issues.bad) : undefined;
+  const nextBadRepaso = repasoIssues ? nextIn('repaso', repasoIssues.bad) : undefined;
   const addDraft = () => {
     if (!draft.trim() || !slide) return;
     dispatch({
@@ -354,9 +394,53 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     },
   });
 
-  const slideError = issues?.perSlide[index] ?? null;
+  const slideError = listIssues?.perSlide[index] ?? null;
   const previewStep = slide ? (preview === null || preview > slide.steps ? slide.steps : preview) : 0;
   const pendingFor = (id: string) => pending.filter((note) => note.slideId === id).length;
+
+  const thumb = (target: Section, list: DeckSlide[], item: DeckSlide, k: number) => {
+    const count = pendingFor(item.id);
+    const bad = Boolean((target === 'repaso' ? repasoIssues : issues)?.perSlide[k]);
+    return (
+      <button
+        key={`${item.id}-${k}`}
+        type="button"
+        className={`thumb ${layout === 'mid' ? 'is-image' : ''}`}
+        aria-current={target === listName && k === index ? 'true' : undefined}
+        onClick={() => pick(target, k)}
+      >
+        {layout === 'mid' ? (
+          <span className="thumb-image">
+            <span className="thumb-top">
+              <span className="thumb-n">{slideNumber(target, k)}</span>
+              <span>
+                {count > 0 && <span className="flag-note">{count} com.</span>}
+                {bad && <span className="flag-bad">Revisar</span>}
+              </span>
+            </span>
+            <span className="thumb-frame" aria-hidden="true">
+              <FitSlide mode="width">
+                <SlideView meta={meta} slides={list} index={k} step={item.steps} print />
+              </FitSlide>
+            </span>
+          </span>
+        ) : (
+          <>
+            <span className="thumb-n">{slideNumber(target, k)}</span>
+            <span className="thumb-copy">
+              <span className="thumb-title">{item.title}</span>
+              <span className="thumb-meta">
+                {PHASE_NAMES[item.phase]}
+                {item.steps ? ` · ${item.steps} pasos` : ''}
+                {count ? ` · ${count} ${count === 1 ? 'comentario' : 'comentarios'}` : ''}
+                {bad ? ' · revisar' : ''}
+              </span>
+            </span>
+          </>
+        )}
+      </button>
+    );
+  };
 
   const list = (
     <aside aria-label="Láminas de la clase" className={`editor-list is-${layout}`}>
@@ -387,7 +471,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
         </button>
       )}
       {issues && issues.bad.length > 0 && (
-        <button type="button" className="editor-alert is-error" onClick={() => nextBad !== undefined && pick(nextBad)}>
+        <button type="button" className="editor-alert is-error" onClick={() => nextBad !== undefined && pick('slides', nextBad)}>
           <b>
             Revisión de la clase: {issues.bad.length}{' '}
             {issues.bad.length === 1 ? 'lámina' : 'láminas'} con errores
@@ -399,7 +483,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
         <button
           type="button"
           className="editor-alert is-note"
-          onClick={() => nextNoted !== undefined && pick(nextNoted)}
+          onClick={() => nextNoted !== undefined && pick('slides', nextNoted)}
         >
           <b>
             {pending.length} {pending.length === 1 ? 'comentario pendiente' : 'comentarios pendientes'}
@@ -411,54 +495,40 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           </span>
         </button>
       )}
-      {deck.map((item, k) => {
-        const count = pendingFor(item.id);
-        const bad = Boolean(issues?.perSlide[k]);
-        return (
-          <button
-            key={`${item.id}-${k}`}
-            type="button"
-            className={`thumb ${layout === 'mid' ? 'is-image' : ''}`}
-            aria-current={k === index ? 'true' : undefined}
-            onClick={() => pick(k)}
-          >
-            {layout === 'mid' ? (
-              <span className="thumb-image">
-                <span className="thumb-top">
-                  <span className="thumb-n">{pad2(k + 1)}</span>
-                  <span>
-                    {count > 0 && <span className="flag-note">{count} com.</span>}
-                    {bad && <span className="flag-bad">Revisar</span>}
-                  </span>
-                </span>
-                <span className="thumb-frame" aria-hidden="true">
-                  <FitSlide mode="width">
-                    <SlideView meta={meta} slides={deck} index={k} step={item.steps} print />
-                  </FitSlide>
-                </span>
-              </span>
-            ) : (
-              <>
-                <span className="thumb-n">{pad2(k + 1)}</span>
-                <span className="thumb-copy">
-                  <span className="thumb-title">{item.title}</span>
-                  <span className="thumb-meta">
-                    {PHASE_NAMES[item.phase]}
-                    {item.steps ? ` · ${item.steps} pasos` : ''}
-                    {count ? ` · ${count} ${count === 1 ? 'comentario' : 'comentarios'}` : ''}
-                    {bad ? ' · revisar' : ''}
-                  </span>
-                </span>
-              </>
-            )}
-          </button>
-        );
-      })}
+      {deck.map((item, k) => thumb('slides', deck, item, k))}
       <div className="editor-add">
-        <button type="button" className="btn-new-slide" onClick={() => setPicker(true)}>
+        <button type="button" className="btn-new-slide" onClick={() => setPicker('slides')}>
           + Nueva lámina
         </button>
       </div>
+      <section aria-label="Repaso del estudiante" className="editor-repaso">
+        <div className="editor-repaso-head">
+          <p className="kicker">Repaso del estudiante · {repaso.length}</p>
+          <p className="muted small">
+            Solo en el celular, bajo «Para seguir explorando»: no se proyectan, no salen en el
+            PDF ni cuentan en los tramos.
+          </p>
+        </div>
+        {repasoIssues && repasoIssues.bad.length > 0 && (
+          <button
+            type="button"
+            className="editor-alert is-error"
+            onClick={() => nextBadRepaso !== undefined && pick('repaso', nextBadRepaso)}
+          >
+            <b>
+              Repaso: {repasoIssues.bad.length}{' '}
+              {repasoIssues.bad.length === 1 ? 'lámina' : 'láminas'} con errores
+            </b>
+            <span>Ir a la siguiente →</span>
+          </button>
+        )}
+        {repasoDeck.map((item, k) => thumb('repaso', repasoDeck, item, k))}
+        <div className="editor-add">
+          <button type="button" className="btn-new-slide" onClick={() => setPicker('repaso')}>
+            + Lámina de repaso
+          </button>
+        </div>
+      </section>
     </aside>
   );
 
@@ -541,7 +611,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       className={`editor-props is-${layout} ${layout === 'mid' && !propsOpen ? 'is-hidden' : ''}`}
     >
       <div className="props-head">
-        <h2>Lámina {pad2(index + 1)}</h2>
+        <h2>{listName === 'repaso' ? `Lámina de repaso ${number}` : `Lámina ${number}`}</h2>
         <div className="row">
           <button type="button" className="square-btn" aria-label="Mover antes" disabled={index === 0} onClick={() => move(-1)}>
             <ArrowUp size={18} aria-hidden="true" />
@@ -550,7 +620,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             type="button"
             className="square-btn"
             aria-label="Mover después"
-            disabled={index === slides.length - 1}
+            disabled={index === current.length - 1}
             onClick={() => move(1)}
           >
             <ArrowDown size={18} aria-hidden="true" />
@@ -558,7 +628,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           <button type="button" className="btn btn-small" onClick={duplicate}>
             Duplicar
           </button>
-          <button type="button" className="btn btn-small btn-danger-soft" disabled={slides.length < 2} onClick={remove}>
+          <button type="button" className="btn btn-small btn-danger-soft" disabled={!canRemove} onClick={remove}>
             Eliminar
           </button>
           {layout === 'mid' && (
@@ -633,9 +703,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             </div>
           </div>
           <SlideIdField
-            key={`${lessonId}-${index}`}
+            key={`${lessonId}-${listName}-${index}`}
             value={slide.id}
-            taken={slides.filter((_, k) => k !== index).map((s) => s.id)}
+            taken={all.filter((s) => s !== slide).map((s) => s.id)}
             onCommit={(id) => update(index, { id })}
           />
         </div>
@@ -688,7 +758,8 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
         <section aria-label="Vista previa" className="editor-preview">
           <div className="preview-bar">
             <span className="kicker-rule small-rule">
-              {PHASE_NAMES[slide.phase]} <span aria-hidden="true" /> {pad2(index + 1)}
+              {listName === 'repaso' ? 'Repaso del estudiante' : PHASE_NAMES[slide.phase]}{' '}
+              <span aria-hidden="true" /> {number}
             </span>
             <div role="group" aria-label="Estado de pasos" className="row">
               {layout === 'mid' && (
@@ -714,7 +785,12 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             <FitSlide mode="width">
               <SlideView
                 meta={meta}
-                slides={deferredDeck.length === deck.length ? deferredDeck : deck}
+                slides={
+                  deferredDeck.length === currentDeck.length &&
+                  deferredDeck[index]?.id === currentDeck[index]?.id
+                    ? deferredDeck
+                    : currentDeck
+                }
                 index={index}
                 step={previewStep}
               />
@@ -827,13 +903,20 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       )}
       {props}
       {picker && (
-        <Modal label="Elegir plantilla" onClose={() => setPicker(false)} className="picker">
+        <Modal label="Elegir plantilla" onClose={() => setPicker(null)} className="picker">
           <div className="modal-head">
             <div>
-              <p className="kicker">Nueva lámina después de la {pad2(index + 1)}</p>
+              <p className="kicker">
+                {picker === 'repaso' ? 'Nueva lámina de repaso' : 'Nueva lámina'}{' '}
+                {picker === listName
+                  ? `después de la ${number}`
+                  : picker === 'repaso'
+                    ? 'al final del repaso'
+                    : 'al final de la clase'}
+              </p>
               <h2>Elige una plantilla con mascota</h2>
             </div>
-            <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setPicker(false)}>
+            <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setPicker(null)}>
               <X size={22} aria-hidden="true" />
             </button>
           </div>
@@ -865,7 +948,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             </button>
           </div>
           <p className="muted modal-lead">
-            Descarga un ZIP con <code>lesson.yaml</code> y {slides.length} archivos{' '}
+            Descarga un ZIP con <code>lesson.yaml</code> y {all.length} archivos{' '}
             <code>.mdx</code>, tal como están en la app (incluye los cambios sin guardar).
             No hace falta para publicar: «Guardar en el repositorio» ya lo hace.
           </p>

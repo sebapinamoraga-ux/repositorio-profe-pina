@@ -199,6 +199,41 @@
   font-weight: 650;
   white-space: nowrap;
 }
+/* Repaso del estudiante: segunda lista, separada por un borde. */
+.editor-repaso {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+.editor-repaso-head {
+  padding: 14px 16px 6px;
+  display: grid;
+  gap: 4px;
+}
+.editor-repaso-head p {
+  margin: 0;
+}
+.editor-list.is-mid .editor-repaso-head {
+  padding: 12px 10px 6px;
+}
+/* En la columna angosta basta el título; la explicación queda en la columna ancha. */
+.editor-list.is-mid .editor-repaso-head .muted {
+  display: none;
+}
+.editor-list.is-mid .btn-new-slide {
+  white-space: normal;
+  line-height: 1.2;
+}
+.editor-list.is-narrow .editor-repaso {
+  flex-direction: row;
+  border-top: 0;
+  border-left: 1px solid var(--line);
+}
+.editor-list.is-narrow .editor-repaso-head {
+  width: 220px;
+  align-content: center;
+}
 .editor-preview {
   min-width: 0;
   min-height: 0;
