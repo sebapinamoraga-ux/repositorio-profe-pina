@@ -6,16 +6,18 @@ import { checkContentFiles } from '@aula/content-model/check-content';
 import { readContentFiles } from '@aula/content-model/read-content';
 import { resolve } from 'node:path';
 import { mascotGallery } from '../app/gallery';
-import { skeleton } from '../store/mdx';
+import { skeleton, slideFromTemplate } from '../store/mdx';
 import { libraryOf, planningReducer, UNPLANNED_UNIT } from './library';
 import { migrateLegacy } from './migrate-v1';
 import {
   createLesson,
+  editableRepaso,
   editableSlides,
   findLesson,
   planningWrites,
   removeLessonFiles,
   writeLesson,
+  writeRepaso,
   writeSlides,
   type FileWrite,
 } from './ops';
@@ -99,6 +101,88 @@ describe('láminas de repaso', () => {
     const files = new Map(disk);
     files.set(lesson.path, `${lesson.text}  - apertura.mdx\n`);
     const result = await checkContentFiles(files, { shouldCompile: () => false });
+    expect(result.problems.map((p) => p.message)).toContain(
+      'Archivo de diapositiva repetido (en slides o repaso).',
+    );
+  });
+});
+
+describe('edición del repaso desde la app', () => {
+  const ID = 'funcion-cuadratica-2';
+  const lesson = findLesson(bundle, ID);
+  if (!lesson) throw new Error('Falta la clase base');
+  const repaso = editableRepaso(lesson);
+  const meta = (files: ReadonlyMap<string, string>) =>
+    parse(files.get(lesson.path) ?? '') as { slides: string[]; tramos: unknown; repaso?: string[] };
+  const slidePathOf = (id: string) => `${lesson.dir}/slides/${id}.mdx`;
+  const check = (files: ReadonlyMap<string, string>) =>
+    checkContentFiles(files, { shouldCompile: (path) => path.startsWith(`${lesson.dir}/`) });
+
+  it('cambiar el título de una lámina de repaso solo reescribe su archivo', () => {
+    const [first, ...rest] = repaso;
+    if (!first) throw new Error('Sin repaso');
+    const writes = writeRepaso(bundle, ID, [{ ...first, title: 'Título de prueba del repaso' }, ...rest]);
+    const changed = writes.filter((w) => disk.get(w.path) !== w.text);
+    expect(changed.map((w) => w.path)).toEqual([slidePathOf(first.id)]);
+  });
+
+  it('reordenar, quitar y agregar láminas cambia solo `repaso` y pasa content:check', async () => {
+    const [a, b, c, d] = repaso;
+    const template = mascotGallery.templates[0];
+    if (!a || !b || !c || !d || !template) throw new Error('Faltan datos de prueba');
+    const nueva = slideFromTemplate(template, 'repaso-extra');
+    const files = apply(disk, writeRepaso(bundle, ID, [c, a, nueva, d]));
+    const before = meta(disk);
+    const after = meta(files);
+    expect(after.repaso).toEqual([c.id, a.id, 'repaso-extra', d.id].map((id) => `${id}.mdx`));
+    expect(after.slides).toEqual(before.slides);
+    expect(after.tramos).toEqual(before.tramos);
+    expect(files.has(slidePathOf(b.id))).toBe(false);
+    expect(files.has(slidePathOf('repaso-extra'))).toBe(true);
+    const result = await check(files);
+    expect(result.problems).toEqual([]);
+    expect(findLesson(result.bundle, ID)?.repaso.map((f) => f.slide.id)).toEqual([
+      c.id,
+      a.id,
+      'repaso-extra',
+      d.id,
+    ]);
+  });
+
+  it('quitar todo el repaso borra la clave y sus archivos, sin tocar la clase', async () => {
+    const files = apply(disk, writeRepaso(bundle, ID, []));
+    expect(meta(files)).not.toHaveProperty('repaso');
+    expect((files.get(lesson.path) ?? '').split('\n')).toEqual(
+      lesson.text.split('\n').filter((line) => !/^repaso:|^ {2}- (explorar|comprueba)-/.test(line)),
+    );
+    for (const slide of repaso) expect(files.has(slidePathOf(slide.id))).toBe(false);
+    for (const file of lesson.meta.slides) expect(files.has(`${lesson.dir}/slides/${file}`)).toBe(true);
+    expect((await check(files)).problems).toEqual([]);
+  });
+
+  it('agregar un repaso a una clase sin él lo escribe al final de lesson.yaml', async () => {
+    const sistemas = findLesson(bundle, 'sistemas-2x2');
+    const template = mascotGallery.templates[0];
+    if (!sistemas || !template) throw new Error('Falta la clase base');
+    expect(sistemas.meta.repaso).toBeUndefined();
+    const files = apply(
+      disk,
+      writeRepaso(bundle, 'sistemas-2x2', [slideFromTemplate(template, 'para-explorar')]),
+    );
+    const text = files.get(sistemas.path) ?? '';
+    expect(text.startsWith(sistemas.text.trimEnd())).toBe(true);
+    expect(text.endsWith('repaso:\n  - para-explorar.mdx\n')).toBe(true);
+    const result = await checkContentFiles(files, {
+      shouldCompile: (path) => path.includes('para-explorar'),
+    });
+    expect(result.problems).toEqual([]);
+  });
+
+  it('una lámina de repaso con el ID de una de la clase no pasa content:check', async () => {
+    const [first, ...rest] = repaso;
+    if (!first) throw new Error('Sin repaso');
+    const files = apply(disk, writeRepaso(bundle, ID, [{ ...first, id: 'apertura' }, ...rest]));
+    const result = await check(files);
     expect(result.problems.map((p) => p.message)).toContain(
       'Archivo de diapositiva repetido (en slides o repaso).',
     );

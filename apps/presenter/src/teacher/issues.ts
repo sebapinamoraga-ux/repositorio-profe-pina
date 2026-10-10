@@ -85,19 +85,22 @@ const clean = (count: number): LessonIssues => ({
 /**
  * null mientras se revisa. Lo que está en el repositorio sin cambios ya pasó content:check;
  * se revisa lo que tiene cambios sin guardar (o las láminas que entrega el editor).
+ * Con `list: 'repaso'` revisa las láminas del repaso: sin tramos ni errores de lesson.yaml,
+ * que ya se informan con las de la clase.
  */
 export function useLessonIssues(
   lessonId: string,
   slidesOverride?: readonly EditedSlide[],
+  list: 'slides' | 'repaso' = 'slides',
 ): LessonIssues | null {
   const content = useContent();
-  const lesson = lessonEntry(content, lessonId);
+  const entry = lessonEntry(content, lessonId);
   const pending = hasPending(content, lessonId);
+  const source = entry?.[list] ?? [];
   const slides =
     slidesOverride ??
-    (pending && lesson
-      ? lesson.slides.map(({ slide, body }) => ({ ...slide, body }))
-      : undefined);
+    (pending && entry ? source.map(({ slide, body }) => ({ ...slide, body })) : undefined);
+  const lesson = list === 'slides' ? entry : undefined;
   const lessonErrors = lesson
     ? content.bundle.problems
         .filter((problem) => problem.path === lesson.path)
@@ -137,7 +140,7 @@ export function useLessonIssues(
       clearTimeout(timer);
     };
   }, [key]);
-  if (!slides) return lesson ? clean(lesson.slides.length) : null;
+  if (!slides) return entry ? clean(source.length) : null;
   // Mientras se revisa un cambio, se conserva el último resultado de esta clase.
   return result?.lessonId === lessonId && result.issues.count === slides.length
     ? result.issues

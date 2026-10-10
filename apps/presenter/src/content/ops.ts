@@ -38,6 +38,11 @@ export function editableSlides(lesson: LessonEntry | undefined): EditedSlide[] {
   return (lesson?.slides ?? []).map(({ slide, body }) => ({ ...slide, body }));
 }
 
+/** Láminas del repaso del estudiante, en el orden de `repaso` en lesson.yaml. */
+export function editableRepaso(lesson: LessonEntry | undefined): EditedSlide[] {
+  return (lesson?.repaso ?? []).map(({ slide, body }) => ({ ...slide, body }));
+}
+
 /** Reemplaza las láminas de una clase: escribe cada .mdx, borra los quitados y ajusta lesson.yaml. */
 export function writeSlides(
   bundle: ContentBundle,
@@ -47,13 +52,38 @@ export function writeSlides(
   const lesson = findLesson(bundle, lessonId);
   if (!lesson) return [];
   const writes: FileWrite[] = [];
-  const kept = new Set(slides.map(slideFile));
+  const kept = new Set([...slides.map(slideFile), ...(lesson.meta.repaso ?? [])]);
   for (const slide of slides)
     writes.push({ path: slidePath(lesson.dir, slideFile(slide)), text: toMdx(slide) });
   for (const file of lesson.meta.slides)
     if (!kept.has(file)) writes.push({ path: slidePath(lesson.dir, file), text: null });
   writes.push(
     ...writeLesson(bundle, lessonId, { slides: slides.map(slideFile) }),
+  );
+  return writes;
+}
+
+/**
+ * Reemplaza las láminas del repaso del estudiante: escribe cada .mdx, borra las quitadas y
+ * ajusta `repaso` en lesson.yaml (sin la clave si queda vacío). No toca `slides` ni `tramos`.
+ */
+export function writeRepaso(
+  bundle: ContentBundle,
+  lessonId: string,
+  repaso: readonly EditedSlide[],
+): FileWrite[] {
+  const lesson = findLesson(bundle, lessonId);
+  if (!lesson) return [];
+  const writes: FileWrite[] = [];
+  const kept = new Set([...repaso.map(slideFile), ...lesson.meta.slides]);
+  for (const slide of repaso)
+    writes.push({ path: slidePath(lesson.dir, slideFile(slide)), text: toMdx(slide) });
+  for (const file of lesson.meta.repaso ?? [])
+    if (!kept.has(file)) writes.push({ path: slidePath(lesson.dir, file), text: null });
+  writes.push(
+    ...writeLesson(bundle, lessonId, {
+      repaso: repaso.length ? repaso.map(slideFile) : undefined,
+    }),
   );
   return writes;
 }
