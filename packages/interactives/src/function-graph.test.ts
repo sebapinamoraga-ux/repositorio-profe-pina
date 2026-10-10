@@ -8,6 +8,7 @@ import {
   valorFuncion,
   validarCurva,
   validarVentana,
+  verticeCuadratica,
   type Curva,
 } from './function-graph';
 
@@ -76,5 +77,20 @@ describe('expresionCuadratica', () => {
   it('con a = 0 escribe la recta y con todo nulo escribe 0', () => {
     expect(expresionCuadratica(0, 1, 2)).toBe('x + 2');
     expect(expresionCuadratica(0, 0, 0)).toBe('0');
+  });
+});
+
+describe('verticeCuadratica', () => {
+  it('usa x = −b/(2a) e y = f(x)', () => {
+    expect(verticeCuadratica(1, -4, 3)).toEqual({ x: 2, y: -1 });
+    expect(verticeCuadratica(-2, 40, 0)).toEqual({ x: 10, y: 200 });
+    expect(verticeCuadratica(1, 2, 0)).toEqual({ x: -1, y: -1 });
+  });
+  it('escribe 0 y no −0 cuando b = 0', () => {
+    expect(Object.is(verticeCuadratica(-1, 0, 0).x, 0)).toBe(true);
+    expect(Object.is(verticeCuadratica(-1, 0, 0).y, 0)).toBe(true);
+  });
+  it('sin término cuadrático no hay vértice', () => {
+    expect(() => verticeCuadratica(0, 1, 2)).toThrow();
   });
 });

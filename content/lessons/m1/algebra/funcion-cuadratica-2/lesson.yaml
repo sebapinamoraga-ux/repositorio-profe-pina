@@ -72,3 +72,8 @@ slides:
   - ticket-paes-discriminante.mdx
   - ticket-paes-maximo.mdx
   - cierre.mdx
+repaso:
+  - explorar-a-c.mdx
+  - comprueba-apertura.mdx
+  - explorar-b.mdx
+  - comprueba-b-vertice.mdx

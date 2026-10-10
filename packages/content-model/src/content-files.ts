@@ -45,6 +45,8 @@ export interface LessonEntry {
   text: string;
   /** Solo las láminas que se pudieron leer; las demás quedan en `problems`. */
   slides: SlideFile[];
+  /** Láminas de `repaso`, con la misma lectura que las de la clase. */
+  repaso: SlideFile[];
 }
 
 export interface ContentBundle {
@@ -125,6 +127,7 @@ const lessonDraftSchema = lessonSchema.extend({
   skills: z.array(z.string()),
   curriculum: z.array(z.string()),
   slides: z.array(z.string()),
+  repaso: z.array(z.string()).optional(),
 });
 const slideDraftSchema = slideSchema.extend({
   id: z.string(),
@@ -197,22 +200,32 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
       if (!read.value) continue;
       const meta = read.value;
       const dir = lessonDir(path);
-      const slides: SlideFile[] = [];
-      for (const file of meta.slides) {
-        const source = slidePath(dir, file);
-        const slideText = files.get(source);
-        if (slideText === undefined) {
-          problem(source, `Falta el archivo de la lámina ${file}.`);
-          continue;
+      const readSlides = (list: readonly string[]) => {
+        const read: SlideFile[] = [];
+        for (const file of list) {
+          const source = slidePath(dir, file);
+          const slideText = files.get(source);
+          if (slideText === undefined) {
+            problem(source, `Falta el archivo de la lámina ${file}.`);
+            continue;
+          }
+          const strict = cached('slide', source, slideText, () => splitSource(slideText));
+          const split = strict.value
+            ? strict
+            : cached('slide-draft', source, slideText, () => splitDraft(slideText));
+          if (strict.error) problem(source, strict.error);
+          if (split.value) read.push({ file, path: source, text: slideText, ...split.value });
         }
-        const strict = cached('slide', source, slideText, () => splitSource(slideText));
-        const split = strict.value
-          ? strict
-          : cached('slide-draft', source, slideText, () => splitDraft(slideText));
-        if (strict.error) problem(source, strict.error);
-        if (split.value) slides.push({ file, path: source, text: slideText, ...split.value });
-      }
-      bundle.lessons.push({ meta, dir, path, text, slides });
+        return read;
+      };
+      bundle.lessons.push({
+        meta,
+        dir,
+        path,
+        text,
+        slides: readSlides(meta.slides),
+        repaso: readSlides(meta.repaso ?? []),
+      });
     }
   }
   return bundle;

@@ -4,7 +4,7 @@ Aplicación Vite/React en apps/presenter; contratos Zod en packages/content-mode
 
 ## Contenido: el repositorio es la fuente de verdad
 
-Todo el contenido vive en `content/` del repositorio: `lessons/**/lesson.yaml` con su lista explícita de `slides/*.mdx`, `activities/*.yaml`, `curriculum/*.yaml`, `planning/*.yaml` (unidades y orden de la biblioteca) y la galería de plantillas. Se edita de dos formas equivalentes: a mano en el código o desde la app (rol Docente). La app no tiene servidor propio: lee y escribe en el repositorio con la API de GitHub desde el navegador.
+Todo el contenido vive en `content/` del repositorio: `lessons/**/lesson.yaml` con su lista explícita de `slides/*.mdx` (y, opcionalmente, `repaso`: láminas que solo ve el estudiante), `activities/*.yaml`, `curriculum/*.yaml`, `planning/*.yaml` (unidades y orden de la biblioteca) y la galería de plantillas. Se edita de dos formas equivalentes: a mano en el código o desde la app (rol Docente). La app no tiene servidor propio: lee y escribe en el repositorio con la API de GitHub desde el navegador.
 
 El contenido se maneja como un mapa ruta → texto (`ContentFiles`). `parseContentFiles` (packages/content-model/src/content-files.ts) lo interpreta igual en disco, en el build y desde GitHub, y `checkContentFiles` (check-content.ts) aplica las reglas de content:check sobre ese mapa: el script de Node y el navegador ejecutan el mismo código. La lectura es tolerante: una clase o lámina con un campo vacío sigue visible en la app y su problema se informa.
 

@@ -66,7 +66,9 @@ export function contentPlugin(): Plugin {
       );
       const included = new Set(lessons.map((lesson) => lesson.meta.id));
       const used = new Set(
-        lessons.flatMap((l) => l.slides.flatMap((s) => s.slide.activities)),
+        lessons.flatMap((l) =>
+          [...l.slides, ...l.repaso].flatMap((s) => s.slide.activities),
+        ),
       );
       const files: Record<string, string> = {};
       for (const [path, text] of all) {
@@ -98,7 +100,7 @@ export function contentPlugin(): Plugin {
       let counter = 0;
       for (const lesson of lessons) {
         files[lesson.path] = lesson.text;
-        for (const slide of lesson.slides) {
+        for (const slide of [...lesson.slides, ...lesson.repaso]) {
           files[slide.path] = slide.text;
           const name = `slide${counter++}`;
           imports.push(

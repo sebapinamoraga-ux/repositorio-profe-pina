@@ -71,7 +71,9 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
       : (catalog[0]?.meta.id ?? '');
   });
   const deck = useMemo(() => repoDeck(lessonId), [lessonId]);
-  const slides = useMemo(() => deck?.slides ?? [], [deck]);
+  // Las láminas de repaso siguen a las de la clase y solo existen en el celular.
+  const slides = useMemo(() => [...(deck?.slides ?? []), ...(deck?.repaso ?? [])], [deck]);
+  const classCount = deck?.slides.length ?? 0;
   const repaso = useRepaso(lessonId);
   const { progress } = repaso;
   const index = Math.min(progress.index, Math.max(0, slides.length - 1));
@@ -79,9 +81,10 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
 
   const infos = useMemo(
     () =>
-      (catalog.find((lesson) => lesson.meta.id === lessonId)?.slides ?? []).map(
-        ({ text }) => slideInfo(text),
-      ),
+      (() => {
+        const lesson = catalog.find((entry) => entry.meta.id === lessonId);
+        return lesson ? [...lesson.slides, ...lesson.repaso] : [];
+      })().map(({ text }) => slideInfo(text)),
     [lessonId],
   );
   const info = infos[index];
@@ -177,6 +180,25 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
     );
 
   const n = slides.length;
+  const extra = index >= classCount;
+  const indexRow = (s: (typeof slides)[number], i: number) => (
+    <li key={s.id}>
+      <button
+        type="button"
+        aria-current={i === index ? 'true' : undefined}
+        onClick={() => {
+          goTo(i);
+          setSheet(null);
+          setMode('read');
+          scrollTop();
+        }}
+      >
+        <span className="s-muted">{pad2(i + 1)}</span>
+        <span>{s.title}</span>
+        <span className="s-seen">{progress.seen[s.id] ? '✓ Vista' : ''}</span>
+      </button>
+    </li>
+  );
   const seenCount = slides.filter((s) => progress.seen[s.id]).length;
   const questions = slides.flatMap((s, i) =>
     s.activities.flatMap((id) => {
@@ -203,7 +225,9 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
               setMode('read');
             }}
           >
-            <span>Ticket PAES · lámina {pad2(q.i + 1)}</span>
+            <span>
+              {q.i >= classCount ? 'Para seguir explorando' : 'Ticket PAES'} · lámina {pad2(q.i + 1)}
+            </span>
             <b className={!q.answer ? 'is-muted' : q.ok ? 'is-ok' : 'is-err'}>
               {!q.answer ? 'Sin responder' : q.ok ? '✓ Correcta' : `Respondiste ${q.answer} · reintentar`}
             </b>
@@ -279,7 +303,7 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
         <>
           <main className="s-read">
             <p className="s-eyebrow">
-              {PHASE_NAMES[slide.phase]}
+              {extra ? 'Para seguir explorando' : PHASE_NAMES[slide.phase]}
               <span aria-hidden="true" />
               {pad2(index + 1)}
             </p>
@@ -355,7 +379,11 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
                   } else step(1);
                 }}
               >
-                {index === n - 1 ? 'Fin del repaso' : 'Siguiente lámina'}
+                {index === n - 1
+                  ? 'Fin del repaso'
+                  : index === classCount - 1
+                    ? 'Seguir explorando'
+                    : 'Siguiente lámina'}
               </button>
             </div>
           </nav>
@@ -635,25 +663,16 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
                 dispositivo.
               </p>
               <ol className="s-index">
-                {slides.map((s, i) => (
-                  <li key={s.id}>
-                    <button
-                      type="button"
-                      aria-current={i === index ? 'true' : undefined}
-                      onClick={() => {
-                        goTo(i);
-                        setSheet(null);
-                        setMode('read');
-                        scrollTop();
-                      }}
-                    >
-                      <span className="s-muted">{pad2(i + 1)}</span>
-                      <span>{s.title}</span>
-                      <span className="s-seen">{progress.seen[s.id] ? '✓ Vista' : ''}</span>
-                    </button>
-                  </li>
-                ))}
+                {slides.slice(0, classCount).map((s, i) => indexRow(s, i))}
               </ol>
+              {n > classCount && (
+                <>
+                  <h3 className="s-kicker s-index-group">Para seguir explorando</h3>
+                  <ol className="s-index" start={classCount + 1}>
+                    {slides.slice(classCount).map((s, i) => indexRow(s, classCount + i))}
+                  </ol>
+                </>
+              )}
               <button
                 type="button"
                 className="s-btn s-full"

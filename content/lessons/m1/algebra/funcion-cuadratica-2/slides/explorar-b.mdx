@@ -1,0 +1,45 @@
+---
+id: explorar-b
+title: 'Explora b y el vértice'
+phase: practica
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+<PracticaGuiada titulo="Explora · mueve b">
+1. Con $a=1$, mueve $b$ de $-4$ a $4$. ¿Hacia dónde se mueve el vértice?
+2. ¿Cambia el corte con el eje $y$ cuando mueves $b$?
+3. Pon $a=-1$ y vuelve a mover $b$. ¿Hacia dónde se mueve ahora el vértice?
+</PracticaGuiada>
+
+<Paso n={1}>
+Hacia la **izquierda**: con $a=1$, $x_v=-\frac{b}{2}$, que disminuye cuando $b$ aumenta.
+</Paso>
+<Paso n={2}>
+No: el corte sigue en $(0;\ c)$, porque $f(0)=c$ no depende de $b$.
+</Paso>
+<Paso n={3}>
+Hacia la **derecha**: con $a=-1$, $x_v=-\frac{b}{2\cdot(-1)}=\frac{b}{2}$, que aumenta con $b$.
+</Paso>
+</div>
+<ExploradorCuadratica
+  id="repaso-b"
+  b={0}
+  variarB
+  bEstatico={2}
+  marcarVertice
+  aInicial={1}
+  cInicial={0}
+  aEstatico={1}
+  cEstatico={0}
+  xMin={-5}
+  xMax={5}
+  yMin={-6}
+  yMax={8}
+  pasoY={2}
+  descripcion="Parábola y = ax² + bx + c con controles para a, b y c y su vértice marcado; la curva inicial y = x² queda discontinua como referencia."
+/>
+</Columnas>

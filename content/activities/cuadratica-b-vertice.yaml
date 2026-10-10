@@ -1,0 +1,26 @@
+id: cuadratica-b-vertice
+type: paes
+prompt: 'En f(x) = 2x² + bx + 1, ¿qué valor de b ubica el vértice de la parábola en x = 1?'
+answer: C · b = −4
+solution: 'El vértice está en x = −b/(2a) = −b/4. Para que valga 1, −b/4 = 1, así que b = −4. Comprobación: en f(x) = 2x² − 4x + 1, −(−4)/(2 · 2) = 1.'
+skills: [Resolver problemas, Argumentar]
+source:
+  kind: original
+  reference: Elaboración propia para tercero medio; repaso del efecto de b en el vértice.
+options:
+  - id: A
+    text: 'b = 4'
+    correct: false
+    explanation: 'Olvida el signo menos de −b/(2a): con b = 4, el vértice queda en x = −4/4 = −1.'
+  - id: B
+    text: 'b = −2'
+    correct: false
+    explanation: 'Divide por 2 en vez de 2a = 4: con b = −2, el vértice queda en x = 2/4 = ½.'
+  - id: C
+    text: 'b = −4'
+    correct: true
+    explanation: '−b/(2 · 2) = 1 da b = −4, y en 2x² − 4x + 1 el vértice queda en x = 4/4 = 1.'
+  - id: D
+    text: 'b = 2'
+    correct: false
+    explanation: 'Iguala b/2 a 1 sin el signo ni a: con b = 2, el vértice queda en x = −2/4 = −½.'

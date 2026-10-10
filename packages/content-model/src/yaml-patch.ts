@@ -21,6 +21,7 @@ export const LESSON_KEYS = [
   'status',
   'tramos',
   'slides',
+  'repaso',
 ] as const;
 export const ACTIVITY_KEYS = [
   'id',

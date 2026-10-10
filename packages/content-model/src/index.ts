@@ -117,6 +117,11 @@ export const lessonSchema = z.object({
   curriculum: z.array(id).min(1),
   status: z.enum(['draft', 'published']),
   slides: z.array(z.string().regex(/^[a-z0-9-]+\.mdx$/)).min(1),
+  /**
+   * Láminas solo para el repaso del estudiante: siguen a las de la clase en el celular, pero
+   * no se proyectan, no salen en el PDF ni cuentan en los tramos.
+   */
+  repaso: z.array(z.string().regex(/^[a-z0-9-]+\.mdx$/)).optional(),
   /** Distribución docente del tiempo (no se proyecta): tramos contiguos que cubren toda la clase. */
   tramos: z
     .array(

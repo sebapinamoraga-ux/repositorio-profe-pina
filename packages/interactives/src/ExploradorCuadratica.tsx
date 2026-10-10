@@ -4,6 +4,7 @@ import {
   expresionCuadratica,
   marcasEje,
   muestrearCurva,
+  verticeCuadratica,
   type Curva,
 } from './function-graph';
 
@@ -15,8 +16,9 @@ const curvaDe = (a: number, b: number, c: number): Curva =>
   a === 0 ? { tipo: 'afin', m: b, n: c } : { tipo: 'cuadratica', a, b, c };
 
 /**
- * Parábola y = ax² + bx + c con controles para a y c; b queda fijo. La curva inicial se
- * conserva discontinua como referencia. El PDF muestra los valores estáticos declarados.
+ * Parábola y = ax² + bx + c con controles para a y c; b queda fijo salvo con `variarB`.
+ * La curva inicial se conserva discontinua como referencia y `marcarVertice` rotula el
+ * vértice. El PDF muestra los valores estáticos declarados.
  */
 export function ExploradorCuadratica({
   id,
@@ -31,6 +33,12 @@ export function ExploradorCuadratica({
   cMin = -4,
   cMax = 4,
   cPaso = 1,
+  variarB = false,
+  bEstatico,
+  bMin = -4,
+  bMax = 4,
+  bPaso = 1,
+  marcarVertice = false,
   xMin,
   xMax,
   yMin,
@@ -51,6 +59,14 @@ export function ExploradorCuadratica({
   cMin?: number;
   cMax?: number;
   cPaso?: number;
+  /** Agrega un control para b; `b` pasa a ser su valor inicial. */
+  variarB?: boolean;
+  /** b en la versión impresa; por defecto, `b`. */
+  bEstatico?: number;
+  bMin?: number;
+  bMax?: number;
+  bPaso?: number;
+  marcarVertice?: boolean;
   xMin: number;
   xMax: number;
   yMin: number;
@@ -65,12 +81,19 @@ export function ExploradorCuadratica({
     throw new Error('ExploradorCuadratica requiere aInicial ≠ 0.');
   const keyA = `cuadratica-${id}-a`;
   const keyC = `cuadratica-${id}-c`;
+  const keyB = `cuadratica-${id}-b`;
   const a = runtime.print
     ? aEstatico
     : Number(runtime.values[keyA] ?? aInicial);
   const c = runtime.print
     ? cEstatico
     : Number(runtime.values[keyC] ?? cInicial);
+  const bInicial = b;
+  const bActual = runtime.print
+    ? (bEstatico ?? bInicial)
+    : variarB
+      ? Number(runtime.values[keyB] ?? bInicial)
+      : bInicial;
   const ventana = { xMin, xMax, yMin, yMax };
   const left = 60;
   const top = 40;
@@ -85,7 +108,15 @@ export function ExploradorCuadratica({
           `${index === 0 ? 'M' : 'L'}${sx(point.x).toFixed(2)} ${sy(point.y).toFixed(2)}`,
       )
       .join(' ');
-  const cambiada = a !== aInicial || c !== cInicial;
+  const cambiada = a !== aInicial || c !== cInicial || bActual !== bInicial;
+  const vertice =
+    marcarVertice && a !== 0 ? verticeCuadratica(a, bActual, c) : null;
+  const verticeVisible =
+    vertice !== null &&
+    vertice.x >= xMin &&
+    vertice.x <= xMax &&
+    vertice.y >= yMin &&
+    vertice.y <= yMax;
   const axisY = yMin <= 0 && yMax >= 0 ? sy(0) : sy(yMin);
   const axisX = xMin <= 0 && xMax >= 0 ? sx(0) : sx(xMin);
   const corteVisible = xMin <= 0 && xMax >= 0 && c >= yMin && c <= yMax;
@@ -163,7 +194,7 @@ export function ExploradorCuadratica({
           {cambiada && (
             <path
               className="graph-secondary-line"
-              d={path(curvaDe(aInicial, b, cInicial))}
+              d={path(curvaDe(aInicial, bInicial, cInicial))}
               strokeWidth="4"
               strokeDasharray="14 10"
               fill="none"
@@ -171,7 +202,7 @@ export function ExploradorCuadratica({
           )}
           <path
             className="graph-primary-line graph-curve"
-            d={path(curvaDe(a, b, c))}
+            d={path(curvaDe(a, bActual, c))}
             strokeWidth="6"
             fill="none"
           />
@@ -183,7 +214,26 @@ export function ExploradorCuadratica({
               r="10"
             />
           )}
+          {verticeVisible && (
+            <circle
+              className="graph-vertex"
+              cx={sx(vertice.x)}
+              cy={sy(vertice.y)}
+              r="10"
+            />
+          )}
         </g>
+        {verticeVisible && (
+          <text
+            className="graph-point-label graph-vertex-label"
+            x={sx(vertice.x)}
+            y={sy(vertice.y) + (a > 0 ? 34 : -18)}
+            textAnchor="middle"
+            fontSize="21"
+          >
+            V({formatNumber(vertice.x)}; {formatNumber(vertice.y)})
+          </text>
+        )}
         {corteVisible && (
           <text
             className="graph-point-label"
@@ -213,11 +263,11 @@ export function ExploradorCuadratica({
       </svg>
       <div className="graph-caption">
         <span className="graph-caption-primary">
-          y = {expresionCuadratica(a, b, c)}
+          y = {expresionCuadratica(a, bActual, c)}
           {a === 0 && ' · recta: no es cuadrática'}
         </span>
         {cambiada && (
-          <span>inicial: y = {expresionCuadratica(aInicial, b, cInicial)}</span>
+          <span>inicial: y = {expresionCuadratica(aInicial, bInicial, cInicial)}</span>
         )}
       </div>
       {!runtime.print && (
@@ -234,6 +284,20 @@ export function ExploradorCuadratica({
               onChange={(event) => runtime.setValue(keyA, event.target.value)}
             />
           </label>
+          {variarB && (
+            <label>
+              b = {formatNumber(bActual)}
+              <input
+                aria-label="Coeficiente b"
+                type="range"
+                min={bMin}
+                max={bMax}
+                step={bPaso}
+                value={bActual}
+                onChange={(event) => runtime.setValue(keyB, event.target.value)}
+              />
+            </label>
+          )}
           <label>
             c = {formatNumber(c)}
             <input
@@ -250,6 +314,7 @@ export function ExploradorCuadratica({
             onClick={() => {
               runtime.setValue(keyA, String(aInicial));
               runtime.setValue(keyC, String(cInicial));
+              if (variarB) runtime.setValue(keyB, String(bInicial));
             }}
           >
             Restablecer

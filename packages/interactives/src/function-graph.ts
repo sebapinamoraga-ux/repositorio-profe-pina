@@ -181,3 +181,15 @@ export function expresionCuadratica(a: number, b: number, c: number): string {
     })
     .join('');
 }
+
+/** Vértice de y = ax² + bx + c (a ≠ 0): x = −b/(2a) e y = f(x). */
+export function verticeCuadratica(
+  a: number,
+  b: number,
+  c: number,
+): PuntoGrafico {
+  if (a === 0) throw new Error('Sin término cuadrático no hay vértice.');
+  // Sumar 0 convierte −0 en 0, para no escribir «(−0; 0)».
+  const x = -b / (2 * a) + 0;
+  return { x, y: a * x * x + b * x + c + 0 };
+}

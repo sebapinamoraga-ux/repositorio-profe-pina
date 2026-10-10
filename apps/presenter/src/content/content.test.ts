@@ -70,6 +70,41 @@ describe('planificación', () => {
   });
 });
 
+describe('láminas de repaso', () => {
+  const REPASO = ['explorar-a-c', 'comprueba-apertura', 'explorar-b', 'comprueba-b-vertice'];
+
+  it('se leen aparte de las de la clase', () => {
+    const lesson = findLesson(bundle, 'funcion-cuadratica-2');
+    if (!lesson) throw new Error('Falta la clase base');
+    expect(lesson.repaso.map((file) => file.slide.id)).toEqual(REPASO);
+    const ids = new Set(lesson.slides.map((file) => file.slide.id));
+    expect(REPASO.filter((id) => ids.has(id))).toEqual([]);
+  });
+
+  it('editar las láminas de la clase conserva el repaso', () => {
+    const lesson = findLesson(bundle, 'funcion-cuadratica-2');
+    if (!lesson) throw new Error('Falta la clase base');
+    const files = apply(
+      disk,
+      writeSlides(bundle, 'funcion-cuadratica-2', editableSlides(lesson).slice(1)),
+    );
+    const meta = parse(files.get(lesson.path) ?? '') as { repaso: string[] };
+    expect(meta.repaso).toEqual(REPASO.map((id) => `${id}.mdx`));
+    for (const id of REPASO) expect(files.has(`${lesson.dir}/slides/${id}.mdx`)).toBe(true);
+  });
+
+  it('una lámina en la clase y en el repaso no pasa content:check', async () => {
+    const lesson = findLesson(bundle, 'funcion-cuadratica-2');
+    if (!lesson) throw new Error('Falta la clase base');
+    const files = new Map(disk);
+    files.set(lesson.path, `${lesson.text}  - apertura.mdx\n`);
+    const result = await checkContentFiles(files, { shouldCompile: () => false });
+    expect(result.problems.map((p) => p.message)).toContain(
+      'Archivo de diapositiva repetido (en slides o repaso).',
+    );
+  });
+});
+
 describe('operaciones sobre archivos', () => {
   it('cambiar el título de una lámina solo reescribe su archivo', () => {
     const lesson = findLesson(bundle, 'sistemas-2x2');
