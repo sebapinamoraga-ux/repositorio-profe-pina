@@ -202,3 +202,40 @@ it('exige los atributos de GraficoComparacion y RectaIntervalos', () => {
     ),
   ).toThrow('xMin');
 });
+it('cuenta la señal como paso y valida su posición y texto', () => {
+  const senal = (attrs: Record<string, string | { value: string }>) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxTextElement',
+        name: 'Senal',
+        attributes: Object.entries(attrs).map(([name, value]) => ({
+          type: 'mdxJsxAttribute',
+          name,
+          value,
+        })),
+      },
+    ],
+  });
+  expect(() =>
+    validateMdxTree(
+      senal({ paso: { value: '1' }, texto: 'pendiente', posicion: 'abajo' }),
+      slide,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(senal({ paso: { value: '2' }, texto: 'afín' }), slide),
+  ).toThrow('fuera de 1..1');
+  expect(() =>
+    validateMdxTree(senal({ texto: 'afín' }), slide),
+  ).toThrow('fuera de 1..1');
+  expect(() =>
+    validateMdxTree(
+      senal({ paso: { value: '1' }, texto: 'afín', posicion: 'izquierda' }),
+      slide,
+    ),
+  ).toThrow('posicion');
+  expect(() =>
+    validateMdxTree(senal({ paso: { value: '1' } }), slide),
+  ).toThrow('texto');
+});

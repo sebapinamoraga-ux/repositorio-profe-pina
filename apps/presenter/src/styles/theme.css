@@ -288,6 +288,53 @@ a {
 .katex .asoc-4 {
   --association-soft: var(--association-4-soft);
 }
+.signal {
+  position: relative;
+  display: inline-block;
+}
+.signal-mark {
+  color: var(--procedure);
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.signal-derecha .signal-mark {
+  margin-left: 0.6em;
+}
+.signal-arrow {
+  margin-right: 0.3em;
+}
+.signal-abajo,
+.signal-arriba {
+  text-align: center;
+}
+.signal-abajo {
+  padding-bottom: 1.9em;
+}
+.signal-arriba {
+  padding-top: 1.9em;
+}
+.signal-abajo .signal-mark,
+.signal-arriba .signal-mark {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  transform: translateX(-50%);
+}
+.signal-abajo .signal-mark {
+  bottom: 0;
+  flex-direction: column;
+}
+.signal-arriba .signal-mark {
+  top: 0;
+  flex-direction: column-reverse;
+}
+.signal-abajo .signal-arrow,
+.signal-arriba .signal-arrow {
+  margin: 0;
+}
 .association-inline,
 .katex [class*='asoc-'] {
   padding: 0 0.13em;

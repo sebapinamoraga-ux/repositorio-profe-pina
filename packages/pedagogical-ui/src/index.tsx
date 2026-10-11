@@ -209,6 +209,46 @@ export function Paso({ n, children }: { n: number; children: ReactNode }) {
     </motion.div>
   );
 }
+export type SignalPlacement = 'derecha' | 'abajo' | 'arriba';
+const SIGNAL_ARROWS: Record<SignalPlacement, string> = {
+  derecha: '←',
+  abajo: '↑',
+  arriba: '↓',
+};
+/** Flecha con un rótulo breve que señala una expresión o un término y aparece en un paso. */
+export function Senal({
+  paso,
+  texto,
+  posicion = 'derecha',
+  children,
+}: {
+  paso: number;
+  texto: string;
+  posicion?: SignalPlacement;
+  children: ReactNode;
+}) {
+  const { step, print } = useSlide();
+  const reduced = useReducedMotion();
+  const visible = print || step >= paso;
+  return (
+    <span className={`signal signal-${posicion}`}>
+      <span className="signal-target">{children}</span>
+      <motion.span
+        className="signal-mark"
+        aria-hidden={!visible}
+        initial={false}
+        animate={{ opacity: visible ? 1 : 0 }}
+        transition={{ duration: reduced || print ? 0 : 0.15 }}
+        style={{ visibility: visible ? 'visible' : 'hidden' }}
+      >
+        <span className="signal-arrow" aria-hidden="true">
+          {SIGNAL_ARROWS[posicion]}
+        </span>
+        <span className="signal-text">{texto}</span>
+      </motion.span>
+    </span>
+  );
+}
 export function Formula({ tex }: { tex: string }) {
   return (
     <span

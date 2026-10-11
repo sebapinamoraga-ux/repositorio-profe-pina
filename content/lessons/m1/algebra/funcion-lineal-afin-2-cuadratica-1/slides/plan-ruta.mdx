@@ -3,30 +3,34 @@ id: plan-ruta
 title: 'Para comenzar... un tercer plan de arriendo'
 phase: inicio
 layout: dos-columnas
-steps: 2
+steps: 7
 activities: []
 ---
 
 <Columnas>
 <div>
-<Etiquetas>
-<Etiqueta tono={1}>Libre: $L(x)=500x$</Etiqueta>
-<Etiqueta tono={2}>Base: $B(x)=300x+1.500$</Etiqueta>
-</Etiquetas>
+Los dos planes que ya conocemos:
 
+**Plan Libre:** <Senal paso={1} texto="lineal"><Asociacion tono={1}>$L(x)=500x$</Asociacion></Senal>
+
+**Plan Base:** <Senal paso={2} texto="afín"><Asociacion tono={2}>$B(x)={}$<Senal paso={3} texto="pendiente" posicion="arriba">$300$</Senal>$x+{}$<Senal paso={4} texto="coeficiente de posición" posicion="abajo">$1.500$</Senal></Asociacion></Senal>
+
+<Paso n={5}>
 La empresa lanzó el **Plan Ruta**, pero no publicó su tarifa. Solo tenemos dos boletas.
+</Paso>
 </div>
 <div>
+<Paso n={5}>
 <Tarjeta titulo="Boletas del Plan Ruta" tono={3}>
 **2 km** → **\$2.000**
 
 **6 km** → **\$3.600**
 </Tarjeta>
-
-<Paso n={1}>
+</Paso>
+<Paso n={6}>
 ¿Cuánto más se pagó por los **4 km** de diferencia? ¿Cuánto es por cada kilómetro?
 </Paso>
-<Paso n={2}>
+<Paso n={7}>
 <PracticaGuiada titulo="Pregunta central">
 ¿Cuál es la expresión $R(x)$ del Plan Ruta?
 </PracticaGuiada>

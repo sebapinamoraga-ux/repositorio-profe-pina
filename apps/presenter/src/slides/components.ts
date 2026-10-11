@@ -31,6 +31,7 @@ export const mdxComponents = {
   Cierre: blocks.Cierre,
   Columnas: blocks.Columnas,
   Paso: blocks.Paso,
+  Senal: blocks.Senal,
   Formula: blocks.Formula,
   PreguntaPAES: blocks.PreguntaPAES,
   GraficoSistema,

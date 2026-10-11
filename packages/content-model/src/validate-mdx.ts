@@ -41,6 +41,7 @@ const components = new Set([
   'Cierre',
   'Columnas',
   'Paso',
+  'Senal',
   'Formula',
   'PreguntaPAES',
   'GraficoSistema',
@@ -110,16 +111,35 @@ export function validateMdxTree(
         if (node.name === 'Asociacion' && tone === undefined)
           throw new Error('Asociacion requiere un tono literal de 1..4');
       }
-      if (node.name === 'Paso' || node.name === 'PreguntaPAES') {
+      if (
+        node.name === 'Paso' ||
+        node.name === 'PreguntaPAES' ||
+        node.name === 'Senal'
+      ) {
         const name = node.name === 'Paso' ? 'n' : 'paso';
         const attr = attributes.find((a) => a.name === name)?.value;
         const raw = typeof attr === 'string' ? attr : attr?.value;
-        const n = raw === undefined && name === 'paso' ? 1 : Number(raw);
+        const n =
+          raw === undefined && node.name === 'PreguntaPAES' ? 1 : Number(raw);
         if (!Number.isInteger(n) || n < 1 || n > slide.steps)
           throw new Error(`Paso ${String(raw)} fuera de 1..${slide.steps}`);
         steps.add(n);
         if (node.name === 'Paso' && inStep)
           throw new Error('No anidar bloques Paso');
+      }
+      if (node.name === 'Senal') {
+        const posicion = literalAttribute(attributes, 'posicion');
+        if (
+          posicion !== undefined &&
+          posicion !== 'derecha' &&
+          posicion !== 'abajo' &&
+          posicion !== 'arriba'
+        )
+          throw new Error(
+            `Senal requiere posicion derecha, abajo o arriba: ${posicion}`,
+          );
+        if (!literalAttribute(attributes, 'texto'))
+          throw new Error('Senal requiere un texto literal');
       }
       if (node.name === 'GraficoFuncion') {
         const tipo = literalAttribute(attributes, 'tipo');
