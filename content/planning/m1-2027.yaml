@@ -9,5 +9,6 @@ units:
     title: Funciones
     lessons:
       - id: funcion-lineal-afin-1
+        mark: lista
       - id: funcion-lineal-afin-2-cuadratica-1
       - id: funcion-cuadratica-2
