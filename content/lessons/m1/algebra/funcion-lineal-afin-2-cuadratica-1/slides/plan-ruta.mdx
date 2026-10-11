@@ -3,17 +3,27 @@ id: plan-ruta
 title: 'Para comenzar... un tercer plan de arriendo'
 phase: inicio
 layout: dos-columnas
-steps: 7
+steps: 6
 activities: []
 ---
 
 <Columnas>
 <div>
-Los dos planes que ya conocemos:
+<TablaLectura encabezados="Plan|Expresión|Tipo">
+<FilaLectura nombre="Libre" rasgo="lineal" paso={1}>
+<Asociacion tono={1}>$L(x)=500x$</Asociacion>
+</FilaLectura>
+<FilaLectura nombre="Base" rasgo="afín" paso={2}>
+<Asociacion tono={2}>$B(x)={}$<Senal paso={3} numero={1} texto="pendiente" posicion="arriba">$300$</Senal>$x+{}$<Senal paso={4} numero={2} texto="coeficiente de posición" posicion="abajo">$1.500$</Senal></Asociacion>
+</FilaLectura>
+</TablaLectura>
 
-**Plan Libre:** <Senal paso={1} texto="lineal"><Asociacion tono={1}>$L(x)=500x$</Asociacion></Senal>
-
-**Plan Base:** <Senal paso={2} texto="afín"><Asociacion tono={2}>$B(x)={}$<Senal paso={3} texto="pendiente" posicion="arriba">$300$</Senal>$x+{}$<Senal paso={4} texto="coeficiente de posición" posicion="abajo">$1.500$</Senal></Asociacion></Senal>
+<Paso n={3}>
+<Leyenda>
+<ItemLeyenda numero={1}>$300$: **pendiente** (\$300 por km, cargo dependiente)</ItemLeyenda>
+<ItemLeyenda numero={2} paso={4}>$1.500$: **coeficiente de posición** (cargo fijo)</ItemLeyenda>
+</Leyenda>
+</Paso>
 
 <Paso n={5}>
 La empresa lanzó el **Plan Ruta**, pero no publicó su tarifa. Solo tenemos dos boletas.
@@ -26,11 +36,10 @@ La empresa lanzó el **Plan Ruta**, pero no publicó su tarifa. Solo tenemos dos
 
 **6 km** → **\$3.600**
 </Tarjeta>
-</Paso>
-<Paso n={6}>
+
 ¿Cuánto más se pagó por los **4 km** de diferencia? ¿Cuánto es por cada kilómetro?
 </Paso>
-<Paso n={7}>
+<Paso n={6}>
 <PracticaGuiada titulo="Pregunta central">
 ¿Cuál es la expresión $R(x)$ del Plan Ruta?
 </PracticaGuiada>

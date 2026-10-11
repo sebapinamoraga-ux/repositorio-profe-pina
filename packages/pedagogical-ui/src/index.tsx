@@ -209,44 +209,128 @@ export function Paso({ n, children }: { n: number; children: ReactNode }) {
     </motion.div>
   );
 }
+/** Aparece en el paso indicado (o siempre, sin paso) y reserva su espacio mientras tanto. */
+function Revela({
+  paso,
+  className,
+  children,
+}: {
+  paso?: number;
+  className: string;
+  children: ReactNode;
+}) {
+  const { step, print } = useSlide();
+  const reduced = useReducedMotion();
+  const visible = print || paso === undefined || step >= paso;
+  return (
+    <motion.span
+      className={className}
+      aria-hidden={!visible}
+      initial={false}
+      animate={{ opacity: visible ? 1 : 0 }}
+      transition={{ duration: reduced || print ? 0 : 0.15 }}
+      style={{ visibility: visible ? 'visible' : 'hidden' }}
+    >
+      {children}
+    </motion.span>
+  );
+}
+const NumeroReferencia = ({ numero }: { numero: number }) => (
+  <span className="reference-number">{numero}</span>
+);
 export type SignalPlacement = 'derecha' | 'abajo' | 'arriba';
-const SIGNAL_ARROWS: Record<SignalPlacement, string> = {
-  derecha: '←',
-  abajo: '↑',
-  arriba: '↓',
-};
-/** Flecha con un rótulo breve que señala una expresión o un término y aparece en un paso. */
+/**
+ * Ficha que nombra una expresión o un término y aparece en un paso. Su muesca apunta a lo
+ * que envuelve; el número opcional la conecta con un ItemLeyenda.
+ */
 export function Senal({
   paso,
   texto,
+  numero,
   posicion = 'derecha',
   children,
 }: {
   paso: number;
   texto: string;
+  numero?: number;
   posicion?: SignalPlacement;
   children: ReactNode;
 }) {
-  const { step, print } = useSlide();
-  const reduced = useReducedMotion();
-  const visible = print || step >= paso;
   return (
     <span className={`signal signal-${posicion}`}>
       <span className="signal-target">{children}</span>
-      <motion.span
-        className="signal-mark"
-        aria-hidden={!visible}
-        initial={false}
-        animate={{ opacity: visible ? 1 : 0 }}
-        transition={{ duration: reduced || print ? 0 : 0.15 }}
-        style={{ visibility: visible ? 'visible' : 'hidden' }}
-      >
-        <span className="signal-arrow" aria-hidden="true">
-          {SIGNAL_ARROWS[posicion]}
-        </span>
+      <Revela paso={paso} className="signal-mark">
+        {numero !== undefined && <NumeroReferencia numero={numero} />}
         <span className="signal-text">{texto}</span>
-      </motion.span>
+      </Revela>
     </span>
+  );
+}
+/** Tabla para leer expresiones: nombre, expresión y un rasgo que se revela por fila. */
+export function TablaLectura({
+  encabezados,
+  children,
+}: {
+  encabezados: string;
+  children: ReactNode;
+}) {
+  const [nombre, expresion, rasgo] = encabezados
+    .split('|')
+    .map((e) => e.trim());
+  return (
+    <table className="reading-table">
+      <thead>
+        <tr>
+          <th scope="col">{nombre}</th>
+          <th scope="col">{expresion}</th>
+          <th scope="col">{rasgo}</th>
+        </tr>
+      </thead>
+      <tbody>{children}</tbody>
+    </table>
+  );
+}
+export function FilaLectura({
+  nombre,
+  rasgo,
+  paso,
+  children,
+}: {
+  nombre: string;
+  rasgo: string;
+  paso: number;
+  children: ReactNode;
+}) {
+  return (
+    <tr>
+      <th scope="row">{nombre}</th>
+      <td>{children}</td>
+      <td className="reading-trait-cell">
+        <Revela paso={paso} className="reading-trait">
+          {rasgo}
+        </Revela>
+      </td>
+    </tr>
+  );
+}
+/** Recordatorio de lo que significa cada referencia numerada. */
+export function Leyenda({ children }: { children: ReactNode }) {
+  return <div className="reading-legend">{children}</div>;
+}
+export function ItemLeyenda({
+  numero,
+  paso,
+  children,
+}: {
+  numero: number;
+  paso?: number;
+  children: ReactNode;
+}) {
+  return (
+    <Revela paso={paso} className="reading-legend-item">
+      <NumeroReferencia numero={numero} />
+      <span>{children}</span>
+    </Revela>
   );
 }
 export function Formula({ tex }: { tex: string }) {

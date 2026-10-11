@@ -226,16 +226,96 @@ it('cuenta la señal como paso y valida su posición y texto', () => {
   expect(() =>
     validateMdxTree(senal({ paso: { value: '2' }, texto: 'afín' }), slide),
   ).toThrow('fuera de 1..1');
-  expect(() =>
-    validateMdxTree(senal({ texto: 'afín' }), slide),
-  ).toThrow('fuera de 1..1');
+  expect(() => validateMdxTree(senal({ texto: 'afín' }), slide)).toThrow(
+    'fuera de 1..1',
+  );
   expect(() =>
     validateMdxTree(
       senal({ paso: { value: '1' }, texto: 'afín', posicion: 'izquierda' }),
       slide,
     ),
   ).toThrow('posicion');
+  expect(() => validateMdxTree(senal({ paso: { value: '1' } }), slide)).toThrow(
+    'texto',
+  );
+});
+it('valida la tabla de lectura y la leyenda numerada', () => {
+  const el = (
+    name: string,
+    attrs: Record<string, string | { value: string }>,
+    children: unknown[] = [],
+  ) => ({
+    type: 'mdxJsxFlowElement',
+    name,
+    attributes: Object.entries(attrs).map(([key, value]) => ({
+      type: 'mdxJsxAttribute',
+      name: key,
+      value,
+    })),
+    children,
+  });
+  const fila = el('FilaLectura', {
+    nombre: 'Base',
+    rasgo: 'afín',
+    paso: { value: '1' },
+  });
+  const tabla = (headers: string, rows: unknown[] = [fila]) =>
+    el('TablaLectura', { encabezados: headers }, rows);
+  const root = (...children: unknown[]) => ({ type: 'root', children });
   expect(() =>
-    validateMdxTree(senal({ paso: { value: '1' } }), slide),
-  ).toThrow('texto');
+    validateMdxTree(root(tabla('Plan|Expresión|Tipo')), slide),
+  ).not.toThrow();
+  expect(() => validateMdxTree(root(tabla('Plan|Tipo')), slide)).toThrow(
+    'tres encabezados',
+  );
+  expect(() => validateMdxTree(root(fila), slide)).toThrow(
+    'dentro de TablaLectura',
+  );
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo', [
+          el('FilaLectura', { nombre: 'Base', paso: { value: '1' } }),
+        ]),
+      ),
+      slide,
+    ),
+  ).toThrow('nombre y rasgo');
+  const item = (attrs: Record<string, string | { value: string }>) =>
+    root(
+      tabla('Plan|Expresión|Tipo'),
+      el('Leyenda', {}, [el('ItemLeyenda', attrs)]),
+    );
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('Leyenda', {}, [el('ItemLeyenda', { numero: { value: '1' } })]),
+      ),
+      slide,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(item({ numero: { value: '0' } }), slide),
+  ).toThrow('numero');
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('ItemLeyenda', { numero: { value: '1' } }),
+      ),
+      slide,
+    ),
+  ).toThrow('dentro de Leyenda');
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('Leyenda', {}, [
+          el('ItemLeyenda', { numero: { value: '1' }, paso: { value: '2' } }),
+        ]),
+      ),
+      slide,
+    ),
+  ).toThrow('fuera de 1..1');
 });
