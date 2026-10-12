@@ -15,7 +15,7 @@ objectives:
   - Relacionar el signo de a con la concavidad de la parábola y el valor de c con su intersección con el eje Y.
 skills: [Representar, Modelar, Resolver problemas, Argumentar]
 curriculum: [m1-2027-funcion-lineal-afin, m1-2027-funcion-cuadratica]
-status: draft
+status: published
 tramos:
   - label: 'Inicio: un tercer plan de arriendo'
     from: apertura
