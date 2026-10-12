@@ -67,17 +67,16 @@ export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
                 {PHASE_NAMES[slide.phase]} <span aria-hidden="true" /> {pad2(at + 1)} /{' '}
                 {slides.length}
               </span>
-              <h1>{slide.title}</h1>
+              <h1 title={slide.title}>{slide.title}</h1>
               <p aria-live="polite" className="muted">
                 {stepLabel} · lámina {pad2(at + 1)}
               </p>
-              {slide.steps > 0 && (
-                <div aria-hidden="true" className="step-dots">
-                  {Array.from({ length: slide.steps }, (_, k) => (
-                    <span key={k} className={k < step ? 'is-on' : ''} />
-                  ))}
-                </div>
-              )}
+              {/* Siempre presente, aunque esté vacío, para que los botones no se muevan. */}
+              <div aria-hidden="true" className="step-dots">
+                {Array.from({ length: slide.steps }, (_, k) => (
+                  <span key={k} className={k < step ? 'is-on' : ''} />
+                ))}
+              </div>
             </div>
           )}
           <button

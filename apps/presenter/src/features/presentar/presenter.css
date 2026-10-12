@@ -88,6 +88,17 @@
 .presenter-bar.is-labeled .bar-vote-slot {
   width: 118px;
 }
+.bar-pace-slot {
+  display: flex;
+  flex: none;
+  width: 42px;
+}
+.bar-pace-slot.is-inline {
+  width: 140px;
+}
+.bar-pace-slot > .bar-btn {
+  flex: 1;
+}
 .bar-vote {
   flex: 1;
   color: #f2c86a;
@@ -140,7 +151,9 @@
 }
 .pace-inline {
   display: inline-block;
-  min-width: 92px;
+  width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: left;
   font-size: 14px;
   font-variant-numeric: tabular-nums;

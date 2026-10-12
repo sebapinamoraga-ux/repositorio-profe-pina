@@ -91,6 +91,12 @@
   line-height: 1.15;
   letter-spacing: -0.6px;
   font-weight: 650;
+  /* Alto fijo de dos líneas: un título largo no empuja los botones. */
+  height: 2.3em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .remote-slide p {
   margin: 0;
@@ -98,6 +104,7 @@
 }
 .step-dots {
   display: flex;
+  height: 6px;
   gap: 6px;
   margin-top: 4px;
 }

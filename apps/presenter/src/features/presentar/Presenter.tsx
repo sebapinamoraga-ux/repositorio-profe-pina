@@ -422,25 +422,28 @@ export function Presenter({
               </button>
             )}
           </span>
-          {tramo && (
-            <button
-              type="button"
-              className="bar-btn"
-              aria-label="Ritmo de la clase"
-              aria-pressed={paceOn}
-              title="Ritmo de la clase (R)"
-              onClick={togglePace}
-            >
-              <Timer size={20} aria-hidden="true" />
-              {paceOn && !paceWide && barLabels && (
-                <span className={`pace-inline ${over ? 'is-over' : ''}`}>
-                  {tramo.minutes
-                    ? `${minutes(paceRead.tramoMin)}/${tramo.minutes} min`
-                    : `${minutes(paceRead.tramoMin)} min`}
-                </span>
-              )}
-            </button>
-          )}
+          {/* Hueco fijo: el reloj solo existe en láminas con tramo. */}
+          <span className={`bar-pace-slot ${paceOn && !paceWide && barLabels ? 'is-inline' : ''}`}>
+            {tramo && (
+              <button
+                type="button"
+                className="bar-btn"
+                aria-label="Ritmo de la clase"
+                aria-pressed={paceOn}
+                title="Ritmo de la clase (R)"
+                onClick={togglePace}
+              >
+                <Timer size={20} aria-hidden="true" />
+                {paceOn && !paceWide && barLabels && (
+                  <span className={`pace-inline ${over ? 'is-over' : ''}`}>
+                    {tramo.minutes
+                      ? `${minutes(paceRead.tramoMin)}/${tramo.minutes} min`
+                      : `${minutes(paceRead.tramoMin)} min`}
+                  </span>
+                )}
+              </button>
+            )}
+          </span>
           <button
             type="button"
             className="bar-btn"
