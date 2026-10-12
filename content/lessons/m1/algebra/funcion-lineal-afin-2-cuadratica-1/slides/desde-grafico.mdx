@@ -3,24 +3,29 @@ id: desde-grafico
 title: 'Desde el gráfico a la expresión'
 phase: desarrollo
 layout: dos-columnas
-steps: 2
+steps: 3
 activities: []
 ---
 
 <Columnas>
 <div>
-El **Plan Paseo** solo se conoce por su gráfico.
+**Plan Paseo:** buscamos $P(x)=mx+n$.
 
 <Paso n={1}>
-**Leer $n$:** corta el eje $y$ en $(0;\ 2.000)$, así que $n=2.000$.
+**$n$:** corta el eje $y$ en $(0;\ 2.000)$ → $n=2.000$
 </Paso>
 <Paso n={2}>
-**Contar $m$:** de $x=0$ a $x=4$ sube $1.000$, así que $m=1.000:4=250$.
+**$m$:** sube \$1.000 en 4 km → $m=1.000:4=250$
+</Paso>
+<Paso n={3}>
+<Tarjeta titulo="Expresión del Plan Paseo">
 
 $$
 P(x)=250x+2.000
 $$
 
+$P(4)=250\cdot 4+2.000=3.000$ ✓
+</Tarjeta>
 </Paso>
 </div>
 <GraficoFuncion
@@ -28,15 +33,20 @@ $$
   m={250}
   n={2000}
   xMin={-0.5}
-  xMax={8}
+  xMax={6}
   yMin={0}
-  yMax={4500}
+  yMax={3500}
   paso={1}
   pasoY={500}
   ejeX="km"
   ejeY="$"
-  puntosX={[0, 4]}
+  puntosX={[4]}
+  marcarCorteY
+  pasoCorteY={1}
+  pendienteEn={0}
+  pendienteAncho={4}
+  pasoPendiente={2}
   etiqueta="Plan Paseo"
-  descripcion="Recta del Plan Paseo que pasa por (0; 2.000) y (4; 3.000)."
+  descripcion="Recta del Plan Paseo: corta el eje y en (0; 2.000) y pasa por (4; 3.000); de 0 a 4 km sube 1.000."
 />
 </Columnas>

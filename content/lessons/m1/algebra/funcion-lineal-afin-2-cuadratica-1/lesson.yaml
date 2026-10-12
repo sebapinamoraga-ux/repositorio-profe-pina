@@ -10,46 +10,38 @@ prerequisites:
   - Ubicar pares ordenados en el plano cartesiano.
 objectives:
   - Determinar la expresión de una función afín a partir de dos puntos, de un punto y la pendiente, o de su gráfico.
-  - Modelar una situación con una función afín a partir de una tabla o un enunciado, e interpretar m y n.
+  - Modelar una situación con una función afín a partir de un enunciado, e interpretar m y n.
   - Reconocer una función cuadrática en su expresión y su tabla, y distinguirla de una afín porque sus variaciones no son constantes.
   - Relacionar el signo de a con la concavidad de la parábola y el valor de c con su intersección con el eje Y.
 skills: [Representar, Modelar, Resolver problemas, Argumentar]
 curriculum: [m1-2027-funcion-lineal-afin, m1-2027-funcion-cuadratica]
-status: draft
+status: published
 tramos:
   - label: 'Inicio: un tercer plan de arriendo'
     from: apertura
     to: plan-ruta
     minutes: 5
-  - label: 'De dos puntos, o de un punto y la pendiente, a la expresión'
+  - label: 'De dos puntos a la expresión y comparar con el Plan Base'
     from: dos-puntos
-    to: punto-pendiente
-    minutes: 13
+    to: comparar-planes
+    minutes: 18
   - label: 'Desde el gráfico a la expresión'
     from: desde-grafico
-    to: errores-grafico
-    minutes: 8
-  - label: 'Comparar planes y modelar desde una tabla'
-    from: comparar-planes
-    to: modelar-tabla
-    minutes: 10
+    to: errores-grafico-cociente
+    minutes: 13
   - label: 'Puente: el ingreso de la empresa'
-    from: ingreso-tabla
+    from: ingreso-cantidad
     to: ingreso-tabla
-    minutes: 5
+    minutes: 9
   - label: 'La función cuadrática: a, b, c, la parábola y el efecto de a y c'
     from: cuadratica
     to: efecto-a-c
-    minutes: 20
-  - label: 'Leer una parábola'
-    from: leer-parabola
-    to: leer-parabola
-    minutes: 6
+    minutes: 26
   - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
-    from: ticket-paes
+    from: ticket-paes-cuadratica
     to: ticket-paes-cuadratica
-    minutes: 9
-  - label: 'Cierre y pregunta abierta para la parte 2'
+    minutes: 5
+  - label: 'Cierre: semáforo de aprendizaje'
     from: cierre
     to: cierre
     minutes: 4
@@ -57,17 +49,20 @@ slides:
   - apertura.mdx
   - plan-ruta.mdx
   - dos-puntos.mdx
-  - punto-pendiente.mdx
+  - dos-puntos-n.mdx
+  - dos-puntos-expresion.mdx
+  - comparar-planes.mdx
   - desde-grafico.mdx
   - errores-grafico.mdx
-  - comparar-planes.mdx
-  - modelar-tabla.mdx
+  - errores-grafico-frecuentes.mdx
+  - errores-grafico-cociente.mdx
+  - ingreso-cantidad.mdx
   - ingreso-tabla.mdx
   - cuadratica.mdx
   - identificar-abc.mdx
   - parabola.mdx
   - efecto-a-c.mdx
-  - leer-parabola.mdx
-  - ticket-paes.mdx
   - ticket-paes-cuadratica.mdx
   - cierre.mdx
+repaso:
+  - modelar-tabla.mdx
