@@ -1,0 +1,26 @@
+id: afin-grafico-errores
+type: paes
+prompt: 'Una muestra se saca de un refrigerador y su temperatura aumenta de manera constante. En el gráfico de la figura adjunta se representa la temperatura T, en °C, de la muestra en función del tiempo t, en minutos, desde que se sacó del refrigerador. ¿Cuál de las siguientes funciones modela la temperatura de la muestra?'
+answer: A · T(t) = 2t − 3
+solution: 'La temperatura inicial es −3 °C: n = −3. En 2 minutos sube de −3 °C a 1 °C, es decir, 4 °C: m = 4 : 2 = 2. Luego T(t) = 2t − 3.'
+skills: [Representar, Modelar]
+source:
+  kind: original
+  reference: Elaboración propia con el formato de la PAES M1; función afín a partir de su gráfico.
+options:
+  - id: A
+    text: 'T(t) = 2t − 3'
+    correct: true
+    explanation: 'n = −3 es la temperatura inicial y m = 4 : 2 = 2 son los grados que sube por minuto. Cumple T(0) = −3 y T(2) = 1.'
+  - id: B
+    text: 'T(t) = 2t + 3'
+    correct: false
+    explanation: 'Cambia el signo de n: la temperatura inicial es −3 °C, bajo cero, no 3 °C. Aquí T(0) = 3.'
+  - id: C
+    text: 'T(t) = 0,5t − 3'
+    correct: false
+    explanation: 'Invierte el cociente: divide el tiempo por la temperatura, 2 : 4, en vez de la temperatura por el tiempo, 4 : 2. Aquí T(2) = −2.'
+  - id: D
+    text: 'T(t) = 4t − 3'
+    correct: false
+    explanation: 'Usa lo que sube, 4 °C, como pendiente sin dividir por los 2 minutos. Aquí T(2) = 5.'

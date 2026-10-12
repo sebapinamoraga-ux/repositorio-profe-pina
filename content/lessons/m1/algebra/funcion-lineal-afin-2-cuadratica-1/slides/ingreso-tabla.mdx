@@ -1,6 +1,6 @@
 ---
 id: ingreso-tabla
-title: 'El ingreso de la empresa'
+title: '¿El ingreso es una función afín?'
 phase: desarrollo
 layout: dos-columnas
 steps: 3
@@ -9,34 +9,46 @@ activities: []
 
 <Columnas>
 <div>
-Para los tours de un día, la empresa observó que si cobra $\htmlClass{asoc-4}{x}$ **miles de pesos**, arrienda $40-2\htmlClass{asoc-4}{x}$ **bicicletas**.
-
-<Etiquetas>
-<Etiqueta tono={4}>$x$: precio (miles de pesos)</Etiqueta>
-</Etiquetas>
-
-<Paso n={1}>
-Ingreso = precio × cantidad:
-
-$$
-I(\htmlClass{asoc-4}{x})=\htmlClass{asoc-4}{x}\,(40-2\htmlClass{asoc-4}{x})
-$$
-
-</Paso>
-</div>
-<div>
-<Paso n={2}>
 
 $$
 \begin{array}{c|c|c|c|c|c|c}
-x & 0 & 1 & 2 & 3 & 4 & 5\\ \hline
+\htmlClass{asoc-4}{x} & 0 & 1 & 2 & 3 & 4 & 5\\
+\htmlClass{asoc-1}{40-2x} & 40 & 38 & 36 & 34 & 32 & 30\\ \hline
 I(x) & 0 & 38 & 72 & 102 & 128 & 150
 \end{array}
 $$
 
+<Paso n={1}>
+Variaciones de $I$: $\;+38,\ +34,\ +30,\ +26,\ +22$
+</Paso>
+<Paso n={2}>
+Si fuera afín, subiría siempre $38$ y en $x=5$ llegaría a $190$. Llega a $150$.
 </Paso>
 <Paso n={3}>
-Las variaciones son $38,\ 34,\ 30,\ 26,\ 22$: **no son constantes**. $I$ no es afín y su gráfico **no es una recta**.
+<Tarjeta titulo="No es afín">
+Las variaciones **no son constantes**: el gráfico de $I$ **no es una recta**, es una curva.
+</Tarjeta>
 </Paso>
 </div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={-2}
+  b={40}
+  c={0}
+  xMin={0}
+  xMax={6}
+  yMin={0}
+  yMax={200}
+  paso={1}
+  pasoY={50}
+  ejeX="x"
+  ejeY="ingreso"
+  puntosX={[1, 2, 3, 4, 5]}
+  pasoCurva={3}
+  referenciaM={38}
+  pasoReferencia={2}
+  etiquetaReferencia="Si subiera siempre 38"
+  etiqueta="Ingreso I(x)"
+  descripcion="Puntos del ingreso de x = 1 a x = 5: 38, 72, 102, 128 y 150 miles de pesos. Quedan bajo la recta discontinua y = 38x y forman una curva."
+/>
 </Columnas>
