@@ -7,6 +7,8 @@ import type { View } from '../store/schema';
 import { nowParts, uid } from '../store/teacher';
 import { useUi } from '../ui/UiProvider';
 import { makeNote } from './notes';
+import { Button } from '../ui/Button';
+import { Card, Page, PageHeader } from '../ui/Layout';
 
 export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { data, dispatch, snap } = useAula();
@@ -80,21 +82,20 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
   };
 
   return (
-    <main className="page page-grid-bg">
-      <div className="page-inner page-courses">
-        <header className="page-head">
-          <p className="kicker">Cursos e historial docente</p>
-          <h1 className="page-title">Tus cursos</h1>
-          <p className="page-lead">
-            Elige un curso al iniciar una clase. Cada sesión registra curso, clase, fecha,
-            inicio, término y tu observación. Nada de esto aparece en el contenido público ni
-            en el PDF.
-          </p>
-        </header>
+    <Page width="wide" grid>
+        <PageHeader
+          kicker="Cursos e historial docente"
+          title="Tus cursos"
+          lead="Elige un curso al iniciar una clase. Cada sesión registra curso, clase, fecha, inicio, término y tu observación. Nada de esto aparece en el contenido público ni en el PDF."
+        />
         {active && (
-          <section aria-label="Clase en curso" className={`tab-card tone-ok active-session ${width < 800 ? '' : 'is-wide'}`}>
+          <Card
+            aria-label="Clase en curso"
+            tone="comprobacion"
+            className={`active-session ${width < 800 ? '' : 'is-wide'}`}
+          >
             <div className="stack-tight">
-              <p className="tab-label">Clase en curso · desde {active.start}</p>
+              <p className="card-tab">Clase en curso · desde {active.start}</p>
               <p className="active-title">
                 {courseName(active.courseId)} · {active.lessonTitle}
               </p>
@@ -123,14 +124,14 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
               </label>
             </div>
             <div className="row">
-              <button type="button" className="btn" onClick={() => onNavigate('presentar')}>
+              <Button onClick={() => onNavigate('presentar')}>
                 Volver a proyectar
-              </button>
-              <button type="button" className="btn btn-ok" onClick={end}>
+              </Button>
+              <Button variant="primary" onClick={end}>
                 Terminar y registrar
-              </button>
+              </Button>
             </div>
-          </section>
+          </Card>
         )}
         <section aria-label="Cursos" className="course-grid">
           {data.courses.map((course) => {
@@ -172,12 +173,11 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
                       />
                     </label>
                     <div className="row">
-                      <button type="button" className="btn btn-ink" onClick={() => setEditing(null)}>
+                      <Button variant="primary" onClick={() => setEditing(null)}>
                         Listo
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-danger-soft"
+                      </Button>
+                      <Button
+                        variant="danger"
                         onClick={() => {
                           const undo = snap(['courses']);
                           dispatch({ type: 'removeCourse', id: course.id });
@@ -186,7 +186,7 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
                         }}
                       >
                         Eliminar curso
-                      </button>
+                      </Button>
                     </div>
                   </>
                 ) : (
@@ -200,17 +200,16 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
                       </p>
                     </div>
                     <div className="row course-actions">
-                      <button
-                        type="button"
-                        className="btn btn-accent"
+                      <Button
+                        variant="present"
                         disabled={Boolean(active)}
                         onClick={() => start(course.id)}
                       >
                         Iniciar clase
-                      </button>
-                      <button type="button" className="btn" onClick={() => setEditing(course.id)}>
+                      </Button>
+                      <Button onClick={() => setEditing(course.id)}>
                         Editar
-                      </button>
+                      </Button>
                     </div>
                   </>
                 )}
@@ -241,9 +240,9 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
               value={observaciones}
               onChange={(event) => setObservaciones(event.target.value)}
             />
-            <button type="submit" className="btn btn-ink" disabled={!nombre.trim()}>
+            <Button type="submit" variant="primary" disabled={!nombre.trim()}>
               Agregar curso
-            </button>
+            </Button>
           </form>
         </section>
         <section aria-label="Historial de sesiones" className="history">
@@ -284,7 +283,6 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
             </article>
           ))}
         </section>
-      </div>
-    </main>
+    </Page>
   );
 }

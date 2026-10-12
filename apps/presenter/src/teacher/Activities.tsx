@@ -12,6 +12,8 @@ import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { ListField } from './LessonForm';
 import { ConnectHint } from './SaveBar';
+import { Button, IconButton } from '../ui/Button';
+import { Notice, Page, PageHeader } from '../ui/Layout';
 
 type Option = NonNullable<Activity['options']>[number];
 type Equation = [number, number, number];
@@ -136,9 +138,9 @@ function ActivityForm({
           <p className="kicker">{isNew ? 'Nueva actividad' : 'Actividad'} · {draft.id}</p>
           <h2>{draft.type === 'paes' ? 'Pregunta tipo PAES' : 'Pregunta abierta'}</h2>
         </div>
-        <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onClose}>
+        <IconButton label="Cerrar" onClick={onClose}>
           <X size={22} aria-hidden="true" />
-        </button>
+        </IconButton>
       </div>
       <div className="lesson-form">
         <label className="field">
@@ -170,10 +172,9 @@ function ActivityForm({
                     onChange={(event) => setOption(k, { text: event.target.value })}
                   />
                   {options.length > 4 && (
-                    <button
-                      type="button"
-                      className="icon-btn icon-danger"
-                      aria-label={`Quitar alternativa ${option.id}`}
+                    <IconButton
+                      danger
+                      label={`Quitar alternativa ${option.id}`}
                       onClick={() =>
                         set({
                           options: options
@@ -183,7 +184,7 @@ function ActivityForm({
                       }
                     >
                       <Trash2 size={16} aria-hidden="true" />
-                    </button>
+                    </IconButton>
                   )}
                 </div>
                 <textarea
@@ -211,9 +212,8 @@ function ActivityForm({
               </div>
             ))}
             {options.length < 5 && (
-              <button
-                type="button"
-                className="link-btn"
+              <Button
+                variant="quiet" size="sm"
                 onClick={() =>
                   set({
                     options: [
@@ -230,7 +230,7 @@ function ActivityForm({
                 }
               >
                 <Plus size={14} aria-hidden="true" /> Agregar alternativa
-              </button>
+              </Button>
             )}
           </fieldset>
         )}
@@ -238,13 +238,12 @@ function ActivityForm({
           Respuesta
           <input value={draft.answer} onChange={(event) => set({ answer: event.target.value })} />
           {correct && !draft.answer.startsWith(correct.id) && (
-            <button
-              type="button"
-              className="link-btn"
+            <Button
+              variant="quiet" size="sm"
               onClick={() => set({ answer: `${correct.id} · ${correct.text}` })}
             >
               Usar «{correct.id} · {correct.text}»
-            </button>
+            </Button>
           )}
         </label>
         <label className="field">
@@ -305,24 +304,24 @@ function ActivityForm({
         </fieldset>
       </div>
       {problems.length > 0 ? (
-        <div className="alert alert-warn">
+        <Notice tone="warn">
           <b>Antes de aplicar, corrige:</b>
           <ul>
             {problems.map((problem) => (
               <li key={problem}>{problem}</li>
             ))}
           </ul>
-        </div>
+        </Notice>
       ) : (
-        <p className="alert alert-ok small">Comprobación sin problemas.</p>
+        <Notice tone="ok" className="small">Comprobación sin problemas.</Notice>
       )}
       <div className="modal-actions">
-        <button type="button" className="btn" onClick={onClose}>
+        <Button onClick={onClose}>
           Cancelar
-        </button>
-        <button type="button" className="btn btn-ink" disabled={problems.length > 0} onClick={apply}>
+        </Button>
+        <Button variant="primary" disabled={problems.length > 0} onClick={apply}>
           Aplicar cambios
-        </button>
+        </Button>
       </div>
     </Modal>
   );
@@ -352,23 +351,19 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
   };
 
   return (
-    <main className="page">
-      <div className="page-inner">
-        <header className="library-head">
-          <div>
-            <p className="kicker">Banco de actividades</p>
-            <h1 className="page-title">Actividades y preguntas PAES</h1>
-            <p className="page-lead">
-              Las láminas las muestran con el bloque «Pregunta PAES». Cada cambio se
-              comprueba igual que en content:check antes de aplicarse.
-            </p>
-          </div>
-          {content.canEdit && (
-            <button type="button" className="btn btn-small btn-ink" onClick={() => setCreating(true)}>
+    <Page>
+        <PageHeader
+          kicker="Banco de actividades"
+          title="Actividades y preguntas PAES"
+          lead="Las láminas las muestran con el bloque «Pregunta PAES». Cada cambio se comprueba igual que en content:check antes de aplicarse."
+          actions={
+            content.canEdit && (
+            <Button variant="primary" size="sm" onClick={() => setCreating(true)}>
               <Plus size={18} aria-hidden="true" /> Nueva actividad
-            </button>
-          )}
-        </header>
+            </Button>
+            )
+          }
+        />
         {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
         {creating && (
           <form className="add-form" onSubmit={create}>
@@ -385,12 +380,12 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
               </button>
             </div>
             <div className="row row-end">
-              <button type="button" className="btn btn-small" onClick={() => setCreating(false)}>
+              <Button size="sm" onClick={() => setCreating(false)}>
                 Cancelar
-              </button>
-              <button type="submit" className="btn btn-small btn-ink" disabled={!title.trim()}>
+              </Button>
+              <Button type="submit" variant="primary" size="sm" disabled={!title.trim()}>
                 Crear
-              </button>
+              </Button>
             </div>
           </form>
         )}
@@ -416,23 +411,21 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
                   </div>
                   {content.canEdit && (
                     <div className="row">
-                      <button
-                        type="button"
-                        className="btn btn-small btn-ink"
+                      <Button
+                        variant="primary" size="sm"
                         onClick={() => setEditing({ activity, isNew: false })}
                       >
                         Editar
-                      </button>
-                      <button
-                        type="button"
-                        className="square-btn is-danger"
-                        aria-label={`Eliminar ${activity.id}`}
+                      </Button>
+                      <IconButton
+                        outline danger
+                        label={`Eliminar ${activity.id}`}
                         disabled={uses.length > 0}
                         title={uses.length ? 'Primero quítala de las láminas que la usan.' : undefined}
                         onClick={() => remove(activity)}
                       >
                         <Trash2 size={18} aria-hidden="true" />
-                      </button>
+                      </IconButton>
                     </div>
                   )}
                 </div>
@@ -440,7 +433,6 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
             );
           })}
         </ul>
-      </div>
       {editing && (
         <ActivityForm
           key={editing.activity.id}
@@ -449,6 +441,6 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
           onClose={() => setEditing(null)}
         />
       )}
-    </main>
+    </Page>
   );
 }

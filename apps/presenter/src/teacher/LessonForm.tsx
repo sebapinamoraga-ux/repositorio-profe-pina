@@ -6,6 +6,8 @@ import { useContent } from '../content/ContentProvider';
 import { findLesson, writeLesson } from '../content/ops';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
+import { Button, IconButton } from '../ui/Button';
+import { Notice } from '../ui/Layout';
 
 type Tramo = NonNullable<Lesson['tramos']>[number];
 
@@ -64,19 +66,18 @@ export function ListField({
               onChange={(event) => set(k, event.target.value)}
             />
           )}
-          <button
-            type="button"
-            className="icon-btn icon-danger"
-            aria-label={`Quitar ${label.toLowerCase()} ${k + 1}`}
+          <IconButton
+            danger
+            label={`Quitar ${label.toLowerCase()} ${k + 1}`}
             onClick={() => onChange(items.filter((_, j) => j !== k))}
           >
             <Trash2 size={16} aria-hidden="true" />
-          </button>
+          </IconButton>
         </div>
       ))}
-      <button type="button" className="link-btn" onClick={() => onChange([...items, ''])}>
+      <Button variant="quiet" size="sm" onClick={() => onChange([...items, ''])}>
         <Plus size={14} aria-hidden="true" /> Agregar
-      </button>
+      </Button>
     </fieldset>
   );
 }
@@ -145,20 +146,18 @@ function TramosField({
             value={tramo.minutes}
             onChange={(event) => set(k, { minutes: Math.max(0, Number(event.target.value) || 0) })}
           />
-          <button
-            type="button"
-            className="icon-btn icon-danger"
-            aria-label={`Quitar tramo ${k + 1}`}
+          <IconButton
+            danger
+            label={`Quitar tramo ${k + 1}`}
             onClick={() => onChange(tramos.filter((_, j) => j !== k))}
           >
             <Trash2 size={16} aria-hidden="true" />
-          </button>
+          </IconButton>
         </div>
       ))}
       <div className="row">
-        <button
-          type="button"
-          className="link-btn"
+        <Button
+          variant="quiet" size="sm"
           disabled={!ids.length}
           onClick={() =>
             onChange([
@@ -173,7 +172,7 @@ function TramosField({
           }
         >
           <Plus size={14} aria-hidden="true" /> Agregar tramo
-        </button>
+        </Button>
         {tramos.length > 0 && (
           <span className={`small ${total === lesson.duration ? 'muted' : 'text-error'}`}>
             Suman {total} de {lesson.duration} minutos
@@ -234,9 +233,9 @@ export function LessonDialog({
           <p className="kicker">Datos de la clase · {meta.id}</p>
           <h2>{meta.title || 'Sin título'}</h2>
         </div>
-        <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onClose}>
+        <IconButton label="Cerrar" onClick={onClose}>
           <X size={22} aria-hidden="true" />
-        </button>
+        </IconButton>
       </div>
       <div className="lesson-form">
         <label className="field">
@@ -351,21 +350,21 @@ export function LessonDialog({
         <TramosField lesson={meta} onChange={(tramos) => patch({ tramos })} />
       </div>
       {problems.length > 0 ? (
-        <div className="alert alert-warn">
+        <Notice tone="warn">
           <b>Para guardar, corrige:</b>
           <ul>
             {problems.map((problem) => (
               <li key={problem}>{problem}</li>
             ))}
           </ul>
-        </div>
+        </Notice>
       ) : (
         <p className="muted small">Los cambios quedan pendientes hasta que guardes.</p>
       )}
       <div className="modal-actions">
-        <button type="button" className="btn btn-ink" onClick={onClose}>
+        <Button variant="primary" onClick={onClose}>
           Listo
-        </button>
+        </Button>
       </div>
     </Modal>
   );

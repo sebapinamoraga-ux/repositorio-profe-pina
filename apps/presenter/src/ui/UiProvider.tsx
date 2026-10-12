@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { Check } from 'lucide-react';
 import { Modal } from './Modal';
+import { Button } from './Button';
 
 interface ConfirmOptions {
   title: string;
@@ -106,22 +107,19 @@ export function UiProvider({ children }: { children: ReactNode }) {
           <h2>{dialog.title}</h2>
           {dialog.body && <p>{dialog.body}</p>}
           <div className="modal-actions">
-            <button
-              type="button"
-              className="btn"
+            <Button
               data-autofocus={dialog.danger ? '' : undefined}
               onClick={() => close(false)}
             >
               {dialog.cancel ?? 'Cancelar'}
-            </button>
-            <button
-              type="button"
-              className={dialog.danger ? 'btn btn-danger' : 'btn btn-ink'}
+            </Button>
+            <Button
+              variant={dialog.danger ? 'danger-strong' : 'primary'}
               data-autofocus={dialog.danger ? undefined : ''}
               onClick={() => close(true)}
             >
               {dialog.ok ?? 'Aceptar'}
-            </button>
+            </Button>
           </div>
         </Modal>
       )}

@@ -25,6 +25,8 @@ import { useUi } from '../ui/UiProvider';
 import { useLessonIssues } from './issues';
 import { LessonDialog } from './LessonForm';
 import { ConnectHint } from './SaveBar';
+import { Button, IconButton } from '../ui/Button';
+import { Notice, Page, PageHeader } from '../ui/Layout';
 
 /** Aplica cambios de la planificación sobre el contenido efectivo. */
 function usePlanning() {
@@ -248,70 +250,66 @@ function LessonRow({
                   ))}
                 </select>
               </label>
-              <button
-                type="button"
-                className="square-btn"
-                aria-label={`Subir «${entry.title}»`}
+              <IconButton
+                outline
+                label={`Subir «${entry.title}»`}
                 disabled={first || !planned}
                 onClick={() => planning({ type: 'moveLesson', id: entry.id, delta: -1 })}
               >
                 <ChevronUp size={18} aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                className="square-btn"
-                aria-label={`Bajar «${entry.title}»`}
+              </IconButton>
+              <IconButton
+                outline
+                label={`Bajar «${entry.title}»`}
                 disabled={last || !planned}
                 onClick={() => planning({ type: 'moveLesson', id: entry.id, delta: 1 })}
               >
                 <ChevronDown size={18} aria-hidden="true" />
-              </button>
+              </IconButton>
               {!original && (
-                <button
-                  type="button"
-                  className="square-btn is-danger"
-                  aria-label={`Eliminar «${entry.title}»`}
+                <IconButton
+                  outline danger
+                  label={`Eliminar «${entry.title}»`}
                   onClick={remove}
                 >
                   <Trash2 size={18} aria-hidden="true" />
-                </button>
+                </IconButton>
               )}
             </div>
           ) : editing ? (
-            <button type="button" className="btn btn-small btn-ink" onClick={() => onEditing(false)}>
+            <Button variant="primary" size="sm" onClick={() => onEditing(false)}>
               Listo
-            </button>
+            </Button>
           ) : (
             <div className="row">
               {!has && canEdit && (
-                <button type="button" className="btn btn-small btn-ink" onClick={onPrepare}>
+                <Button variant="primary" size="sm" onClick={onPrepare}>
                   Preparar
-                </button>
+                </Button>
               )}
               {has && (
-                <button
-                  type="button"
-                  className={`btn btn-small ${entry.status === 'lista' ? '' : 'btn-ink'}`}
+                <Button
+                  variant={entry.status === 'lista' ? 'secondary' : 'primary'}
+                  size="sm"
                   onClick={() => open('editor')}
                 >
                   Editar
-                </button>
+                </Button>
               )}
               {has && entry.status === 'lista' && (
-                <button type="button" className="btn btn-small btn-accent" onClick={() => open('presentar')}>
+                <Button variant="present" size="sm" onClick={() => open('presentar')}>
                   Presentar
-                </button>
+                </Button>
               )}
               {canEdit && (
-                <button
-                  type="button"
-                  className="square-btn more-btn"
+                <IconButton
+                  outline className="more-btn"
                   aria-expanded={menuOpen}
-                  aria-label={`Más acciones para ${entry.title}`}
+                  label={`Más acciones para ${entry.title}`}
                   onClick={() => onMenu(!menuOpen)}
                 >
                   ⋯
-                </button>
+                </IconButton>
               )}
             </div>
           )}
@@ -319,44 +317,41 @@ function LessonRow({
       </div>
       {menuOpen && !organizing && (
         <div role="group" aria-label="Más acciones" className="lesson-menu">
-          <button
-            type="button"
-            className="btn btn-small"
+          <Button
+            size="sm"
             onClick={() => {
               onEditing(true);
               onMenu(false);
             }}
           >
             Editar título y objetivo
-          </button>
+          </Button>
           {has && (
-            <button
-              type="button"
-              className="btn btn-small"
+            <Button
+              size="sm"
               onClick={() => {
                 onDetails();
                 onMenu(false);
               }}
             >
               Datos de la clase
-            </button>
+            </Button>
           )}
           {has && (
-            <button type="button" className="btn btn-small" onClick={duplicate}>
+            <Button size="sm" onClick={duplicate}>
               Duplicar
-            </button>
+            </Button>
           )}
           {has && entry.status === 'en-preparacion' && (
             <>
-              <button
-                type="button"
-                className="btn btn-small btn-ok-soft"
+              <Button
+                size="sm"
                 disabled={blocked}
                 aria-describedby={issues?.errors ? `why-${entry.id}` : undefined}
                 onClick={() => setMark('lista')}
               >
                 Marcar como lista
-              </button>
+              </Button>
               {issues && issues.errors > 0 && (
                 <p id={`why-${entry.id}`} className="menu-why">
                   Para marcarla como lista, corrige primero los errores de revisión en el
@@ -366,18 +361,17 @@ function LessonRow({
             </>
           )}
           {entry.status === 'lista' && !original && (
-            <button
-              type="button"
-              className="btn btn-small"
+            <Button
+              size="sm"
               onClick={() => setMark('en-preparacion')}
             >
               Volver a preparación
-            </button>
+            </Button>
           )}
           {!original && (
-            <button type="button" className="btn btn-small btn-danger-soft" onClick={remove}>
+            <Button variant="danger" size="sm" onClick={remove}>
               {has ? 'Eliminar clase' : 'Quitar de la biblioteca'}
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -432,9 +426,9 @@ function PrepareDialog({
           <p className="kicker">Preparar clase</p>
           <h2>{entry.title}</h2>
         </div>
-        <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onClose}>
+        <IconButton label="Cerrar" onClick={onClose}>
           <X size={22} aria-hidden="true" />
-        </button>
+        </IconButton>
       </div>
       <div role="radiogroup" aria-label="Punto de partida" className="choice-list">
         <button
@@ -475,12 +469,12 @@ function PrepareDialog({
         </label>
       )}
       <div className="modal-actions">
-        <button type="button" className="btn" onClick={onClose}>
+        <Button onClick={onClose}>
           Cancelar
-        </button>
-        <button type="button" className="btn btn-ink" onClick={confirm}>
+        </Button>
+        <Button variant="primary" onClick={confirm}>
           Crear y abrir en editor
-        </button>
+        </Button>
       </div>
     </Modal>
   );
@@ -531,7 +525,7 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
   return (
     <Modal label="Eliminar unidad" onClose={onClose}>
       <div>
-        <p className="kicker kicker-danger">Eliminar unidad {k + 1}</p>
+        <p className="kicker kicker--danger">Eliminar unidad {k + 1}</p>
         <h2>{unit.title}</h2>
         <p className="muted modal-lead">
           {lessons.length === 1 ? 'Tiene 1 clase' : `Tiene ${lessons.length} clases`}. ¿Qué
@@ -581,12 +575,12 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
         </button>
       </div>
       <div className="modal-actions">
-        <button type="button" className="btn" onClick={onClose}>
+        <Button onClick={onClose}>
           Cancelar
-        </button>
-        <button type="button" className="btn btn-danger" onClick={confirm}>
+        </Button>
+        <Button variant="danger-strong" onClick={confirm}>
           Eliminar unidad
-        </button>
+        </Button>
       </div>
     </Modal>
   );
@@ -665,18 +659,13 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
     : undefined;
 
   return (
-    <main className="page">
-      <div className="page-inner">
-        <header className="library-head">
-          <div>
-            <p className="kicker">Biblioteca · M1 · Álgebra y funciones</p>
-            <h1 className="page-title">Tus clases</h1>
-            <p className="page-lead">
-              Abre una clase para editarla o proyectarla. Las que están por preparar parten
-              de la estructura base o de otra clase.
-            </p>
-          </div>
-          <div className="row">
+    <Page>
+        <PageHeader
+          kicker="Biblioteca · M1 · Álgebra y funciones"
+          title="Tus clases"
+          lead="Abre una clase para editarla o proyectarla. Las que están por preparar parten de la estructura base o de otra clase."
+          actions={
+          <>
             {!organizing && (
               <div role="group" aria-label="Filtrar por estado" className="pill-group">
                 {FILTERS.map(([key, label]) => (
@@ -693,9 +682,9 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
               </div>
             )}
             {canEdit && (
-            <button
-              type="button"
-              className={`btn btn-small ${organizing ? 'btn-ink' : ''}`}
+            <Button
+              variant={organizing ? 'primary' : 'secondary'}
+              size="sm"
               aria-pressed={organizing}
               onClick={() => {
                 setOrganizing((value) => !value);
@@ -705,17 +694,18 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
             >
               <Settings2 size={18} aria-hidden="true" />
               {organizing ? 'Listo' : 'Organizar'}
-            </button>
+            </Button>
             )}
-          </div>
-        </header>
+          </>
+          }
+        />
         {!canEdit && <ConnectHint onNavigate={onNavigate} />}
         {organizing && (
-          <p role="status" className="alert alert-info">
+          <Notice role="status" tone="info">
             Modo organizar: cambia el nombre y el orden de las unidades, mueve clases entre
             unidades o elimínalas. Cada eliminación se puede deshacer; los cambios quedan
             pendientes hasta que los guardes en el repositorio.
-          </p>
+          </Notice>
         )}
         {visible.length === 0 && (
           <p role="status" className="empty-note">
@@ -744,27 +734,24 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                       />
                     </div>
                     <div className="row">
-                      <button
-                        type="button"
-                        className="square-btn"
-                        aria-label={`Subir unidad ${k + 1}`}
+                      <IconButton
+                        outline
+                        label={`Subir unidad ${k + 1}`}
                         disabled={k === 0}
                         onClick={() => planning({ type: 'moveUnit', id: unit.id, delta: -1 })}
                       >
                         <ChevronUp size={18} aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className="square-btn"
-                        aria-label={`Bajar unidad ${k + 1}`}
+                      </IconButton>
+                      <IconButton
+                        outline
+                        label={`Bajar unidad ${k + 1}`}
                         disabled={k === library.units.filter((u) => u.id !== UNPLANNED_UNIT.id).length - 1}
                         onClick={() => planning({ type: 'moveUnit', id: unit.id, delta: 1 })}
                       >
                         <ChevronDown size={18} aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-small btn-danger-soft"
+                      </IconButton>
+                      <Button
+                        variant="danger" size="sm"
                         onClick={() => {
                           if (all.length) {
                             setRemoveUnit(unit.id);
@@ -776,7 +763,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                         }}
                       >
                         Eliminar unidad
-                      </button>
+                      </Button>
                     </div>
                   </>
                 ) : (
@@ -840,9 +827,8 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                     />
                   </label>
                   <div className="row row-end">
-                    <button
-                      type="button"
-                      className="btn btn-small"
+                    <Button
+                      size="sm"
                       onClick={() => {
                         setAddFor(null);
                         setNewTitle('');
@@ -850,19 +836,18 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                       }}
                     >
                       Cancelar
-                    </button>
-                    <button type="submit" className="btn btn-small btn-ink" disabled={!newTitle.trim()}>
+                    </Button>
+                    <Button type="submit" variant="primary" size="sm" disabled={!newTitle.trim()}>
                       Agregar clase
-                    </button>
+                    </Button>
                   </div>
                 </form>
               ) : (
                 shown === 'todas' &&
                 canEdit &&
                 unit.id !== UNPLANNED_UNIT.id && (
-                  <button
-                    type="button"
-                    className="add-dashed"
+                  <Button
+                    variant="add"
                     onClick={() => {
                       setAddFor(unit.id);
                       setNewTitle('');
@@ -871,7 +856,7 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                     }}
                   >
                     + Agregar clase a la unidad {k + 1}
-                  </button>
+                  </Button>
                 )
               )}
             </section>
@@ -891,34 +876,30 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
                 />
               </label>
               <div className="row">
-                <button
-                  type="button"
-                  className="btn"
+                <Button
                   onClick={() => {
                     setUnitAdding(false);
                     setUnitTitle('');
                   }}
                 >
                   Cancelar
-                </button>
-                <button type="submit" className="btn btn-ink" disabled={!unitTitle.trim()}>
+                </Button>
+                <Button type="submit" variant="primary" disabled={!unitTitle.trim()}>
                   Crear unidad
-                </button>
+                </Button>
               </div>
             </form>
           ) : (
-            <button
-              type="button"
-              className="add-dashed add-unit-btn"
+            <Button
+              variant="add" className="add-unit-btn"
               onClick={() => {
                 setUnitAdding(true);
                 setUnitTitle('');
               }}
             >
               + Nueva unidad
-            </button>
+            </Button>
           ))}
-      </div>
       {prepareEntry && (
         <PrepareDialog
           entry={prepareEntry}
@@ -928,6 +909,6 @@ export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
       )}
       {removeUnit && <RemoveUnitDialog unitId={removeUnit} onClose={() => setRemoveUnit(null)} />}
       {details && <LessonDialog lessonId={details} onClose={() => setDetails(null)} />}
-    </main>
+    </Page>
   );
 }

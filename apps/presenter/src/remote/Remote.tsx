@@ -6,6 +6,8 @@ import { deckFor, pad2, PHASE_NAMES } from '../store/deck';
 import { Brand } from '../ui/Brand';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
+import { Button, IconButton } from '../ui/Button';
+import { Notice } from '../ui/Layout';
 
 /** Control remoto: envía pasos a la pestaña que proyecta. Sin proyección abierta, no hay a quién enviarlos. */
 export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
@@ -33,9 +35,9 @@ export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
     <div className="phone-shell">
       <div className="phone-strip">
         <span>Celular como control remoto</span>
-        <button type="button" className="btn btn-small btn-paper" onClick={onChangeRole}>
+        <Button size="sm" onClick={onChangeRole}>
           Cambiar de rol
-        </button>
+        </Button>
       </div>
       <main className="remote">
         <div className="remote-column">
@@ -54,10 +56,10 @@ export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
             )}
           </header>
           {!online && (
-            <p role="alert" className="alert alert-error">
+            <Notice role="alert" tone="error">
               <b>La proyección no recibe tus toques.</b> Abre «Presentar» en otra
               pestaña o ventana de este navegador; el control se conecta solo.
-            </p>
+            </Notice>
           )}
           {slide && (
             <div className="remote-slide">
@@ -130,9 +132,9 @@ export function Remote({ onChangeRole }: { onChangeRole: () => void }) {
               <p className="caption">
                 {meta.duration} MIN · {meta.subject.toUpperCase()}
               </p>
-              <button type="button" className="icon-btn" aria-label="Cerrar índice" onClick={() => setIndex(false)}>
+              <IconButton label="Cerrar índice" onClick={() => setIndex(false)}>
                 <X size={22} aria-hidden="true" />
-              </button>
+              </IconButton>
             </div>
             <ol className="slide-index">
               {slides.map((item, i) => (

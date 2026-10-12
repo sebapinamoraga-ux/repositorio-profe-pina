@@ -44,6 +44,8 @@ import { LessonDialog } from './LessonForm';
 import { makeNote } from './notes';
 import { ParamFields } from './ParamForm';
 import { ConnectHint } from './SaveBar';
+import { Button, buttonClass, IconButton } from '../ui/Button';
+import { Notice } from '../ui/Layout';
 
 const SLIDE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -174,12 +176,12 @@ function NoteItem({
       <p>{note.text}</p>
       <div className="note-item-foot">
         <span>{meta}</span>
-        <button type="button" className={`btn btn-small ${done ? '' : 'btn-ok-soft'}`} onClick={onToggle}>
+        <Button size="sm" onClick={onToggle}>
           {done ? 'Reabrir' : 'Marcar como aplicado'}
-        </button>
-        <button type="button" className="icon-btn icon-danger" aria-label="Eliminar comentario" onClick={onRemove}>
+        </Button>
+        <IconButton danger label="Eliminar comentario" onClick={onRemove}>
           <Trash2 size={18} aria-hidden="true" />
-        </button>
+        </IconButton>
       </div>
     </li>
   );
@@ -246,9 +248,8 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           <h1>{meta.title}</h1>
           <p>Esta clase está por preparar. Parte de la estructura base o de otra clase.</p>
           <div className="row">
-            <button
-              type="button"
-              className="btn btn-ink"
+            <Button
+              variant="primary"
               disabled={!content.canEdit}
               onClick={() =>
                 content.edit([
@@ -267,10 +268,10 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               }
             >
               Preparar con la estructura base
-            </button>
-            <button type="button" className="btn" onClick={() => onNavigate('biblioteca')}>
+            </Button>
+            <Button onClick={() => onNavigate('biblioteca')}>
               Elegir otra clase en la biblioteca
-            </button>
+            </Button>
           </div>
         </div>
       </main>
@@ -454,13 +455,13 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           </>
         )}
         <div className="row">
-          <button type="button" className="btn btn-small" onClick={() => setDetails(true)}>
+          <Button size="sm" onClick={() => setDetails(true)}>
             Datos de la clase
-          </button>
-          <button type="button" className="btn btn-small" onClick={() => setExporting(true)}>
+          </Button>
+          <Button size="sm" onClick={() => setExporting(true)}>
             <Download size={16} aria-hidden="true" />
             Copia ZIP
-          </button>
+          </Button>
         </div>
       </div>
       {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
@@ -497,9 +498,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       )}
       {deck.map((item, k) => thumb('slides', deck, item, k))}
       <div className="editor-add">
-        <button type="button" className="btn-new-slide" onClick={() => setPicker('slides')}>
+        <Button variant="add" block className="new-slide" onClick={() => setPicker('slides')}>
           + Nueva lámina
-        </button>
+        </Button>
       </div>
       <section aria-label="Repaso del estudiante" className="editor-repaso">
         <div className="editor-repaso-head">
@@ -524,9 +525,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
         )}
         {repasoDeck.map((item, k) => thumb('repaso', repasoDeck, item, k))}
         <div className="editor-add">
-          <button type="button" className="btn-new-slide" onClick={() => setPicker('repaso')}>
+          <Button variant="add" block className="new-slide" onClick={() => setPicker('repaso')}>
             + Lámina de repaso
-          </button>
+          </Button>
         </div>
       </section>
     </aside>
@@ -537,9 +538,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
     if (fields === null) return <p className="muted small">Leyendo el contenido…</p>;
     if (fields === 'error')
       return (
-        <p className="alert alert-error small">
+        <Notice tone="error" className="small">
           El MDX de esta lámina tiene un error de sintaxis. Corrígelo en «MDX de la lámina».
-        </p>
+        </Notice>
       );
     let lastGroup: string | null = null;
     return fields.map((field, k) => {
@@ -613,28 +614,27 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       <div className="props-head">
         <h2>{listName === 'repaso' ? `Lámina de repaso ${number}` : `Lámina ${number}`}</h2>
         <div className="row">
-          <button type="button" className="square-btn" aria-label="Mover antes" disabled={index === 0} onClick={() => move(-1)}>
+          <IconButton outline label="Mover antes" disabled={index === 0} onClick={() => move(-1)}>
             <ArrowUp size={18} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="square-btn"
-            aria-label="Mover después"
+          </IconButton>
+          <IconButton
+            outline
+            label="Mover después"
             disabled={index === current.length - 1}
             onClick={() => move(1)}
           >
             <ArrowDown size={18} aria-hidden="true" />
-          </button>
-          <button type="button" className="btn btn-small" onClick={duplicate}>
+          </IconButton>
+          <Button size="sm" onClick={duplicate}>
             Duplicar
-          </button>
-          <button type="button" className="btn btn-small btn-danger-soft" disabled={!canRemove} onClick={remove}>
+          </Button>
+          <Button variant="danger" size="sm" disabled={!canRemove} onClick={remove}>
             Eliminar
-          </button>
+          </Button>
           {layout === 'mid' && (
-            <button type="button" className="icon-btn" aria-label="Cerrar propiedades" onClick={() => setPropsOpen(false)}>
+            <IconButton label="Cerrar propiedades" onClick={() => setPropsOpen(false)}>
               <X size={20} aria-hidden="true" />
-            </button>
+            </IconButton>
           )}
         </div>
       </div>
@@ -681,25 +681,23 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
           <div className="field">
             Pasos revelables
             <div className="stepper">
-              <button
-                type="button"
-                className="square-btn"
-                aria-label="Menos pasos"
+              <IconButton
+                outline
+                label="Menos pasos"
                 disabled={slide.steps === 0}
                 onClick={() => update(index, { steps: Math.max(0, slide.steps - 1) })}
               >
                 −
-              </button>
+              </IconButton>
               <span>{slide.steps}</span>
-              <button
-                type="button"
-                className="square-btn"
-                aria-label="Más pasos"
+              <IconButton
+                outline
+                label="Más pasos"
                 disabled={slide.steps === 12}
                 onClick={() => update(index, { steps: Math.min(12, slide.steps + 1) })}
               >
                 +
-              </button>
+              </IconButton>
             </div>
           </div>
           <SlideIdField
@@ -730,16 +728,16 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
       </div>
       <div className="props-foot">
         <a
-          className="btn btn-ink"
+          className={buttonClass({ variant: 'primary' })}
           download={`${slide.id}.mdx`}
           href={`data:text/plain;charset=utf-8,${encodeURIComponent(toMdx(slide))}`}
         >
           Descargar .mdx
         </a>
         {pendingHere && (
-          <button type="button" className="btn" onClick={restore}>
+          <Button onClick={restore}>
             Descartar cambios de esta clase
-          </button>
+          </Button>
         )}
       </div>
       <p className="muted small props-note">
@@ -763,9 +761,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             </span>
             <div role="group" aria-label="Estado de pasos" className="row">
               {layout === 'mid' && (
-                <button type="button" className="btn btn-ink btn-small" aria-expanded={propsOpen} onClick={() => setPropsOpen((open) => !open)}>
+                <Button variant="primary" size="sm" aria-expanded={propsOpen} onClick={() => setPropsOpen((open) => !open)}>
                   Propiedades
-                </button>
+                </Button>
               )}
               <span className="muted small">Vista</span>
               {Array.from({ length: slide.steps + 1 }, (_, n) => (
@@ -839,9 +837,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               </>
             )}
             {applied > 0 && (
-              <button type="button" className="link-btn" aria-expanded={showApplied} onClick={() => setShowApplied((v) => !v)}>
+              <Button variant="quiet" size="sm" aria-expanded={showApplied} onClick={() => setShowApplied((v) => !v)}>
                 {showApplied ? 'Ocultar aplicados' : `Ver ${applied} ${applied === 1 ? 'aplicado' : 'aplicados'}`}
-              </button>
+              </Button>
             )}
             <div className="note-draft">
               <textarea
@@ -866,18 +864,18 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
                     Toda la clase
                   </button>
                 </div>
-                <button type="button" className="btn btn-ink btn-small" disabled={!draft.trim()} onClick={addDraft}>
+                <Button variant="primary" size="sm" disabled={!draft.trim()} onClick={addDraft}>
                   Agregar comentario
-                </button>
+                </Button>
               </div>
             </div>
           </section>
           <div aria-live="polite" className="editor-check">
             {!issues ? (
-              <p className="kicker muted-kicker">Revisión de contenido · revisando…</p>
+              <p className="kicker kicker--muted">Revisión de contenido · revisando…</p>
             ) : slideError ? (
               <>
-                <p className="kicker kicker-danger">Revisión de contenido · hay errores</p>
+                <p className="kicker kicker--danger">Revisión de contenido · hay errores</p>
                 <p className="check-line is-error">
                   <b>Error</b>
                   <span>{slideError}</span>
@@ -885,7 +883,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               </>
             ) : (
               <>
-                <p className="kicker kicker-ok">Revisión de contenido · sin problemas</p>
+                <p className="kicker kicker--ok">Revisión de contenido · sin problemas</p>
                 <p className="muted small">
                   Compila con las reglas de content:check, los pasos coinciden y hay como
                   máximo una mascota. Revisa también el estado inicial y el revelado.
@@ -916,9 +914,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               </p>
               <h2>Elige una plantilla con mascota</h2>
             </div>
-            <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setPicker(null)}>
+            <IconButton label="Cerrar" onClick={() => setPicker(null)}>
               <X size={22} aria-hidden="true" />
-            </button>
+            </IconButton>
           </div>
           <div className="picker-grid">
             {mascotGallery.templates.map((template) => (
@@ -943,9 +941,9 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               <p className="kicker">Copia de respaldo</p>
               <h2>{meta.title}</h2>
             </div>
-            <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setExporting(false)}>
+            <IconButton label="Cerrar" onClick={() => setExporting(false)}>
               <X size={22} aria-hidden="true" />
-            </button>
+            </IconButton>
           </div>
           <p className="muted modal-lead">
             Descarga un ZIP con <code>lesson.yaml</code> y {all.length} archivos{' '}
@@ -953,12 +951,11 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
             No hace falta para publicar: «Guardar en el repositorio» ya lo hace.
           </p>
           <div className="modal-actions">
-            <button type="button" className="btn" onClick={() => setExporting(false)}>
+            <Button onClick={() => setExporting(false)}>
               Cancelar
-            </button>
-            <button
-              type="button"
-              className="btn btn-ink"
+            </Button>
+            <Button
+              variant="primary"
               onClick={() => {
                 const zip = makeZip(exportData.files);
                 download(`${exportData.folder}.zip`, new Blob([zip], { type: 'application/zip' }));
@@ -967,7 +964,7 @@ export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
               }}
             >
               Descargar ZIP
-            </button>
+            </Button>
           </div>
         </Modal>
       )}

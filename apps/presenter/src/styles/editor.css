@@ -80,7 +80,7 @@
 .editor-alert.is-note {
   background: var(--ocre-soft);
   border-color: var(--ocre-line);
-  color: #6b4600;
+  color: var(--note-ink);
 }
 .editor-list.is-narrow .editor-alert {
   min-width: 220px;
@@ -188,17 +188,6 @@
 .editor-list.is-narrow .editor-add {
   align-items: center;
 }
-.btn-new-slide {
-  min-height: 44px;
-  width: 100%;
-  padding: 0 14px;
-  border-radius: 8px;
-  background: var(--ocre-soft);
-  border: 1px dashed var(--ocre-line);
-  color: var(--ocre);
-  font-weight: 650;
-  white-space: nowrap;
-}
 /* Repaso del estudiante: segunda lista, separada por un borde. */
 .editor-repaso {
   flex: none;
@@ -221,7 +210,10 @@
 .editor-list.is-mid .editor-repaso-head .muted {
   display: none;
 }
-.editor-list.is-mid .btn-new-slide {
+.new-slide {
+  white-space: nowrap;
+}
+.editor-list.is-mid .new-slide {
   white-space: normal;
   line-height: 1.2;
 }
@@ -340,18 +332,6 @@
   color: var(--muted);
   margin-right: auto;
 }
-.icon-danger {
-  color: var(--err);
-}
-.link-btn {
-  justify-self: start;
-  min-height: 36px;
-  padding: 0 4px;
-  background: transparent;
-  color: var(--accent);
-  font-size: 14px;
-  font-weight: 650;
-}
 .note-draft {
   display: grid;
   gap: 8px;
@@ -374,12 +354,6 @@
 }
 .editor-check .kicker {
   margin: 0;
-}
-.kicker-ok {
-  color: var(--ok);
-}
-.muted-kicker {
-  color: var(--muted);
 }
 .check-line {
   margin: 0;
@@ -456,7 +430,7 @@
   align-items: center;
   gap: 6px;
 }
-.stepper .square-btn {
+.stepper .icon-btn--outline {
   width: 44px;
   height: 44px;
   font-size: 18px;
@@ -577,11 +551,6 @@
   display: grid;
   gap: 4px;
   font-size: 14px;
-}
-.alert-ok {
-  background: var(--ok-soft);
-  border-color: var(--ok-line);
-  color: var(--ok);
 }
 .modal code,
 .pdf-note code {
