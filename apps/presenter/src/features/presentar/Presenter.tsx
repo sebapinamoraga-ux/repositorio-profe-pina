@@ -75,6 +75,8 @@ export function Presenter({
   const ui = useUi();
   const width = useViewportWidth();
   const wide = width >= 750;
+  // Etiquetas de la barra solo cuando caben sin desplazar los controles.
+  const barLabels = width >= 1200;
   const rootRef = useRef<HTMLElement>(null);
   const noteRef = useRef<HTMLTextAreaElement>(null);
 
@@ -371,110 +373,117 @@ export function Presenter({
           />
         </FitSlide>
       </div>
-      <nav className="presenter-bar toolbar" aria-label="Controles de presentación">
-        <button type="button" className="bar-btn" aria-label="Salir de la presentación" onClick={exit}>
-          <LogOut size={20} aria-hidden="true" />
-          {wide && <span>Salir</span>}
-        </button>
-        <span className="bar-divider" />
-        <button type="button" className="bar-btn" aria-label="Índice de clases" onClick={() => setMenu(true)}>
-          <Menu size={21} aria-hidden="true" />
-        </button>
-        <span className="bar-divider" />
-        <button type="button" className="bar-btn" aria-label="Retroceder" disabled={atStart} onClick={previous}>
-          <ChevronLeft aria-hidden="true" />
-        </button>
-        <span className="position">
-          {index + 1} <span>/ {slides.length}</span>
-        </span>
-        <button
-          type="button"
-          className="bar-btn bar-next"
-          aria-label={step < slide.steps ? 'Revelar siguiente paso' : 'Avanzar diapositiva'}
-          disabled={atEnd}
-          onClick={next}
-        >
-          <ChevronRight aria-hidden="true" />
-        </button>
-        {wide && (
-          <span className="step-label">
-            {slide.steps ? `Paso ${step} de ${slide.steps}` : 'Explora y conversa'}
+      <nav className={`presenter-bar toolbar ${barLabels ? 'is-labeled' : ''}`} aria-label="Controles de presentación">
+        <div className="bar-group bar-start">
+          <button type="button" className="bar-btn" aria-label="Salir de la presentación" onClick={exit}>
+            <LogOut size={20} aria-hidden="true" />
+            {barLabels && <span>Salir</span>}
+          </button>
+          <span className="bar-divider" />
+          <button type="button" className="bar-btn" aria-label="Índice de clases" onClick={() => setMenu(true)}>
+            <Menu size={21} aria-hidden="true" />
+          </button>
+        </div>
+        <div className="bar-group bar-center">
+          <button type="button" className="bar-btn" aria-label="Retroceder" disabled={atStart} onClick={previous}>
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <span className="position">
+            {index + 1} <span>/ {slides.length}</span>
           </span>
-        )}
-        <span className="bar-divider" />
-        {activity && (
           <button
             type="button"
-            className="bar-btn bar-vote"
-            aria-label="Votación anónima"
-            aria-pressed={votePanel}
-            onClick={() => setVotePanel((open) => !open)}
+            className="bar-btn bar-next"
+            aria-label={step < slide.steps ? 'Revelar siguiente paso' : 'Avanzar diapositiva'}
+            disabled={atEnd}
+            onClick={next}
           >
-            <Vote size={20} aria-hidden="true" />
-            {wide && <span>Votación</span>}
+            <ChevronRight aria-hidden="true" />
           </button>
-        )}
-        {tramo && (
+          {width >= 860 && (
+            <span className="step-label">
+              {slide.steps ? `Paso ${step} de ${slide.steps}` : 'Explora y conversa'}
+            </span>
+          )}
+        </div>
+        <div className="bar-group bar-end">
+          {/* Hueco fijo: que haya o no votación no mueve los demás botones. */}
+          <span className="bar-vote-slot">
+            {activity && (
+              <button
+                type="button"
+                className="bar-btn bar-vote"
+                aria-label="Votación anónima"
+                aria-pressed={votePanel}
+                onClick={() => setVotePanel((open) => !open)}
+              >
+                <Vote size={20} aria-hidden="true" />
+                {barLabels && <span>Votación</span>}
+              </button>
+            )}
+          </span>
+          {tramo && (
+            <button
+              type="button"
+              className="bar-btn"
+              aria-label="Ritmo de la clase"
+              aria-pressed={paceOn}
+              title="Ritmo de la clase (R)"
+              onClick={togglePace}
+            >
+              <Timer size={20} aria-hidden="true" />
+              {paceOn && !paceWide && barLabels && (
+                <span className={`pace-inline ${over ? 'is-over' : ''}`}>
+                  {tramo.minutes
+                    ? `${minutes(paceRead.tramoMin)}/${tramo.minutes} min`
+                    : `${minutes(paceRead.tramoMin)} min`}
+                </span>
+              )}
+            </button>
+          )}
           <button
             type="button"
             className="bar-btn"
-            aria-label="Ritmo de la clase"
-            aria-pressed={paceOn}
-            title="Ritmo de la clase (R)"
-            onClick={togglePace}
+            aria-label="Anotar comentario para mejorar la clase"
+            title="Anotar comentario (N)"
+            aria-pressed={note}
+            onClick={() => setNote((open) => !open)}
           >
-            <Timer size={20} aria-hidden="true" />
-            {paceOn && !paceWide && wide && (
-              <span className={`pace-inline ${over ? 'is-over' : ''}`}>
-                {tramo.minutes
-                  ? `${minutes(paceRead.tramoMin)}/${tramo.minutes} min`
-                  : `${minutes(paceRead.tramoMin)} min`}
+            <MessageSquarePlus size={20} aria-hidden="true" />
+            {barLabels && <span>Anotar</span>}
+            {slideNotes > 0 && (
+              <span
+                className="bar-badge"
+                aria-label={
+                  slideNotes === 1
+                    ? '1 comentario pendiente en esta lámina'
+                    : `${slideNotes} comentarios pendientes en esta lámina`
+                }
+              >
+                {slideNotes}
               </span>
             )}
           </button>
-        )}
-        <button
-          type="button"
-          className="bar-btn"
-          aria-label="Anotar comentario para mejorar la clase"
-          title="Anotar comentario (N)"
-          aria-pressed={note}
-          onClick={() => setNote((open) => !open)}
-        >
-          <MessageSquarePlus size={20} aria-hidden="true" />
-          {wide && <span>Anotar</span>}
-          {slideNotes > 0 && (
-            <span
-              className="bar-badge"
-              aria-label={
-                slideNotes === 1
-                  ? '1 comentario pendiente en esta lámina'
-                  : `${slideNotes} comentarios pendientes en esta lámina`
-              }
-            >
-              {slideNotes}
-            </span>
-          )}
-        </button>
-        <button type="button" className="bar-btn" aria-label="Reiniciar clase" onClick={reset}>
-          <RotateCcw size={20} aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          className="bar-btn"
-          aria-label="Vista PDF con respuestas"
-          onClick={() => onNavigate('clase', { section: 'pdf' })}
-        >
-          <Printer size={20} aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          className="bar-btn"
-          aria-label={fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-          onClick={() => void toggleFullscreen()}
-        >
-          {fullscreen ? <Minimize size={20} aria-hidden="true" /> : <Maximize size={20} aria-hidden="true" />}
-        </button>
+          <button type="button" className="bar-btn" aria-label="Reiniciar clase" onClick={reset}>
+            <RotateCcw size={20} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="bar-btn"
+            aria-label="Vista PDF con respuestas"
+            onClick={() => onNavigate('clase', { section: 'pdf' })}
+          >
+            <Printer size={20} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="bar-btn"
+            aria-label={fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+            onClick={() => void toggleFullscreen()}
+          >
+            {fullscreen ? <Minimize size={20} aria-hidden="true" /> : <Maximize size={20} aria-hidden="true" />}
+          </button>
+        </div>
       </nav>
       <div className="progress" style={{ width: `${((index + 1) / slides.length) * 100}%` }} />
       {message && (
