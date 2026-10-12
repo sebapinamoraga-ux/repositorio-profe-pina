@@ -318,3 +318,15 @@
   opacity: 0.45;
   cursor: default;
 }
+/* Fecha planificada de la clase, antes del título. */
+.date-chip {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+}

@@ -6,8 +6,15 @@ import type { Navigate } from '../../app/routes';
 import { nowParts, uid } from '../../store/teacher';
 import { useUi } from '../../ui/UiProvider';
 import { EndSessionForm } from '../../shell/Session';
+import { useCurrentLesson } from '../clases/current';
 import { Button } from '../../ui/Button';
 import { Card, Page, PageHeader } from '../../ui/Layout';
+
+const CURRENT_REASON = {
+  hoy: 'la clase de hoy',
+  proxima: 'la próxima clase de la planificación',
+  ultima: 'la última clase que abriste',
+} as const;
 
 export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const { data, dispatch, snap } = useAula();
@@ -21,8 +28,9 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const courseName = (id: string) =>
     data.courses.find((c) => c.id === id)?.nombre ?? 'Curso eliminado';
 
+  const current = useCurrentLesson();
   const start = (courseId: string) => {
-    const deck = deckFor(content, data.lessonId);
+    const deck = deckFor(content, current?.id ?? data.lessonId);
     const t = nowParts();
     dispatch({
       type: 'startSession',
@@ -63,8 +71,8 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
         />
         {!active && (
           <p className="hint">
-            «Iniciar clase» proyecta «{deckFor(content, data.lessonId).meta.title}», la última
-            clase que abriste.{' '}
+            «Iniciar clase» proyecta «{deckFor(content, current?.id ?? data.lessonId).meta.title}»
+            {current ? `, ${CURRENT_REASON[current.reason]}` : ''}.{' '}
             <Button variant="quiet" size="sm" onClick={() => onNavigate('clases')}>
               Elegir otra clase
             </Button>

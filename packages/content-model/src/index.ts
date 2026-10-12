@@ -207,12 +207,23 @@ export const curriculumSchema = z
   .passthrough();
 /** Marca docente de una clase en la biblioteca; «por preparar» se deduce de que no exista lesson.yaml. */
 export const lessonMarkSchema = z.enum(['lista', 'en-preparacion', 'por-preparar']);
+/** Fecha de calendario AAAA-MM-DD que existe (no 2026-02-30). */
+export const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Usa la forma AAAA-MM-DD, por ejemplo 2026-10-17.')
+  .refine((value) => {
+    const [y = 0, m = 0, d = 0] = value.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d));
+    return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+  }, 'La fecha no existe en el calendario.');
 export const plannedLessonSchema = z.object({
   id,
   /** Título y objetivo de una clase aún sin lesson.yaml; si existe, manda lesson.yaml. */
   title: z.string().optional(),
   objective: z.string().optional(),
   mark: lessonMarkSchema.optional(),
+  /** Día en que se hace la clase según el calendario; decide la «Clase de hoy». */
+  date: isoDateSchema.optional(),
 });
 /** Planificación de unidades (content/planning): el orden de la biblioteca docente. */
 export const planningSchema = z
@@ -228,6 +239,7 @@ export const planningSchema = z
   .superRefine((planning, ctx) => {
     const units = new Set<string>();
     const lessons = new Set<string>();
+    const dates = new Map<string, string>();
     for (const unit of planning.units) {
       if (units.has(unit.id))
         ctx.addIssue({ code: 'custom', message: `Unidad duplicada: ${unit.id}` });
@@ -239,6 +251,14 @@ export const planningSchema = z
             message: `Clase planificada dos veces: ${lesson.id}`,
           });
         lessons.add(lesson.id);
+        if (!lesson.date) continue;
+        const other = dates.get(lesson.date);
+        if (other)
+          ctx.addIssue({
+            code: 'custom',
+            message: `Dos clases planificadas el ${lesson.date}: ${other} y ${lesson.id}. Cada día tiene una sola clase.`,
+          });
+        else dates.set(lesson.date, lesson.id);
       }
     }
   });
