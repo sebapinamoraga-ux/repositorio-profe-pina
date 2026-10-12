@@ -6,7 +6,7 @@ import { verifyActivity } from '@aula/content-model/verify-model';
 import { solveLinearSystem } from '@aula/interactives/linear-system';
 import { useContent } from '../content/ContentProvider';
 import { activityUses, removeActivity, writeActivity } from '../content/ops';
-import type { View } from '../store/schema';
+import type { Navigate } from '../app/routes';
 import { slugify } from '../store/teacher';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
@@ -75,7 +75,7 @@ function NumberCell({
   );
 }
 
-function ActivityForm({
+export function ActivityForm({
   initial,
   isNew,
   onClose,
@@ -327,8 +327,90 @@ function ActivityForm({
   );
 }
 
+/**
+ * Fila de una actividad: tipo, enunciado y las láminas que la usan, cada una con un enlace a su
+ * lugar en el editor. `lessonId` limita esos enlaces a una clase.
+ */
+export function ActivityRow({
+  activity,
+  lessonId,
+  onEdit,
+  onRemove,
+  onNavigate,
+}: {
+  activity: Activity;
+  lessonId?: string;
+  onEdit: () => void;
+  onRemove?: () => void;
+  onNavigate: Navigate;
+}) {
+  const content = useContent();
+  const all = activityUses(content.bundle, activity.id);
+  const uses = lessonId ? all.filter((use) => use.lesson.id === lessonId) : all;
+  return (
+    <li className="lesson-row">
+      <div className="lesson-main">
+        <div className="lesson-copy">
+          <div className="lesson-title">
+            <h3>{activity.id}</h3>
+            <span className="mark-chip">{activity.type === 'paes' ? 'PAES' : 'Abierta'}</span>
+          </div>
+          <p className="lesson-objective" title={activity.prompt}>
+            {activity.prompt}
+          </p>
+          {uses.length ? (
+            <p className="activity-uses">
+              <span className="muted small">En</span>
+              {uses.map((use) => (
+                <Button
+                  key={`${use.lesson.id}-${use.slide.id}`}
+                  variant="quiet"
+                  size="sm"
+                  onClick={() =>
+                    onNavigate('clase', {
+                      lesson: use.lesson.id,
+                      section: use.list === 'repaso' ? 'repaso' : 'laminas',
+                      slide: use.slide.id,
+                    })
+                  }
+                >
+                  {use.list === 'repaso'
+                    ? `Repaso R${use.index + 1}`
+                    : `Lámina ${String(use.index + 1).padStart(2, '0')}`}{' '}
+                  «{use.slide.title}»{lessonId ? '' : ` · ${use.lesson.title}`}
+                </Button>
+              ))}
+            </p>
+          ) : (
+            <p className="muted small">Ninguna lámina la usa todavía.</p>
+          )}
+        </div>
+        {content.canEdit && (
+          <div className="row">
+            <Button variant="primary" size="sm" onClick={onEdit}>
+              Editar
+            </Button>
+            {onRemove && (
+              <IconButton
+                outline
+                danger
+                label={`Eliminar ${activity.id}`}
+                disabled={all.length > 0}
+                title={all.length ? 'Primero quítala de las láminas que la usan.' : undefined}
+                onClick={onRemove}
+              >
+                <Trash2 size={18} aria-hidden="true" />
+              </IconButton>
+            )}
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
+
 /** Banco de actividades (content/activities): preguntas abiertas y tipo PAES. */
-export function Activities({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Activities({ onNavigate }: { onNavigate: Navigate }) {
   const content = useContent();
   const ui = useUi();
   const [editing, setEditing] = useState<{ activity: Activity; isNew: boolean } | null>(null);
@@ -390,48 +472,15 @@ export function Activities({ onNavigate }: { onNavigate: (view: View) => void })
           </form>
         )}
         <ul className="activity-list">
-          {list.map((activity) => {
-            const uses = activityUses(content.bundle, activity.id);
-            return (
-              <li key={activity.id} className="lesson-row">
-                <div className="lesson-main">
-                  <div className="lesson-copy">
-                    <div className="lesson-title">
-                      <h3>{activity.id}</h3>
-                      <span className="mark-chip">{activity.type === 'paes' ? 'PAES' : 'Abierta'}</span>
-                    </div>
-                    <p className="lesson-objective" title={activity.prompt}>
-                      {activity.prompt}
-                    </p>
-                    <p className="muted small">
-                      {uses.length
-                        ? `En ${uses.map((use) => `«${use.slide.title}» (${use.lesson.id})`).join(', ')}`
-                        : 'Ninguna lámina la usa todavía.'}
-                    </p>
-                  </div>
-                  {content.canEdit && (
-                    <div className="row">
-                      <Button
-                        variant="primary" size="sm"
-                        onClick={() => setEditing({ activity, isNew: false })}
-                      >
-                        Editar
-                      </Button>
-                      <IconButton
-                        outline danger
-                        label={`Eliminar ${activity.id}`}
-                        disabled={uses.length > 0}
-                        title={uses.length ? 'Primero quítala de las láminas que la usan.' : undefined}
-                        onClick={() => remove(activity)}
-                      >
-                        <Trash2 size={18} aria-hidden="true" />
-                      </IconButton>
-                    </div>
-                  )}
-                </div>
-              </li>
-            );
-          })}
+          {list.map((activity) => (
+            <ActivityRow
+              key={activity.id}
+              activity={activity}
+              onEdit={() => setEditing({ activity, isNew: false })}
+              onRemove={() => remove(activity)}
+              onNavigate={onNavigate}
+            />
+          ))}
         </ul>
       {editing && (
         <ActivityForm

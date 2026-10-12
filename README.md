@@ -16,7 +16,7 @@ npm run dev
 Abrir http://127.0.0.1:5173 y elegir un rol:
 
 - **Estudiante**: repaso en el celular, sin cuenta, con temas claro, oscuro y alto contraste, y respuesta anónima a la votación de la clase.
-- **Docente**: Clase de hoy, Biblioteca, Presentar, Editor, Actividades y PAES, Galería, Cursos e historial, Vista PDF y Conexión. Las clases, actividades y la planificación se editan aquí y se guardan en este repositorio desde cualquier dispositivo conectado (ver [Editar desde la app](docs/authoring.md#editar-desde-la-app)). Cursos, sesiones y comentarios quedan en el navegador. El acceso es un bloqueo local, sin cuenta.
+- **Docente**: cada clase tiene su espacio con pestañas (Resumen, Láminas, Repaso, Actividades, Revisión y PDF); además, Biblioteca, Presentar, Actividades y PAES, Galería, Cursos e historial y Conexión. Las clases, actividades y la planificación se editan aquí y se guardan en este repositorio desde cualquier dispositivo conectado (ver [Editar desde la app](docs/authoring.md#editar-desde-la-app)). Cursos, sesiones y comentarios quedan en el navegador. El acceso es un bloqueo local, sin cuenta.
 - **Control remoto**: avanza la proyección abierta en otra pestaña o ventana del mismo navegador.
 
 En el presentador, flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice, F alterna pantalla completa, N anota un comentario de mejora y R muestra el ritmo de la clase. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.

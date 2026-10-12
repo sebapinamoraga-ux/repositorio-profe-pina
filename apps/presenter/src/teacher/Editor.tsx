@@ -2,10 +2,11 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
-import { ArrowDown, ArrowUp, Download, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, X } from 'lucide-react';
 import { phaseSchema } from '@aula/content-model';
 import { mascotGallery } from '../app/gallery';
 import { TemplateSlide } from '../app/MascotGallery';
@@ -19,9 +20,7 @@ import {
   writeRepaso,
   writeSlides,
 } from '../content/ops';
-import { buildExport } from '../editor/export';
 import type { Field } from '../editor/mdx-fields';
-import { makeZip } from '../editor/zip';
 import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
 import { useAula } from '../store/AulaProvider';
@@ -37,10 +36,10 @@ import {
   toMdx,
 } from '../store/deck';
 import type { EditedSlide, Note, View } from '../store/schema';
+import { NoteItem, useNoteActions } from './lesson/NoteItem';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
-import { useLessonIssues } from './issues';
-import { LessonDialog } from './LessonForm';
+import type { LessonIssues } from './issues';
 import { makeNote } from './notes';
 import { ParamFields } from './ParamForm';
 import { ConnectHint } from './SaveBar';
@@ -50,11 +49,11 @@ import { Notice } from '../ui/Layout';
 const SLIDE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Lista que se edita: las láminas de la clase o las del repaso del estudiante. */
-type Section = 'slides' | 'repaso';
+export type SlideList = 'slides' | 'repaso';
 
 /** Número visible: 01, 02… en la clase; R1, R2… en el repaso. */
-const slideNumber = (section: Section, k: number) =>
-  section === 'repaso' ? `R${k + 1}` : pad2(k + 1);
+const slideNumber = (list: SlideList, k: number) =>
+  list === 'repaso' ? `R${k + 1}` : pad2(k + 1);
 
 /** Identificador de lámina: se edita libre y se aplica al salir del campo si es válido y único. */
 function SlideIdField({
@@ -111,11 +110,6 @@ const LAYOUTS: [EditedSlide['layout'], string][] = [
   ['ejercicio', 'Ejercicio'],
 ];
 const PRESENCE = { sutil: 'Sutil', pedagogica: 'Pedagógica', marca: 'Marca' } as const;
-const SOURCE_LABEL: Record<Note['source'], string> = {
-  presentador: 'durante la clase',
-  cierre: 'al cerrar la clase',
-  editor: 'en el editor',
-};
 
 /** Ancho del editor (no del viewport): la barra lateral docente le resta espacio. */
 function useElementWidth() {
@@ -140,61 +134,30 @@ function uniqueId(base: string, taken: readonly { id: string }[]) {
   return id;
 }
 
-function download(name: string, blob: Blob) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = name;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function NoteItem({
-  note,
-  extra,
-  onToggle,
-  onRemove,
-}: {
-  note: Note;
-  extra?: string;
-  onToggle: () => void;
-  onRemove: () => void;
-}) {
-  const done = note.status === 'aplicado';
-  const meta = [
-    extra,
-    note.date.split('-').reverse().slice(0, 2).join('-'),
-    note.course,
-    SOURCE_LABEL[note.source],
-  ]
-    .filter(Boolean)
-    .join(' · ');
-  return (
-    <li className={`note-item ${done ? 'is-done' : ''}`}>
-      <p>{note.text}</p>
-      <div className="note-item-foot">
-        <span>{meta}</span>
-        <Button size="sm" onClick={onToggle}>
-          {done ? 'Reabrir' : 'Marcar como aplicado'}
-        </Button>
-        <IconButton danger label="Eliminar comentario" onClick={onRemove}>
-          <Trash2 size={18} aria-hidden="true" />
-        </IconButton>
-      </div>
-    </li>
-  );
-}
-
+/**
+ * Editor de una lista de láminas (la clase o el repaso). La lámina seleccionada la decide la URL
+ * (`slideId`); elegir otra la informa con `onSelect`.
+ */
 export function Editor({
   lessonId,
+  list: listName,
+  slideId,
+  issues: listIssues,
+  onSelect,
+  onOpenDetails,
   onNavigate,
 }: {
   lessonId: string;
+  list: SlideList;
+  slideId: string | null;
+  /** Revisión de esta lista (null mientras se revisa). */
+  issues: LessonIssues | null;
+  onSelect: (id: string) => void;
+  onOpenDetails: () => void;
   onNavigate: (view: View) => void;
 }) {
-  const { data, dispatch, snap } = useAula();
+  const { data, dispatch } = useAula();
+  const noteActions = useNoteActions();
   const content = useContent();
   const ui = useUi();
   const { width, ref: rootRef } = useElementWidth();
@@ -204,35 +167,27 @@ export function Editor({
   const pendingHere = hasPending(content, lessonId);
   const slides = useMemo(() => (lesson ? editableSlides(lesson) : null), [lesson]);
   const repaso = useMemo(() => editableRepaso(lesson), [lesson]);
-  const [details, setDetails] = useState(false);
 
   const [fieldsModule, setFieldsModule] = useState<FieldsModule | null>(null);
   useEffect(() => {
     void import('../editor/mdx-fields').then(setFieldsModule);
   }, []);
 
-  const [section, setSection] = useState<Section>('slides');
-  const [selected, setSelected] = useState(0);
   const [preview, setPreview] = useState<number | null>(null);
   const [propsOpen, setPropsOpen] = useState(false);
-  const [picker, setPicker] = useState<Section | null>(null);
-  const [exporting, setExporting] = useState(false);
+  const [picker, setPicker] = useState(false);
   const [draft, setDraft] = useState('');
   const [draftScope, setDraftScope] = useState<'slide' | 'lesson'>('slide');
   const [showApplied, setShowApplied] = useState(false);
-  const issues = useLessonIssues(lessonId, pendingHere ? (slides ?? undefined) : undefined);
-  const repasoIssues = useLessonIssues(lessonId, pendingHere ? repaso : undefined, 'repaso');
 
-  // Si el repaso queda vacío, la selección vuelve a las láminas de la clase.
-  const listName: Section = section === 'repaso' && repaso.length ? 'repaso' : 'slides';
   const current = listName === 'repaso' ? repaso : (slides ?? []);
-  const index = Math.min(selected, Math.max(0, current.length - 1));
+  const found = current.findIndex((item) => item.id === slideId);
+  const index = found >= 0 ? found : 0;
   const slide = current[index];
   const deck = useMemo(() => (lesson ? deckSlides(lesson) : []), [lesson]);
   const repasoDeck = useMemo(() => (lesson ? deckSlides(lesson, 'repaso') : []), [lesson]);
   const currentDeck = listName === 'repaso' ? repasoDeck : deck;
   const deferredDeck = useDeferredValue(currentDeck);
-  const listIssues = listName === 'repaso' ? repasoIssues : issues;
 
   const fields = useMemo<Field[] | 'error' | null>(() => {
     if (!fieldsModule || !slide) return null;
@@ -242,6 +197,15 @@ export function Editor({
       return 'error';
     }
   }, [fieldsModule, slide]);
+
+  // La lámina elegida desde otra pestaña (un enlace de Revisión o Actividades) queda a la vista.
+  const listRef = useRef<HTMLElement>(null);
+  const selectedId = current[index]?.id;
+  useEffect(() => {
+    listRef.current
+      ?.querySelector('[aria-current="true"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [selectedId]);
 
   if (!slides) {
     const entry = content.library.entries.find((item) => item.id === lessonId);
@@ -284,25 +248,24 @@ export function Editor({
   }
 
   const all = [...slides, ...repaso];
-  const commitTo = (target: Section, next: EditedSlide[]) => {
+  const commit = (next: EditedSlide[]) => {
     if (!content.canEdit) {
       ui.toast('Conecta la app con GitHub (Conexión) para editar.');
       return;
     }
     content.edit(
-      target === 'repaso'
+      listName === 'repaso'
         ? writeRepaso(content.bundle, lessonId, next)
         : writeSlides(content.bundle, lessonId, next),
     );
   };
-  const commit = (next: EditedSlide[]) => commitTo(listName, next);
   const update = (i: number, patch: Partial<EditedSlide>) =>
     commit(current.map((item, k) => (k === i ? { ...item, ...patch } : item)));
-  const pick = (target: Section, i: number) => {
-    setSection(target);
-    setSelected(i);
+  const select = (id: string | undefined) => {
+    if (id) onSelect(id);
     setPreview(null);
   };
+  const pick = (i: number) => select(current[i]?.id);
   const number = slideNumber(listName, index);
   const move = (delta: -1 | 1) => {
     const j = index + delta;
@@ -314,38 +277,39 @@ export function Editor({
     next[index] = b;
     next[j] = a;
     commit(next);
-    setSelected(j);
   };
   const duplicate = () => {
     if (!slide) return;
     const next = [...current];
-    next.splice(index + 1, 0, { ...slide, id: uniqueId(`${slide.id}-copia`, all) });
+    const id = uniqueId(`${slide.id}-copia`, all);
+    next.splice(index + 1, 0, { ...slide, id });
     commit(next);
-    pick(listName, index + 1);
+    select(id);
   };
   // La clase conserva al menos una lámina; el repaso puede quedar vacío.
   const canRemove = listName === 'repaso' || slides.length > 1;
   const remove = () => {
     if (!slide || !canRemove) return;
     const undo = content.snap();
+    const neighbour = current[index + 1] ?? current[index - 1];
     commit(current.filter((_, k) => k !== index));
+    select(neighbour?.id);
     ui.toast(
       `${listName === 'repaso' ? 'Lámina de repaso' : 'Lámina'} ${number} «${slide.title}» eliminada`,
       undo,
     );
   };
-  // Una lámina nueva va después de la seleccionada, o al final si se elige en la otra lista.
-  const insertAt = (target: Section) =>
-    target === listName ? index + 1 : (target === 'repaso' ? repaso : slides).length;
+  // Una lámina nueva va después de la seleccionada (o primera si la lista está vacía).
   const addFromTemplate = (templateId: string) => {
     const template = mascotGallery.templates.find((t) => t.id === templateId);
-    if (!template || !picker) return;
-    const at = insertAt(picker);
-    const next = [...(picker === 'repaso' ? repaso : slides)];
-    next.splice(at, 0, slideFromTemplate(template, uniqueId(template.id, all)));
-    commitTo(picker, next);
-    setPicker(null);
-    pick(picker, at);
+    if (!template) return;
+    const at = current.length ? index + 1 : 0;
+    const id = uniqueId(template.id, all);
+    const next = [...current];
+    next.splice(at, 0, slideFromTemplate(template, id));
+    commit(next);
+    setPicker(false);
+    select(id);
   };
   const restore = () => {
     if (!lesson) return;
@@ -363,15 +327,13 @@ export function Editor({
     (note) => note.slideId && !all.some((s) => s.id === note.slideId) && visible(note),
   );
   const applied = notes.length - pending.length;
-  const notedIndexes = slides
+  const notedIndexes = current
     .map((s, k) => (pending.some((note) => note.slideId === s.id) ? k : -1))
     .filter((k) => k >= 0);
-  /** Siguiente posición de una lista a partir de la selección. */
-  const nextIn = (target: Section, indexes: readonly number[]) =>
-    indexes.find((k) => target !== listName || k > index) ?? indexes[0];
-  const nextNoted = nextIn('slides', notedIndexes);
-  const nextBad = issues ? nextIn('slides', issues.bad) : undefined;
-  const nextBadRepaso = repasoIssues ? nextIn('repaso', repasoIssues.bad) : undefined;
+  /** Siguiente posición de la lista a partir de la selección. */
+  const nextIn = (indexes: readonly number[]) => indexes.find((k) => k > index) ?? indexes[0];
+  const nextNoted = nextIn(notedIndexes);
+  const nextBad = listIssues ? nextIn(listIssues.bad) : undefined;
   const addDraft = () => {
     if (!draft.trim() || !slide) return;
     dispatch({
@@ -386,39 +348,25 @@ export function Editor({
     });
     setDraft('');
   };
-  const noteHandlers = (note: Note) => ({
-    onToggle: () =>
-      dispatch({
-        type: 'updateNote',
-        id: note.id,
-        patch: { status: note.status === 'pendiente' ? 'aplicado' : 'pendiente' },
-      }),
-    onRemove: () => {
-      const undo = snap(['notes']);
-      dispatch({ type: 'removeNote', id: note.id });
-      ui.toast('Comentario eliminado', undo);
-    },
-  });
-
   const slideError = listIssues?.perSlide[index] ?? null;
   const previewStep = slide ? (preview === null || preview > slide.steps ? slide.steps : preview) : 0;
   const pendingFor = (id: string) => pending.filter((note) => note.slideId === id).length;
 
-  const thumb = (target: Section, list: DeckSlide[], item: DeckSlide, k: number) => {
+  const thumb = (list: DeckSlide[], item: DeckSlide, k: number) => {
     const count = pendingFor(item.id);
-    const bad = Boolean((target === 'repaso' ? repasoIssues : issues)?.perSlide[k]);
+    const bad = Boolean(listIssues?.perSlide[k]);
     return (
       <button
         key={`${item.id}-${k}`}
         type="button"
         className={`thumb ${layout === 'mid' ? 'is-image' : ''}`}
-        aria-current={target === listName && k === index ? 'true' : undefined}
-        onClick={() => pick(target, k)}
+        aria-current={k === index ? 'true' : undefined}
+        onClick={() => pick(k)}
       >
         {layout === 'mid' ? (
           <span className="thumb-image">
             <span className="thumb-top">
-              <span className="thumb-n">{slideNumber(target, k)}</span>
+              <span className="thumb-n">{slideNumber(listName, k)}</span>
               <span>
                 {count > 0 && <span className="flag-note">{count} com.</span>}
                 {bad && <span className="flag-bad">Revisar</span>}
@@ -432,7 +380,7 @@ export function Editor({
           </span>
         ) : (
           <>
-            <span className="thumb-n">{slideNumber(target, k)}</span>
+            <span className="thumb-n">{slideNumber(listName, k)}</span>
             <span className="thumb-copy">
               <span className="thumb-title">{item.title}</span>
               <span className="thumb-meta">
@@ -448,48 +396,42 @@ export function Editor({
     );
   };
 
-  const list = (
-    <aside aria-label="Láminas de la clase" className={`editor-list is-${layout}`}>
-      <div className="editor-list-head">
-        {layout === 'wide' && (
-          <>
-            <p className="kicker">
-              {meta.duration} MIN · {meta.subject.toUpperCase()} · {slides.length} LÁMINAS
-            </p>
-            <p className="editor-lesson-title">{meta.title}</p>
-          </>
-        )}
-        <div className="row">
-          <Button size="sm" onClick={() => setDetails(true)}>
-            Datos de la clase
-          </Button>
-          <Button size="sm" onClick={() => setExporting(true)}>
-            <Download size={16} aria-hidden="true" />
-            Copia ZIP
-          </Button>
+  const listPanel = (
+    <aside
+      ref={listRef}
+      aria-label={listName === 'repaso' ? 'Láminas del repaso' : 'Láminas de la clase'}
+      className={`editor-list is-${layout}`}
+    >
+      {listName === 'repaso' && (
+        <div className="editor-repaso-head">
+          <p className="kicker">Repaso del estudiante</p>
+          <p className="muted small">
+            Solo en el celular, bajo «Para seguir explorando»: no se proyectan, no salen en el
+            PDF ni cuentan en los tramos.
+          </p>
         </div>
-      </div>
+      )}
       {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
-      {issues && issues.lessonErrors.length > 0 && (
-        <button type="button" className="editor-alert is-error" onClick={() => setDetails(true)}>
-          <b>Datos de la clase: {issues.lessonErrors.length} por corregir</b>
+      {listName === 'slides' && listIssues && listIssues.lessonErrors.length > 0 && (
+        <button type="button" className="editor-alert is-error" onClick={onOpenDetails}>
+          <b>Datos de la clase: {listIssues.lessonErrors.length} por corregir</b>
           <span>Abrir datos de la clase →</span>
         </button>
       )}
-      {issues && issues.bad.length > 0 && (
-        <button type="button" className="editor-alert is-error" onClick={() => nextBad !== undefined && pick('slides', nextBad)}>
+      {listIssues && listIssues.bad.length > 0 && (
+        <button type="button" className="editor-alert is-error" onClick={() => nextBad !== undefined && pick(nextBad)}>
           <b>
-            Revisión de la clase: {issues.bad.length}{' '}
-            {issues.bad.length === 1 ? 'lámina' : 'láminas'} con errores
+            {listName === 'repaso' ? 'Repaso' : 'Revisión de la clase'}: {listIssues.bad.length}{' '}
+            {listIssues.bad.length === 1 ? 'lámina' : 'láminas'} con errores
           </b>
           <span>Ir a la siguiente →</span>
         </button>
       )}
-      {pending.length > 0 && (
+      {listName === 'slides' && pending.length > 0 && (
         <button
           type="button"
           className="editor-alert is-note"
-          onClick={() => nextNoted !== undefined && pick('slides', nextNoted)}
+          onClick={() => nextNoted !== undefined && pick(nextNoted)}
         >
           <b>
             {pending.length} {pending.length === 1 ? 'comentario pendiente' : 'comentarios pendientes'}
@@ -501,40 +443,12 @@ export function Editor({
           </span>
         </button>
       )}
-      {deck.map((item, k) => thumb('slides', deck, item, k))}
+      {currentDeck.map((item, k) => thumb(currentDeck, item, k))}
       <div className="editor-add">
-        <Button variant="add" block className="new-slide" onClick={() => setPicker('slides')}>
-          + Nueva lámina
+        <Button variant="add" block className="new-slide" onClick={() => setPicker(true)}>
+          {listName === 'repaso' ? '+ Lámina de repaso' : '+ Nueva lámina'}
         </Button>
       </div>
-      <section aria-label="Repaso del estudiante" className="editor-repaso">
-        <div className="editor-repaso-head">
-          <p className="kicker">Repaso del estudiante · {repaso.length}</p>
-          <p className="muted small">
-            Solo en el celular, bajo «Para seguir explorando»: no se proyectan, no salen en el
-            PDF ni cuentan en los tramos.
-          </p>
-        </div>
-        {repasoIssues && repasoIssues.bad.length > 0 && (
-          <button
-            type="button"
-            className="editor-alert is-error"
-            onClick={() => nextBadRepaso !== undefined && pick('repaso', nextBadRepaso)}
-          >
-            <b>
-              Repaso: {repasoIssues.bad.length}{' '}
-              {repasoIssues.bad.length === 1 ? 'lámina' : 'láminas'} con errores
-            </b>
-            <span>Ir a la siguiente →</span>
-          </button>
-        )}
-        {repasoDeck.map((item, k) => thumb('repaso', repasoDeck, item, k))}
-        <div className="editor-add">
-          <Button variant="add" block className="new-slide" onClick={() => setPicker('repaso')}>
-            + Lámina de repaso
-          </Button>
-        </div>
-      </section>
     </aside>
   );
 
@@ -709,7 +623,10 @@ export function Editor({
             key={`${lessonId}-${listName}-${index}`}
             value={slide.id}
             taken={all.filter((s) => s !== slide).map((s) => s.id)}
-            onCommit={(id) => update(index, { id })}
+            onCommit={(id) => {
+              update(index, { id });
+              select(id);
+            }}
           />
         </div>
       </div>
@@ -752,11 +669,18 @@ export function Editor({
     </section>
   );
 
-  const exportData = exporting && lesson ? buildExport(content.files, lesson) : null;
-
   return (
     <main ref={rootRef} className={`editor is-${layout}`}>
-      {list}
+      {listPanel}
+      {!slide && (
+        <section aria-label="Vista previa" className="editor-preview">
+          <p className="empty-note">
+            {listName === 'repaso'
+              ? 'El repaso aún no tiene láminas. Agrega una para que el estudiante siga explorando en el celular.'
+              : 'Esta clase aún no tiene láminas.'}
+          </p>
+        </section>
+      )}
       {slide && (
         <section aria-label="Vista previa" className="editor-preview">
           <div className="preview-bar">
@@ -818,7 +742,7 @@ export function Editor({
                 <p className="notes-sub">En esta lámina</p>
                 <ul className="note-list">
                   {slideNotes.map((note) => (
-                    <NoteItem key={note.id} note={note} {...noteHandlers(note)} />
+                    <NoteItem key={note.id} note={note} {...noteActions(note)} />
                   ))}
                 </ul>
               </>
@@ -828,14 +752,14 @@ export function Editor({
                 <p className="notes-sub">De toda la clase</p>
                 <ul className="note-list">
                   {lessonNotes.map((note) => (
-                    <NoteItem key={note.id} note={note} {...noteHandlers(note)} />
+                    <NoteItem key={note.id} note={note} {...noteActions(note)} />
                   ))}
                   {orphanNotes.map((note) => (
                     <NoteItem
                       key={note.id}
                       note={note}
                       extra={`Lámina eliminada «${note.slideTitle}»`}
-                      {...noteHandlers(note)}
+                      {...noteActions(note)}
                     />
                   ))}
                 </ul>
@@ -876,7 +800,7 @@ export function Editor({
             </div>
           </section>
           <div aria-live="polite" className="editor-check">
-            {!issues ? (
+            {!listIssues ? (
               <p className="kicker kicker--muted">Revisión de contenido · revisando…</p>
             ) : slideError ? (
               <>
@@ -895,7 +819,7 @@ export function Editor({
                 </p>
               </>
             )}
-            {issues?.warnings.map((warning) => (
+            {listIssues?.warnings.map((warning) => (
               <p key={warning} className="check-line is-warn">
                 <b>Aviso</b>
                 <span>{warning}</span>
@@ -906,20 +830,16 @@ export function Editor({
       )}
       {props}
       {picker && (
-        <Modal label="Elegir plantilla" onClose={() => setPicker(null)} className="picker">
+        <Modal label="Elegir plantilla" onClose={() => setPicker(false)} className="picker">
           <div className="modal-head">
             <div>
               <p className="kicker">
-                {picker === 'repaso' ? 'Nueva lámina de repaso' : 'Nueva lámina'}{' '}
-                {picker === listName
-                  ? `después de la ${number}`
-                  : picker === 'repaso'
-                    ? 'al final del repaso'
-                    : 'al final de la clase'}
+                {listName === 'repaso' ? 'Nueva lámina de repaso' : 'Nueva lámina'}
+                {current.length ? ` después de la ${number}` : ''}
               </p>
               <h2>Elige una plantilla con mascota</h2>
             </div>
-            <IconButton label="Cerrar" onClick={() => setPicker(null)}>
+            <IconButton label="Cerrar" onClick={() => setPicker(false)}>
               <X size={22} aria-hidden="true" />
             </IconButton>
           </div>
@@ -935,41 +855,6 @@ export function Editor({
                 </span>
               </button>
             ))}
-          </div>
-        </Modal>
-      )}
-      {details && <LessonDialog lessonId={lessonId} onClose={() => setDetails(false)} />}
-      {exportData && (
-        <Modal label="Copia ZIP" onClose={() => setExporting(false)}>
-          <div className="modal-head">
-            <div>
-              <p className="kicker">Copia de respaldo</p>
-              <h2>{meta.title}</h2>
-            </div>
-            <IconButton label="Cerrar" onClick={() => setExporting(false)}>
-              <X size={22} aria-hidden="true" />
-            </IconButton>
-          </div>
-          <p className="muted modal-lead">
-            Descarga un ZIP con <code>lesson.yaml</code> y {all.length} archivos{' '}
-            <code>.mdx</code>, tal como están en la app (incluye los cambios sin guardar).
-            No hace falta para publicar: «Guardar en el repositorio» ya lo hace.
-          </p>
-          <div className="modal-actions">
-            <Button onClick={() => setExporting(false)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                const zip = makeZip(exportData.files);
-                download(`${exportData.folder}.zip`, new Blob([zip], { type: 'application/zip' }));
-                setExporting(false);
-                ui.toast(`Exportada «${meta.title}» (${exportData.files.length} archivos)`);
-              }}
-            >
-              Descargar ZIP
-            </Button>
           </div>
         </Modal>
       )}

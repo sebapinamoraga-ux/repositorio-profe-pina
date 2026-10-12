@@ -1,28 +1,30 @@
 import {
+  LEGACY_VIEWS,
   roleSchema,
+  sectionSchema,
   viewSchema,
   type RoleState,
+  type Section,
   type View,
 } from '../store/schema';
 
 /**
- * Rutas de la app como datos. El fragmento (#rol=…&vista=…&clase=…&slide=…) es la fuente de
- * verdad: recargar o compartir un enlace abre la misma vista y la misma clase. Funciones puras,
- * sin acceso a `window`, para probarlas sin navegador.
+ * Rutas de la app como datos. El fragmento (#rol=…&vista=…&clase=…&seccion=…&slide=…) es la
+ * fuente de verdad: recargar o compartir un enlace abre la misma vista, la misma clase y la misma
+ * pestaña. Funciones puras, sin acceso a `window`, para probarlas sin navegador.
  */
 
 /** Vistas docentes que trabajan sobre una clase: llevan `clase` en la URL. */
-export const LESSON_VIEWS: ReadonlySet<View> = new Set<View>([
-  'hoy',
-  'presentar',
-  'editor',
-  'pdf',
-  'galeria',
-]);
+export const LESSON_VIEWS: ReadonlySet<View> = new Set<View>(['clase', 'presentar', 'galeria']);
+
+/** Pestañas donde se elige una lámina: la lámina seleccionada viaja en la URL. */
+const SLIDE_SECTIONS: ReadonlySet<Section> = new Set<Section>(['laminas', 'repaso']);
 
 export interface TeacherRoute {
   role: 'docente';
   view: View;
+  /** Pestaña del espacio de la clase; null fuera de «clase». */
+  section: Section | null;
   lesson: string | null;
   slide: string | null;
 }
@@ -40,11 +42,14 @@ export interface PrintRoute {
   local: boolean;
 }
 
+export interface NavTarget {
+  lesson?: string;
+  section?: Section;
+  slide?: string;
+}
+
 /** Destino de una navegación docente; sin `lesson`, una vista de clase conserva la actual. */
-export type Navigate = (
-  view: View,
-  target?: { lesson?: string; slide?: string },
-) => void;
+export type Navigate = (view: View, target?: NavTarget) => void;
 
 const text = (params: URLSearchParams, key: string) => params.get(key) || null;
 
@@ -57,6 +62,32 @@ export function parsePrint(params: URLSearchParams): PrintRoute | null {
   };
 }
 
+/** Construye una ruta docente válida: la pestaña solo existe en «clase» y vale «resumen» por omisión. */
+export function teacherRoute(
+  view: View,
+  target: { lesson?: string | null; section?: Section | null; slide?: string | null } = {},
+): TeacherRoute {
+  return {
+    role: 'docente',
+    view,
+    section: view === 'clase' ? (target.section ?? 'resumen') : null,
+    lesson: target.lesson ?? null,
+    slide: target.slide ?? null,
+  };
+}
+
+function parseTeacher(params: URLSearchParams): TeacherRoute {
+  const raw = params.get('vista') ?? '';
+  const legacy = LEGACY_VIEWS[raw];
+  const view = viewSchema.safeParse(raw);
+  const section = sectionSchema.safeParse(params.get('seccion'));
+  return teacherRoute(legacy ? 'clase' : view.success ? view.data : 'clase', {
+    lesson: text(params, 'clase'),
+    section: legacy ?? (section.success ? section.data : null),
+    slide: text(params, 'slide'),
+  });
+}
+
 function fromSaved(saved: RoleState): AppRoute {
   switch (saved.role) {
     case null:
@@ -66,7 +97,7 @@ function fromSaved(saved: RoleState): AppRoute {
     case 'remoto':
       return { role: 'remoto' };
     case 'docente':
-      return { role: 'docente', view: saved.view, lesson: null, slide: null };
+      return teacherRoute(saved.view);
   }
 }
 
@@ -76,10 +107,9 @@ function fromSaved(saved: RoleState): AppRoute {
  */
 export function parseRoute(
   params: URLSearchParams,
-  saved: RoleState = { role: null, view: 'hoy' },
+  saved: RoleState = { role: null, view: 'clase' },
 ): AppRoute {
   const lesson = text(params, 'clase');
-  const slide = text(params, 'slide');
   const role = roleSchema.safeParse(params.get('rol'));
   if (role.success) {
     switch (role.data) {
@@ -87,20 +117,12 @@ export function parseRoute(
         return { role: 'estudiante', lesson, code: text(params, 'codigo') };
       case 'remoto':
         return { role: 'remoto' };
-      case 'docente': {
-        const view = viewSchema.safeParse(params.get('vista'));
-        return {
-          role: 'docente',
-          view: view.success ? view.data : 'hoy',
-          lesson,
-          slide,
-        };
-      }
+      case 'docente':
+        return parseTeacher(params);
     }
   }
-  if (params.get('galeria') === 'mascotas')
-    return { role: 'docente', view: 'galeria', lesson, slide: null };
-  if (lesson) return { role: 'docente', view: 'presentar', lesson, slide };
+  if (params.get('galeria') === 'mascotas') return teacherRoute('galeria', { lesson });
+  if (lesson) return teacherRoute('presentar', { lesson, slide: text(params, 'slide') });
   return fromSaved(saved);
 }
 
@@ -115,9 +137,12 @@ export function routeParams(route: AppRoute): URLSearchParams {
   }
   if (route.role === 'docente') {
     params.set('vista', route.view);
-    if (route.lesson && LESSON_VIEWS.has(route.view))
-      params.set('clase', route.lesson);
-    if (route.slide && route.view === 'presentar') params.set('slide', route.slide);
+    if (route.lesson && LESSON_VIEWS.has(route.view)) params.set('clase', route.lesson);
+    if (route.view === 'clase') params.set('seccion', route.section ?? 'resumen');
+    const slideHere =
+      route.view === 'presentar' ||
+      (route.view === 'clase' && route.section !== null && SLIDE_SECTIONS.has(route.section));
+    if (route.slide && slideHere) params.set('slide', route.slide);
   }
   return params;
 }

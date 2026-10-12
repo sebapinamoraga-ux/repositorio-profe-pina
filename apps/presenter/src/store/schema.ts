@@ -118,19 +118,29 @@ export type TeacherData = z.infer<typeof teacherDataSchema>;
 export const roleSchema = z.enum(['estudiante', 'docente', 'remoto']);
 export type Role = z.infer<typeof roleSchema>;
 export const viewSchema = z.enum([
-  'hoy',
+  'clase',
   'biblioteca',
   'presentar',
-  'editor',
   'galeria',
   'cursos',
-  'pdf',
   'actividades',
   'conexion',
 ]);
 export type View = z.infer<typeof viewSchema>;
+/** Pestañas del espacio de una clase. */
+export const sectionSchema = z.enum(['resumen', 'laminas', 'repaso', 'actividades', 'revision', 'pdf']);
+export type Section = z.infer<typeof sectionSchema>;
+/** Vistas anteriores al espacio de la clase: hoy son pestañas de «clase». */
+export const LEGACY_VIEWS: Readonly<Record<string, Section>> = {
+  hoy: 'resumen',
+  editor: 'laminas',
+  pdf: 'pdf',
+};
 export const roleStateSchema = z.object({
   role: roleSchema.nullable(),
-  view: viewSchema.catch('hoy'),
+  view: z.preprocess(
+    (value) => (typeof value === 'string' && value in LEGACY_VIEWS ? 'clase' : value),
+    viewSchema.catch('clase'),
+  ),
 });
 export type RoleState = z.infer<typeof roleStateSchema>;

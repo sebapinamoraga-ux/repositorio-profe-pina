@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import { Lightbulb } from 'lucide-react';
-import { useViewportWidth } from '../app/route';
-import type { Navigate } from '../app/routes';
-import { useContent } from '../content/ContentProvider';
-import { useAula } from '../store/AulaProvider';
-import { deckFor, pad2 } from '../store/deck';
-import { nowParts, pendingNotes } from '../store/teacher';
-import { Button } from '../ui/Button';
-import { Card, Page, PageHeader } from '../ui/Layout';
+import { useViewportWidth } from '../../app/route';
+import type { Navigate } from '../../app/routes';
+import { useContent } from '../../content/ContentProvider';
+import { useAula } from '../../store/AulaProvider';
+import { deckFor, pad2 } from '../../store/deck';
+import { nowParts, pendingNotes } from '../../store/teacher';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Layout';
 
-const MARK_LABEL = {
-  lista: 'lista',
-  'en-preparacion': 'en preparación',
-  'por-preparar': 'por preparar',
-} as const;
-
-export function Today({
+/** Resumen de la clase: objetivos, tramos, inicio de la clase y lo pendiente. */
+export function Summary({
   lessonId,
   onNavigate,
 }: {
@@ -27,7 +22,6 @@ export function Today({
   const content = useContent();
   const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
-  const entry = content.library.entries.find((item) => item.id === lessonId);
   const [courseId, setCourseId] = useState(data.courses[0]?.id ?? '');
   const session = data.activeSession;
   const notes = pendingNotes(data, lessonId);
@@ -57,24 +51,13 @@ export function Today({
   };
 
   return (
-    <Page width="medium" grid>
-        <PageHeader
-          kicker={`Clase de hoy · ${MARK_LABEL[entry?.status ?? 'por-preparar']}`}
-          kickerAction={
-            <Button variant="quiet" size="sm" onClick={() => onNavigate('biblioteca')}>
-              Cambiar clase
-            </Button>
-          }
-          title={meta.title}
-          meta={
-            <>
-              <span>{meta.duration} minutos</span>
-              <span>PAES {meta.subject.toUpperCase()}</span>
-              <span>{meta.axis}</span>
-              <span>{slides.length} láminas</span>
-            </>
-          }
-        />
+    <div className="ws-page">
+        <div className="chips">
+          <span>{meta.duration} minutos</span>
+          <span>PAES {meta.subject.toUpperCase()}</span>
+          <span>{meta.axis}</span>
+          <span>{slides.length} láminas</span>
+        </div>
         <div className={`today-grid ${width >= 1200 ? 'is-wide' : ''}`}>
           <div className="stack">
             <Card
@@ -139,11 +122,11 @@ export function Today({
             ) : (
               <Card variant="dashed" title="Clase en preparación">
                 <p className="muted">
-                  Aún no tiene tramos con minutos. Completa sus láminas en el
-                  editor antes de proyectarla.
+                  Aún no tiene tramos con minutos. Completa sus láminas antes de
+                  proyectarla.
                 </p>
-                <Button variant="primary" onClick={() => onNavigate('editor')}>
-                  Abrir en editor
+                <Button variant="primary" onClick={() => onNavigate('clase', { section: 'laminas' })}>
+                  Abrir las láminas
                 </Button>
               </Card>
             )}
@@ -170,7 +153,7 @@ export function Today({
               <Button variant="present" size="lg" block disabled={!slides.length} onClick={start}>
                 {session ? 'Continuar la clase en curso' : 'Iniciar clase y proyectar'}
               </Button>
-              <Button block disabled={!slides.length} onClick={() => onNavigate('pdf')}>
+              <Button block disabled={!slides.length} onClick={() => onNavigate('clase', { section: 'pdf' })}>
                 Descargar PDF antes de la clase
               </Button>
               <p className="hint">
@@ -205,10 +188,8 @@ export function Today({
                     );
                   })}
                 </ul>
-                <Button size="sm" onClick={() => onNavigate('editor')}>
-                  {notes.length > 3
-                    ? `Ver los ${notes.length} en el editor`
-                    : 'Revisar en el editor'}
+                <Button size="sm" onClick={() => onNavigate('clase', { section: 'revision' })}>
+                  {notes.length > 3 ? `Ver los ${notes.length} en Revisión` : 'Ver en Revisión'}
                 </Button>
               </Card>
             )}
@@ -223,6 +204,6 @@ export function Today({
             )}
           </div>
         </div>
-    </Page>
+    </div>
   );
 }

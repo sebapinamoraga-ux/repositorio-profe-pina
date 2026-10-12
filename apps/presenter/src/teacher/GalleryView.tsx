@@ -1,7 +1,7 @@
 import { MascotGallery } from '../app/MascotGallery';
 import { useContent } from '../content/ContentProvider';
 import { findLesson, writeSlides } from '../content/ops';
-import { routeHash } from '../app/routes';
+import { routeHash, teacherRoute } from '../app/routes';
 import { deckFor, editableSlides, slideFromTemplate } from '../store/deck';
 import type { View } from '../store/schema';
 
@@ -17,7 +17,7 @@ export function GalleryView({
   const deck = deckFor(content, lessonId);
   return (
     <MascotGallery
-      returnHref={routeHash({ role: 'docente', view: 'presentar', lesson: lessonId, slide: null })}
+      returnHref={routeHash(teacherRoute('presentar', { lesson: lessonId }))}
       onReturn={() => onNavigate('presentar')}
       onUse={async (template) => {
         const lesson = findLesson(content.bundle, lessonId);

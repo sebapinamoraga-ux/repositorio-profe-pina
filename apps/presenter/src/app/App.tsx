@@ -17,6 +17,7 @@ import {
   parsePrint,
   parseRoute,
   roleStateOf,
+  teacherRoute,
   type AppRoute,
   type PrintRoute,
 } from './routes';
@@ -56,7 +57,7 @@ function LocalPrintRoute({ print }: { print: PrintRoute }) {
 
 const ROLE_HOME: Record<Role, AppRoute> = {
   estudiante: { role: 'estudiante', lesson: null, code: null },
-  docente: { role: 'docente', view: 'hoy', lesson: null, slide: null },
+  docente: teacherRoute('clase'),
   remoto: { role: 'remoto' },
 };
 

@@ -20,7 +20,7 @@ test('la entrada muestra los tres roles y la parte docente pide desbloqueo local
   await expect(page.getByRole('heading', { name: 'Sistemas de ecuaciones lineales' })).toBeVisible();
   await expect(page.getByText('Tramos de la clase')).toBeVisible();
   await page.reload();
-  await expect(page).toHaveURL(/rol=docente&vista=hoy/);
+  await expect(page).toHaveURL(/rol=docente&vista=clase&clase=sistemas-2x2&seccion=resumen$/);
   await expect(page.getByText('Tramos de la clase')).toBeVisible();
 });
 
@@ -50,7 +50,7 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
 
   await row.getByRole('button', { name: 'Preparar' }).click();
   await page.getByRole('dialog', { name: 'Preparar clase' }).getByRole('button', { name: 'Crear y abrir en editor' }).click();
-  await expect(page).toHaveURL(/vista=editor/);
+  await expect(page).toHaveURL(/vista=clase&clase=clase-de-prueba&seccion=laminas/);
   await expect(page.locator('.thumb')).toHaveCount(5);
   await page.getByRole('button', { name: 'Clases', exact: true }).or(page.getByRole('button', { name: 'Biblioteca de clases' })).first().click();
   await expect(row).toContainText('En preparación');
@@ -67,31 +67,36 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   expect(fake.headCommit()?.message).toMatch(/^Aula: /);
 });
 
-test('la clase viaja en la URL: enlace directo, Atrás del navegador y clase desconocida', async ({
+test('la clase viaja en la URL: pestañas, enlaces directos, Atrás del navegador y clase desconocida', async ({
   page,
 }) => {
   await unlock(page);
   await page.setViewportSize({ width: 1500, height: 900 });
+  // Un enlace anterior al espacio de la clase abre la pestaña equivalente.
   await page.goto('/#rol=docente&vista=editor&clase=funcion-cuadratica-2');
-  await expect(page.locator('.editor-lesson-title')).toHaveText('Función cuadrática (parte 2)');
-  // La barra lateral conserva la clase al cambiar de vista; Atrás vuelve a la vista anterior.
-  await page.getByRole('button', { name: 'Vista PDF' }).click();
-  await expect(page).toHaveURL(/vista=pdf&clase=funcion-cuadratica-2$/);
+  await expect(page).toHaveURL(/vista=clase&clase=funcion-cuadratica-2&seccion=laminas$/);
+  await expect(page.locator('.ws-head h1')).toHaveText('Función cuadrática (parte 2)');
+  // La lámina elegida viaja en la URL; las pestañas conservan la clase; Atrás vuelve.
+  await page.locator('.thumb').nth(2).click();
+  await expect(page).toHaveURL(/seccion=laminas&slide=[a-z0-9-]+$/);
+  const withSlide = page.url();
+  await page.getByRole('navigation', { name: 'Secciones de la clase' }).getByRole('button', { name: 'PDF' }).click();
+  await expect(page).toHaveURL(/vista=clase&clase=funcion-cuadratica-2&seccion=pdf$/);
   await page.goBack();
-  await expect(page).toHaveURL(/vista=editor&clase=funcion-cuadratica-2$/);
-  await expect(page.locator('.editor-lesson-title')).toHaveText('Función cuadrática (parte 2)');
+  await expect(page).toHaveURL(withSlide);
+  await expect(page.locator('.thumb').nth(2)).toHaveAttribute('aria-current', 'true');
   // Sin clase en el enlace se abre la última; una vista sin clase no la lleva.
-  await page.goto('/#rol=docente&vista=hoy');
-  await expect(page).toHaveURL(/vista=hoy&clase=funcion-cuadratica-2$/);
+  await page.goto('/#rol=docente&vista=clase');
+  await expect(page).toHaveURL(/vista=clase&clase=funcion-cuadratica-2&seccion=resumen$/);
   await page.getByRole('button', { name: 'Biblioteca de clases' }).click();
   await expect(page).toHaveURL(/vista=biblioteca$/);
   await expect(page.locator('.lesson-row', { hasText: 'Función cuadrática (parte 2)' })).toContainText(
     'Última abierta',
   );
   // Una clase que no existe se reemplaza por la última abierta y se avisa.
-  await page.goto('/#rol=docente&vista=editor&clase=no-existe');
+  await page.goto('/#rol=docente&vista=clase&clase=no-existe&seccion=revision');
   await expect(page.locator('.toast')).toContainText('No se encontró la clase «no-existe»');
-  await expect(page).toHaveURL(/vista=editor&clase=funcion-cuadratica-2$/);
+  await expect(page).toHaveURL(/vista=clase&clase=funcion-cuadratica-2&seccion=revision$/);
 });
 
 test('editor: cambiar un título, revisar con content:check y descargar la copia ZIP', async ({ page }) => {
@@ -130,7 +135,7 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   await expect(page.locator('.save-bar')).toHaveCount(0);
 });
 
-test('comentario desde el presentador aparece pendiente en el editor', async ({ page }) => {
+test('comentario desde el presentador aparece pendiente en Revisión y junto a su lámina', async ({ page }) => {
   await unlock(page);
   await page.goto('/#rol=docente&vista=presentar&clase=sistemas-2x2&slide=signos');
   await expect(page.locator('.slide')).toHaveAttribute('data-slide', 'signos');
@@ -140,9 +145,14 @@ test('comentario desde el presentador aparece pendiente en el editor', async ({ 
   await expect(page.getByLabel('1 comentario pendiente en esta lámina')).toBeVisible();
   await page.getByRole('button', { name: 'Salir de la presentación' }).click();
   await expect(page.getByText('1 comentario pendiente de clases anteriores')).toBeVisible();
-  await page.getByRole('button', { name: 'Revisar en el editor' }).click();
-  await page.getByRole('button', { name: /1 comentario pendiente/ }).click();
-  await expect(page.locator('.note-item')).toContainText('Dar más tiempo a los signos.');
+  await page.getByRole('button', { name: 'Ver en Revisión' }).click();
+  await expect(page).toHaveURL(/seccion=revision$/);
+  const notes = page.getByRole('region', { name: 'Comentarios para mejorar la clase' });
+  await expect(notes.locator('.note-item')).toContainText('Dar más tiempo a los signos.');
+  // El enlace del comentario abre su lámina en el editor.
+  await notes.getByRole('button', { name: /^Lámina \d+ «/ }).click();
+  await expect(page).toHaveURL(/seccion=laminas&slide=signos$/);
+  await expect(page.locator('.editor-notes .note-item')).toContainText('Dar más tiempo a los signos.');
   await page.getByRole('button', { name: 'Marcar como aplicado' }).click();
   await expect(page.locator('.editor-notes')).toContainText('Todo aplicado');
 });

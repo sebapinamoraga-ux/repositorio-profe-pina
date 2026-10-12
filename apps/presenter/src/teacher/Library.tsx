@@ -19,7 +19,7 @@ import {
 import { useAula } from '../store/AulaProvider';
 import { hasSlides, lessonEntry, skeleton } from '../store/deck';
 import { ORIGINAL_LESSON_ID } from '../store/seed';
-import type { LessonMark, View } from '../store/schema';
+import type { LessonMark, Section } from '../store/schema';
 import { pendingNotes, slugify, uid } from '../store/teacher';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
@@ -103,7 +103,7 @@ function LessonRow({
         ? 'is-warn'
         : 'is-ok';
 
-  const open = (view: View) => onNavigate(view, { lesson: entry.id });
+  const open = (section: Section) => onNavigate('clase', { lesson: entry.id, section });
   const setTitle = (title: string) =>
     findLesson(content.bundle, entry.id)
       ? content.edit(writeLesson(content.bundle, entry.id, { title }))
@@ -214,7 +214,7 @@ function LessonRow({
             {MARK[entry.status]}
           </span>
           {notes > 0 && (
-            <button type="button" className="notes-chip" onClick={() => open('editor')}>
+            <button type="button" className="notes-chip" onClick={() => open('revision')}>
               {notes === 1 ? '1 comentario pendiente' : `${notes} comentarios pendientes`}
             </button>
           )}
@@ -289,13 +289,13 @@ function LessonRow({
                 <Button
                   variant={entry.status === 'lista' ? 'secondary' : 'primary'}
                   size="sm"
-                  onClick={() => open('editor')}
+                  onClick={() => open('laminas')}
                 >
                   Editar
                 </Button>
               )}
               {has && entry.status === 'lista' && (
-                <Button variant="present" size="sm" onClick={() => open('presentar')}>
+                <Button variant="present" size="sm" onClick={() => onNavigate('presentar', { lesson: entry.id })}>
                   Presentar
                 </Button>
               )}
@@ -414,7 +414,7 @@ function PrepareDialog({
       }),
     ]);
     onClose();
-    onNavigate('editor', { lesson: entry.id });
+    onNavigate('clase', { lesson: entry.id, section: 'laminas' });
   };
   return (
     <Modal label="Preparar clase" onClose={onClose}>

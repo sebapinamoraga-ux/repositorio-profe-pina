@@ -68,7 +68,7 @@ test('los parámetros de un interactivo se editan con un formulario', async ({ p
   await openTeacher(page, 'vista=presentar&clase=funcion-lineal-afin-2-cuadratica-1');
   await expect(page.locator('.slide')).toBeVisible();
   await page.getByRole('button', { name: 'Salir de la presentación' }).click();
-  await page.getByRole('button', { name: 'Editor', exact: true }).click();
+  await page.getByRole('button', { name: /^Láminas/ }).click();
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await page.locator('.thumb', { hasText: '¿Qué hacen a y c?' }).click();
   const form = page.getByRole('group', { name: 'Explorador de la parábola' });
@@ -130,10 +130,10 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   await openTeacher(page, 'vista=presentar&clase=funcion-cuadratica-2');
   await expect(page.locator('.slide')).toBeVisible();
   await page.getByRole('button', { name: 'Salir de la presentación' }).click();
-  await page.getByRole('button', { name: 'Editor', exact: true }).click();
+  await page.getByRole('button', { name: /^Repaso/ }).click();
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
 
-  const repaso = page.getByRole('region', { name: 'Repaso del estudiante' });
+  const repaso = page.getByRole('complementary', { name: 'Láminas del repaso' });
   await expect(repaso.locator('.thumb')).toHaveCount(4);
   await repaso.locator('.thumb').nth(1).click();
   await expect(page.getByRole('heading', { name: 'Lámina de repaso R2' })).toBeVisible();

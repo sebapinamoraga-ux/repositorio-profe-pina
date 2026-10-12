@@ -70,7 +70,7 @@ export function loadRoleState(): RoleState {
   } catch {
     /* Sin rol guardado. */
   }
-  return { role: null, view: 'hoy' };
+  return { role: null, view: 'clase' };
 }
 export const saveRoleState = (state: RoleState) =>
   write(ROLE_KEY, JSON.stringify(state));

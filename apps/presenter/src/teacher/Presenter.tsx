@@ -22,7 +22,7 @@ import { SlideView } from '../slides/SlideView';
 import { useAula } from '../store/AulaProvider';
 import { deckFor, pad2 } from '../store/deck';
 import { voteCounts } from '../store/live';
-import type { View } from '../store/schema';
+import type { Navigate } from '../app/routes';
 import { nowParts } from '../store/teacher';
 import { Modal } from '../ui/Modal';
 import { qrPath } from '../ui/qr';
@@ -66,7 +66,7 @@ export function Presenter({
   onNavigate,
 }: {
   lessonId: string;
-  onNavigate: (view: View) => void;
+  onNavigate: Navigate;
 }) {
   const { data, dispatch, live, send, setPresenting } = useAula();
   const content = useContent();
@@ -263,7 +263,7 @@ export function Presenter({
             <Button onClick={() => onNavigate('biblioteca')}>
               Ir a la biblioteca
             </Button>
-            <Button variant="primary" onClick={() => onNavigate('editor')}>
+            <Button variant="primary" onClick={() => onNavigate('clase', { section: 'laminas' })}>
               Abrir en editor
             </Button>
           </div>
@@ -341,7 +341,7 @@ export function Presenter({
   };
   const exit = () => {
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
-    onNavigate('hoy');
+    onNavigate('clase', { section: 'resumen' });
   };
 
   const paceRead = pace.read(tramo?.label ?? null);
@@ -463,7 +463,7 @@ export function Presenter({
           type="button"
           className="bar-btn"
           aria-label="Vista PDF con respuestas"
-          onClick={() => onNavigate('pdf')}
+          onClick={() => onNavigate('clase', { section: 'pdf' })}
         >
           <Printer size={20} aria-hidden="true" />
         </button>
