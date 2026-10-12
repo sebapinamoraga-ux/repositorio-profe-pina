@@ -67,10 +67,9 @@ export function TemplateSlide({
         <span>
           <b>p.</b> PROFE PIÑA
         </span>
-        <span>MATEMÁTICA Y FÍSICA</span>
+        <span>{template.slideType}</span>
       </div>
       <div className="template-slide-main">
-        <p className="template-eyebrow">{template.eyebrow}</p>
         <h2>{template.heading}</h2>
         <div className="template-content">
           {template.layout !== 'portada' && <p>{template.body}</p>}
@@ -87,7 +86,7 @@ export function TemplateSlide({
         alt={template.mascot.alt}
       />
       <div className="template-slide-footer">
-        <span>{template.slideType}</span>
+        <span className="template-eyebrow">{template.eyebrow}</span>
         <span>
           {level} · pose {String(template.mascot.pose).padStart(2, '0')}
         </span>

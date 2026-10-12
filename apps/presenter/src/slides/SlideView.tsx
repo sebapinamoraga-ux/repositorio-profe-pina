@@ -31,21 +31,20 @@ export function Frame({
         <span className="brand">
           p<span className="brand-dot">.</span> <span>PROFE PIÑA</span>
         </span>
-        <span className="subject">
-          PAES {meta.subject.toUpperCase()} <span>•</span> {meta.axis}
+        <span className="deck-title" title={meta.title}>
+          {meta.title}
         </span>
       </header>
       <div className="slide-body">
+        <h1>{slide.title}</h1>
+        <div className="slide-content">{children}</div>
+      </div>
+      <footer>
         <div className="eyebrow">
           <span>{PHASE_NAMES[slide.phase]}</span>
           <span className="rule" />
           <span>{pad2(index + 1)}</span>
         </div>
-        <h1>{slide.title}</h1>
-        <div className="slide-content">{children}</div>
-      </div>
-      <footer>
-        <span>{meta.title}</span>
         <span>
           {pad2(index + 1)} / {total}
         </span>

@@ -98,14 +98,14 @@ a {
   margin-left: 14px;
   font-weight: 600;
 }
-.subject {
+.deck-title {
   font-size: 19px;
   color: var(--muted);
-  display: flex;
-  gap: 20px;
-}
-.subject span {
-  color: var(--yellow);
+  min-width: 0;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .slide-body {
   flex: 1;
@@ -121,7 +121,6 @@ a {
   letter-spacing: 2.2px;
   color: var(--yellow);
   font-weight: 600;
-  margin-bottom: 16px;
 }
 .rule {
   height: 1px;
@@ -175,6 +174,7 @@ a {
 .slide footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 16px;
   color: var(--muted);
   border-top: 1px solid var(--line);
@@ -911,10 +911,9 @@ a {
 .template-slide-main {
   position: absolute;
   z-index: 2;
-  inset: 18% 5% 12%;
+  inset: 16.5% 5% 12%;
 }
 .template-eyebrow {
-  margin: 0 0 1.2%;
   color: var(--yellow);
   text-transform: uppercase;
   letter-spacing: 0.12em;
