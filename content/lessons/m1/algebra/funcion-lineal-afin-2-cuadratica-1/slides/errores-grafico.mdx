@@ -1,37 +1,28 @@
 ---
 id: errores-grafico
-title: 'Leer bien la pendiente y el signo de n'
+title: 'Práctica: leer la expresión en el gráfico'
 phase: practica
 layout: dos-columnas
-steps: 2
-activities: []
+steps: 0
+activities: [afin-grafico-errores]
 ---
 
-<Columnas>
+<Columnas amplia="izquierda">
 <div>
-<PracticaGuiada titulo="Individual · 2 minutos">
-Encuentra $g(x)$.
-</PracticaGuiada>
-
-<Paso n={1}>
-$n=-3$ y, de $x=0$ a $x=2$, sube $4$: $m=4:2=2$. Entonces $g(x)=2x-3$.
-</Paso>
-<Paso n={2}>
-<Comprobacion titulo="Comprobación">
-$g(2)=2\cdot 2-3=1$ ✓
-</Comprobacion>
-</Paso>
+<PreguntaPAES id="afin-grafico-errores" mostrarRespuesta={false} />
 </div>
 <GraficoFuncion
   tipo="afin"
   m={2}
   n={-3}
-  xMin={-1}
+  xMin={0}
   xMax={4}
   yMin={-4}
-  yMax={5}
+  yMax={6}
+  ejeX="t (min)"
+  ejeY="T (°C)"
   puntosX={[0, 2]}
-  etiqueta="Recta de g"
-  descripcion="Recta de g que corta el eje y en (0; −3) y pasa por (2; 1)."
+  etiqueta="Temperatura de la muestra"
+  descripcion="Recta de la temperatura T de la muestra según el tiempo t: pasa por (0; −3) y (2; 1)."
 />
 </Columnas>
