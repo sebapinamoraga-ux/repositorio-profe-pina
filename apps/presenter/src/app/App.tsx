@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { PrintDeck } from '../slides/PrintDeck';
 import { ContentProvider, useContent } from '../content/ContentProvider';
 import { AulaProvider } from '../store/AulaProvider';
@@ -9,16 +9,17 @@ import {
   saveRoleState,
   setUnlocked,
 } from '../store/persist';
-import {
-  roleSchema,
-  viewSchema,
-  type Role,
-  type RoleState,
-  type View,
-} from '../store/schema';
+import type { Role } from '../store/schema';
 import { UiProvider } from '../ui/UiProvider';
 import { ActivitiesContext, catalog } from './catalog';
 import { readRoute, useRoute } from './route';
+import {
+  parsePrint,
+  parseRoute,
+  roleStateOf,
+  type AppRoute,
+  type PrintRoute,
+} from './routes';
 import { Landing } from '../roles/Landing';
 import { Access } from '../roles/Access';
 import { TeacherShell } from '../teacher/TeacherShell';
@@ -30,91 +31,54 @@ const Remote = lazy(async () => ({
   default: (await import('../remote/Remote')).Remote,
 }));
 
-/** Rol y vista: el fragmento manda (enlaces y recargas); si no trae rol, se usa el último guardado. */
-function initialRole(route: URLSearchParams): RoleState {
-  const role = roleSchema.safeParse(route.get('rol'));
-  const view = viewSchema.safeParse(route.get('vista'));
-  if (role.success)
-    return { role: role.data, view: view.success ? view.data : 'hoy' };
-  // Enlaces anteriores a la nueva interfaz: #clase=…&slide=… y #galeria=mascotas.
-  if (route.get('galeria') === 'mascotas')
-    return { role: 'docente', view: 'galeria' };
-  if (route.get('clase')) return { role: 'docente', view: 'presentar' };
-  return loadRoleState();
-}
-
-function PrintRoute({ route }: { route: URLSearchParams }) {
-  const id = route.get('clase') ?? catalog[0]?.meta.id;
+function PrintRouteView({ print }: { print: PrintRoute }) {
+  const id = print.lesson ?? catalog[0]?.meta.id;
   if (!id) return <p>No hay clases publicadas.</p>;
   const deck = repoDeck(id);
   if (!deck || !deck.slides.length) return <p>No hay clases publicadas.</p>;
-  return <PrintDeck deck={deck} autoPrint={route.get('imprimir') === '1'} />;
+  return <PrintDeck deck={deck} autoPrint={print.autoPrint} />;
 }
 
 /** Impresión con el contenido efectivo de este navegador (borradores y cambios sin guardar). */
-function LocalPrintRoute({ route }: { route: URLSearchParams }) {
+function LocalPrintRoute({ print }: { print: PrintRoute }) {
   const content = useContent();
-  const id = route.get('clase') ?? '';
+  const id = print.lesson ?? '';
   if (content.connection && content.mode === 'build')
     return <p className="app-loading">Cargando el contenido…</p>;
   const deck = deckFor(content, id);
   if (!deck.slides.length) return <p>Esta clase aún no tiene láminas.</p>;
   return (
     <ActivitiesContext.Provider value={content.bundle.activities}>
-      <PrintDeck deck={deck} autoPrint={route.get('imprimir') === '1'} />
+      <PrintDeck deck={deck} autoPrint={print.autoPrint} />
     </ActivitiesContext.Provider>
   );
 }
 
+const ROLE_HOME: Record<Role, AppRoute> = {
+  estudiante: { role: 'estudiante', lesson: null, code: null },
+  docente: { role: 'docente', view: 'hoy', lesson: null, slide: null },
+  remoto: { role: 'remoto' },
+};
+
+/** El fragmento es la única fuente de rol, vista y clase; aquí solo se lee y se recuerda. */
 function Roles() {
-  const { route, replace } = useRoute();
-  const [state, setState] = useState<RoleState>(() => initialRole(readRoute()));
+  const { route, go } = useRoute();
+  const current = useMemo(() => parseRoute(route), [route]);
   const [unlocked, setUnlockedState] = useState(isUnlocked);
 
   useEffect(() => {
-    saveRoleState(state);
-    replace(
-      state.role
-        ? {
-            rol: state.role,
-            vista: state.role === 'docente' ? state.view : null,
-            galeria: null,
-            // La clase solo vive en la URL de quien presenta y del estudiante,
-            // que la lee al cargarse (#rol=estudiante&clase=…).
-            ...(state.role === 'docente' && state.view === 'presentar'
-              ? {}
-              : state.role === 'estudiante'
-                ? { slide: null }
-                : { clase: null, slide: null }),
-          }
-        : { rol: null, vista: null, clase: null, slide: null, galeria: null },
-    );
-  }, [state, replace]);
-
-  // Cambios del fragmento hechos a mano o por enlaces internos.
+    saveRoleState(roleStateOf(current, loadRoleState()));
+  }, [current]);
+  // Forma canónica: quita parámetros que la ruta no usa (p. ej., la lámina fuera de Presentar).
+  // Se lee la URL vigente: los efectos de las vistas hijas (que corren antes) pueden haberla
+  // completado en este mismo ciclo, por ejemplo con la clase.
   useEffect(() => {
-    const role = roleSchema.safeParse(route.get('rol'));
-    const view = viewSchema.safeParse(route.get('vista'));
-    if (!role.success) return;
-    setState((current) =>
-      current.role === role.data &&
-      (!view.success || current.view === view.data)
-        ? current
-        : { role: role.data, view: view.success ? view.data : current.view },
-    );
-  }, [route]);
+    go(parseRoute(readRoute()), 'replace');
+  }, [current, go]);
 
   const choose = useCallback(
-    (role: Role | null) =>
-      setState((current) => ({
-        role,
-        view: role === 'docente' ? 'hoy' : current.view,
-      })),
-    [],
-  );
-  const navigate = useCallback(
-    (view: View) => setState((current) => ({ ...current, view })),
-    [],
+    (role: Role | null) => go(role ? ROLE_HOME[role] : { role: null }),
+    [go],
   );
   const unlock = useCallback(() => {
     setUnlocked(true);
@@ -123,30 +87,29 @@ function Roles() {
   const lock = useCallback(() => {
     setUnlocked(false);
     setUnlockedState(false);
-    setState({ role: null, view: 'hoy' });
-  }, []);
+    go({ role: null });
+  }, [go]);
 
-  if (!state.role) return <Landing onChoose={choose} />;
-  if (state.role !== 'estudiante' && !unlocked)
+  if (!current.role) return <Landing onChoose={choose} />;
+  if (current.role !== 'estudiante' && !unlocked)
     return (
       <Access
-        role={state.role}
+        role={current.role}
         onBack={() => choose(null)}
         onUnlock={unlock}
       />
     );
-  if (state.role === 'docente')
+  if (current.role === 'docente')
     return (
       <TeacherShell
-        view={state.view}
-        onNavigate={navigate}
+        route={current}
         onChangeRole={() => choose(null)}
         onLock={lock}
       />
     );
   return (
     <Suspense fallback={<p className="app-loading">Cargando…</p>}>
-      {state.role === 'estudiante' ? (
+      {current.role === 'estudiante' ? (
         <Student onChangeRole={() => choose(null)} />
       ) : (
         <Remote onChangeRole={() => choose(null)} />
@@ -157,13 +120,13 @@ function Roles() {
 
 export function App() {
   const { route } = useRoute();
-  const local = route.get('fuente') === 'local';
-  if (route.get('modo') === 'pdf' && !local) return <PrintRoute route={route} />;
+  const print = parsePrint(route);
+  if (print && !print.local) return <PrintRouteView print={print} />;
   return (
     <UiProvider>
       <AulaProvider>
         <ContentProvider>
-          {route.get('modo') === 'pdf' ? <LocalPrintRoute route={route} /> : <Roles />}
+          {print ? <LocalPrintRoute print={print} /> : <Roles />}
         </ContentProvider>
       </AulaProvider>
     </UiProvider>

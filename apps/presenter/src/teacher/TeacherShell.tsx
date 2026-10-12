@@ -1,8 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { ActivitiesContext } from '../app/catalog';
-import { useViewportWidth } from '../app/route';
+import { useRoute, useViewportWidth } from '../app/route';
+import { LESSON_VIEWS, type Navigate, type TeacherRoute } from '../app/routes';
 import { useContent } from '../content/ContentProvider';
 import { useAula } from '../store/AulaProvider';
+import { lessonEntry, lessonMeta, type ContentView } from '../store/deck';
 import type { View } from '../store/schema';
 import { Brand } from '../ui/Brand';
 import { useUi } from '../ui/UiProvider';
@@ -54,9 +56,12 @@ const SHORT_NAV: [View, string][] = [
   ['cursos', 'Cursos'],
 ];
 
-export interface TeacherNav {
-  view: View;
-  onNavigate: (view: View) => void;
+/** Una clase existe si está en la planificación o en el contenido. */
+function lessonExists(content: ContentView, id: string) {
+  return (
+    content.library.entries.some((entry) => entry.id === id) ||
+    Boolean(lessonEntry(content, id))
+  );
 }
 
 function Account({
@@ -91,14 +96,19 @@ function Account({
 }
 
 export function TeacherShell({
-  view,
-  onNavigate,
+  route,
   onChangeRole,
   onLock,
-}: TeacherNav & { onChangeRole: () => void; onLock: () => void }) {
-  const { data } = useAula();
+}: {
+  route: TeacherRoute;
+  onChangeRole: () => void;
+  onLock: () => void;
+}) {
+  const { data, dispatch } = useAula();
   const content = useContent();
-  const { confirm } = useUi();
+  const { confirm, toast } = useUi();
+  const { go: goTo } = useRoute();
+  const view = route.view;
   const width = useViewportWidth();
   const [account, setAccount] = useState(false);
   const presenting = view === 'presentar';
@@ -109,6 +119,31 @@ export function TeacherShell({
   const course = session
     ? data.courses.find((c) => c.id === session.courseId)
     : undefined;
+
+  // La clase sale de la URL; sin ella, la última que se abrió. Mientras llega el contenido del
+  // repositorio, una clase del enlace que aún no se conoce (un borrador) se espera, no se reemplaza.
+  const lessonView = LESSON_VIEWS.has(view);
+  const settled = !(content.connection && content.mode === 'build');
+  const wanted = route.lesson;
+  const waiting = Boolean(lessonView && wanted && !settled && !lessonExists(content, wanted));
+  const lessonId =
+    wanted && lessonExists(content, wanted)
+      ? wanted
+      : lessonExists(content, data.lessonId)
+        ? data.lessonId
+        : (content.library.entries[0]?.id ?? data.lessonId);
+
+  useEffect(() => {
+    if (!lessonView || waiting || wanted === lessonId) return;
+    if (wanted)
+      toast(`No se encontró la clase «${wanted}». Se abrió «${lessonMeta(content, lessonId).title}».`);
+    goTo({ ...route, lesson: lessonId, slide: null }, 'replace');
+  }, [lessonView, waiting, wanted, lessonId, route, goTo, toast, content]);
+  // Se recuerda la última clase abierta para volver a ella desde las vistas sin clase.
+  useEffect(() => {
+    if (lessonView && !waiting && lessonId !== data.lessonId)
+      dispatch({ type: 'openLesson', id: lessonId });
+  }, [lessonView, waiting, lessonId, data.lessonId, dispatch]);
 
   useEffect(() => {
     if (!account) return;
@@ -130,27 +165,33 @@ export function TeacherShell({
     )
       onLock();
   };
-  const go = (next: View) => {
+  const go: Navigate = (next, target) => {
     setAccount(false);
-    onNavigate(next);
+    goTo({
+      role: 'docente',
+      view: next,
+      lesson: target?.lesson ?? (LESSON_VIEWS.has(next) ? lessonId : null),
+      slide: target?.slide ?? null,
+    });
   };
 
   const page = (() => {
+    if (waiting) return <p className="app-loading">Cargando la clase…</p>;
     switch (view) {
       case 'hoy':
-        return <Today onNavigate={go} />;
+        return <Today lessonId={lessonId} onNavigate={go} />;
       case 'biblioteca':
         return <Library onNavigate={go} />;
       case 'presentar':
-        return <Presenter onNavigate={go} />;
+        return <Presenter key={lessonId} lessonId={lessonId} onNavigate={go} />;
       case 'editor':
-        return <Editor onNavigate={go} />;
+        return <Editor key={lessonId} lessonId={lessonId} onNavigate={go} />;
       case 'galeria':
-        return <Gallery onNavigate={go} />;
+        return <Gallery lessonId={lessonId} onNavigate={go} />;
       case 'cursos':
         return <Courses onNavigate={go} />;
       case 'pdf':
-        return <PdfView onNavigate={go} />;
+        return <PdfView lessonId={lessonId} onNavigate={go} />;
       case 'actividades':
         return <Activities onNavigate={go} />;
       case 'conexion':
