@@ -3,28 +3,29 @@
   display: grid;
   gap: 6px;
 }
-.active-session {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-  align-items: end;
-}
-.active-session.is-wide {
-  grid-template-columns: minmax(0, 1fr) auto;
-}
 .active-session .card-tab {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+.active-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
 }
 .active-title {
   margin: 0;
   font-size: 22px;
   font-weight: 650;
 }
-.active-session .field {
-  margin-top: 6px;
+.end-session {
+  display: grid;
+  gap: 12px;
 }
-.active-session .field textarea {
+.end-session .field textarea {
   background: var(--panel);
+}
+.active-session .end-session .field textarea {
   border-color: var(--ok-line);
 }
 .course-grid {
@@ -338,4 +339,61 @@
 /* En la lista horizontal del celular, el estado de conexión ya se ve arriba. */
 .editor-list.is-narrow .notice {
   display: none;
+}
+
+/* Clase de hoy al tope de Clases. */
+.today-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.today-card-copy {
+  flex: 1 1 420px;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.today-card-copy h2,
+.today-card-copy p {
+  margin: 0;
+}
+.today-card-copy h2 {
+  font-size: clamp(22px, 2.4vw, 30px);
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+}
+.today-card-objective {
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.45;
+}
+.today-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Ajustes */
+.settings-section {
+  display: grid;
+  gap: 12px;
+}
+.settings-section > p {
+  margin: 0;
+  line-height: 1.5;
+}
+.settings-title {
+  margin: 0;
+  font-size: 24px;
+}
+.settings-section .card h3 {
+  margin: 0;
+  font-size: 18px;
 }

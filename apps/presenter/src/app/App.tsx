@@ -57,7 +57,7 @@ function LocalPrintRoute({ print }: { print: PrintRoute }) {
 
 const ROLE_HOME: Record<Role, AppRoute> = {
   estudiante: { role: 'estudiante', lesson: null, code: null },
-  docente: teacherRoute('clase'),
+  docente: teacherRoute('clases'),
   remoto: { role: 'remoto' },
 };
 

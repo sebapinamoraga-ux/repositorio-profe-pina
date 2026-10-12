@@ -258,13 +258,13 @@ export function Presenter({
       <main className="presenter presenter-empty">
         <div className="empty-card">
           <h1>Esta clase aún no tiene láminas</h1>
-          <p>Prepárala desde la biblioteca o ábrela en el editor.</p>
+          <p>Prepárala en Clases o agrégale láminas.</p>
           <div className="row">
-            <Button onClick={() => onNavigate('biblioteca')}>
-              Ir a la biblioteca
+            <Button onClick={() => onNavigate('clases')}>
+              Ir a Clases
             </Button>
             <Button variant="primary" onClick={() => onNavigate('clase', { section: 'laminas' })}>
-              Abrir en editor
+              Abrir las láminas
             </Button>
           </div>
         </div>
@@ -660,11 +660,11 @@ export function Presenter({
           <IconButton className="drawer-close" label="Cerrar índice" onClick={() => setMenu(false)}>
             <X size={22} aria-hidden="true" />
           </IconButton>
-          <p className="kicker-rule">Tu biblioteca</p>
+          <p className="kicker-rule">Tus clases</p>
           <h2 className="drawer-title">Clases para pensar.</h2>
-          <button type="button" className="drawer-lesson" onClick={() => onNavigate('biblioteca')}>
+          <button type="button" className="drawer-lesson" onClick={() => onNavigate('clases')}>
             {meta.title}
-            <span>Cambiar de clase en la biblioteca</span>
+            <span>Cambiar de clase</span>
           </button>
           <button type="button" className="drawer-gallery" onClick={() => onNavigate('galeria')}>
             Galería de plantillas de mascota

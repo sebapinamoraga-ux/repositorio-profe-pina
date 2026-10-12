@@ -117,19 +117,25 @@ export type TeacherData = z.infer<typeof teacherDataSchema>;
 
 export const roleSchema = z.enum(['estudiante', 'docente', 'remoto']);
 export type Role = z.infer<typeof roleSchema>;
+/** Vistas docentes. Clases, Recursos (actividades y galería), Cursos y Ajustes son el menú. */
 export const viewSchema = z.enum([
+  'clases',
   'clase',
-  'biblioteca',
   'presentar',
+  'actividades',
   'galeria',
   'cursos',
-  'actividades',
-  'conexion',
+  'ajustes',
 ]);
 export type View = z.infer<typeof viewSchema>;
 /** Pestañas del espacio de una clase. */
 export const sectionSchema = z.enum(['resumen', 'laminas', 'repaso', 'actividades', 'revision', 'pdf']);
 export type Section = z.infer<typeof sectionSchema>;
+/** Vistas renombradas: los enlaces anteriores siguen funcionando. */
+export const VIEW_ALIASES: Readonly<Record<string, View>> = {
+  biblioteca: 'clases',
+  conexion: 'ajustes',
+};
 /** Vistas anteriores al espacio de la clase: hoy son pestañas de «clase». */
 export const LEGACY_VIEWS: Readonly<Record<string, Section>> = {
   hoy: 'resumen',
@@ -139,8 +145,13 @@ export const LEGACY_VIEWS: Readonly<Record<string, Section>> = {
 export const roleStateSchema = z.object({
   role: roleSchema.nullable(),
   view: z.preprocess(
-    (value) => (typeof value === 'string' && value in LEGACY_VIEWS ? 'clase' : value),
-    viewSchema.catch('clase'),
+    (value) =>
+      typeof value !== 'string'
+        ? value
+        : value in LEGACY_VIEWS
+          ? 'clase'
+          : (VIEW_ALIASES[value] ?? value),
+    viewSchema.catch('clases'),
   ),
 });
 export type RoleState = z.infer<typeof roleStateSchema>;

@@ -480,25 +480,6 @@ textarea {
   gap: 8px;
   padding-top: 16px;
 }
-.session-note {
-  margin: 0;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--ok-soft);
-  border: 1px solid var(--ok-line);
-  color: var(--ok);
-  font-size: 14px;
-  line-height: 1.4;
-}
-.account-card {
-  display: grid;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 10px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  min-width: 0;
-}
 .account-id {
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr);
@@ -530,10 +511,6 @@ textarea {
   font-size: 14px;
   font-weight: 700;
 }
-.avatar-button {
-  width: 40px;
-  height: 40px;
-}
 .save-pill {
   display: inline-flex;
   align-items: center;
@@ -556,15 +533,6 @@ textarea {
 .save-pill.is-offline .save-dot {
   background: var(--panel);
   border-color: var(--ocre);
-}
-.account-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-.account-actions .btn {
-  min-height: 40px;
-  padding: 0 8px;
 }
 .topbar {
   position: relative;
@@ -606,26 +574,6 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-.account-pop {
-  position: absolute;
-  top: 60px;
-  right: 10px;
-  z-index: 30;
-  width: min(300px, calc(100vw - 20px));
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  box-shadow: var(--sh-pop);
-  display: grid;
-  gap: 10px;
-}
-.account-more {
-  display: grid;
-  gap: 2px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--line-4);
 }
 .teacher-content {
   min-width: 0;
@@ -2065,4 +2013,83 @@ textarea {
 }
 .save-message {
   flex: 1 1 220px;
+}
+
+/* Indicador de conexión: abre Ajustes. */
+.save-pill.is-button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+.save-pill.is-button:hover {
+  border-color: var(--line);
+  background: var(--panel);
+}
+.sidebar-foot .save-pill.is-button {
+  justify-self: start;
+}
+.bottom-bar button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* Barras de estado sobre el contenido docente: sesión en curso y solo lectura. */
+.session-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px clamp(16px, 3vw, 40px);
+  background: var(--ok-soft);
+  border-bottom: 1px solid var(--ok-line);
+}
+.session-bar p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  font-size: 15px;
+}
+.session-bar b {
+  color: var(--ok);
+}
+.session-dot {
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+.session-time {
+  color: var(--muted);
+}
+.connection-strip {
+  margin: 0;
+  padding: 8px clamp(16px, 3vw, 40px);
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--accent-line);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.connection-strip .btn--quiet {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.sub-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px clamp(16px, 3vw, 40px) 0;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
 }

@@ -22,9 +22,9 @@ export function GalleryView({
       onUse={async (template) => {
         const lesson = findLesson(content.bundle, lessonId);
         if (!content.canEdit)
-          return 'Conecta la app con GitHub (Docente → Conexión) para agregar láminas.';
+          return 'Conecta la app con GitHub en Ajustes para agregar láminas.';
         if (!lesson)
-          return `«${deck.meta.title}» aún no está preparada: prepárala en la biblioteca.`;
+          return `«${deck.meta.title}» aún no está preparada: prepárala en Clases.`;
         const slides = editableSlides(lesson);
         let id = template.id;
         for (let k = 2; slides.some((s) => s.id === id); k++) id = `${template.id}-${k}`;

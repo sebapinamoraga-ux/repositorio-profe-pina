@@ -16,7 +16,7 @@ npm run dev
 Abrir http://127.0.0.1:5173 y elegir un rol:
 
 - **Estudiante**: repaso en el celular, sin cuenta, con temas claro, oscuro y alto contraste, y respuesta anónima a la votación de la clase.
-- **Docente**: cada clase tiene su espacio con pestañas (Resumen, Láminas, Repaso, Actividades, Revisión y PDF); además, Biblioteca, Presentar, Actividades y PAES, Galería, Cursos e historial y Conexión. Las clases, actividades y la planificación se editan aquí y se guardan en este repositorio desde cualquier dispositivo conectado (ver [Editar desde la app](docs/authoring.md#editar-desde-la-app)). Cursos, sesiones y comentarios quedan en el navegador. El acceso es un bloqueo local, sin cuenta.
+- **Docente**: un menú de cuatro entradas. **Clases** muestra la clase de hoy y la planificación; cada clase tiene su espacio con pestañas (Resumen, Láminas, Repaso, Actividades, Revisión y PDF) y desde ahí se proyecta. **Recursos** reúne el banco de actividades PAES y las plantillas de la mascota; **Cursos**, los cursos y el historial; **Ajustes**, la conexión con GitHub y el acceso local. La sesión en curso queda visible en una barra en todas las pantallas. Las clases, actividades y la planificación se editan aquí y se guardan en este repositorio desde cualquier dispositivo conectado (ver [Editar desde la app](docs/authoring.md#editar-desde-la-app)). Cursos, sesiones y comentarios quedan en el navegador. El acceso es un bloqueo local, sin cuenta.
 - **Control remoto**: avanza la proyección abierta en otra pestaña o ventana del mismo navegador.
 
 En el presentador, flecha derecha/espacio revelan pasos y avanzan; izquierda retrocede. M abre el índice, F alterna pantalla completa, N anota un comentario de mejora y R muestra el ritmo de la clase. Los botones funcionan con pantalla táctil. Las alternativas no revelan respuestas al seleccionarlas.
@@ -46,7 +46,7 @@ Consulta también el [lenguaje visual común](docs/visual-language.md), que rige
 npm run lesson:new -- --id mi-nueva-clase
 ```
 
-Se crea un borrador en `content/lessons/m1/algebra`. Edita el manifiesto y las diapositivas, comprueba el contenido y cambia `status` a `published` cuando esté listo. También puedes crear y preparar clases desde la Biblioteca de la app. Consulta [Autoría](docs/authoring.md), [Arquitectura](docs/architecture.md) y [Publicación](docs/deployment.md).
+Se crea un borrador en `content/lessons/m1/algebra`. Edita el manifiesto y las diapositivas, comprueba el contenido y cambia `status` a `published` cuando esté listo. También puedes crear y preparar clases desde Clases, en la app. Consulta [Autoría](docs/authoring.md), [Arquitectura](docs/architecture.md) y [Publicación](docs/deployment.md).
 
 El repositorio conserva el ZIP de origen en `archive/`. El motor nuevo reemplaza su parser manual; las demos originales no se publican.
 

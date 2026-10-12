@@ -121,7 +121,7 @@ export function LessonWorkspace({
             <p className="kicker">
               Clase · {MARK_LABEL[entry?.status ?? 'por-preparar']}
             </p>
-            <Button variant="quiet" size="sm" onClick={() => onNavigate('biblioteca')}>
+            <Button variant="quiet" size="sm" onClick={() => onNavigate('clases')}>
               Cambiar clase
             </Button>
           </div>

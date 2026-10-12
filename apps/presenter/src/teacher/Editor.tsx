@@ -42,7 +42,6 @@ import { useUi } from '../ui/UiProvider';
 import type { LessonIssues } from './issues';
 import { makeNote } from './notes';
 import { ParamFields } from './ParamForm';
-import { ConnectHint } from './SaveBar';
 import { Button, buttonClass, IconButton } from '../ui/Button';
 import { Notice } from '../ui/Layout';
 
@@ -212,7 +211,6 @@ export function Editor({
     return (
       <main className="page">
         <div className="empty-card editor-empty">
-          {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
           <p className="kicker">Editor</p>
           <h1>{meta.title}</h1>
           <p>Esta clase está por preparar. Parte de la estructura base o de otra clase.</p>
@@ -238,8 +236,8 @@ export function Editor({
             >
               Preparar con la estructura base
             </Button>
-            <Button onClick={() => onNavigate('biblioteca')}>
-              Elegir otra clase en la biblioteca
+            <Button onClick={() => onNavigate('clases')}>
+              Elegir otra clase en Clases
             </Button>
           </div>
         </div>
@@ -250,7 +248,7 @@ export function Editor({
   const all = [...slides, ...repaso];
   const commit = (next: EditedSlide[]) => {
     if (!content.canEdit) {
-      ui.toast('Conecta la app con GitHub (Conexión) para editar.');
+      ui.toast('Conecta la app con GitHub en Ajustes para editar.');
       return;
     }
     content.edit(
@@ -411,7 +409,6 @@ export function Editor({
           </p>
         </div>
       )}
-      {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
       {listName === 'slides' && listIssues && listIssues.lessonErrors.length > 0 && (
         <button type="button" className="editor-alert is-error" onClick={onOpenDetails}>
           <b>Datos de la clase: {listIssues.lessonErrors.length} por corregir</b>

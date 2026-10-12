@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react';
-import { useContent } from '../content/ContentProvider';
-import { DEFAULT_BRANCH, DEFAULT_REPO } from '../content/storage';
-import type { View } from '../store/schema';
-import { useUi } from '../ui/UiProvider';
-import { Button } from '../ui/Button';
-import { Card, Notice, Page, PageHeader } from '../ui/Layout';
+import { useContent } from '../../content/ContentProvider';
+import { DEFAULT_BRANCH, DEFAULT_REPO } from '../../content/storage';
+import type { View } from '../../store/schema';
+import { useUi } from '../../ui/UiProvider';
+import { Button } from '../../ui/Button';
+import { Card, Notice } from '../../ui/Layout';
 
 const NEW_TOKEN_URL = 'https://github.com/settings/personal-access-tokens/new';
 
@@ -17,7 +17,7 @@ function when(iso: string | null) {
 }
 
 /** Conexión con el repositorio: el token se pega una vez por dispositivo. */
-export function Connection({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function ConnectionSettings({ onNavigate }: { onNavigate: (view: View) => void }) {
   const content = useContent();
   const ui = useUi();
   const { connection, sync, snapshot, mode, pending } = content;
@@ -59,12 +59,15 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
   };
 
   return (
-    <Page width="narrow">
-        <PageHeader
-          kicker="Conexión"
-          title="Contenido en GitHub"
-          lead="Las clases, actividades y la planificación viven en el repositorio. Al conectar este dispositivo, la app lee la versión al día (incluidos los borradores) y cada «Guardar» crea un commit; el sitio público se actualiza en unos minutos."
-        />
+    <section aria-labelledby="ajustes-github" className="settings-section">
+        <h2 id="ajustes-github" className="settings-title">
+          Contenido en GitHub
+        </h2>
+        <p className="muted">
+          Las clases, actividades y la planificación viven en el repositorio. Al conectar este
+          dispositivo, la app lee la versión al día (incluidos los borradores) y cada «Guardar»
+          crea un commit; el sitio público se actualiza en unos minutos.
+        </p>
         {connection ? (
           <Card aria-label="Estado de la conexión">
             <p>
@@ -90,8 +93,8 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
               <Button size="sm" onClick={() => void content.refresh()}>
                 Actualizar ahora
               </Button>
-              <Button size="sm" onClick={() => onNavigate('biblioteca')}>
-                Ir a la biblioteca
+              <Button size="sm" onClick={() => onNavigate('clases')}>
+                Ir a Clases
               </Button>
               <Button variant="danger" size="sm" onClick={() => void disconnect()}>
                 Desconectar este dispositivo
@@ -131,7 +134,7 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
           </Card>
         )}
         <Card aria-label="Cómo crear el token">
-          <h2>Cómo crear el token (una vez por dispositivo)</h2>
+          <h3>Cómo crear el token (una vez por dispositivo)</h3>
           <ol className="steps-list">
             <li>
               Abre{' '}
@@ -156,6 +159,6 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
             GitHub. Tus cursos, sesiones y notas no se suben al repositorio.
           </p>
         </Card>
-    </Page>
+    </section>
   );
 }
