@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { activitySchema, mascotPropsSchema, slideSchema } from './index';
+import { activitySchema, mascotPropsSchema, planningSchema, slideSchema } from './index';
 it('rechaza diapositivas sin fases válidas', () => {
   expect(
     slideSchema.safeParse({
@@ -47,4 +47,18 @@ it('limita las poses según el nivel de presencia', () => {
       alt: 'Profe Piña sostiene un lápiz.',
     }).success,
   ).toBe(false);
+});
+
+it('la planificación acepta fechas reales y una sola clase por día', () => {
+  const plan = (lessons: { id: string; date?: string }[]) =>
+    planningSchema.safeParse({ units: [{ id: 'u1', title: 'U', lessons }] });
+  expect(plan([{ id: 'a', date: '2026-10-17' }, { id: 'b' }]).success).toBe(true);
+  expect(plan([{ id: 'a', date: '2026-02-30' }]).success).toBe(false);
+  expect(plan([{ id: 'a', date: '17-10-2026' }]).success).toBe(false);
+  const twice = plan([
+    { id: 'a', date: '2026-10-17' },
+    { id: 'b', date: '2026-10-17' },
+  ]);
+  expect(twice.success).toBe(false);
+  expect(twice.error?.issues[0]?.message).toContain('Dos clases planificadas el 2026-10-17');
 });

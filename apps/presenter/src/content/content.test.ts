@@ -7,7 +7,14 @@ import { readContentFiles } from '@aula/content-model/read-content';
 import { resolve } from 'node:path';
 import { mascotGallery } from '../app/gallery';
 import { skeleton, slideFromTemplate } from '../store/mdx';
-import { libraryOf, planningReducer, UNPLANNED_UNIT } from './library';
+import {
+  currentLesson,
+  formatPlanDate,
+  libraryOf,
+  planningReducer,
+  UNPLANNED_UNIT,
+  type LibraryEntry,
+} from './library';
 import { migrateLegacy } from './migrate-v1';
 import {
   createLesson,
@@ -32,6 +39,8 @@ function apply(files: ReadonlyMap<string, string>, writes: readonly FileWrite[])
     else next.set(write.path, write.text);
   return next;
 }
+
+const NL = '\n';
 
 const PLAN: Planning = {
   units: [
@@ -69,6 +78,55 @@ describe('planificación', () => {
     const sistemas = library.entries.find((e) => e.id === 'sistemas-2x2');
     expect(sistemas).toMatchObject({ status: 'lista', repoStatus: 'published' });
     expect(library.units.some((u) => u.id === UNPLANNED_UNIT.id)).toBe(false);
+  });
+});
+
+describe('fecha planificada', () => {
+  const entry = (id: string, date: string | null): LibraryEntry => ({
+    id,
+    unitId: 'u1',
+    title: id,
+    objective: '',
+    duration: 80,
+    status: 'lista',
+    repoStatus: 'published',
+    date,
+  });
+  const plan = [entry('a', '2026-09-26'), entry('b', '2026-10-17'), entry('c', null), entry('d', '2026-10-24')];
+
+  it('la clase actual es la de hoy, si no la próxima, y sin fechas por delante la última abierta', () => {
+    expect(currentLesson(plan, '2026-10-17', 'c')).toEqual({ id: 'b', reason: 'hoy', date: '2026-10-17' });
+    expect(currentLesson(plan, '2026-10-12', 'c')).toEqual({ id: 'b', reason: 'proxima', date: '2026-10-17' });
+    expect(currentLesson(plan, '2026-10-18', 'a')).toMatchObject({ id: 'd', reason: 'proxima' });
+    expect(currentLesson(plan, '2026-12-01', 'c')).toEqual({ id: 'c', reason: 'ultima', date: null });
+    expect(currentLesson([], '2026-12-01', 'c')).toBeNull();
+  });
+
+  it('se escribe en la planificación como una línea y se borra al vaciarla', () => {
+    const path = 'content/planning/m1-2027.yaml';
+    const before = disk.get(path) ?? '';
+    const [write] = planningWrites(bundle, disk, {
+      type: 'updateLesson',
+      id: 'funcion-cuadratica-2',
+      patch: { date: '2026-10-31' },
+    });
+    const after = write?.text ?? '';
+    const added = after.split(NL).filter((line) => !before.split(NL).includes(line));
+    expect(added).toEqual(['        date: 2026-10-31']);
+    const files = apply(disk, write ? [write] : []);
+    expect(libraryOf(parseContentFiles(files)).entries.find((e) => e.id === 'funcion-cuadratica-2')?.date).toBe(
+      '2026-10-31',
+    );
+    const [cleared] = planningWrites(parseContentFiles(files), files, {
+      type: 'updateLesson',
+      id: 'funcion-cuadratica-2',
+      patch: { date: undefined },
+    });
+    expect(cleared?.text).not.toContain('2026-10-31');
+  });
+
+  it('se muestra con el día de la semana, sin correrse por la zona horaria', () => {
+    expect(formatPlanDate('2026-10-17')).toBe('sábado, 17 de octubre');
   });
 });
 

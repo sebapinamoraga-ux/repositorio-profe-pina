@@ -164,3 +164,24 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   expect(files[`${dir}/slides/comprueba-b-vertice.mdx`]).toBeUndefined();
   expect(files[`${dir}/slides/${added}.mdx`]).toBeDefined();
 });
+
+test('la fecha de una clase se edita en Clases y se guarda en la planificación', async ({ page }) => {
+  const fake = await connectFakeGitHub(page);
+  await openTeacher(page, 'vista=clases');
+  const row = page.locator('.lesson-row', { hasText: 'Función cuadrática (parte 2)' });
+  await expect(row.locator('.date-chip')).toBeVisible();
+  await row.getByRole('button', { name: /^Más acciones/ }).click();
+  await page.getByRole('button', { name: 'Editar título, objetivo y fecha' }).click();
+  // En edición el título es un campo: la fila se busca por el campo de fecha.
+  const date = page.getByLabel('Fecha de la clase');
+  // Cada día tiene una sola clase: una fecha ocupada no se aplica.
+  await date.fill('2026-10-17');
+  await expect(page.locator('.toast')).toContainText('Ese día ya está planificada');
+  await expect(date).toHaveValue('2026-10-24');
+  await date.fill('2026-10-31');
+  await page.locator('.lesson-row', { has: date }).getByRole('button', { name: 'Listo' }).click();
+  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
+  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  const plan = fake.files()['content/planning/m1-2027.yaml'] ?? '';
+  expect(plan).toContain('      - id: funcion-cuadratica-2\n        date: 2026-10-31\n');
+});

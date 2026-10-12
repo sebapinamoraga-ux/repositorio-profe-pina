@@ -21,6 +21,8 @@ export interface LibraryEntry {
   status: LessonMark;
   /** Estado en el repositorio; null si aún no tiene lesson.yaml. */
   repoStatus: Lesson['status'] | null;
+  /** Día planificado (AAAA-MM-DD), si la planificación lo indica. */
+  date: string | null;
 }
 
 export interface Library {
@@ -46,6 +48,7 @@ export function entryOf(
       duration: 80,
       status: 'por-preparar',
       repoStatus: null,
+      date: planned?.date ?? null,
     };
   const mark =
     planned?.mark && planned.mark !== 'por-preparar'
@@ -61,6 +64,7 @@ export function entryOf(
     duration: lesson.duration,
     status: mark,
     repoStatus: lesson.status,
+    date: planned?.date ?? null,
   };
 }
 
@@ -170,7 +174,7 @@ export function planningReducer(planning: Planning, action: PlanningAction): Pla
           lessons: unit.lessons.map((item) => {
             if (item.id !== action.id) return item;
             const next: PlannedLesson = { ...item, ...action.patch };
-            for (const key of ['title', 'objective', 'mark'] as const)
+            for (const key of ['title', 'objective', 'mark', 'date'] as const)
               if (next[key] === undefined || next[key] === '') delete next[key];
             return next;
           }),
@@ -209,4 +213,38 @@ export function planningReducer(planning: Planning, action: PlanningAction): Pla
       };
     }
   }
+}
+
+/** Por qué una clase es la actual: se hace hoy, es la próxima del calendario o es la última abierta. */
+export type CurrentReason = 'hoy' | 'proxima' | 'ultima';
+
+/**
+ * La clase actual según la planificación: la de hoy; si no hay, la próxima con fecha; si no
+ * quedan fechas por delante, la última que se abrió. `today` es AAAA-MM-DD en hora local.
+ */
+export function currentLesson(
+  entries: readonly LibraryEntry[],
+  today: string,
+  lastOpened: string,
+): { id: string; reason: CurrentReason; date: string | null } | null {
+  const dated = entries
+    .filter((entry): entry is LibraryEntry & { date: string } => entry.date !== null)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const now = dated.find((entry) => entry.date === today);
+  if (now) return { id: now.id, reason: 'hoy', date: now.date };
+  const next = dated.find((entry) => entry.date > today);
+  if (next) return { id: next.id, reason: 'proxima', date: next.date };
+  const last = entries.find((entry) => entry.id === lastOpened) ?? entries[0];
+  return last ? { id: last.id, reason: 'ultima', date: last.date } : null;
+}
+
+/** «sábado 17 de octubre» a partir de AAAA-MM-DD, sin depender de la zona horaria. */
+export function formatPlanDate(date: string, style: 'long' | 'short' = 'long'): string {
+  const [y = 0, m = 1, d = 1] = date.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('es-CL', {
+    timeZone: 'UTC',
+    ...(style === 'long'
+      ? { weekday: 'long', day: 'numeric', month: 'long' }
+      : { weekday: 'short', day: 'numeric', month: 'short' }),
+  });
 }

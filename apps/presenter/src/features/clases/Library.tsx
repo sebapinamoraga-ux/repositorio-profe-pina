@@ -4,6 +4,7 @@ import { mascotGallery } from '../../app/gallery';
 import type { Navigate } from '../../app/routes';
 import { useContent } from '../../content/ContentProvider';
 import {
+  formatPlanDate,
   UNPLANNED_UNIT,
   type LibraryEntry,
   type PlanningAction,
@@ -116,6 +117,20 @@ function LessonRow({
     objectives[0] = objective;
     content.edit(writeLesson(content.bundle, entry.id, { objectives }));
   };
+  // La fecha vive en la planificación; cada día tiene una sola clase.
+  const setDate = (date: string) => {
+    const taken = library.entries.find((item) => item.id !== entry.id && item.date === date);
+    if (date && taken) {
+      ui.toast(`Ese día ya está planificada «${taken.title}».`);
+      return;
+    }
+    planning(
+      ...(planned
+        ? []
+        : [{ type: 'addLesson' as const, unitId: firstUnit, lesson: { id: entry.id } }]),
+      { type: 'updateLesson', id: entry.id, patch: { date: date || undefined } },
+    );
+  };
   // La marca vive en la planificación: una clase «Sin unidad» entra a la primera unidad.
   const setMark = (mark: LessonMark) => {
     planning(
@@ -195,10 +210,23 @@ function LessonRow({
                   onChange={(event) => setObjective(event.target.value)}
                 />
               </label>
+              <label className="field">
+                Fecha de la clase
+                <input
+                  type="date"
+                  value={entry.date ?? ''}
+                  onChange={(event) => setDate(event.target.value)}
+                />
+              </label>
             </div>
           ) : (
             <>
               <div className="lesson-title">
+                {entry.date && (
+                  <time className="date-chip" dateTime={entry.date}>
+                    {formatPlanDate(entry.date, 'short')}
+                  </time>
+                )}
                 <h3>{entry.title || 'Sin título'}</h3>
                 {active && <span className="badge-active">Última abierta</span>}
               </div>
@@ -322,7 +350,7 @@ function LessonRow({
               onMenu(false);
             }}
           >
-            Editar título y objetivo
+            Editar título, objetivo y fecha
           </Button>
           {has && (
             <Button

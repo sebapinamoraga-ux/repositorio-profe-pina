@@ -9,6 +9,8 @@ test('la entrada muestra los tres roles y la parte docente pide desbloqueo local
   page,
 }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
+  // La clase actual sale de las fechas de la planificación: se fija el día.
+  await page.clock.setFixedTime(new Date('2026-10-12T10:00:00'));
   await page.goto('/');
   const roles = page.locator('.role-card b');
   await expect(roles).toHaveText(['Estudiante', 'Docente', 'Control remoto']);
@@ -17,13 +19,16 @@ test('la entrada muestra los tres roles y la parte docente pide desbloqueo local
   await page.getByRole('button', { name: /Docente/ }).click();
   await expect(page.getByRole('heading', { name: 'Entra a tu aula' })).toBeVisible();
   await page.getByRole('button', { name: 'Entrar como docente' }).click();
-  // La entrada docente es Clases, con la clase de hoy a un toque.
-  const today = page.getByRole('region', { name: 'Clase de hoy' });
-  await expect(today.getByRole('heading', { name: 'Sistemas de ecuaciones lineales' })).toBeVisible();
+  // La entrada docente es Clases, con la próxima clase del calendario a un toque.
+  const next = page.getByRole('region', { name: 'Próxima clase' });
+  await expect(next.getByRole('heading', { name: /^Función lineal y afín \(parte 2\)/ })).toBeVisible();
+  await expect(next).toContainText('sábado, 17 de octubre');
   await page.reload();
   await expect(page).toHaveURL(/rol=docente&vista=clases$/);
-  await today.getByRole('button', { name: 'Abrir la clase' }).click();
-  await expect(page).toHaveURL(/rol=docente&vista=clase&clase=sistemas-2x2&seccion=resumen$/);
+  await next.getByRole('button', { name: 'Abrir la clase' }).click();
+  await expect(page).toHaveURL(
+    /rol=docente&vista=clase&clase=funcion-lineal-afin-2-cuadratica-1&seccion=resumen$/,
+  );
   await expect(page.getByText('Tramos de la clase')).toBeVisible();
 });
 
@@ -269,7 +274,7 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await expect(page.locator('.history-row')).toHaveCount(1);
   await expect(page.locator('.history-row')).toContainText('3° Medio A');
   await page.getByRole('button', { name: 'Clases', exact: true }).click();
-  await page.getByRole('region', { name: 'Clase de hoy' }).getByRole('button', { name: 'Abrir la clase' }).click();
+  await page.locator('.today-card').getByRole('button', { name: 'Abrir la clase' }).click();
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
 
