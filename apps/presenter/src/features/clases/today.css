@@ -1,0 +1,39 @@
+/* Clase de hoy al tope de Clases. */
+/* Clase de hoy al tope de Clases. */
+.today-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--accent);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.today-card-copy {
+  flex: 1 1 420px;
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+.today-card-copy h2,
+.today-card-copy p {
+  margin: 0;
+}
+.today-card-copy h2 {
+  font-size: clamp(22px, 2.4vw, 30px);
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+}
+.today-card-objective {
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.45;
+}
+.today-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

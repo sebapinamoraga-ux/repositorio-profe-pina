@@ -1,0 +1,79 @@
+/* Estado sobre el contenido: conexión, sesión en curso y subpestañas. */
+/* Indicador de conexión: abre Ajustes. */
+.save-pill.is-button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+.save-pill.is-button:hover {
+  border-color: var(--line);
+  background: var(--panel);
+}
+.sidebar-foot .save-pill.is-button {
+  justify-self: start;
+}
+.bottom-bar button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+/* Barras de estado sobre el contenido docente: sesión en curso y solo lectura. */
+.session-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px clamp(16px, 3vw, 40px);
+  background: var(--ok-soft);
+  border-bottom: 1px solid var(--ok-line);
+}
+.session-bar p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  font-size: 15px;
+}
+.session-bar b {
+  color: var(--ok);
+}
+.session-dot {
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+.session-time {
+  color: var(--muted);
+}
+.connection-strip {
+  margin: 0;
+  padding: 8px clamp(16px, 3vw, 40px);
+  background: var(--accent-soft);
+  border-bottom: 1px solid var(--accent-line);
+  font-size: 15px;
+  line-height: 1.45;
+}
+.connection-strip .btn--quiet {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.sub-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px clamp(16px, 3vw, 40px) 0;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}

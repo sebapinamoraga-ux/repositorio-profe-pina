@@ -1,0 +1,43 @@
+/* Lienzo escalado de las láminas. */
+/* Lienzo escalado */
+.fit-slide {
+  position: relative;
+  overflow: hidden;
+}
+.fit-contain {
+  width: 100%;
+  height: 100%;
+}
+.fit-width {
+  width: 100%;
+}
+.fit-stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1600px;
+  height: 900px;
+  transform-origin: 0 0;
+}
+.slide-error,
+.slide-loading {
+  margin: 0;
+  padding: 22px 28px;
+  border-radius: 14px;
+  font-size: 26px;
+  line-height: 1.4;
+}
+.slide-error {
+  background: var(--err-soft);
+  border: 1px solid var(--err-line);
+  color: var(--ink);
+}
+.slide-error p {
+  margin: 8px 0 0;
+  font-size: 20px;
+  white-space: pre-wrap;
+  color: var(--err);
+}
+.slide-loading {
+  color: var(--muted);
+}
