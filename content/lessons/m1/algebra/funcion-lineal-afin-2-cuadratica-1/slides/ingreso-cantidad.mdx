@@ -1,0 +1,51 @@
+---
+id: ingreso-cantidad
+title: 'El ingreso de la empresa: precio y cantidad'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+En los tours de un día, si la empresa cobra $\htmlClass{asoc-4}{x}$ **miles de pesos** por bicicleta, arrienda $\htmlClass{asoc-1}{40-2x}$ bicicletas.
+
+<Paso n={1}>
+
+$$
+\begin{array}{c|c|c|c|c|c|c}
+\text{precio } \htmlClass{asoc-4}{x} & 0 & 1 & 2 & 3 & 4 & 5\\ \hline
+\text{bicicletas} & 40 & 38 & 36 & 34 & 32 & 30
+\end{array}
+$$
+
+Cada **\$1.000** más, se arriendan **2 bicicletas menos**.
+</Paso>
+<Paso n={2}>
+<Tarjeta titulo="Ingreso = precio × cantidad">
+
+$$
+I(x)=\htmlClass{asoc-4}{x}\,(\htmlClass{asoc-1}{40-2x})
+$$
+
+</Tarjeta>
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={-2}
+  n={40}
+  xMin={0}
+  xMax={20}
+  yMin={0}
+  yMax={45}
+  paso={5}
+  pasoY={10}
+  ejeX="x"
+  ejeY="bicicletas"
+  puntosX={[5]}
+  etiqueta="Bicicletas arrendadas: 40 − 2x"
+  descripcion="Recta decreciente de las bicicletas arrendadas según el precio: 40 bicicletas con precio 0 y 30 con precio 5 mil pesos; con 20 mil pesos no se arrienda ninguna."
+/>
+</Columnas>

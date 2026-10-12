@@ -77,6 +77,8 @@ const STEP_ATTRIBUTES: Partial<
   GraficoFuncion: [
     { name: 'pasoPendiente', required: false },
     { name: 'pasoCorteY', required: false },
+    { name: 'pasoCurva', required: false },
+    { name: 'pasoReferencia', required: false },
   ],
 };
 export function validateMdxTree(

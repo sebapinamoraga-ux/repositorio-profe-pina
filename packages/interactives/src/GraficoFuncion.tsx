@@ -73,6 +73,11 @@ export function GraficoFuncion({
   pendienteAncho = 1,
   pasoPendiente,
   pasoCorteY,
+  pasoCurva,
+  referenciaM,
+  referenciaN,
+  pasoReferencia,
+  etiquetaReferencia,
   compacto = false,
   etiqueta,
   descripcion,
@@ -107,6 +112,14 @@ export function GraficoFuncion({
   pasoPendiente?: number;
   /** Paso en que aparece el corte con el eje y; sin él, se ve siempre. */
   pasoCorteY?: number;
+  /** Paso en que aparece la curva; antes solo se ven los puntos marcados. */
+  pasoCurva?: number;
+  /** Recta discontinua de referencia y = referenciaM·x + referenciaN, para comparar. */
+  referenciaM?: number;
+  referenciaN?: number;
+  /** Paso en que aparece la recta de referencia; sin él, se ve siempre. */
+  pasoReferencia?: number;
+  etiquetaReferencia?: string;
   /** Menor altura, para mostrar dos gráficos en una lámina. */
   compacto?: boolean;
   etiqueta: string;
@@ -116,6 +129,10 @@ export function GraficoFuncion({
   const { step, print } = useSlide();
   const shown = (paso: number | undefined) =>
     print || paso === undefined || step >= paso ? 'visible' : 'hidden';
+  const referencia =
+    referenciaM !== undefined
+      ? { m: referenciaM, n: referenciaN ?? 0 }
+      : undefined;
   const curva = curvaDesdeProps(tipo, { m, n, a, b, c, h, k, r });
   const points = muestrearCurva(curva, { xMin, xMax, yMin, yMax });
   // La circunferencia exige la misma escala en ambos ejes; las funciones usan todo el lienzo.
@@ -247,10 +264,23 @@ export function GraficoFuncion({
         <g clipPath={`url(#${clipId})`}>
           <path
             className="graph-primary-line graph-curve"
+            visibility={shown(pasoCurva)}
             d={path}
             strokeWidth="6"
             fill="none"
           />
+          {referencia && (
+            <line
+              className="graph-secondary-line"
+              visibility={shown(pasoReferencia)}
+              strokeWidth="4"
+              strokeDasharray="14 10"
+              x1={sx(xMin)}
+              x2={sx(xMax)}
+              y1={sy(referencia.m * xMin + referencia.n)}
+              y2={sy(referencia.m * xMax + referencia.n)}
+            />
+          )}
           {rectaVertical !== undefined && (
             <line
               className="graph-secondary-line"
@@ -368,6 +398,11 @@ export function GraficoFuncion({
       </svg>
       <div className="graph-caption">
         <span className="graph-caption-primary">{etiqueta}</span>
+        {referencia && etiquetaReferencia && (
+          <span style={{ visibility: shown(pasoReferencia) }}>
+            {etiquetaReferencia}
+          </span>
+        )}
         {rectaVertical !== undefined && (
           <span>
             x = {formatNumber(rectaVertical)} · {cuts.length}{' '}

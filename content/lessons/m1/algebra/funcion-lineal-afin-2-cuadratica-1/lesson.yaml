@@ -30,9 +30,9 @@ tramos:
     to: errores-grafico-cociente
     minutes: 13
   - label: 'Puente: el ingreso de la empresa'
-    from: ingreso-tabla
+    from: ingreso-cantidad
     to: ingreso-tabla
-    minutes: 5
+    minutes: 9
   - label: 'La función cuadrática: a, b, c, la parábola y el efecto de a y c'
     from: cuadratica
     to: efecto-a-c
@@ -42,9 +42,9 @@ tramos:
     to: leer-parabola
     minutes: 6
   - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
-    from: ticket-paes
+    from: ticket-paes-cuadratica
     to: ticket-paes-cuadratica
-    minutes: 9
+    minutes: 5
   - label: 'Cierre y pregunta abierta para la parte 2'
     from: cierre
     to: cierre
@@ -60,13 +60,13 @@ slides:
   - errores-grafico.mdx
   - errores-grafico-frecuentes.mdx
   - errores-grafico-cociente.mdx
+  - ingreso-cantidad.mdx
   - ingreso-tabla.mdx
   - cuadratica.mdx
   - identificar-abc.mdx
   - parabola.mdx
   - efecto-a-c.mdx
   - leer-parabola.mdx
-  - ticket-paes.mdx
   - ticket-paes-cuadratica.mdx
   - cierre.mdx
 repaso:
