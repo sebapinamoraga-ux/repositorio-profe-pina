@@ -1,5 +1,6 @@
 import {
   LEGACY_VIEWS,
+  VIEW_ALIASES,
   roleSchema,
   sectionSchema,
   viewSchema,
@@ -79,9 +80,9 @@ export function teacherRoute(
 function parseTeacher(params: URLSearchParams): TeacherRoute {
   const raw = params.get('vista') ?? '';
   const legacy = LEGACY_VIEWS[raw];
-  const view = viewSchema.safeParse(raw);
+  const view = viewSchema.safeParse(VIEW_ALIASES[raw] ?? raw);
   const section = sectionSchema.safeParse(params.get('seccion'));
-  return teacherRoute(legacy ? 'clase' : view.success ? view.data : 'clase', {
+  return teacherRoute(legacy ? 'clase' : view.success ? view.data : 'clases', {
     lesson: text(params, 'clase'),
     section: legacy ?? (section.success ? section.data : null),
     slide: text(params, 'slide'),
@@ -107,7 +108,7 @@ function fromSaved(saved: RoleState): AppRoute {
  */
 export function parseRoute(
   params: URLSearchParams,
-  saved: RoleState = { role: null, view: 'clase' },
+  saved: RoleState = { role: null, view: 'clases' },
 ): AppRoute {
   const lesson = text(params, 'clase');
   const role = roleSchema.safeParse(params.get('rol'));

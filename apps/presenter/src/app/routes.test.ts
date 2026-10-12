@@ -22,9 +22,15 @@ describe('parseRoute', () => {
     });
   });
 
-  it('una vista o pestaña desconocida vuelve al resumen de la clase', () => {
-    expect(parse('rol=docente&vista=otra')).toMatchObject({ view: 'clase', section: 'resumen' });
+  it('una vista desconocida vuelve a Clases y una pestaña desconocida al resumen', () => {
+    expect(parse('rol=docente&vista=otra')).toMatchObject({ view: 'clases', section: null });
     expect(parse('rol=docente&vista=clase&seccion=otra')).toMatchObject({ section: 'resumen' });
+  });
+
+  it('las vistas renombradas siguen abriendo su sección', () => {
+    expect(parse('rol=docente&vista=biblioteca')).toMatchObject({ view: 'clases' });
+    expect(parse('rol=docente&vista=conexion')).toMatchObject({ view: 'ajustes' });
+    expect(parse('rol=docente')).toMatchObject({ view: 'clases' });
   });
 
   it('las vistas anteriores al espacio de la clase son pestañas', () => {
@@ -78,8 +84,8 @@ describe('routeHash', () => {
     expect(canonical('rol=docente&vista=clase&clase=a&seccion=pdf&slide=b')).toBe(
       '#rol=docente&vista=clase&clase=a&seccion=pdf',
     );
-    expect(canonical('rol=docente&vista=biblioteca&clase=a&seccion=pdf')).toBe(
-      '#rol=docente&vista=biblioteca',
+    expect(canonical('rol=docente&vista=clases&clase=a&seccion=pdf')).toBe(
+      '#rol=docente&vista=clases',
     );
     expect(canonical('slide=b&clase=a')).toBe('#rol=docente&vista=presentar&clase=a&slide=b');
   });

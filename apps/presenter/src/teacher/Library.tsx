@@ -25,7 +25,7 @@ import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { useLessonIssues } from './issues';
 import { LessonDialog } from './LessonForm';
-import { ConnectHint } from './SaveBar';
+import { TodayCard } from './lesson/TodayCard';
 import { Button, IconButton } from '../ui/Button';
 import { Notice, Page, PageHeader } from '../ui/Layout';
 
@@ -167,7 +167,7 @@ function LessonRow({
       dispatch({ type: 'openLesson', id: ORIGINAL_LESSON_ID });
     onMenu(false);
     ui.toast(
-      has ? `«${entry.title}» eliminada` : `«${entry.title}» quitada de la biblioteca`,
+      has ? `«${entry.title}» eliminada` : `«${entry.title}» quitada de Clases`,
       undo,
     );
   };
@@ -368,7 +368,7 @@ function LessonRow({
           )}
           {!original && (
             <Button variant="danger" size="sm" onClick={remove}>
-              {has ? 'Eliminar clase' : 'Quitar de la biblioteca'}
+              {has ? 'Eliminar clase' : 'Quitar de Clases'}
             </Button>
           )}
         </div>
@@ -658,9 +658,9 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
   return (
     <Page>
         <PageHeader
-          kicker="Biblioteca · M1 · Álgebra y funciones"
+          kicker="Clases · M1 · Álgebra y funciones"
           title="Tus clases"
-          lead="Abre una clase para editarla o proyectarla. Las que están por preparar parten de la estructura base o de otra clase."
+          lead="Abre una clase para prepararla, revisarla o proyectarla. Las que están por preparar parten de la estructura base o de otra clase."
           actions={
           <>
             {!organizing && (
@@ -696,7 +696,7 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
           </>
           }
         />
-        {!canEdit && <ConnectHint onNavigate={onNavigate} />}
+        {!organizing && <TodayCard onNavigate={onNavigate} />}
         {organizing && (
           <Notice role="status" tone="info">
             Modo organizar: cambia el nombre y el orden de las unidades, mueve clases entre

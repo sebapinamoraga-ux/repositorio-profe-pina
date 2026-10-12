@@ -1,12 +1,11 @@
 import { useState, type FormEvent } from 'react';
-import { useViewportWidth } from '../app/route';
 import { useAula } from '../store/AulaProvider';
 import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
 import type { Navigate } from '../app/routes';
 import { nowParts, uid } from '../store/teacher';
 import { useUi } from '../ui/UiProvider';
-import { makeNote } from './notes';
+import { EndSessionForm } from './session/Session';
 import { Button } from '../ui/Button';
 import { Card, Page, PageHeader } from '../ui/Layout';
 
@@ -14,10 +13,7 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const { data, dispatch, snap } = useAula();
   const content = useContent();
   const ui = useUi();
-  const width = useViewportWidth();
   const [editing, setEditing] = useState<string | null>(null);
-  const [obs, setObs] = useState('');
-  const [improve, setImprove] = useState('');
   const [nombre, setNombre] = useState('');
   const [nivel, setNivel] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -40,29 +36,6 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
       },
     });
     onNavigate('presentar', { lesson: deck.meta.id });
-  };
-  const end = () => {
-    if (!active) return;
-    const text = improve.trim();
-    if (text)
-      dispatch({
-        type: 'addNote',
-        note: makeNote(data, {
-          text,
-          lessonId: active.lessonId,
-          slideId: null,
-          slideTitle: '',
-          source: 'cierre',
-        }),
-      });
-    dispatch({ type: 'endSession', id: uid('s'), end: nowParts().time, obs: obs.trim() });
-    setObs('');
-    setImprove('');
-    ui.toast(
-      text
-        ? 'Sesión registrada. Tu comentario quedó pendiente en el editor.'
-        : 'Sesión registrada en el historial.',
-    );
   };
   const add = (event: FormEvent) => {
     event.preventDefault();
@@ -92,54 +65,23 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
           <p className="hint">
             «Iniciar clase» proyecta «{deckFor(content, data.lessonId).meta.title}», la última
             clase que abriste.{' '}
-            <Button variant="quiet" size="sm" onClick={() => onNavigate('biblioteca')}>
+            <Button variant="quiet" size="sm" onClick={() => onNavigate('clases')}>
               Elegir otra clase
             </Button>
           </p>
         )}
         {active && (
-          <Card
-            aria-label="Clase en curso"
-            tone="comprobacion"
-            className={`active-session ${width < 800 ? '' : 'is-wide'}`}
-          >
-            <div className="stack-tight">
-              <p className="card-tab">Clase en curso · desde {active.start}</p>
+          <Card aria-label="Clase en curso" tone="comprobacion" className="active-session">
+            <p className="card-tab">Clase en curso · desde {active.start}</p>
+            <div className="active-head">
               <p className="active-title">
                 {courseName(active.courseId)} · {active.lessonTitle}
               </p>
-              <label className="field">
-                Observación posterior
-                <textarea
-                  rows={2}
-                  value={obs}
-                  placeholder="Hasta qué lámina llegamos, qué retomar con este curso…"
-                  onChange={(event) => setObs(event.target.value)}
-                />
-              </label>
-              <label className="field">
-                <span>
-                  ¿Qué mejorarías?{' '}
-                  <span className="field-note">
-                    Queda como comentario pendiente en el editor, para todos los cursos.
-                  </span>
-                </span>
-                <textarea
-                  rows={2}
-                  value={improve}
-                  placeholder="Qué cambiarías la próxima vez que la hagas…"
-                  onChange={(event) => setImprove(event.target.value)}
-                />
-              </label>
-            </div>
-            <div className="row">
               <Button onClick={() => onNavigate('presentar', { lesson: active.lessonId })}>
                 Volver a proyectar
               </Button>
-              <Button variant="primary" onClick={end}>
-                Terminar y registrar
-              </Button>
             </div>
+            <EndSessionForm />
           </Card>
         )}
         <section aria-label="Cursos" className="course-grid">

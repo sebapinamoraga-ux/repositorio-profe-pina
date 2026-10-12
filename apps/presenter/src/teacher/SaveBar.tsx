@@ -7,57 +7,85 @@ import type { View } from '../store/schema';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { Button, IconButton } from '../ui/Button';
-import { Notice } from '../ui/Layout';
 
-/** Aviso para editar: sin conexión con GitHub la app solo muestra el contenido. */
-export function ConnectHint({ onNavigate }: { onNavigate?: (view: View) => void }) {
+/**
+ * Único aviso de solo lectura, en la parte superior de las pantallas docentes: sin conexión con
+ * GitHub la app muestra el contenido publicado y los controles de edición quedan desactivados.
+ */
+export function ConnectionStrip({ onNavigate }: { onNavigate: (view: View) => void }) {
   const { connection, mode, sync } = useContent();
-  if (connection && mode === 'build')
-    return (
-      <Notice role="status" tone="info">
-        {sync.status === 'error'
-          ? `No se pudo leer el repositorio: ${sync.error ?? ''}`
-          : 'Leyendo el contenido del repositorio…'}
-      </Notice>
-    );
-  if (connection) return null;
+  if (connection && mode !== 'build') return null;
   return (
-    <Notice role="status" tone="info">
-      Para editar clases desde cualquier dispositivo, conecta la app con GitHub en{' '}
-      {onNavigate ? (
-        <Button variant="quiet" size="sm" onClick={() => onNavigate('conexion')}>
-          Conexión
-        </Button>
+    <p className="connection-strip">
+      {connection ? (
+        sync.status === 'error' ? (
+          `No se pudo leer el repositorio: ${sync.error ?? ''}`
+        ) : (
+          'Leyendo el contenido del repositorio…'
+        )
       ) : (
-        <b>Conexión</b>
+        <>
+          <b>Solo lectura.</b> La app muestra el contenido publicado. Para editar, conecta la app
+          con GitHub en{' '}
+          <Button variant="quiet" size="sm" onClick={() => onNavigate('ajustes')}>
+            Ajustes
+          </Button>
+          .
+        </>
       )}
-      . Mientras tanto, la app muestra el contenido publicado.
-    </Notice>
+    </p>
   );
 }
 
-/** Estado de sincronización en la barra docente. */
-export function SyncPill({ compact = false }: { compact?: boolean }) {
+function syncLabel(
+  connected: boolean,
+  online: boolean,
+  status: string,
+  mode: string,
+  n: number,
+) {
+  if (!connected) return 'Sin conectar · solo lectura';
+  if (!online || status === 'offline') return `Sin conexión${n ? ` · ${n} sin guardar` : ''}`;
+  if (status === 'error') return 'Error al leer GitHub';
+  if (n) return `${n} ${n === 1 ? 'cambio sin guardar' : 'cambios sin guardar'}`;
+  return mode === 'live' ? 'Al día con GitHub' : 'Sincronizando…';
+}
+
+/** Estado de la conexión con GitHub: un solo indicador, que lleva a Ajustes. */
+export function SyncPill({
+  compact = false,
+  onOpen,
+}: {
+  compact?: boolean;
+  onOpen?: () => void;
+}) {
   const online = useOnline();
   const { connection, mode, sync, pending } = useContent();
   const n = pending.length;
-  const label = !connection
-    ? 'Sin conectar · solo lectura'
-    : !online || sync.status === 'offline'
-      ? `Sin conexión${n ? ` · ${n} sin guardar` : ''}`
-      : sync.status === 'error'
-        ? 'Error al leer GitHub'
-        : n
-          ? `${n} ${n === 1 ? 'cambio sin guardar' : 'cambios sin guardar'}`
-          : mode === 'live'
-            ? 'Al día con GitHub'
-            : 'Sincronizando…';
+  const label = syncLabel(Boolean(connection), online, sync.status, mode, n);
   const tone =
     !connection || !online || sync.status !== 'idle' ? 'is-offline' : n ? 'is-pending' : '';
-  return (
-    <span className={`save-pill ${tone}`} aria-label={label} title={label}>
+  const body = (
+    <>
       <span aria-hidden="true" className="save-dot" />
       {!compact && label}
+    </>
+  );
+  if (onOpen)
+    return (
+      <button
+        type="button"
+        className={`save-pill is-button ${tone}`}
+        aria-label={`${label}. Abrir Ajustes`}
+        title={label}
+        onClick={onOpen}
+      >
+        {body}
+      </button>
+    );
+  return (
+    <span className={`save-pill ${tone}`} aria-label={label} title={label}>
+      {body}
     </span>
   );
 }
@@ -244,7 +272,7 @@ export function SaveBar({ onNavigate }: { onNavigate: (view: View) => void }) {
             </>
           )}
           {!connection && (
-            <Button size="sm" onClick={() => onNavigate('conexion')}>
+            <Button size="sm" onClick={() => onNavigate('ajustes')}>
               Conectar
             </Button>
           )}

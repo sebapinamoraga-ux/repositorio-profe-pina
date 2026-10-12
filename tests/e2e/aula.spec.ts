@@ -17,9 +17,12 @@ test('la entrada muestra los tres roles y la parte docente pide desbloqueo local
   await page.getByRole('button', { name: /Docente/ }).click();
   await expect(page.getByRole('heading', { name: 'Entra a tu aula' })).toBeVisible();
   await page.getByRole('button', { name: 'Entrar como docente' }).click();
-  await expect(page.getByRole('heading', { name: 'Sistemas de ecuaciones lineales' })).toBeVisible();
-  await expect(page.getByText('Tramos de la clase')).toBeVisible();
+  // La entrada docente es Clases, con la clase de hoy a un toque.
+  const today = page.getByRole('region', { name: 'Clase de hoy' });
+  await expect(today.getByRole('heading', { name: 'Sistemas de ecuaciones lineales' })).toBeVisible();
   await page.reload();
+  await expect(page).toHaveURL(/rol=docente&vista=clases$/);
+  await today.getByRole('button', { name: 'Abrir la clase' }).click();
   await expect(page).toHaveURL(/rol=docente&vista=clase&clase=sistemas-2x2&seccion=resumen$/);
   await expect(page.getByText('Tramos de la clase')).toBeVisible();
 });
@@ -52,7 +55,7 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   await page.getByRole('dialog', { name: 'Preparar clase' }).getByRole('button', { name: 'Crear y abrir en editor' }).click();
   await expect(page).toHaveURL(/vista=clase&clase=clase-de-prueba&seccion=laminas/);
   await expect(page.locator('.thumb')).toHaveCount(5);
-  await page.getByRole('button', { name: 'Clases', exact: true }).or(page.getByRole('button', { name: 'Biblioteca de clases' })).first().click();
+  await page.getByRole('button', { name: 'Clases', exact: true }).click();
   await expect(row).toContainText('En preparación');
 
   // Todo queda en un solo commit: la planificación y la carpeta de la clase nueva.
@@ -88,8 +91,8 @@ test('la clase viaja en la URL: pestañas, enlaces directos, Atrás del navegado
   // Sin clase en el enlace se abre la última; una vista sin clase no la lleva.
   await page.goto('/#rol=docente&vista=clase');
   await expect(page).toHaveURL(/vista=clase&clase=funcion-cuadratica-2&seccion=resumen$/);
-  await page.getByRole('button', { name: 'Biblioteca de clases' }).click();
-  await expect(page).toHaveURL(/vista=biblioteca$/);
+  await page.getByRole('button', { name: 'Clases', exact: true }).click();
+  await expect(page).toHaveURL(/vista=clases$/);
   await expect(page.locator('.lesson-row', { hasText: 'Función cuadrática (parte 2)' })).toContainText(
     'Última abierta',
   );
@@ -251,13 +254,22 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await page.getByRole('button', { name: 'Iniciar clase' }).first().click();
   await expect(page).toHaveURL(/vista=presentar/);
   await page.getByRole('button', { name: 'Salir de la presentación' }).click();
-  await page.getByRole('button', { name: 'Cursos e historial' }).click();
-  await page.getByLabel('Observación posterior').fill('Llegamos a la lámina 16.');
-  await page.getByRole('textbox', { name: /¿Qué mejorarías\?/ }).fill('Acortar la comparación.');
-  await page.getByRole('button', { name: 'Terminar y registrar' }).click();
+  // La sesión en curso se ve en todas las pantallas y se cierra desde su barra.
+  const bar = page.getByRole('region', { name: 'Clase en curso' }).first();
+  await expect(bar).toContainText('3° Medio A');
+  await page.getByRole('button', { name: 'Recursos', exact: true }).click();
+  await expect(bar).toBeVisible();
+  await bar.getByRole('button', { name: 'Cerrar sesión' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Cerrar la sesión' });
+  await dialog.getByLabel('Observación posterior').fill('Llegamos a la lámina 16.');
+  await dialog.getByRole('textbox', { name: /¿Qué mejorarías\?/ }).fill('Acortar la comparación.');
+  await dialog.getByRole('button', { name: 'Terminar y registrar' }).click();
+  await expect(page.getByRole('region', { name: 'Clase en curso' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Cursos', exact: true }).click();
   await expect(page.locator('.history-row')).toHaveCount(1);
   await expect(page.locator('.history-row')).toContainText('3° Medio A');
-  await page.getByRole('button', { name: 'Clase de hoy' }).click();
+  await page.getByRole('button', { name: 'Clases', exact: true }).click();
+  await page.getByRole('region', { name: 'Clase de hoy' }).getByRole('button', { name: 'Abrir la clase' }).click();
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
 
@@ -266,7 +278,10 @@ test('sin conexión con GitHub la biblioteca es de solo lectura y explica cómo 
   await page.goto('/#rol=docente&vista=biblioteca');
   await expect(page.locator('.lesson-row', { hasText: 'Función lineal y afín (parte 1)' })).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Organizar' })).toHaveCount(0);
-  await expect(page.getByText(/conecta la app con GitHub/)).toBeVisible();
-  await page.getByRole('main').getByRole('button', { name: 'Conexión' }).click();
+  // Un único aviso de solo lectura, que lleva a Ajustes.
+  const strip = page.locator('.connection-strip');
+  await expect(strip).toContainText(/conecta la app con GitHub/);
+  await strip.getByRole('button', { name: 'Ajustes' }).click();
+  await expect(page).toHaveURL(/vista=ajustes$/);
   await expect(page.getByRole('heading', { name: 'Contenido en GitHub' })).toBeVisible();
 });

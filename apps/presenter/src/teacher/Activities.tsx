@@ -11,7 +11,6 @@ import { slugify } from '../store/teacher';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
 import { ListField } from './LessonForm';
-import { ConnectHint } from './SaveBar';
 import { Button, IconButton } from '../ui/Button';
 import { Notice, Page, PageHeader } from '../ui/Layout';
 
@@ -446,7 +445,6 @@ export function Activities({ onNavigate }: { onNavigate: Navigate }) {
             )
           }
         />
-        {!content.canEdit && <ConnectHint onNavigate={onNavigate} />}
         {creating && (
           <form className="add-form" onSubmit={create}>
             <label className="field">
