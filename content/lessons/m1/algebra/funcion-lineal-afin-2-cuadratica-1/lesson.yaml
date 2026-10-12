@@ -41,7 +41,7 @@ tramos:
     from: ticket-paes-cuadratica
     to: ticket-paes-cuadratica
     minutes: 5
-  - label: 'Cierre y pregunta abierta para la parte 2'
+  - label: 'Cierre: semáforo de aprendizaje'
     from: cierre
     to: cierre
     minutes: 4

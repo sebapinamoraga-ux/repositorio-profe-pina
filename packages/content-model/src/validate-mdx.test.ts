@@ -381,3 +381,26 @@ it('una pregunta sin respuesta no ocupa pasos y Columnas valida su ancho', () =>
     validateMdxTree(columnas('centro'), { ...slide, steps: 0 }),
   ).toThrow('amplia');
 });
+it('exige las tres luces del semáforo', () => {
+  const semaforo = (luces: string[]) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'Semaforo',
+        attributes: luces.map((name) => ({
+          type: 'mdxJsxAttribute',
+          name,
+          value: 'texto',
+        })),
+      },
+    ],
+  });
+  const sinPasos = { ...slide, steps: 0 };
+  expect(() =>
+    validateMdxTree(semaforo(['rojo', 'amarillo', 'verde']), sinPasos),
+  ).not.toThrow();
+  expect(() => validateMdxTree(semaforo(['rojo', 'verde']), sinPasos)).toThrow(
+    'Semaforo',
+  );
+});

@@ -50,6 +50,7 @@ const components = new Set([
   'FilaLectura',
   'Leyenda',
   'ItemLeyenda',
+  'Semaforo',
   'Formula',
   'PreguntaPAES',
   'GraficoSistema',
@@ -191,6 +192,13 @@ export function validateMdxTree(
             `Columnas acepta amplia="izquierda" o "derecha": ${amplia}`,
           );
       }
+      if (
+        node.name === 'Semaforo' &&
+        ['rojo', 'amarillo', 'verde'].some(
+          (luz) => !literalAttribute(attributes, luz),
+        )
+      )
+        throw new Error('Semaforo requiere rojo, amarillo y verde literales');
       if (node.name === 'TablaLectura') {
         const headers = literalAttribute(attributes, 'encabezados') ?? '';
         if (headers.split('|').filter((h) => h.trim()).length !== 3)

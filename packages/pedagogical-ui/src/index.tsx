@@ -322,6 +322,42 @@ export function FilaLectura({
     </tr>
   );
 }
+/**
+ * Semáforo de autoevaluación: rojo, amarillo y verde de arriba abajo, cada luz con su
+ * significado escrito para no depender solo del color.
+ */
+export function Semaforo({
+  rojo,
+  amarillo,
+  verde,
+}: {
+  rojo: string;
+  amarillo: string;
+  verde: string;
+}) {
+  const luces = [
+    ['rojo', 'Rojo', rojo],
+    ['amarillo', 'Amarillo', amarillo],
+    ['verde', 'Verde', verde],
+  ] as const;
+  return (
+    <div className="traffic-light">
+      <div className="traffic-light-housing" aria-hidden="true">
+        {luces.map(([id]) => (
+          <span key={id} className={`traffic-light-lamp lamp-${id}`} />
+        ))}
+      </div>
+      <ul className="traffic-light-labels">
+        {luces.map(([id, nombre, texto]) => (
+          <li key={id}>
+            <strong>{nombre}:</strong>
+            <span>{texto}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 /** Recordatorio de lo que significa cada referencia numerada. */
 export function Leyenda({ children }: { children: ReactNode }) {
   return <div className="reading-legend">{children}</div>;

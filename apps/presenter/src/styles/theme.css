@@ -380,6 +380,51 @@ a {
   line-height: 1.15em;
   text-align: center;
 }
+/* Semáforo de autoevaluación: cada luz alineada con su significado. */
+.traffic-light {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 8px 0 4px;
+}
+.traffic-light-housing {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #2b2f36;
+}
+.traffic-light-lamp {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+.lamp-rojo {
+  background: #d64545;
+}
+.lamp-amarillo {
+  background: #e8b21f;
+}
+.lamp-verde {
+  background: #2e9d5b;
+}
+/* Más específico que .slide ul y .slide li, para alinear cada texto con su luz. */
+.traffic-light .traffic-light-labels {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 14px 0;
+  list-style: none;
+}
+.traffic-light .traffic-light-labels li {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  min-height: 44px;
+  padding: 0;
+  line-height: 1.25;
+}
 /* Tabla de lectura: nombre, expresión y un rasgo que se revela por fila. */
 .reading-table {
   width: 100%;

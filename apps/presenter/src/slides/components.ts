@@ -36,6 +36,7 @@ export const mdxComponents = {
   FilaLectura: blocks.FilaLectura,
   Leyenda: blocks.Leyenda,
   ItemLeyenda: blocks.ItemLeyenda,
+  Semaforo: blocks.Semaforo,
   Formula: blocks.Formula,
   PreguntaPAES: blocks.PreguntaPAES,
   GraficoSistema,

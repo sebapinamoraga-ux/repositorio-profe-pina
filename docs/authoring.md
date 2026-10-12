@@ -34,6 +34,8 @@ Para leer expresiones con el curso, usa `TablaLectura` (tres encabezados separad
 
 Si dos fichas de una misma expresión se superponen, ubica una encima y otra debajo.
 
+Para la autoevaluación del cierre, `Semaforo` muestra un semáforo con el significado escrito de cada luz: `<Semaforo rojo="Necesito repasarlo con ayuda." amarillo="Lo entendí, pero me quedan dudas." verde="Lo entendí y podría explicárselo a alguien." />`. Va dentro de un bloque `Cierre`.
+
 Para conectar visualmente un mismo referente, usa `tono={1}`, `tono={2}`, `tono={3}` o `tono={4}` en `Etiqueta`, `Tarjeta` y `Asociacion`. Conserva la correspondencia durante toda la secuencia y no uses el tono para indicar acierto, error o función del bloque.
 
 ```mdx

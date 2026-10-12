@@ -90,6 +90,9 @@ const ATTR_LABELS: Record<string, string> = {
   encabezados: 'Encabezados (separados por |)',
   nombre: 'Nombre',
   rasgo: 'Rasgo',
+  rojo: 'Luz roja',
+  amarillo: 'Luz amarilla',
+  verde: 'Luz verde',
 };
 const FIXED: Record<string, string> = {
   PreguntaPAES: 'Pregunta PAES',
