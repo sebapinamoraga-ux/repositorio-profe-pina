@@ -16,6 +16,26 @@ Escribe Markdown normal y matemáticas en línea con `$...$`. Para ecuaciones ce
 
 `steps` debe coincidir con el máximo paso y la secuencia debe empezar en 1. Un mismo paso puede revelar varios fragmentos. No anidar pasos. No insertar estilos por diapositiva ni JavaScript arbitrario.
 
+Para leer expresiones con el curso, usa `TablaLectura` (tres encabezados separados por `|`) con una `FilaLectura` por expresión: `nombre`, `rasgo` (por ejemplo, el tipo de función) y el `paso` en que aparece el rasgo. Dentro de la expresión, `Senal` muestra en su `paso` una ficha piedra cuya muesca apunta al término que envuelve, encima (`posicion="arriba"`), debajo (`posicion="abajo"`) o a la derecha (por defecto). Con `numero`, la ficha se conecta con un `ItemLeyenda` de una `Leyenda`, que recuerda qué significa cada término en el contexto; `ItemLeyenda` acepta su propio `paso`. Para señalar un término, divide la fórmula y usa `{}` para conservar el espaciado:
+
+```mdx
+<TablaLectura encabezados="Plan|Expresión|Tipo">
+<FilaLectura nombre="Base" rasgo="afín" paso={1}>
+<Asociacion tono={2}>$B(x)={}$<Senal paso={2} numero={1} texto="pendiente" posicion="arriba">$300$</Senal>$x+1.500$</Asociacion>
+</FilaLectura>
+</TablaLectura>
+
+<Paso n={2}>
+<Leyenda>
+<ItemLeyenda numero={1}>$300$: **pendiente** (\$300 por km, cargo dependiente)</ItemLeyenda>
+</Leyenda>
+</Paso>
+```
+
+Si dos fichas de una misma expresión se superponen, ubica una encima y otra debajo.
+
+Para la autoevaluación del cierre, `Semaforo` muestra un semáforo con el significado escrito de cada luz: `<Semaforo rojo="Necesito repasarlo con ayuda." amarillo="Lo entendí, pero me quedan dudas." verde="Lo entendí y podría explicárselo a alguien." />`. Va dentro de un bloque `Cierre`.
+
 Para conectar visualmente un mismo referente, usa `tono={1}`, `tono={2}`, `tono={3}` o `tono={4}` en `Etiqueta`, `Tarjeta` y `Asociacion`. Conserva la correspondencia durante toda la secuencia y no uses el tono para indicar acierto, error o función del bloque.
 
 ```mdx

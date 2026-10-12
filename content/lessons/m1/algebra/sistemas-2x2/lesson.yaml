@@ -25,7 +25,7 @@ tramos:
     from: idea
     to: error
     minutes: 20
-  - label: Pausa en parejas y solución por reducción
+  - label: Pausa individual y solución por reducción
     from: comparar
     to: elegir
     minutes: 12

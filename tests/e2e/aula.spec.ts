@@ -229,6 +229,24 @@ test('repaso del estudiante: lectura al ancho, solución plegada y tema', async 
   expect(overflow).toBe(false);
 });
 
+test('repaso del estudiante: el enlace abre la clase indicada y la URL la sigue', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#rol=estudiante&clase=funcion-cuadratica-2');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Función cuadrática (parte 2)',
+  );
+  await expect(page).toHaveURL(/clase=funcion-cuadratica-2/);
+  await page.getByRole('button', { name: 'Índice de láminas' }).click();
+  await page.getByRole('combobox', { name: 'Clase' }).selectOption('sistemas-2x2');
+  await expect(page).toHaveURL(/clase=sistemas-2x2/);
+  await page.reload();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Sistemas de ecuaciones lineales de 2×2',
+  );
+});
+
 test('repaso del estudiante: láminas para seguir explorando con control de b', async ({
   page,
 }) => {
