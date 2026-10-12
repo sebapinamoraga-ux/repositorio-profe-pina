@@ -3,14 +3,14 @@ import { useViewportWidth } from '../app/route';
 import { useAula } from '../store/AulaProvider';
 import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
-import type { View } from '../store/schema';
+import type { Navigate } from '../app/routes';
 import { nowParts, uid } from '../store/teacher';
 import { useUi } from '../ui/UiProvider';
 import { makeNote } from './notes';
 import { Button } from '../ui/Button';
 import { Card, Page, PageHeader } from '../ui/Layout';
 
-export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const { data, dispatch, snap } = useAula();
   const content = useContent();
   const ui = useUi();
@@ -39,7 +39,7 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
         votes: [],
       },
     });
-    onNavigate('presentar');
+    onNavigate('presentar', { lesson: deck.meta.id });
   };
   const end = () => {
     if (!active) return;
@@ -88,6 +88,15 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
           title="Tus cursos"
           lead="Elige un curso al iniciar una clase. Cada sesión registra curso, clase, fecha, inicio, término y tu observación. Nada de esto aparece en el contenido público ni en el PDF."
         />
+        {!active && (
+          <p className="hint">
+            «Iniciar clase» proyecta «{deckFor(content, data.lessonId).meta.title}», la última
+            clase que abriste.{' '}
+            <Button variant="quiet" size="sm" onClick={() => onNavigate('biblioteca')}>
+              Elegir otra clase
+            </Button>
+          </p>
+        )}
         {active && (
           <Card
             aria-label="Clase en curso"
@@ -124,7 +133,7 @@ export function Courses({ onNavigate }: { onNavigate: (view: View) => void }) {
               </label>
             </div>
             <div className="row">
-              <Button onClick={() => onNavigate('presentar')}>
+              <Button onClick={() => onNavigate('presentar', { lesson: active.lessonId })}>
                 Volver a proyectar
               </Button>
               <Button variant="primary" onClick={end}>

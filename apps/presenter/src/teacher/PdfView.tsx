@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
-import { useAula } from '../store/AulaProvider';
 import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
 import type { View } from '../store/schema';
@@ -25,10 +24,15 @@ function usePublishedPdf(id: string, enabled: boolean) {
   return enabled ? url : null;
 }
 
-export function PdfView({ onNavigate }: { onNavigate: (view: View) => void }) {
-  const { data } = useAula();
+export function PdfView({
+  lessonId,
+  onNavigate,
+}: {
+  lessonId: string;
+  onNavigate: (view: View) => void;
+}) {
   const content = useContent();
-  const deck = deckFor(content, data.lessonId);
+  const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
   const local = deck.origin === 'edited';
   const published = usePublishedPdf(

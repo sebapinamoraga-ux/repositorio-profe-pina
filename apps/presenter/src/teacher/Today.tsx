@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Lightbulb } from 'lucide-react';
-import { useRoute, useViewportWidth } from '../app/route';
+import { useViewportWidth } from '../app/route';
+import type { Navigate } from '../app/routes';
 import { useContent } from '../content/ContentProvider';
 import { useAula } from '../store/AulaProvider';
 import { deckFor, pad2 } from '../store/deck';
-import type { View } from '../store/schema';
 import { nowParts, pendingNotes } from '../store/teacher';
 import { Button } from '../ui/Button';
 import { Card, Page, PageHeader } from '../ui/Layout';
@@ -15,24 +15,28 @@ const MARK_LABEL = {
   'por-preparar': 'por preparar',
 } as const;
 
-export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Today({
+  lessonId,
+  onNavigate,
+}: {
+  lessonId: string;
+  onNavigate: Navigate;
+}) {
   const { data, dispatch } = useAula();
-  const { replace } = useRoute();
   const width = useViewportWidth();
   const content = useContent();
-  const deck = deckFor(content, data.lessonId);
+  const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
-  const entry = content.library.entries.find((item) => item.id === data.lessonId);
+  const entry = content.library.entries.find((item) => item.id === lessonId);
   const [courseId, setCourseId] = useState(data.courses[0]?.id ?? '');
   const session = data.activeSession;
-  const notes = pendingNotes(data, data.lessonId);
+  const notes = pendingNotes(data, lessonId);
   const indexOf = (id: string) => slides.findIndex((slide) => slide.id === id);
   const maxMinutes = Math.max(1, ...meta.tramos.map((t) => t.minutes));
   const hasTramos = meta.tramos.length > 0 && slides.length > 0;
 
   const present = (slideId?: string) => {
-    replace({ clase: meta.id, slide: slideId ?? null });
-    onNavigate('presentar');
+    onNavigate('presentar', { lesson: meta.id, slide: slideId });
   };
   const start = () => {
     if (!session && courseId && data.courses.some((c) => c.id === courseId)) {

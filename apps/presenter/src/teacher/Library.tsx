@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { ChevronDown, ChevronUp, Settings2, Trash2, X } from 'lucide-react';
 import { mascotGallery } from '../app/gallery';
+import type { Navigate } from '../app/routes';
 import { useContent } from '../content/ContentProvider';
 import {
   UNPLANNED_UNIT,
@@ -71,7 +72,7 @@ function LessonRow({
   onEditing: (open: boolean) => void;
   onPrepare: () => void;
   onDetails: () => void;
-  onNavigate: (view: View) => void;
+  onNavigate: Navigate;
 }) {
   const { data, dispatch } = useAula();
   const content = useContent();
@@ -102,10 +103,7 @@ function LessonRow({
         ? 'is-warn'
         : 'is-ok';
 
-  const open = (view: View) => {
-    dispatch({ type: 'openLesson', id: entry.id });
-    onNavigate(view);
-  };
+  const open = (view: View) => onNavigate(view, { lesson: entry.id });
   const setTitle = (title: string) =>
     findLesson(content.bundle, entry.id)
       ? content.edit(writeLesson(content.bundle, entry.id, { title }))
@@ -202,7 +200,7 @@ function LessonRow({
             <>
               <div className="lesson-title">
                 <h3>{entry.title || 'Sin título'}</h3>
-                {active && <span className="badge-active">Activa</span>}
+                {active && <span className="badge-active">Última abierta</span>}
               </div>
               <p className="lesson-objective" title={entry.objective}>
                 {entry.objective || 'Sin objetivo todavía.'}
@@ -386,9 +384,9 @@ function PrepareDialog({
 }: {
   entry: LibraryEntry;
   onClose: () => void;
-  onNavigate: (view: View) => void;
+  onNavigate: Navigate;
 }) {
-  const { data, dispatch } = useAula();
+  const { data } = useAula();
   const content = useContent();
   const sources = content.library.entries.filter((item) => hasSlides(content, item.id));
   const [mode, setMode] = useState<'base' | 'other'>('base');
@@ -415,9 +413,8 @@ function PrepareDialog({
         patch: { title: undefined, objective: undefined, mark: 'en-preparacion' },
       }),
     ]);
-    dispatch({ type: 'openLesson', id: entry.id });
     onClose();
-    onNavigate('editor');
+    onNavigate('editor', { lesson: entry.id });
   };
   return (
     <Modal label="Preparar clase" onClose={onClose}>
@@ -586,7 +583,7 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
   );
 }
 
-export function Library({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Library({ onNavigate }: { onNavigate: Navigate }) {
   const content = useContent();
   const { library, canEdit } = content;
   const planning = usePlanning();

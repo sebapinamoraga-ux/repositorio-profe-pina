@@ -20,7 +20,7 @@ import { readRoute, useRoute, useViewportWidth } from '../app/route';
 import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
 import { useAula } from '../store/AulaProvider';
-import { deckFor, hasSlides, pad2 } from '../store/deck';
+import { deckFor, pad2 } from '../store/deck';
 import { voteCounts } from '../store/live';
 import type { View } from '../store/schema';
 import { nowParts } from '../store/teacher';
@@ -61,24 +61,22 @@ function Qr({ text }: { text: string }) {
   );
 }
 
-export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Presenter({
+  lessonId,
+  onNavigate,
+}: {
+  lessonId: string;
+  onNavigate: (view: View) => void;
+}) {
   const { data, dispatch, live, send, setPresenting } = useAula();
   const content = useContent();
   const activities = useActivities();
-  const { route, replace } = useRoute();
+  const { replace } = useRoute();
   const ui = useUi();
   const width = useViewportWidth();
   const wide = width >= 750;
   const rootRef = useRef<HTMLElement>(null);
   const noteRef = useRef<HTMLTextAreaElement>(null);
-
-  // Un enlace con #clase=… abre esa clase si existe en la biblioteca o en el repositorio.
-  const urlLesson = route.get('clase');
-  const lessonId =
-    urlLesson && hasSlides(content, urlLesson) ? urlLesson : data.lessonId;
-  useEffect(() => {
-    if (lessonId !== data.lessonId) dispatch({ type: 'openLesson', id: lessonId });
-  }, [lessonId, data.lessonId, dispatch]);
 
   const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;

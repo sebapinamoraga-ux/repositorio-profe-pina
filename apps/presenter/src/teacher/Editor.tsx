@@ -187,13 +187,18 @@ function NoteItem({
   );
 }
 
-export function Editor({ onNavigate }: { onNavigate: (view: View) => void }) {
+export function Editor({
+  lessonId,
+  onNavigate,
+}: {
+  lessonId: string;
+  onNavigate: (view: View) => void;
+}) {
   const { data, dispatch, snap } = useAula();
   const content = useContent();
   const ui = useUi();
   const { width, ref: rootRef } = useElementWidth();
   const layout = width >= 1100 ? 'wide' : width >= 700 ? 'mid' : 'narrow';
-  const lessonId = data.lessonId;
   const meta = lessonMeta(content, lessonId);
   const lesson = findLesson(content.bundle, lessonId);
   const pendingHere = hasPending(content, lessonId);

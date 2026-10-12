@@ -67,6 +67,33 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   expect(fake.headCommit()?.message).toMatch(/^Aula: /);
 });
 
+test('la clase viaja en la URL: enlace directo, Atrás del navegador y clase desconocida', async ({
+  page,
+}) => {
+  await unlock(page);
+  await page.setViewportSize({ width: 1500, height: 900 });
+  await page.goto('/#rol=docente&vista=editor&clase=funcion-cuadratica-2');
+  await expect(page.locator('.editor-lesson-title')).toHaveText('Función cuadrática (parte 2)');
+  // La barra lateral conserva la clase al cambiar de vista; Atrás vuelve a la vista anterior.
+  await page.getByRole('button', { name: 'Vista PDF' }).click();
+  await expect(page).toHaveURL(/vista=pdf&clase=funcion-cuadratica-2$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/vista=editor&clase=funcion-cuadratica-2$/);
+  await expect(page.locator('.editor-lesson-title')).toHaveText('Función cuadrática (parte 2)');
+  // Sin clase en el enlace se abre la última; una vista sin clase no la lleva.
+  await page.goto('/#rol=docente&vista=hoy');
+  await expect(page).toHaveURL(/vista=hoy&clase=funcion-cuadratica-2$/);
+  await page.getByRole('button', { name: 'Biblioteca de clases' }).click();
+  await expect(page).toHaveURL(/vista=biblioteca$/);
+  await expect(page.locator('.lesson-row', { hasText: 'Función cuadrática (parte 2)' })).toContainText(
+    'Última abierta',
+  );
+  // Una clase que no existe se reemplaza por la última abierta y se avisa.
+  await page.goto('/#rol=docente&vista=editor&clase=no-existe');
+  await expect(page.locator('.toast')).toContainText('No se encontró la clase «no-existe»');
+  await expect(page).toHaveURL(/vista=editor&clase=funcion-cuadratica-2$/);
+});
+
 test('editor: cambiar un título, revisar con content:check y descargar la copia ZIP', async ({ page }) => {
   await unlock(page);
   await connectFakeGitHub(page);

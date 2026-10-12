@@ -1,21 +1,26 @@
 import { MascotGallery } from '../app/MascotGallery';
 import { useContent } from '../content/ContentProvider';
 import { findLesson, writeSlides } from '../content/ops';
-import { useAula } from '../store/AulaProvider';
+import { routeHash } from '../app/routes';
 import { deckFor, editableSlides, slideFromTemplate } from '../store/deck';
 import type { View } from '../store/schema';
 
 /** Se conserva la galería del repositorio; la página solo adopta el estilo de la app. */
-export function GalleryView({ onNavigate }: { onNavigate: (view: View) => void }) {
-  const { data } = useAula();
+export function GalleryView({
+  lessonId,
+  onNavigate,
+}: {
+  lessonId: string;
+  onNavigate: (view: View) => void;
+}) {
   const content = useContent();
-  const deck = deckFor(content, data.lessonId);
+  const deck = deckFor(content, lessonId);
   return (
     <MascotGallery
-      returnHref={`#rol=docente&vista=presentar&clase=${data.lessonId}`}
+      returnHref={routeHash({ role: 'docente', view: 'presentar', lesson: lessonId, slide: null })}
       onReturn={() => onNavigate('presentar')}
       onUse={async (template) => {
-        const lesson = findLesson(content.bundle, data.lessonId);
+        const lesson = findLesson(content.bundle, lessonId);
         if (!content.canEdit)
           return 'Conecta la app con GitHub (Docente → Conexión) para agregar láminas.';
         if (!lesson)
@@ -24,7 +29,7 @@ export function GalleryView({ onNavigate }: { onNavigate: (view: View) => void }
         let id = template.id;
         for (let k = 2; slides.some((s) => s.id === id); k++) id = `${template.id}-${k}`;
         content.edit(
-          writeSlides(content.bundle, data.lessonId, [
+          writeSlides(content.bundle, lessonId, [
             ...slides,
             slideFromTemplate(template, id),
           ]),
