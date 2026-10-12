@@ -1,0 +1,216 @@
+/* Base de la interfaz: títulos, foco, marca, enlaces de vuelta y diálogos. */
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  background: var(--page);
+  color: var(--ink);
+}
+select,
+textarea {
+  font: inherit;
+}
+/* El reset de Tailwind deja los títulos sin peso; la interfaz los usa en negrita.
+   Las láminas y las plantillas conservan sus propios estilos (y el PDF no cambia). */
+:where(h1, h2, h3, b, strong):not(.slide *, .template-slide *) {
+  font-weight: 700;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 14px;
+}
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.app-loading {
+  margin: 0;
+  padding: 32px;
+  color: var(--muted);
+}
+
+/* Marca */
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+.app-brand-dot {
+  color: var(--ocre);
+}
+.app-brand-label {
+  margin-left: 10px;
+  font-size: 14px;
+  letter-spacing: 2.2px;
+  font-weight: 600;
+}
+.app-brand-sm {
+  font-size: 26px;
+}
+.app-brand-sm .app-brand-label {
+  margin-left: 8px;
+  letter-spacing: 2px;
+}
+.app-brand-md {
+  font-size: 32px;
+}
+.app-brand-lg {
+  font-size: 40px;
+  gap: 6px;
+}
+.app-brand-lg .app-brand-label {
+  margin-left: 14px;
+  letter-spacing: 2.5px;
+}
+
+/* Enlace para volver (acceso docente) */
+.link-back {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 650;
+  font-size: 15px;
+}
+
+/* Diálogos */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--backdrop);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.modal {
+  width: min(560px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--sh-dialog);
+}
+.modal:focus {
+  outline: none;
+}
+.modal h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.2;
+}
+.modal p {
+  margin: 0;
+}
+.modal.confirm {
+  width: min(460px, 100%);
+  gap: 12px;
+}
+.modal.confirm p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.modal-sheet {
+  place-items: end center;
+  padding: 0;
+}
+.modal-sheet .modal {
+  width: min(520px, 100%);
+  max-height: 78%;
+  border-radius: 20px 20px 0 0;
+  padding: 18px 16px 24px;
+  gap: 8px;
+}
+.modal-drawer {
+  place-items: stretch start;
+  padding: 0;
+}
+.modal-drawer .modal {
+  width: 520px;
+  max-width: 100%;
+  height: 100%;
+  max-height: none;
+  border-radius: 0;
+  border-right: 1px solid var(--line);
+  padding: 38px;
+  display: block;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: calc(100vw - 24px);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 10px 10px 18px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: var(--sh-pop);
+  font-size: 15px;
+  line-height: 1.4;
+  min-height: 52px;
+}
+.toast-icon {
+  color: #86d6ae;
+}
+.toast button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font-weight: 650;
+}
+/* Avisos y atajos de teclado no se imprimen. */
+@media print {
+  .toast,
+  .skip-link {
+    display: none !important;
+  }
+}

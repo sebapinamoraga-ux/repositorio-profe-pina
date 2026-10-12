@@ -3,7 +3,7 @@ import {
   reducer as presentationReducer,
   type Action as PresentationAction,
   type PresentationState,
-} from '../presentation/state';
+} from './presentation';
 
 /** Una papeleta por dispositivo: cambiar de alternativa reemplaza la anterior. */
 export interface VoteState {

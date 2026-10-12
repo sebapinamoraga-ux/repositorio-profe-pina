@@ -1,0 +1,168 @@
+/* Control remoto en el celular. */
+/* Celular: control remoto */
+.phone-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+.phone-strip {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: var(--page);
+  border-bottom: 1px solid var(--line-3);
+  font-size: 14px;
+  color: var(--muted);
+}
+.remote {
+  position: relative;
+  flex: 1;
+  min-height: 520px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+.remote-column {
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.remote-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.state-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid;
+}
+.state-pill > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.state-pill.is-ok {
+  color: var(--ok);
+  background: var(--ok-soft);
+  border-color: var(--ok-line);
+}
+.state-pill.is-ok > span {
+  background: var(--ok);
+}
+.state-pill.is-off {
+  color: var(--err);
+  background: var(--err-soft);
+  border-color: var(--err-line);
+}
+.state-pill.is-off > span {
+  border: 2px solid var(--err);
+}
+.remote-slide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.remote-slide .kicker-rule {
+  font-size: 14px;
+  gap: 14px;
+  letter-spacing: 2px;
+}
+.remote-slide .kicker-rule > span {
+  width: 36px;
+}
+.remote-slide h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  font-weight: 650;
+}
+.remote-slide p {
+  margin: 0;
+  font-size: 15px;
+}
+.step-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.step-dots span {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #dfe6ef;
+}
+.step-dots span.is-on {
+  background: var(--accent);
+}
+.remote-next {
+  flex: 1;
+  min-height: 160px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 650;
+  font-size: 22px;
+  box-shadow: 0 18px 40px #1f55cf40;
+}
+.remote-next:active:not(:disabled) {
+  transform: scale(0.985);
+}
+.remote-next:disabled,
+.remote-btn:disabled {
+  opacity: 0.4;
+}
+.remote-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+}
+.remote-btn {
+  min-height: 64px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sheet-head .caption {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

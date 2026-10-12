@@ -21,15 +21,15 @@ import {
   type AppRoute,
   type PrintRoute,
 } from './routes';
-import { Landing } from '../roles/Landing';
-import { Access } from '../roles/Access';
-import { TeacherShell } from '../teacher/TeacherShell';
+import { Landing } from '../features/entrada/Landing';
+import { Access } from '../features/entrada/Access';
+import { TeacherShell } from '../shell/TeacherShell';
 
 const Student = lazy(async () => ({
-  default: (await import('../student/Student')).Student,
+  default: (await import('../features/estudiante/Student')).Student,
 }));
 const Remote = lazy(async () => ({
-  default: (await import('../remote/Remote')).Remote,
+  default: (await import('../features/remoto/Remote')).Remote,
 }));
 
 function PrintRouteView({ print }: { print: PrintRoute }) {

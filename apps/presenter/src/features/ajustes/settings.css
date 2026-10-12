@@ -1,0 +1,18 @@
+/* Ajustes. */
+/* Ajustes */
+.settings-section {
+  display: grid;
+  gap: 12px;
+}
+.settings-section > p {
+  margin: 0;
+  line-height: 1.5;
+}
+.settings-title {
+  margin: 0;
+  font-size: 24px;
+}
+.settings-section .card h3 {
+  margin: 0;
+  font-size: 18px;
+}
