@@ -29,6 +29,7 @@ La asociación se expresa solo mediante el fondo. No cambia tipografía, color d
 - **Reducción:** ecuaciones verticales alineadas, signo de suma y línea de resultado; mostrar qué términos se cancelan antes de despejar. No comprimir todo en una línea de texto.
 - **Sustitución:** recorrido numerado Despejar → Reemplazar → Resolver. Relacionar visualmente la expresión despejada con su posición en la otra ecuación.
 - **Práctica:** sistema o pregunta a un lado y recorrido a otro. Mostrar modalidad y tiempo. No anticipar la solución en la mascota ni en la consigna.
+- **Lectura de expresiones:** tabla con nombre, expresión y un rasgo que se revela por fila; fichas piedra numeradas cuya muesca apunta al término, y una leyenda que recuerda su significado en contexto. Las fichas y la leyenda usan la familia piedra, no los tonos de asociación.
 - **Comparación como registro:** dos paneles simétricos, pasos equivalentes alineados y resultado compartido. Puede pasarse sin explicación oral; el documento mantiene el desarrollo.
 - **Cierre:** preguntar por el aprendizaje y por la experiencia con la presentación; no confundir reflexión con definición.
 

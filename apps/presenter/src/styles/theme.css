@@ -237,6 +237,12 @@ a {
 .columns > * {
   min-width: 0;
 }
+.columns-wide-izquierda {
+  grid-template-columns: 1.4fr 1fr;
+}
+.columns-wide-derecha {
+  grid-template-columns: 1fr 1.4fr;
+}
 .step {
   margin-top: 12px;
 }
@@ -265,6 +271,196 @@ a {
 .association-tone-4,
 .katex .asoc-4 {
   --association-soft: var(--association-4-soft);
+}
+/* Señal: ficha piedra cuya muesca apunta a lo que nombra. */
+.signal {
+  position: relative;
+  display: inline-block;
+}
+.signal-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.12em 0.55em 0.16em 0.4em;
+  border: 1px solid var(--stone-line);
+  border-radius: 10px;
+  background: var(--procedure-soft);
+  color: var(--ink);
+  font-size: 0.68em;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.signal-mark::after {
+  content: '';
+  position: absolute;
+  border: 9px solid transparent;
+}
+.signal-derecha .signal-mark {
+  margin-left: 1em;
+  vertical-align: middle;
+  border-left: 4px solid var(--procedure);
+}
+.signal-derecha .signal-mark::after {
+  top: 50%;
+  left: -14px;
+  margin-top: -9px;
+  border-right-color: var(--procedure);
+  border-left: none;
+}
+.signal-abajo {
+  padding-bottom: 1.75em;
+}
+.signal-arriba {
+  padding-top: 1.75em;
+}
+.signal-abajo .signal-mark,
+.signal-arriba .signal-mark {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.signal-abajo .signal-mark {
+  bottom: 0;
+  border-top: 4px solid var(--procedure);
+}
+.signal-arriba .signal-mark {
+  top: 0;
+  border-bottom: 4px solid var(--procedure);
+}
+.signal-abajo .signal-mark::after,
+.signal-arriba .signal-mark::after {
+  left: 50%;
+  margin-left: -9px;
+}
+.signal-abajo .signal-mark::after {
+  top: -14px;
+  border-bottom-color: var(--procedure);
+  border-top: none;
+}
+.signal-arriba .signal-mark::after {
+  bottom: -14px;
+  border-top-color: var(--procedure);
+  border-bottom: none;
+}
+.reference-number {
+  display: inline-block;
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  border-radius: 50%;
+  background: var(--procedure);
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1.15em;
+  text-align: center;
+}
+/* Semáforo de autoevaluación: cada luz alineada con su significado. */
+.traffic-light {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 8px 0 4px;
+}
+.traffic-light-housing {
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 22px;
+  background: #2b2f36;
+}
+.traffic-light-lamp {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+.lamp-rojo {
+  background: #d64545;
+}
+.lamp-amarillo {
+  background: #e8b21f;
+}
+.lamp-verde {
+  background: #2e9d5b;
+}
+/* Más específico que .slide ul y .slide li, para alinear cada texto con su luz. */
+.traffic-light .traffic-light-labels {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 14px 0;
+  list-style: none;
+}
+.traffic-light .traffic-light-labels li {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  min-height: 44px;
+  padding: 0;
+  line-height: 1.25;
+}
+/* Tabla de lectura: nombre, expresión y un rasgo que se revela por fila. */
+.reading-table {
+  width: 100%;
+  margin: 0 0 14px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.94em;
+}
+.reading-table thead th {
+  padding: 0 12px 8px 0;
+  border-bottom: 1px solid var(--stone-line);
+  color: var(--procedure);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 1.8px;
+  text-align: left;
+  text-transform: uppercase;
+}
+.reading-table tbody th,
+.reading-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid #e3ddd1;
+  text-align: left;
+  vertical-align: middle;
+}
+.reading-table tbody th {
+  font-weight: 650;
+}
+.reading-table td p {
+  margin: 0;
+}
+.reading-trait-cell {
+  width: 1%;
+  white-space: nowrap;
+}
+.reading-trait {
+  display: inline-block;
+  padding: 2px 14px 3px;
+  border: 1px solid var(--stone-line);
+  border-radius: 999px;
+  background: var(--procedure-soft);
+  font-size: 0.83em;
+  font-weight: 600;
+}
+.reading-legend {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 14px;
+  padding: 12px 18px;
+  border: 1px solid var(--stone-line);
+  border-radius: 14px;
+  background: var(--panel);
+  font-size: 0.77em;
+  line-height: 1.4;
+}
+.reading-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .association-inline,
 .katex [class*='asoc-'] {
@@ -377,6 +573,22 @@ a {
 }
 .graph-context .graph-caption {
   margin-top: -4px;
+}
+.graph-compact svg,
+.graph-context.graph-compact svg {
+  height: 298px;
+}
+/* Al reducirse el gráfico, sus textos crecen en el SVG para seguir legibles. */
+.graph-compact .graph-axis-label {
+  font-size: 26px;
+}
+.graph-compact .graph-axis-title,
+.graph-compact .graph-point-label,
+.graph-compact .graph-slope-label {
+  font-size: 28px;
+}
+.graph-compact .graph-caption {
+  font-size: 21px;
 }
 .graph-caption {
   display: flex;

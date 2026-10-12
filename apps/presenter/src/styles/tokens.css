@@ -139,4 +139,6 @@
   --err: var(--reflection);
   --err-soft: var(--reflection-soft);
   --err-line: var(--reflection-line);
+  /* Borde piedra de tarjetas y tablas en las láminas. */
+  --stone-line: var(--procedure-line);
 }
