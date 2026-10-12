@@ -3,8 +3,7 @@ import { FitSlide } from '../slides/FitSlide';
 import { SlideView } from '../slides/SlideView';
 import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
-import type { View } from '../store/schema';
-import { Button, buttonClass } from '../ui/Button';
+import { buttonClass } from '../ui/Button';
 
 /** PDF publicado por el workflow (publish:pdf), solo para clases con status published. */
 function usePublishedPdf(id: string, enabled: boolean) {
@@ -24,13 +23,8 @@ function usePublishedPdf(id: string, enabled: boolean) {
   return enabled ? url : null;
 }
 
-export function PdfView({
-  lessonId,
-  onNavigate,
-}: {
-  lessonId: string;
-  onNavigate: (view: View) => void;
-}) {
+/** Vista previa del PDF de la clase: una página por lámina, todo revelado. */
+export function PdfView({ lessonId }: { lessonId: string }) {
   const content = useContent();
   const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
@@ -45,16 +39,13 @@ export function PdfView({
     <main className="pdf-view">
       <header className="pdf-head">
         <div>
-          <b>Vista PDF con respuestas · {meta.title}</b>
+          <b>PDF con respuestas</b>
           <span>
             {slides.length} diapositivas, pasos y respuestas visibles, sin notas.
             Una página por diapositiva.
           </span>
         </div>
         <div className="row">
-          <Button onClick={() => onNavigate('presentar')}>
-            Volver a la clase
-          </Button>
           {published && (
             <a className={buttonClass()} href={published} download>
               Descargar PDF publicado

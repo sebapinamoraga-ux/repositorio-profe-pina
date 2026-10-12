@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { ActivitiesContext } from '../app/catalog';
 import { useRoute, useViewportWidth } from '../app/route';
-import { LESSON_VIEWS, type Navigate, type TeacherRoute } from '../app/routes';
+import { LESSON_VIEWS, teacherRoute, type Navigate, type TeacherRoute } from '../app/routes';
 import { useContent } from '../content/ContentProvider';
 import { useAula } from '../store/AulaProvider';
 import { lessonEntry, lessonMeta, type ContentView } from '../store/deck';
@@ -9,7 +9,7 @@ import type { View } from '../store/schema';
 import { Brand } from '../ui/Brand';
 import { useUi } from '../ui/UiProvider';
 import { SaveBar, SyncPill } from './SaveBar';
-import { Today } from './Today';
+import { LessonWorkspace } from './lesson/Workspace';
 import { Button } from '../ui/Button';
 
 const Library = lazy(async () => ({
@@ -18,17 +18,11 @@ const Library = lazy(async () => ({
 const Presenter = lazy(async () => ({
   default: (await import('./Presenter')).Presenter,
 }));
-const Editor = lazy(async () => ({
-  default: (await import('./Editor')).Editor,
-}));
 const Gallery = lazy(async () => ({
   default: (await import('./GalleryView')).GalleryView,
 }));
 const Courses = lazy(async () => ({
   default: (await import('./Courses')).Courses,
-}));
-const PdfView = lazy(async () => ({
-  default: (await import('./PdfView')).PdfView,
 }));
 const Activities = lazy(async () => ({
   default: (await import('./Activities')).Activities,
@@ -38,21 +32,18 @@ const Connection = lazy(async () => ({
 }));
 
 const NAV: [View, string][] = [
-  ['hoy', 'Clase de hoy'],
+  ['clase', 'Clase de hoy'],
   ['biblioteca', 'Biblioteca de clases'],
   ['presentar', 'Presentar'],
-  ['editor', 'Editor'],
   ['actividades', 'Actividades y PAES'],
   ['galeria', 'Galería de mascota'],
   ['cursos', 'Cursos e historial'],
-  ['pdf', 'Vista PDF'],
   ['conexion', 'Conexión'],
 ];
 const SHORT_NAV: [View, string][] = [
-  ['hoy', 'Hoy'],
+  ['clase', 'Hoy'],
   ['biblioteca', 'Clases'],
   ['presentar', 'Presentar'],
-  ['editor', 'Editor'],
   ['cursos', 'Cursos'],
 ];
 
@@ -167,31 +158,35 @@ export function TeacherShell({
   };
   const go: Navigate = (next, target) => {
     setAccount(false);
-    goTo({
-      role: 'docente',
-      view: next,
-      lesson: target?.lesson ?? (LESSON_VIEWS.has(next) ? lessonId : null),
-      slide: target?.slide ?? null,
-    });
+    goTo(
+      teacherRoute(next, {
+        lesson: target?.lesson ?? (LESSON_VIEWS.has(next) ? lessonId : null),
+        section: target?.section,
+        slide: target?.slide,
+      }),
+    );
   };
 
   const page = (() => {
     if (waiting) return <p className="app-loading">Cargando la clase…</p>;
     switch (view) {
-      case 'hoy':
-        return <Today lessonId={lessonId} onNavigate={go} />;
+      case 'clase':
+        return (
+          <LessonWorkspace
+            lessonId={lessonId}
+            section={route.section ?? 'resumen'}
+            slideId={route.slide}
+            onNavigate={go}
+          />
+        );
       case 'biblioteca':
         return <Library onNavigate={go} />;
       case 'presentar':
         return <Presenter key={lessonId} lessonId={lessonId} onNavigate={go} />;
-      case 'editor':
-        return <Editor key={lessonId} lessonId={lessonId} onNavigate={go} />;
       case 'galeria':
         return <Gallery lessonId={lessonId} onNavigate={go} />;
       case 'cursos':
         return <Courses onNavigate={go} />;
-      case 'pdf':
-        return <PdfView lessonId={lessonId} onNavigate={go} />;
       case 'actividades':
         return <Activities onNavigate={go} />;
       case 'conexion':
@@ -307,7 +302,7 @@ export function TeacherShell({
       <div
         id="contenido"
         tabIndex={-1}
-        className={`teacher-content ${view === 'presentar' || view === 'editor' ? 'is-fixed' : ''}`}
+        className={`teacher-content ${view === 'presentar' || view === 'clase' ? 'is-fixed' : ''}`}
       >
         {!presenting && <SaveBar onNavigate={go} />}
         <ActivitiesContext.Provider value={content.bundle.activities}>

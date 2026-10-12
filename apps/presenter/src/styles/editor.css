@@ -31,32 +31,6 @@
   border-right: 0;
   border-bottom: 1px solid var(--line);
 }
-.editor-list-head {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 16px 16px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: var(--paper);
-}
-.editor-list.is-mid .editor-list-head {
-  padding: 12px 10px 6px;
-}
-.editor-list.is-narrow .editor-list-head {
-  position: static;
-  justify-content: center;
-  flex: none;
-}
-.editor-list-head .btn {
-  margin-top: 6px;
-  align-self: flex-start;
-}
-.editor-lesson-title {
-  margin: 0;
-  font-weight: 650;
-}
 .editor-alert {
   flex: none;
   margin: 4px 12px 8px;
@@ -188,13 +162,7 @@
 .editor-list.is-narrow .editor-add {
   align-items: center;
 }
-/* Repaso del estudiante: segunda lista, separada por un borde. */
-.editor-repaso {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--line);
-}
+/* Encabezado de la lista del repaso del estudiante. */
 .editor-repaso-head {
   padding: 14px 16px 6px;
   display: grid;
@@ -216,11 +184,6 @@
 .editor-list.is-mid .new-slide {
   white-space: normal;
   line-height: 1.2;
-}
-.editor-list.is-narrow .editor-repaso {
-  flex-direction: row;
-  border-top: 0;
-  border-left: 1px solid var(--line);
 }
 .editor-list.is-narrow .editor-repaso-head {
   width: 220px;
