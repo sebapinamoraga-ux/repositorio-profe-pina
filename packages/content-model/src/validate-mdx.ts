@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { mascotPropsSchema, type Slide } from './index';
-import { missingParams, parseLiteral, type ParamValue } from './interactive-params';
+import {
+  missingParams,
+  parseLiteral,
+  type ParamValue,
+} from './interactive-params';
 
 // Recorrer el AST de MDX: nunca interpretar etiquetas con reemplazos de texto.
 const attributeSchema = z.object({
@@ -41,6 +45,12 @@ const components = new Set([
   'Cierre',
   'Columnas',
   'Paso',
+  'Senal',
+  'TablaLectura',
+  'FilaLectura',
+  'Leyenda',
+  'ItemLeyenda',
+  'Semaforo',
   'Formula',
   'PreguntaPAES',
   'GraficoSistema',
@@ -56,6 +66,22 @@ const components = new Set([
   'div',
   'span',
 ]);
+/** Atributo con el paso en que aparece cada componente que se revela. */
+const STEP_ATTRIBUTES: Partial<
+  Record<string, readonly { name: string; required: boolean }[]>
+> = {
+  Paso: [{ name: 'n', required: true }],
+  PreguntaPAES: [{ name: 'paso', required: true }],
+  Senal: [{ name: 'paso', required: true }],
+  FilaLectura: [{ name: 'paso', required: true }],
+  ItemLeyenda: [{ name: 'paso', required: false }],
+  GraficoFuncion: [
+    { name: 'pasoPendiente', required: false },
+    { name: 'pasoCorteY', required: false },
+    { name: 'pasoCurva', required: false },
+    { name: 'pasoReferencia', required: false },
+  ],
+};
 export function validateMdxTree(
   tree: unknown,
   slide: Slide,
@@ -73,7 +99,12 @@ export function validateMdxTree(
     )?.value;
     return typeof value === 'string' ? value : value?.value;
   };
-  function visit(value: unknown, inStep = false) {
+  function visit(
+    value: unknown,
+    inStep = false,
+    inReadingTable = false,
+    inLegend = false,
+  ) {
     const node = nodeSchema.parse(value);
     if (node.type === 'mdxjsEsm')
       throw new Error(
@@ -110,20 +141,89 @@ export function validateMdxTree(
         if (node.name === 'Asociacion' && tone === undefined)
           throw new Error('Asociacion requiere un tono literal de 1..4');
       }
-      if (node.name === 'Paso' || node.name === 'PreguntaPAES') {
-        const name = node.name === 'Paso' ? 'n' : 'paso';
-        const attr = attributes.find((a) => a.name === name)?.value;
-        const raw = typeof attr === 'string' ? attr : attr?.value;
-        const n = raw === undefined && name === 'paso' ? 1 : Number(raw);
+      for (const stepAttribute of STEP_ATTRIBUTES[node.name] ?? []) {
+        const raw = literalAttribute(attributes, stepAttribute.name);
+        if (raw === undefined && !stepAttribute.required) continue;
+        // Una pregunta sin respuesta en la lámina no ocupa pasos.
+        if (
+          node.name === 'PreguntaPAES' &&
+          literalAttribute(attributes, 'mostrarRespuesta') === 'false'
+        )
+          continue;
+        const n =
+          raw === undefined && node.name === 'PreguntaPAES' ? 1 : Number(raw);
         if (!Number.isInteger(n) || n < 1 || n > slide.steps)
           throw new Error(`Paso ${String(raw)} fuera de 1..${slide.steps}`);
         steps.add(n);
-        if (node.name === 'Paso' && inStep)
-          throw new Error('No anidar bloques Paso');
       }
+      if (node.name === 'Paso' && inStep)
+        throw new Error('No anidar bloques Paso');
+      if (node.name === 'Senal') {
+        const posicion = literalAttribute(attributes, 'posicion');
+        if (
+          posicion !== undefined &&
+          posicion !== 'derecha' &&
+          posicion !== 'abajo' &&
+          posicion !== 'arriba'
+        )
+          throw new Error(
+            `Senal requiere posicion derecha, abajo o arriba: ${posicion}`,
+          );
+        if (!literalAttribute(attributes, 'texto'))
+          throw new Error('Senal requiere un texto literal');
+      }
+      if (node.name === 'Senal' || node.name === 'ItemLeyenda') {
+        const raw = literalAttribute(attributes, 'numero');
+        const required = node.name === 'ItemLeyenda';
+        if (
+          (raw !== undefined || required) &&
+          !(Number.isInteger(Number(raw)) && Number(raw) >= 1)
+        )
+          throw new Error(`${node.name} requiere un numero entero positivo`);
+      }
+      if (node.name === 'Columnas') {
+        const amplia = literalAttribute(attributes, 'amplia');
+        if (
+          amplia !== undefined &&
+          amplia !== 'izquierda' &&
+          amplia !== 'derecha'
+        )
+          throw new Error(
+            `Columnas acepta amplia="izquierda" o "derecha": ${amplia}`,
+          );
+      }
+      if (
+        node.name === 'Semaforo' &&
+        ['rojo', 'amarillo', 'verde'].some(
+          (luz) => !literalAttribute(attributes, luz),
+        )
+      )
+        throw new Error('Semaforo requiere rojo, amarillo y verde literales');
+      if (node.name === 'TablaLectura') {
+        const headers = literalAttribute(attributes, 'encabezados') ?? '';
+        if (headers.split('|').filter((h) => h.trim()).length !== 3)
+          throw new Error(
+            'TablaLectura requiere tres encabezados separados por |',
+          );
+      }
+      if (node.name === 'FilaLectura') {
+        if (!inReadingTable)
+          throw new Error('FilaLectura va dentro de TablaLectura');
+        if (
+          !literalAttribute(attributes, 'nombre') ||
+          !literalAttribute(attributes, 'rasgo')
+        )
+          throw new Error('FilaLectura requiere nombre y rasgo literales');
+      }
+      if (node.name === 'ItemLeyenda' && !inLegend)
+        throw new Error('ItemLeyenda va dentro de Leyenda');
       if (node.name === 'GraficoFuncion') {
         const tipo = literalAttribute(attributes, 'tipo');
-        if (tipo !== 'afin' && tipo !== 'cuadratica' && tipo !== 'circunferencia')
+        if (
+          tipo !== 'afin' &&
+          tipo !== 'cuadratica' &&
+          tipo !== 'circunferencia'
+        )
           throw new Error(
             `GraficoFuncion requiere tipo afin, cuadratica o circunferencia: ${tipo ?? ''}`,
           );
@@ -132,11 +232,14 @@ export function validateMdxTree(
       if (node.name !== 'PreguntaPAES' && node.name !== 'MascotaProfePina') {
         const values: Record<string, ParamValue> = {};
         for (const attr of attributes) {
-          const raw = typeof attr.value === 'string' ? attr.value : attr.value?.value;
+          const raw =
+            typeof attr.value === 'string' ? attr.value : attr.value?.value;
           const value = parseLiteral(attr.value) ?? raw;
           if (attr.name && value !== undefined) values[attr.name] = value;
         }
-        const present = new Set(attributes.flatMap((attr) => (attr.name ? [attr.name] : [])));
+        const present = new Set(
+          attributes.flatMap((attr) => (attr.name ? [attr.name] : [])),
+        );
         const missing = missingParams(node.name, present, values);
         if (missing[0])
           throw new Error(`${node.name} requiere el atributo ${missing[0]}`);
@@ -166,7 +269,12 @@ export function validateMdxTree(
       }
     }
     for (const child of node.children ?? [])
-      visit(child, inStep || node.name === 'Paso');
+      visit(
+        child,
+        inStep || node.name === 'Paso',
+        inReadingTable || node.name === 'TablaLectura',
+        inLegend || node.name === 'Leyenda',
+      );
   }
   visit(tree);
   for (let n = 1; n <= slide.steps; n++)

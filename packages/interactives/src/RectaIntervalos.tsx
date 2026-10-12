@@ -3,7 +3,10 @@ import { marcasEje } from './function-graph';
 import { parsearIntervalo } from './interval';
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(value);
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 })
+    .format(value)
+    // Un cálculo puede dejar un cero negativo: se escribe 0, no «-0».
+    .replace(/^-(0(,0*)?)$/, '$1');
 
 /** Recta numérica estática con uno o dos intervalos; los intervalos pertenecen al contenido. */
 export function RectaIntervalos({

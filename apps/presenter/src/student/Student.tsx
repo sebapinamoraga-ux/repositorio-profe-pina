@@ -6,7 +6,7 @@ import { katexOptions } from '@aula/content-model';
 import { activities, catalog } from '../app/catalog';
 import { mascotGallery } from '../app/gallery';
 import { mascotUrl } from '../app/mascot-assets';
-import { readRoute, useOnline } from '../app/route';
+import { readRoute, useOnline, useRoute } from '../app/route';
 import { useAula } from '../store/AulaProvider';
 import { pad2, PHASE_NAMES, repoDeck } from '../store/deck';
 import { queueKey, resolveQueued, type QueuedVote } from '../store/live';
@@ -70,6 +70,11 @@ export function Student({ onChangeRole }: { onChangeRole: () => void }) {
       ? live.lessonId
       : (catalog[0]?.meta.id ?? '');
   });
+  // La URL sigue a la clase elegida: un enlace o una recarga abre la misma.
+  const { replace } = useRoute();
+  useEffect(() => {
+    replace({ clase: lessonId || null });
+  }, [lessonId, replace]);
   const deck = useMemo(() => repoDeck(lessonId), [lessonId]);
   // Las láminas de repaso siguen a las de la clase y solo existen en el celular.
   const slides = useMemo(() => [...(deck?.slides ?? []), ...(deck?.repaso ?? [])], [deck]);

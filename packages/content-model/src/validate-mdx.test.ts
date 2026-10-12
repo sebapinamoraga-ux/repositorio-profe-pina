@@ -202,3 +202,205 @@ it('exige los atributos de GraficoComparacion y RectaIntervalos', () => {
     ),
   ).toThrow('xMin');
 });
+it('cuenta la señal como paso y valida su posición y texto', () => {
+  const senal = (attrs: Record<string, string | { value: string }>) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxTextElement',
+        name: 'Senal',
+        attributes: Object.entries(attrs).map(([name, value]) => ({
+          type: 'mdxJsxAttribute',
+          name,
+          value,
+        })),
+      },
+    ],
+  });
+  expect(() =>
+    validateMdxTree(
+      senal({ paso: { value: '1' }, texto: 'pendiente', posicion: 'abajo' }),
+      slide,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(senal({ paso: { value: '2' }, texto: 'afín' }), slide),
+  ).toThrow('fuera de 1..1');
+  expect(() => validateMdxTree(senal({ texto: 'afín' }), slide)).toThrow(
+    'fuera de 1..1',
+  );
+  expect(() =>
+    validateMdxTree(
+      senal({ paso: { value: '1' }, texto: 'afín', posicion: 'izquierda' }),
+      slide,
+    ),
+  ).toThrow('posicion');
+  expect(() => validateMdxTree(senal({ paso: { value: '1' } }), slide)).toThrow(
+    'texto',
+  );
+});
+it('valida la tabla de lectura y la leyenda numerada', () => {
+  const el = (
+    name: string,
+    attrs: Record<string, string | { value: string }>,
+    children: unknown[] = [],
+  ) => ({
+    type: 'mdxJsxFlowElement',
+    name,
+    attributes: Object.entries(attrs).map(([key, value]) => ({
+      type: 'mdxJsxAttribute',
+      name: key,
+      value,
+    })),
+    children,
+  });
+  const fila = el('FilaLectura', {
+    nombre: 'Base',
+    rasgo: 'afín',
+    paso: { value: '1' },
+  });
+  const tabla = (headers: string, rows: unknown[] = [fila]) =>
+    el('TablaLectura', { encabezados: headers }, rows);
+  const root = (...children: unknown[]) => ({ type: 'root', children });
+  expect(() =>
+    validateMdxTree(root(tabla('Plan|Expresión|Tipo')), slide),
+  ).not.toThrow();
+  expect(() => validateMdxTree(root(tabla('Plan|Tipo')), slide)).toThrow(
+    'tres encabezados',
+  );
+  expect(() => validateMdxTree(root(fila), slide)).toThrow(
+    'dentro de TablaLectura',
+  );
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo', [
+          el('FilaLectura', { nombre: 'Base', paso: { value: '1' } }),
+        ]),
+      ),
+      slide,
+    ),
+  ).toThrow('nombre y rasgo');
+  const item = (attrs: Record<string, string | { value: string }>) =>
+    root(
+      tabla('Plan|Expresión|Tipo'),
+      el('Leyenda', {}, [el('ItemLeyenda', attrs)]),
+    );
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('Leyenda', {}, [el('ItemLeyenda', { numero: { value: '1' } })]),
+      ),
+      slide,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(item({ numero: { value: '0' } }), slide),
+  ).toThrow('numero');
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('ItemLeyenda', { numero: { value: '1' } }),
+      ),
+      slide,
+    ),
+  ).toThrow('dentro de Leyenda');
+  expect(() =>
+    validateMdxTree(
+      root(
+        tabla('Plan|Expresión|Tipo'),
+        el('Leyenda', {}, [
+          el('ItemLeyenda', { numero: { value: '1' }, paso: { value: '2' } }),
+        ]),
+      ),
+      slide,
+    ),
+  ).toThrow('fuera de 1..1');
+});
+it('cuenta los pasos opcionales del gráfico de función', () => {
+  const grafico = (pasoPendiente: string) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'GraficoFuncion',
+        attributes: [
+          ['tipo', 'afin'],
+          ['m', { value: '1' }],
+          ['n', { value: '0' }],
+          ['xMin', { value: '0' }],
+          ['xMax', { value: '4' }],
+          ['yMin', { value: '0' }],
+          ['yMax', { value: '4' }],
+          ['pendienteEn', { value: '0' }],
+          ['pasoPendiente', { value: pasoPendiente }],
+          ['etiqueta', 'f'],
+          ['descripcion', 'Recta f.'],
+        ].map(([name, value]) => ({ type: 'mdxJsxAttribute', name, value })),
+      },
+    ],
+  });
+  expect(() => validateMdxTree(grafico('1'), slide)).not.toThrow();
+  expect(() => validateMdxTree(grafico('2'), slide)).toThrow('fuera de 1..1');
+});
+it('una pregunta sin respuesta no ocupa pasos y Columnas valida su ancho', () => {
+  const pregunta = {
+    type: 'mdxJsxFlowElement',
+    name: 'PreguntaPAES',
+    attributes: [
+      { type: 'mdxJsxAttribute', name: 'id', value: 'q' },
+      {
+        type: 'mdxJsxAttribute',
+        name: 'mostrarRespuesta',
+        value: { value: 'false' },
+      },
+    ],
+  };
+  const sinPasos = { ...slide, steps: 0, activities: ['q'] };
+  expect(() =>
+    validateMdxTree({ type: 'root', children: [pregunta] }, sinPasos),
+  ).not.toThrow();
+  const columnas = (amplia: string) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'Columnas',
+        attributes: [
+          { type: 'mdxJsxAttribute', name: 'amplia', value: amplia },
+        ],
+      },
+    ],
+  });
+  expect(() =>
+    validateMdxTree(columnas('izquierda'), { ...slide, steps: 0 }),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(columnas('centro'), { ...slide, steps: 0 }),
+  ).toThrow('amplia');
+});
+it('exige las tres luces del semáforo', () => {
+  const semaforo = (luces: string[]) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'Semaforo',
+        attributes: luces.map((name) => ({
+          type: 'mdxJsxAttribute',
+          name,
+          value: 'texto',
+        })),
+      },
+    ],
+  });
+  const sinPasos = { ...slide, steps: 0 };
+  expect(() =>
+    validateMdxTree(semaforo(['rojo', 'amarillo', 'verde']), sinPasos),
+  ).not.toThrow();
+  expect(() => validateMdxTree(semaforo(['rojo', 'verde']), sinPasos)).toThrow(
+    'Semaforo',
+  );
+});

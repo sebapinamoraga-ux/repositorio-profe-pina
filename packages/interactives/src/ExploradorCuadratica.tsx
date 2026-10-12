@@ -9,7 +9,10 @@ import {
 } from './function-graph';
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 }).format(value);
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 2 })
+    .format(value)
+    // Un cálculo puede dejar un cero negativo: se escribe 0, no «-0».
+    .replace(/^-(0(,0*)?)$/, '$1');
 
 /** Con a = 0 la expresión deja de ser cuadrática y se dibuja la recta bx + c. */
 const curvaDe = (a: number, b: number, c: number): Curva =>
