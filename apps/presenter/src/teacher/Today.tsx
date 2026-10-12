@@ -6,6 +6,8 @@ import { useAula } from '../store/AulaProvider';
 import { deckFor, pad2 } from '../store/deck';
 import type { View } from '../store/schema';
 import { nowParts, pendingNotes } from '../store/teacher';
+import { Button } from '../ui/Button';
+import { Card, Page, PageHeader } from '../ui/Layout';
 
 const MARK_LABEL = {
   lista: 'lista',
@@ -51,36 +53,35 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
   };
 
   return (
-    <main className="page page-grid-bg">
-      <div className="page-inner page-today">
-        <header>
-          <div className="today-kicker">
-            <p className="kicker">
-              Clase de hoy · {MARK_LABEL[entry?.status ?? 'por-preparar']}
-            </p>
-            <button
-              type="button"
-              className="btn btn-small btn-link"
-              onClick={() => onNavigate('biblioteca')}
-            >
+    <Page width="medium" grid>
+        <PageHeader
+          kicker={`Clase de hoy · ${MARK_LABEL[entry?.status ?? 'por-preparar']}`}
+          kickerAction={
+            <Button variant="quiet" size="sm" onClick={() => onNavigate('biblioteca')}>
               Cambiar clase
-            </button>
-          </div>
-          <h1 className="page-title">{meta.title}</h1>
-          <div className="chips">
-            <span>{meta.duration} minutos</span>
-            <span>PAES {meta.subject.toUpperCase()}</span>
-            <span>{meta.axis}</span>
-            <span>{slides.length} láminas</span>
-          </div>
-        </header>
+            </Button>
+          }
+          title={meta.title}
+          meta={
+            <>
+              <span>{meta.duration} minutos</span>
+              <span>PAES {meta.subject.toUpperCase()}</span>
+              <span>{meta.axis}</span>
+              <span>{slides.length} láminas</span>
+            </>
+          }
+        />
         <div className={`today-grid ${width >= 1200 ? 'is-wide' : ''}`}>
           <div className="stack">
-            <section className="tab-card tone-objective">
-              <p className="tab-label">
-                <Lightbulb size={20} aria-hidden="true" />
-                Objetivos
-              </p>
+            <Card
+              tone="objetivo"
+              tab={
+                <>
+                  <Lightbulb size={20} aria-hidden="true" />
+                  Objetivos
+                </>
+              }
+            >
               {meta.objectives.length ? (
                 <ul>
                   {meta.objectives.map((objective) => (
@@ -90,10 +91,9 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
               ) : (
                 <p className="muted">Aún no tiene objetivo.</p>
               )}
-            </section>
+            </Card>
             {hasTramos ? (
-              <section className="card">
-                <h2 className="card-title">Tramos de la clase</h2>
+              <Card title="Tramos de la clase">
                 <ol className="tramos">
                   {meta.tramos.map((tramo) => {
                     const from = indexOf(tramo.from);
@@ -131,27 +131,21 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
                     );
                   })}
                 </ol>
-              </section>
+              </Card>
             ) : (
-              <section className="card card-dashed">
-                <h2 className="card-title">Clase en preparación</h2>
+              <Card variant="dashed" title="Clase en preparación">
                 <p className="muted">
                   Aún no tiene tramos con minutos. Completa sus láminas en el
                   editor antes de proyectarla.
                 </p>
-                <button
-                  type="button"
-                  className="btn btn-ink"
-                  onClick={() => onNavigate('editor')}
-                >
+                <Button variant="primary" onClick={() => onNavigate('editor')}>
                   Abrir en editor
-                </button>
-              </section>
+                </Button>
+              </Card>
             )}
           </div>
           <div className="stack">
-            <section className="card card-raised start-card">
-              <h2 className="card-title">Iniciar la clase</h2>
+            <Card variant="emphasis" title="Iniciar la clase">
               <label className="field">
                 Curso
                 <select
@@ -169,34 +163,27 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
                   ))}
                 </select>
               </label>
-              <button
-                type="button"
-                className="btn btn-accent btn-large"
-                disabled={!slides.length}
-                onClick={start}
-              >
+              <Button variant="present" size="lg" block disabled={!slides.length} onClick={start}>
                 {session ? 'Continuar la clase en curso' : 'Iniciar clase y proyectar'}
-              </button>
-              <button
-                type="button"
-                className="btn"
-                disabled={!slides.length}
-                onClick={() => onNavigate('pdf')}
-              >
+              </Button>
+              <Button block disabled={!slides.length} onClick={() => onNavigate('pdf')}>
                 Descargar PDF antes de la clase
-              </button>
+              </Button>
               <p className="hint">
                 ← → Pasos · M Índice · F Pantalla completa · N Anotar. Los
                 botones también funcionan en pantalla táctil.
               </p>
-            </section>
+            </Card>
             {notes.length > 0 && (
-              <section aria-label="Comentarios pendientes" className="card card-note">
-                <h2 className="card-title">
-                  {notes.length === 1
+              <Card
+                aria-label="Comentarios pendientes"
+                variant="note"
+                title={
+                  notes.length === 1
                     ? '1 comentario pendiente de clases anteriores'
-                    : `${notes.length} comentarios pendientes de clases anteriores`}
-                </h2>
+                    : `${notes.length} comentarios pendientes de clases anteriores`
+                }
+              >
                 <ul>
                   {notes.slice(0, 3).map((note) => {
                     const k = note.slideId ? indexOf(note.slideId) : -1;
@@ -214,30 +201,24 @@ export function Today({ onNavigate }: { onNavigate: (view: View) => void }) {
                     );
                   })}
                 </ul>
-                <button
-                  type="button"
-                  className="btn btn-note"
-                  onClick={() => onNavigate('editor')}
-                >
+                <Button size="sm" onClick={() => onNavigate('editor')}>
                   {notes.length > 3
                     ? `Ver los ${notes.length} en el editor`
                     : 'Revisar en el editor'}
-                </button>
-              </section>
+                </Button>
+              </Card>
             )}
             {meta.prerequisites.length > 0 && (
-              <section className="card card-paper">
-                <h2 className="card-title small">Conocimientos previos</h2>
+              <Card variant="quiet" title="Conocimientos previos" titleSize="sm">
                 <ul className="muted">
                   {meta.prerequisites.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-              </section>
+              </Card>
             )}
           </div>
         </div>
-      </div>
-    </main>
+    </Page>
   );
 }

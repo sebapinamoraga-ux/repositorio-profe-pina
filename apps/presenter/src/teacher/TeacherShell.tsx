@@ -8,6 +8,7 @@ import { Brand } from '../ui/Brand';
 import { useUi } from '../ui/UiProvider';
 import { SaveBar, SyncPill } from './SaveBar';
 import { Today } from './Today';
+import { Button } from '../ui/Button';
 
 const Library = lazy(async () => ({
   default: (await import('./Library')).Library,
@@ -78,12 +79,12 @@ function Account({
       </div>
       <SyncPill />
       <div className="account-actions">
-        <button type="button" className="btn btn-paper" onClick={onChangeRole}>
+        <Button size="sm" onClick={onChangeRole}>
           Cambiar rol
-        </button>
-        <button type="button" className="btn btn-paper" onClick={onLock}>
+        </Button>
+        <Button size="sm" onClick={onLock}>
           Bloquear
-        </button>
+        </Button>
       </div>
     </>
   );

@@ -7,6 +7,8 @@ import {
 } from '@aula/content-model';
 import { mascotGallery } from './gallery';
 import { mascotUrl } from './mascot-assets';
+import { Button, buttonClass } from '../ui/Button';
+import { Page, PageHeader } from '../ui/Layout';
 
 const presenceNames: Record<MascotPresence, string> = {
   sutil: 'Sutil',
@@ -123,50 +125,48 @@ export function MascotGallery({
     visible.find((template) => template.id === selectedId) ?? visible[0];
 
   return (
-    <main className="template-gallery">
-      <header className="gallery-header">
-        <a
-          className="gallery-back"
-          href={returnHref}
-          onClick={(event) => {
-            if (!onReturn) return;
-            event.preventDefault();
-            onReturn();
-          }}
-        >
-          <ArrowLeft size={20} aria-hidden="true" /> Volver a la clase
-        </a>
-        <div>
-          <p className="gallery-kicker">
-            Sistema de plantillas · versión {mascotGallery.version}
-          </p>
-          <h1>Presencia de Profe Piña</h1>
-          <p>
-            {mascotGallery.templates.length} plantillas reutilizables para
-            distintos momentos de matemática y física.
-          </p>
-        </div>
-      </header>
+    <Page width="wide" grid>
+      <PageHeader
+        kicker={`Sistema de plantillas · versión ${mascotGallery.version}`}
+        title="Presencia de Profe Piña"
+        lead={`${mascotGallery.templates.length} plantillas reutilizables para distintos momentos de matemática y física.`}
+        actions={
+          <a
+            className={buttonClass({ variant: 'quiet' })}
+            href={returnHref}
+            onClick={(event) => {
+              if (!onReturn) return;
+              event.preventDefault();
+              onReturn();
+            }}
+          >
+            <ArrowLeft size={20} aria-hidden="true" /> Volver a la clase
+          </a>
+        }
+      />
 
       <nav
         className="gallery-filters"
         aria-label="Filtrar por nivel de presencia"
       >
-        <span>
-          <Filter size={17} /> Nivel
+        <span className="gallery-filter-label">
+          <Filter size={17} aria-hidden="true" /> Nivel
         </span>
-        {(['todas', 'sutil', 'pedagogica', 'marca'] as const).map((item) => (
-          <button
-            key={item}
-            type="button"
-            aria-pressed={presence === item}
-            onClick={() => setPresence(item)}
-          >
-            {item === 'todas' ? 'Todas' : presenceNames[item]}
-          </button>
-        ))}
-        <label>
-          Momento de clase{' '}
+        <div className="pill-group">
+          {(['todas', 'sutil', 'pedagogica', 'marca'] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              className="pill"
+              aria-pressed={presence === item}
+              onClick={() => setPresence(item)}
+            >
+              {item === 'todas' ? 'Todas' : presenceNames[item]}
+            </button>
+          ))}
+        </div>
+        <label className="field gallery-phase">
+          Momento de clase
           <select
             value={phase}
             onChange={(event) => setPhase(event.target.value)}
@@ -208,20 +208,16 @@ export function MascotGallery({
             </dl>
             <div className="gallery-actions">
               <a
-                className="gallery-download"
+                className={buttonClass({ variant: 'primary' })}
                 download={`${selected.id}.mdx`}
                 href={`data:text/plain;charset=utf-8,${encodeURIComponent(mascotTemplateMdx(selected))}`}
               >
                 Descargar plantilla
               </a>
               {onUse && (
-                <button
-                  type="button"
-                  className="gallery-use"
-                  onClick={() => void onUse(selected).then(setAdded)}
-                >
+                <Button onClick={() => void onUse(selected).then(setAdded)}>
                   Agregar a la clase
-                </button>
+                </Button>
               )}
             </div>
             <p className="gallery-instructions">
@@ -266,6 +262,6 @@ export function MascotGallery({
           </button>
         ))}
       </section>
-    </main>
+    </Page>
   );
 }

@@ -3,6 +3,8 @@ import { useContent } from '../content/ContentProvider';
 import { DEFAULT_BRANCH, DEFAULT_REPO } from '../content/storage';
 import type { View } from '../store/schema';
 import { useUi } from '../ui/UiProvider';
+import { Button } from '../ui/Button';
+import { Card, Notice, Page, PageHeader } from '../ui/Layout';
 
 const NEW_TOKEN_URL = 'https://github.com/settings/personal-access-tokens/new';
 
@@ -57,17 +59,14 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
   };
 
   return (
-    <main className="page">
-      <div className="page-inner connection">
-        <p className="kicker">Conexión</p>
-        <h1 className="page-title">Contenido en GitHub</h1>
-        <p className="page-lead">
-          Las clases, actividades y la planificación viven en el repositorio. Al conectar
-          este dispositivo, la app lee la versión al día (incluidos los borradores) y cada
-          «Guardar» crea un commit; el sitio público se actualiza en unos minutos.
-        </p>
+    <Page width="narrow">
+        <PageHeader
+          kicker="Conexión"
+          title="Contenido en GitHub"
+          lead="Las clases, actividades y la planificación viven en el repositorio. Al conectar este dispositivo, la app lee la versión al día (incluidos los borradores) y cada «Guardar» crea un commit; el sitio público se actualiza en unos minutos."
+        />
         {connection ? (
-          <section className="card connection-card" aria-label="Estado de la conexión">
+          <Card aria-label="Estado de la conexión">
             <p>
               <b>Repositorio:</b> {connection.repo} · rama {connection.branch}
             </p>
@@ -88,19 +87,19 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
               {snapshot && <span className="muted"> · commit {snapshot.commit.slice(0, 7)}</span>}
             </p>
             <div className="row">
-              <button type="button" className="btn btn-small" onClick={() => void content.refresh()}>
+              <Button size="sm" onClick={() => void content.refresh()}>
                 Actualizar ahora
-              </button>
-              <button type="button" className="btn btn-small" onClick={() => onNavigate('biblioteca')}>
+              </Button>
+              <Button size="sm" onClick={() => onNavigate('biblioteca')}>
                 Ir a la biblioteca
-              </button>
-              <button type="button" className="btn btn-small btn-danger-soft" onClick={() => void disconnect()}>
+              </Button>
+              <Button variant="danger" size="sm" onClick={() => void disconnect()}>
                 Desconectar este dispositivo
-              </button>
+              </Button>
             </div>
-          </section>
+          </Card>
         ) : (
-          <form className="card connection-card" onSubmit={(event) => void submit(event)}>
+          <Card as="form" onSubmit={(event) => void submit(event)}>
             <label className="field">
               Repositorio (usuario/nombre)
               <input value={repo} onChange={(event) => setRepo(event.target.value)} />
@@ -120,18 +119,18 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
               />
             </label>
             {error && (
-              <p role="alert" className="alert alert-error small">
+              <Notice role="alert" tone="error" className="small">
                 {error}
-              </p>
+              </Notice>
             )}
             <div className="row">
-              <button type="submit" className="btn btn-ink" disabled={busy || !token.trim()}>
+              <Button type="submit" variant="primary" disabled={busy || !token.trim()}>
                 {busy ? 'Comprobando…' : 'Conectar'}
-              </button>
+              </Button>
             </div>
-          </form>
+          </Card>
         )}
-        <section className="card" aria-label="Cómo crear el token">
+        <Card aria-label="Cómo crear el token">
           <h2>Cómo crear el token (una vez por dispositivo)</h2>
           <ol className="steps-list">
             <li>
@@ -156,8 +155,7 @@ export function Connection({ onNavigate }: { onNavigate: (view: View) => void })
             El token queda solo en este navegador. Si pierdes el dispositivo, revócalo en
             GitHub. Tus cursos, sesiones y notas no se suben al repositorio.
           </p>
-        </section>
-      </div>
-    </main>
+        </Card>
+    </Page>
   );
 }

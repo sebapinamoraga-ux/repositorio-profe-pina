@@ -1,7 +1,4 @@
 /* Cursos e historial */
-.page-courses {
-  max-width: 1300px;
-}
 .stack-tight {
   display: grid;
   gap: 6px;
@@ -15,7 +12,7 @@
 .active-session.is-wide {
   grid-template-columns: minmax(0, 1fr) auto;
 }
-.active-session .tab-label {
+.active-session .card-tab {
   margin-bottom: 8px;
 }
 .active-title {
@@ -29,12 +26,6 @@
 .active-session .field textarea {
   background: var(--panel);
   border-color: var(--ok-line);
-}
-.btn-ok {
-  background: var(--ok);
-  border-color: var(--ok);
-  color: #fff;
-  font-weight: 650;
 }
 .course-grid {
   display: grid;
@@ -155,9 +146,6 @@
 }
 
 /* Galería de mascota: misma lógica, estilo de la app */
-.template-gallery {
-  min-height: 100%;
-}
 
 .gallery-actions {
   display: flex;
@@ -165,25 +153,28 @@
   gap: 10px;
   margin: 16px 0 8px;
 }
-.gallery-actions .gallery-download {
-  margin: 0;
+.gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: end;
 }
-.gallery-use {
-  padding: 12px 16px;
+.gallery-filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  color: var(--muted);
+  font-weight: 650;
+}
+.gallery-phase select {
+  min-height: 40px;
+  padding: 0 10px;
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--ink);
-}
-.gallery-use:hover {
-  border-color: var(--accent);
 }
 .gallery-added {
   margin: 10px 0 0;
   color: var(--ok);
   font-weight: 650;
   font-size: 15px;
-}
-.gallery-back {
-  min-height: 44px;
 }

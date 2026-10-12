@@ -5,6 +5,7 @@ import { useAula } from '../store/AulaProvider';
 import { useContent } from '../content/ContentProvider';
 import { deckFor } from '../store/deck';
 import type { View } from '../store/schema';
+import { Button, buttonClass } from '../ui/Button';
 
 /** PDF publicado por el workflow (publish:pdf), solo para clases con status published. */
 function usePublishedPdf(id: string, enabled: boolean) {
@@ -47,15 +48,15 @@ export function PdfView({ onNavigate }: { onNavigate: (view: View) => void }) {
           </span>
         </div>
         <div className="row">
-          <button type="button" className="btn" onClick={() => onNavigate('presentar')}>
+          <Button onClick={() => onNavigate('presentar')}>
             Volver a la clase
-          </button>
+          </Button>
           {published && (
-            <a className="btn btn-accent" href={published} download>
+            <a className={buttonClass()} href={published} download>
               Descargar PDF publicado
             </a>
           )}
-          <a className="btn btn-ink" href={printHref} target="_blank" rel="noreferrer">
+          <a className={buttonClass({ variant: 'primary' })} href={printHref} target="_blank" rel="noreferrer">
             Imprimir o guardar PDF
           </a>
         </div>

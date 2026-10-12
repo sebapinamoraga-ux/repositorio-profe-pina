@@ -1,0 +1,144 @@
+/* Variables de diseño únicas para la app, las láminas y la lectura del estudiante.
+   Familias pedagógicas (docs/visual-language.md): azul definición, violeta objetivo, piedra
+   procedimiento, ocre práctica y error, verde comprobación, rosa reflexión. Los roles de la
+   interfaz (acento, aviso, éxito, error) son alias de esas familias. Los temas oscuro y de alto
+   contraste solo cambian valores: los nombres son los mismos en toda la app. */
+:root {
+  /* Superficies */
+  --page: #f4f0e7;
+  --paper: #fbf8f1;
+  --panel: #fffdfa;
+  --editor-bg: #eee9df;
+  /* Texto */
+  --ink: #17223b;
+  --muted: #52606d;
+  --detail: #6f6659;
+  --on-accent: #ffffff;
+  --focus: #1746a2;
+  /* Líneas */
+  --line: #b8c6d7;
+  --line-2: #cec8bb;
+  --line-3: #d6cfc0;
+  --line-4: #e5e0d4;
+  --border-w: 1px;
+  /* Familias pedagógicas */
+  --blue: #1f55cf;
+  --blue-soft: #e7efff;
+  --blue-line: #9bb7ef;
+  --objective: #76509e;
+  --objective-soft: #f3eafa;
+  --objective-line: #c6aee0;
+  --procedure: #6f6659;
+  --procedure-soft: #f1eee7;
+  --procedure-line: #c9c0b3;
+  --yellow: #8a5a00;
+  --yellow-soft: #fff1bd;
+  --yellow-line: #dfc36a;
+  --success: #216e4e;
+  --success-soft: #e4f4ed;
+  --success-line: #98c6af;
+  --reflection: #9b455d;
+  --reflection-soft: #fae9ed;
+  --reflection-line: #d9a7b5;
+  /* Asociaciones locales: solo fondo */
+  --association-1-soft: #dcf2f0;
+  --association-2-soft: #f9e8d9;
+  --association-3-soft: #eae8f5;
+  --association-4-soft: #f2e8ec;
+  /* Notas del docente */
+  --note-soft: #fff8e1;
+  --note-line: #e8cf86;
+  --note-ink: #6b4600;
+  /* Profundidad (solo pantalla: @media print anula las sombras) */
+  --backdrop: #000b;
+  --shadow: #17223b24;
+  --sh-card: 0 12px 32px #17223b14;
+  --sh-raised: 0 14px 30px #17223b24;
+  --sh-dialog: 0 24px 60px #17223b1f;
+  --sh-pop: 0 18px 40px #17223b33;
+  --grid-soft:
+    linear-gradient(#9eb0c112 1px, transparent 1px),
+    linear-gradient(90deg, #9eb0c112 1px, transparent 1px);
+  --grid-strong:
+    linear-gradient(#9eb0c11f 1px, transparent 1px),
+    linear-gradient(90deg, #9eb0c11f 1px, transparent 1px);
+}
+
+.theme-oscuro {
+  --page: #141c30;
+  --paper: #141c30;
+  --panel: #1d2740;
+  --ink: #f4efe4;
+  --muted: #bcc5cf;
+  --on-accent: #141c30;
+  --focus: #9fbcff;
+  --line: #3d4a66;
+  --line-4: #2a3550;
+  --blue: #9fbcff;
+  --blue-soft: #1f2d52;
+  --blue-line: #4466b0;
+  --objective: #d2b3f0;
+  --objective-soft: #2d2442;
+  --objective-line: #654d8c;
+  --procedure: #dcd2c3;
+  --procedure-soft: #2a2925;
+  --procedure-line: #5d5548;
+  --yellow: #f2c86a;
+  --yellow-soft: #33290f;
+  --yellow-line: #7d6429;
+  --success: #86d6ae;
+  --success-soft: #15342a;
+  --success-line: #33715a;
+  --reflection: #f3adc0;
+  --reflection-soft: #3a1f29;
+  --reflection-line: #7f4759;
+  --association-1-soft: #1a4642;
+  --association-2-soft: #4d3524;
+  --association-3-soft: #34314f;
+  --association-4-soft: #452c3d;
+}
+
+.theme-contraste {
+  --page: #ffffff;
+  --paper: #ffffff;
+  --panel: #ffffff;
+  --ink: #000000;
+  --muted: #1f2933;
+  --focus: #000000;
+  --line: #1f2933;
+  --line-4: #d6dbe3;
+  --border-w: 2px;
+  --blue: #0b3aa8;
+  --blue-soft: #dfe8ff;
+  --blue-line: #0b3aa8;
+  --objective: #4f2d78;
+  --objective-line: #4f2d78;
+  --procedure: #3a332a;
+  --procedure-line: #3a332a;
+  --yellow: #5a3900;
+  --yellow-line: #5a3900;
+  --success: #0d4a31;
+  --success-line: #0d4a31;
+  --reflection: #6b1f36;
+  --reflection-line: #6b1f36;
+}
+
+/* Los alias se declaran también en cada tema: una variable se resuelve donde se declara. */
+:root,
+.theme-oscuro,
+.theme-contraste {
+  --accent: var(--blue);
+  --accent-soft: var(--blue-soft);
+  --accent-line: var(--blue-line);
+  --ocre: var(--yellow);
+  --ocre-soft: var(--yellow-soft);
+  --ocre-line: var(--yellow-line);
+  --ok: var(--success);
+  --ok-soft: var(--success-soft);
+  --ok-line: var(--success-line);
+  --err: var(--reflection);
+  --err-soft: var(--reflection-soft);
+  --err-line: var(--reflection-line);
+  /* Borde piedra de tarjetas y tablas en las láminas. */
+  --stone-line: var(--procedure-line);
+}

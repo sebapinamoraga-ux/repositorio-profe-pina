@@ -29,6 +29,7 @@ import { qrPath } from '../ui/qr';
 import { useUi } from '../ui/UiProvider';
 import { makeNote } from './notes';
 import { tramoAt, usePace } from './pace';
+import { Button, IconButton } from '../ui/Button';
 
 const PACE_VISIBLE = 'profe-pina-ritmo-ver';
 
@@ -261,12 +262,12 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
           <h1>Esta clase aún no tiene láminas</h1>
           <p>Prepárala desde la biblioteca o ábrela en el editor.</p>
           <div className="row">
-            <button type="button" className="btn btn-paper" onClick={() => onNavigate('biblioteca')}>
+            <Button onClick={() => onNavigate('biblioteca')}>
               Ir a la biblioteca
-            </button>
-            <button type="button" className="btn btn-accent" onClick={() => onNavigate('editor')}>
+            </Button>
+            <Button variant="primary" onClick={() => onNavigate('editor')}>
               Abrir en editor
-            </button>
+            </Button>
           </div>
         </div>
       </main>
@@ -517,9 +518,9 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
         <div role="dialog" aria-label="Comentario para mejorar la clase" className="note-pop">
           <div className="note-pop-head">
             <b>Comentario para mejorar la clase</b>
-            <button type="button" className="icon-btn" aria-label="Cerrar" onClick={() => setNote(false)}>
+            <IconButton label="Cerrar" onClick={() => setNote(false)}>
               <X size={20} aria-hidden="true" />
-            </button>
+            </IconButton>
           </div>
           <div role="radiogroup" aria-label="Sobre qué es el comentario" className="pill-group">
             <button
@@ -557,12 +558,12 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
           />
           <div className="note-pop-actions">
             <span className="muted small">Aparecerá en el editor como pendiente.</span>
-            <button type="button" className="btn" onClick={() => setNote(false)}>
+            <Button onClick={() => setNote(false)}>
               Cancelar
-            </button>
-            <button type="button" className="btn btn-ink" disabled={!noteText.trim()} onClick={saveNote}>
+            </Button>
+            <Button variant="primary" disabled={!noteText.trim()} onClick={saveNote}>
               Guardar
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -573,9 +574,9 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
               <p className="kicker">Participación anónima</p>
               <h2>{slide.title}</h2>
             </div>
-            <button type="button" className="icon-btn" aria-label="Cerrar panel" onClick={() => setVotePanel(false)}>
+            <IconButton label="Cerrar panel" onClick={() => setVotePanel(false)}>
               <X size={20} aria-hidden="true" />
-            </button>
+            </IconButton>
           </div>
           {!voteMine ? (
             <>
@@ -583,13 +584,12 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
                 Cada estudiante responde desde su celular sin identificarse. El conteo
                 aparece aquí; la respuesta correcta se revela con el paso de la lámina.
               </p>
-              <button
-                type="button"
-                className="btn btn-ink"
+              <Button
+                variant="primary"
                 onClick={() => send({ type: 'openVote', activity: activityId })}
               >
                 Abrir votación
-              </button>
+              </Button>
             </>
           ) : (
             <>
@@ -632,17 +632,17 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
               </div>
               <div className="row">
                 {vote.open ? (
-                  <button type="button" className="btn btn-ink" onClick={closeVote}>
+                  <Button variant="primary" onClick={closeVote}>
                     Cerrar votación
-                  </button>
+                  </Button>
                 ) : (
                   <>
-                    <button type="button" className="btn btn-ink" onClick={() => send({ type: 'reopenVote' })}>
+                    <Button variant="primary" onClick={() => send({ type: 'reopenVote' })}>
                       Reabrir
-                    </button>
-                    <button type="button" className="btn" onClick={() => void restartVote()}>
+                    </Button>
+                    <Button onClick={() => void restartVote()}>
                       Empezar de cero
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>
@@ -659,9 +659,9 @@ export function Presenter({ onNavigate }: { onNavigate: (view: View) => void }) 
       )}
       {menu && (
         <Modal label="Índice de clases" onClose={() => setMenu(false)} placement="drawer" className="index-drawer">
-          <button type="button" className="icon-btn drawer-close" aria-label="Cerrar índice" onClick={() => setMenu(false)}>
+          <IconButton className="drawer-close" label="Cerrar índice" onClick={() => setMenu(false)}>
             <X size={22} aria-hidden="true" />
-          </button>
+          </IconButton>
           <p className="kicker-rule">Tu biblioteca</p>
           <h2 className="drawer-title">Clases para pensar.</h2>
           <button type="button" className="drawer-lesson" onClick={() => onNavigate('biblioteca')}>

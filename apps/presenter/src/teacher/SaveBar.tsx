@@ -6,31 +6,33 @@ import { describePath } from '../content/validate';
 import type { View } from '../store/schema';
 import { Modal } from '../ui/Modal';
 import { useUi } from '../ui/UiProvider';
+import { Button, IconButton } from '../ui/Button';
+import { Notice } from '../ui/Layout';
 
 /** Aviso para editar: sin conexión con GitHub la app solo muestra el contenido. */
 export function ConnectHint({ onNavigate }: { onNavigate?: (view: View) => void }) {
   const { connection, mode, sync } = useContent();
   if (connection && mode === 'build')
     return (
-      <p role="status" className="alert alert-info">
+      <Notice role="status" tone="info">
         {sync.status === 'error'
           ? `No se pudo leer el repositorio: ${sync.error ?? ''}`
           : 'Leyendo el contenido del repositorio…'}
-      </p>
+      </Notice>
     );
   if (connection) return null;
   return (
-    <p role="status" className="alert alert-info">
+    <Notice role="status" tone="info">
       Para editar clases desde cualquier dispositivo, conecta la app con GitHub en{' '}
       {onNavigate ? (
-        <button type="button" className="link-btn" onClick={() => onNavigate('conexion')}>
+        <Button variant="quiet" size="sm" onClick={() => onNavigate('conexion')}>
           Conexión
-        </button>
+        </Button>
       ) : (
         <b>Conexión</b>
       )}
       . Mientras tanto, la app muestra el contenido publicado.
-    </p>
+    </Notice>
   );
 }
 
@@ -99,12 +101,12 @@ function ConflictDialog({ onClose }: { onClose: () => void }) {
     <Modal label="Resolver conflictos" onClose={onClose} className="conflict-dialog">
       <div className="modal-head">
         <div>
-          <p className="kicker kicker-danger">Cambios en otro dispositivo</p>
+          <p className="kicker kicker--danger">Cambios en otro dispositivo</p>
           <h2>Estos archivos cambiaron en el repositorio mientras los editabas</h2>
         </div>
-        <button type="button" className="icon-btn" aria-label="Cerrar" onClick={onClose}>
+        <IconButton label="Cerrar" onClick={onClose}>
           <X size={22} aria-hidden="true" />
-        </button>
+        </IconButton>
       </div>
       {wc.conflicts.map((conflict) => {
         const ours = conflict.ours.op === 'put' ? conflict.ours.text : '';
@@ -133,12 +135,12 @@ function ConflictDialog({ onClose }: { onClose: () => void }) {
               </pre>
             )}
             <div className="row">
-              <button type="button" className="btn btn-small btn-ink" onClick={() => resolve(conflict.path, 'mine')}>
+              <Button variant="primary" size="sm" onClick={() => resolve(conflict.path, 'mine')}>
                 Conservar mi versión
-              </button>
-              <button type="button" className="btn btn-small" onClick={() => resolve(conflict.path, 'theirs')}>
+              </Button>
+              <Button size="sm" onClick={() => resolve(conflict.path, 'theirs')}>
                 Tomar la del repositorio
-              </button>
+              </Button>
             </div>
           </section>
         );
@@ -207,18 +209,18 @@ export function SaveBar({ onNavigate }: { onNavigate: (view: View) => void }) {
               <b>
                 {n} {n === 1 ? 'cambio sin guardar' : 'cambios sin guardar'}
               </b>{' '}
-              <button type="button" className="link-btn" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+              <Button variant="quiet" size="sm" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
                 {open ? 'Ocultar' : 'Ver cuáles'}
-              </button>
+              </Button>
             </>
           )}
         </p>
         <div className="row">
           {content.wc.conflicts.length > 0 && (
-            <button type="button" className="btn btn-small btn-danger-soft" onClick={() => setConflicts(true)}>
+            <Button variant="danger" size="sm" onClick={() => setConflicts(true)}>
               Resolver {content.wc.conflicts.length}{' '}
               {content.wc.conflicts.length === 1 ? 'conflicto' : 'conflictos'}
-            </button>
+            </Button>
           )}
           {n > 0 && !busy && (
             <>
@@ -229,28 +231,27 @@ export function SaveBar({ onNavigate }: { onNavigate: (view: View) => void }) {
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
               />
-              <button type="button" className="btn btn-small" onClick={() => void discard()}>
+              <Button size="sm" onClick={() => void discard()}>
                 Descartar
-              </button>
-              <button
-                type="button"
-                className="btn btn-small btn-ink"
+              </Button>
+              <Button
+                variant="primary" size="sm"
                 disabled={!canEdit || content.wc.conflicts.length > 0}
                 onClick={save}
               >
                 Guardar en el repositorio
-              </button>
+              </Button>
             </>
           )}
           {!connection && (
-            <button type="button" className="btn btn-small" onClick={() => onNavigate('conexion')}>
+            <Button size="sm" onClick={() => onNavigate('conexion')}>
               Conectar
-            </button>
+            </Button>
           )}
           {(saveState.phase === 'saved' || saveState.phase === 'error') && (
-            <button type="button" className="icon-btn" aria-label="Cerrar aviso" onClick={content.dismissSave}>
+            <IconButton label="Cerrar aviso" onClick={content.dismissSave}>
               <X size={18} aria-hidden="true" />
-            </button>
+            </IconButton>
           )}
         </div>
       </div>
