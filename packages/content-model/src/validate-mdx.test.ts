@@ -319,3 +319,65 @@ it('valida la tabla de lectura y la leyenda numerada', () => {
     ),
   ).toThrow('fuera de 1..1');
 });
+it('cuenta los pasos opcionales del gráfico de función', () => {
+  const grafico = (pasoPendiente: string) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'GraficoFuncion',
+        attributes: [
+          ['tipo', 'afin'],
+          ['m', { value: '1' }],
+          ['n', { value: '0' }],
+          ['xMin', { value: '0' }],
+          ['xMax', { value: '4' }],
+          ['yMin', { value: '0' }],
+          ['yMax', { value: '4' }],
+          ['pendienteEn', { value: '0' }],
+          ['pasoPendiente', { value: pasoPendiente }],
+          ['etiqueta', 'f'],
+          ['descripcion', 'Recta f.'],
+        ].map(([name, value]) => ({ type: 'mdxJsxAttribute', name, value })),
+      },
+    ],
+  });
+  expect(() => validateMdxTree(grafico('1'), slide)).not.toThrow();
+  expect(() => validateMdxTree(grafico('2'), slide)).toThrow('fuera de 1..1');
+});
+it('una pregunta sin respuesta no ocupa pasos y Columnas valida su ancho', () => {
+  const pregunta = {
+    type: 'mdxJsxFlowElement',
+    name: 'PreguntaPAES',
+    attributes: [
+      { type: 'mdxJsxAttribute', name: 'id', value: 'q' },
+      {
+        type: 'mdxJsxAttribute',
+        name: 'mostrarRespuesta',
+        value: { value: 'false' },
+      },
+    ],
+  };
+  const sinPasos = { ...slide, steps: 0, activities: ['q'] };
+  expect(() =>
+    validateMdxTree({ type: 'root', children: [pregunta] }, sinPasos),
+  ).not.toThrow();
+  const columnas = (amplia: string) => ({
+    type: 'root',
+    children: [
+      {
+        type: 'mdxJsxFlowElement',
+        name: 'Columnas',
+        attributes: [
+          { type: 'mdxJsxAttribute', name: 'amplia', value: amplia },
+        ],
+      },
+    ],
+  });
+  expect(() =>
+    validateMdxTree(columnas('izquierda'), { ...slide, steps: 0 }),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(columnas('centro'), { ...slide, steps: 0 }),
+  ).toThrow('amplia');
+});

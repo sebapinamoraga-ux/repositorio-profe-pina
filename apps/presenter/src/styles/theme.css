@@ -260,6 +260,12 @@ a {
 .columns > * {
   min-width: 0;
 }
+.columns-wide-izquierda {
+  grid-template-columns: 1.4fr 1fr;
+}
+.columns-wide-derecha {
+  grid-template-columns: 1fr 1.4fr;
+}
 .step {
   margin-top: 12px;
 }
@@ -545,6 +551,22 @@ a {
 }
 .graph-context .graph-caption {
   margin-top: -4px;
+}
+.graph-compact svg,
+.graph-context.graph-compact svg {
+  height: 298px;
+}
+/* Al reducirse el gráfico, sus textos crecen en el SVG para seguir legibles. */
+.graph-compact .graph-axis-label {
+  font-size: 26px;
+}
+.graph-compact .graph-axis-title,
+.graph-compact .graph-point-label,
+.graph-compact .graph-slope-label {
+  font-size: 28px;
+}
+.graph-compact .graph-caption {
+  font-size: 21px;
 }
 .graph-caption {
   display: flex;

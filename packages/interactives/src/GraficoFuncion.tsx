@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { useSlide } from '@aula/pedagogical-ui';
 import {
   cortesVerticales,
   marcasEje,
@@ -9,7 +10,10 @@ import {
 } from './function-graph';
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 }).format(value);
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 })
+    .format(value)
+    // Un cálculo puede dejar un cero negativo: se escribe 0, no «-0».
+    .replace(/^-(0(,0*)?)$/, '$1');
 
 type TipoCurva = Curva['tipo'];
 type Coeficientes = Partial<
@@ -66,6 +70,10 @@ export function GraficoFuncion({
   rectaVertical,
   marcarCorteY = false,
   pendienteEn,
+  pendienteAncho = 1,
+  pasoPendiente,
+  pasoCorteY,
+  compacto = false,
   etiqueta,
   descripcion,
 }: {
@@ -91,12 +99,23 @@ export function GraficoFuncion({
   rectaVertical?: number;
   /** Marca y rotula el corte con el eje y, (0, n), de una función afín. */
   marcarCorteY?: boolean;
-  /** Dibuja el triángulo de pendiente (+1 en x, +m en y) desde este valor de x. */
+  /** Dibuja el triángulo de pendiente desde este valor de x. */
   pendienteEn?: number;
+  /** Avance horizontal del triángulo de pendiente; por defecto, 1. */
+  pendienteAncho?: number;
+  /** Paso en que aparece el triángulo de pendiente; sin él, se ve siempre. */
+  pasoPendiente?: number;
+  /** Paso en que aparece el corte con el eje y; sin él, se ve siempre. */
+  pasoCorteY?: number;
+  /** Menor altura, para mostrar dos gráficos en una lámina. */
+  compacto?: boolean;
   etiqueta: string;
   descripcion: string;
 }) {
   const clipId = useId().replaceAll(':', '');
+  const { step, print } = useSlide();
+  const shown = (paso: number | undefined) =>
+    print || paso === undefined || step >= paso ? 'visible' : 'hidden';
   const curva = curvaDesdeProps(tipo, { m, n, a, b, c, h, k, r });
   const points = muestrearCurva(curva, { xMin, xMax, yMin, yMax });
   // La circunferencia exige la misma escala en ambos ejes; las funciones usan todo el lienzo.
@@ -128,9 +147,10 @@ export function GraficoFuncion({
     pendienteEn !== undefined && curva.tipo === 'afin'
       ? {
           x0: pendienteEn,
+          x1: pendienteEn + pendienteAncho,
           y0: curva.m * pendienteEn + curva.n,
-          y1: curva.m * (pendienteEn + 1) + curva.n,
-          m: curva.m,
+          y1: curva.m * (pendienteEn + pendienteAncho) + curva.n,
+          dy: curva.m * pendienteAncho,
         }
       : undefined;
   const axisY = yMin <= 0 && yMax >= 0 ? sy(0) : sy(yMin);
@@ -155,7 +175,7 @@ export function GraficoFuncion({
     )
     .join(' ');
   return (
-    <div className="graph graph-function">
+    <div className={`graph graph-function${compacto ? ' graph-compact' : ''}`}>
       <svg viewBox="0 0 620 490" role="img" aria-label={descripcion}>
         <defs>
           <clipPath id={clipId}>
@@ -254,7 +274,8 @@ export function GraficoFuncion({
           {triangulo && (
             <path
               className="graph-slope"
-              d={`M${sx(triangulo.x0)} ${sy(triangulo.y0)} L${sx(triangulo.x0 + 1)} ${sy(triangulo.y0)} L${sx(triangulo.x0 + 1)} ${sy(triangulo.y1)}`}
+              visibility={shown(pasoPendiente)}
+              d={`M${sx(triangulo.x0)} ${sy(triangulo.y0)} L${sx(triangulo.x1)} ${sy(triangulo.y0)} L${sx(triangulo.x1)} ${sy(triangulo.y1)}`}
               fill="none"
               strokeWidth="4"
               strokeDasharray="10 7"
@@ -263,6 +284,7 @@ export function GraficoFuncion({
           {corteY !== undefined && (
             <circle
               className="graph-intersection"
+              visibility={shown(pasoCorteY)}
               cx={sx(0)}
               cy={sy(corteY)}
               r="10"
@@ -292,30 +314,31 @@ export function GraficoFuncion({
           </text>
         ))}
         {triangulo && (
-          <>
+          <g visibility={shown(pasoPendiente)}>
             <text
               className="graph-slope-label"
-              x={(sx(triangulo.x0) + sx(triangulo.x0 + 1)) / 2}
-              y={sy(triangulo.y0) + (triangulo.m > 0 ? 30 : -14)}
+              x={(sx(triangulo.x0) + sx(triangulo.x1)) / 2}
+              y={sy(triangulo.y0) + (triangulo.dy > 0 ? 30 : -14)}
               textAnchor="middle"
               fontSize="22"
             >
-              +1
+              +{formatNumber(pendienteAncho)}
             </text>
             <text
               className="graph-slope-label"
-              x={sx(triangulo.x0 + 1) + 12}
+              x={sx(triangulo.x1) + 12}
               y={(sy(triangulo.y0) + sy(triangulo.y1)) / 2 + 8}
               fontSize="22"
             >
-              {triangulo.m > 0 ? '+' : '−'}
-              {formatNumber(Math.abs(triangulo.m))}
+              {triangulo.dy > 0 ? '+' : '−'}
+              {formatNumber(Math.abs(triangulo.dy))}
             </text>
-          </>
+          </g>
         )}
         {corteY !== undefined && (
           <text
             className="graph-point-label"
+            visibility={shown(pasoCorteY)}
             x={sx(0) + 16}
             y={sy(corteY) + (curva.tipo === 'afin' && curva.m > 0 ? 30 : -14)}
             fontSize="21"

@@ -168,8 +168,17 @@ export const PracticaIndividual = (p: BlockProps) => (
 export const Cierre = (p: BlockProps) => (
   <Block kind="cierre" titulo="Lo que nos llevamos" {...p} />
 );
-export const Columnas = ({ children }: { children: ReactNode }) => (
-  <div className="columns">{children}</div>
+/** Dos columnas iguales; `amplia` da más ancho a una de ellas (p. ej. a un enunciado largo). */
+export const Columnas = ({
+  amplia,
+  children,
+}: {
+  amplia?: 'izquierda' | 'derecha';
+  children: ReactNode;
+}) => (
+  <div className={amplia ? `columns columns-wide-${amplia}` : 'columns'}>
+    {children}
+  </div>
 );
 export function MascotaProfePina({
   pose,
@@ -346,11 +355,23 @@ export function Formula({ tex }: { tex: string }) {
     />
   );
 }
-export function PreguntaPAES({ id, paso = 1 }: { id: string; paso?: number }) {
+/**
+ * Pregunta del banco con sus alternativas. Con `mostrarRespuesta={false}` solo se plantea:
+ * la respuesta queda para una lámina posterior y ni el PDF marca la correcta.
+ */
+export function PreguntaPAES({
+  id,
+  paso = 1,
+  mostrarRespuesta = true,
+}: {
+  id: string;
+  paso?: number;
+  mostrarRespuesta?: boolean;
+}) {
   const runtime = useSlide();
   const activity = runtime.activities[id];
   if (!activity) throw new Error(`Actividad desconocida: ${id}`);
-  const revealed = runtime.print || runtime.step >= paso;
+  const revealed = mostrarRespuesta && (runtime.print || runtime.step >= paso);
   return (
     <section className="question">
       <div className="block-label">
@@ -364,7 +385,7 @@ export function PreguntaPAES({ id, paso = 1 }: { id: string; paso?: number }) {
           runtime.print ? (
             <div
               key={option.id}
-              className={`option ${option.correct ? 'correct' : ''}`}
+              className={`option ${revealed && option.correct ? 'correct' : ''}`}
             >
               <b>{option.id}</b>
               <span>{option.text}</span>
@@ -382,22 +403,26 @@ export function PreguntaPAES({ id, paso = 1 }: { id: string; paso?: number }) {
           ),
         )}
       </div>
-      <Paso n={paso}>
-        <div className="answer">
-          <strong>{activity.answer}</strong>
-          <p>{activity.solution}</p>
-          {!runtime.print &&
-            activity.options
-              ?.filter(
-                (option) => option.id === runtime.values[id] && !option.correct,
-              )
-              .map((option) => (
-                <p className="distractor-feedback" key={option.id}>
-                  <strong>Tu elección {option.id}:</strong> {option.explanation}
-                </p>
-              ))}
-        </div>
-      </Paso>
+      {mostrarRespuesta && (
+        <Paso n={paso}>
+          <div className="answer">
+            <strong>{activity.answer}</strong>
+            <p>{activity.solution}</p>
+            {!runtime.print &&
+              activity.options
+                ?.filter(
+                  (option) =>
+                    option.id === runtime.values[id] && !option.correct,
+                )
+                .map((option) => (
+                  <p className="distractor-feedback" key={option.id}>
+                    <strong>Tu elección {option.id}:</strong>{' '}
+                    {option.explanation}
+                  </p>
+                ))}
+          </div>
+        </Paso>
+      )}
     </section>
   );
 }

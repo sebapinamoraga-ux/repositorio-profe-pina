@@ -67,13 +67,17 @@ const components = new Set([
 ]);
 /** Atributo con el paso en que aparece cada componente que se revela. */
 const STEP_ATTRIBUTES: Partial<
-  Record<string, { name: string; required: boolean }>
+  Record<string, readonly { name: string; required: boolean }[]>
 > = {
-  Paso: { name: 'n', required: true },
-  PreguntaPAES: { name: 'paso', required: true },
-  Senal: { name: 'paso', required: true },
-  FilaLectura: { name: 'paso', required: true },
-  ItemLeyenda: { name: 'paso', required: false },
+  Paso: [{ name: 'n', required: true }],
+  PreguntaPAES: [{ name: 'paso', required: true }],
+  Senal: [{ name: 'paso', required: true }],
+  FilaLectura: [{ name: 'paso', required: true }],
+  ItemLeyenda: [{ name: 'paso', required: false }],
+  GraficoFuncion: [
+    { name: 'pasoPendiente', required: false },
+    { name: 'pasoCorteY', required: false },
+  ],
 };
 export function validateMdxTree(
   tree: unknown,
@@ -134,18 +138,23 @@ export function validateMdxTree(
         if (node.name === 'Asociacion' && tone === undefined)
           throw new Error('Asociacion requiere un tono literal de 1..4');
       }
-      const stepAttribute = STEP_ATTRIBUTES[node.name];
-      const raw =
-        stepAttribute && literalAttribute(attributes, stepAttribute.name);
-      if (stepAttribute && (raw !== undefined || stepAttribute.required)) {
+      for (const stepAttribute of STEP_ATTRIBUTES[node.name] ?? []) {
+        const raw = literalAttribute(attributes, stepAttribute.name);
+        if (raw === undefined && !stepAttribute.required) continue;
+        // Una pregunta sin respuesta en la lámina no ocupa pasos.
+        if (
+          node.name === 'PreguntaPAES' &&
+          literalAttribute(attributes, 'mostrarRespuesta') === 'false'
+        )
+          continue;
         const n =
           raw === undefined && node.name === 'PreguntaPAES' ? 1 : Number(raw);
         if (!Number.isInteger(n) || n < 1 || n > slide.steps)
           throw new Error(`Paso ${String(raw)} fuera de 1..${slide.steps}`);
         steps.add(n);
-        if (node.name === 'Paso' && inStep)
-          throw new Error('No anidar bloques Paso');
       }
+      if (node.name === 'Paso' && inStep)
+        throw new Error('No anidar bloques Paso');
       if (node.name === 'Senal') {
         const posicion = literalAttribute(attributes, 'posicion');
         if (
@@ -168,6 +177,17 @@ export function validateMdxTree(
           !(Number.isInteger(Number(raw)) && Number(raw) >= 1)
         )
           throw new Error(`${node.name} requiere un numero entero positivo`);
+      }
+      if (node.name === 'Columnas') {
+        const amplia = literalAttribute(attributes, 'amplia');
+        if (
+          amplia !== undefined &&
+          amplia !== 'izquierda' &&
+          amplia !== 'derecha'
+        )
+          throw new Error(
+            `Columnas acepta amplia="izquierda" o "derecha": ${amplia}`,
+          );
       }
       if (node.name === 'TablaLectura') {
         const headers = literalAttribute(attributes, 'encabezados') ?? '';
