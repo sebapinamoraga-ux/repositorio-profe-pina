@@ -15,7 +15,10 @@ export { MaquinaFuncion } from './MaquinaFuncion';
 export { ExploradorCuadratica } from './ExploradorCuadratica';
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 }).format(value);
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 })
+    .format(value)
+    // Un cálculo puede dejar un cero negativo: se escribe 0, no «-0».
+    .replace(/^-(0(,0*)?)$/, '$1');
 
 /** Representación estática de dos rectas; los ejemplos pertenecen al contenido. */
 export function GraficoRectas({
