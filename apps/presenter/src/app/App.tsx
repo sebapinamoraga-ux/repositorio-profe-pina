@@ -79,9 +79,13 @@ function Roles() {
             rol: state.role,
             vista: state.role === 'docente' ? state.view : null,
             galeria: null,
+            // La clase solo vive en la URL de quien presenta y del estudiante,
+            // que la lee al cargarse (#rol=estudiante&clase=…).
             ...(state.role === 'docente' && state.view === 'presentar'
               ? {}
-              : { clase: null, slide: null }),
+              : state.role === 'estudiante'
+                ? { slide: null }
+                : { clase: null, slide: null }),
           }
         : { rol: null, vista: null, clase: null, slide: null, galeria: null },
     );
