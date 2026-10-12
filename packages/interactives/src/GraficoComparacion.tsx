@@ -8,7 +8,10 @@ import {
 } from './function-graph';
 
 const formatNumber = (value: number) =>
-  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 }).format(value);
+  new Intl.NumberFormat('es-CL', { maximumFractionDigits: 1 })
+    .format(value)
+    // Un cálculo puede dejar un cero negativo: se escribe 0, no «-0».
+    .replace(/^-(0(,0*)?)$/, '$1');
 
 /**
  * Dos funciones afines en un mismo plano: su intersección (la solución del sistema)
@@ -32,6 +35,7 @@ export function GraficoComparacion({
   resaltarMenor = false,
   marcarInterseccion = true,
   rotularInterseccion = true,
+  compacto = false,
   descripcion,
 }: {
   m1: number;
@@ -53,6 +57,8 @@ export function GraficoComparacion({
   marcarInterseccion?: boolean;
   /** Escribe las coordenadas del punto común. */
   rotularInterseccion?: boolean;
+  /** Menor altura, para mostrar dos gráficos en una lámina. */
+  compacto?: boolean;
   descripcion: string;
 }) {
   const clipId = useId().replaceAll(':', '');
@@ -87,7 +93,9 @@ export function GraficoComparacion({
     corte.y >= yMin &&
     corte.y <= yMax;
   return (
-    <div className="graph graph-function graph-comparison">
+    <div
+      className={`graph graph-function graph-comparison${compacto ? ' graph-compact' : ''}`}
+    >
       <svg viewBox="0 0 640 490" role="img" aria-label={descripcion}>
         <defs>
           <clipPath id={clipId}>

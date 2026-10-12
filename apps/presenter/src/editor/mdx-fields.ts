@@ -86,6 +86,13 @@ const ATTR_LABELS: Record<string, string> = {
   etiqueta: 'Etiqueta',
   nota: 'Nota de la mascota',
   tex: 'Fórmula (TeX)',
+  texto: 'Texto de la señal',
+  encabezados: 'Encabezados (separados por |)',
+  nombre: 'Nombre',
+  rasgo: 'Rasgo',
+  rojo: 'Luz roja',
+  amarillo: 'Luz amarilla',
+  verde: 'Luz verde',
 };
 const FIXED: Record<string, string> = {
   PreguntaPAES: 'Pregunta PAES',

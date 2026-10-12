@@ -1,0 +1,57 @@
+---
+id: errores-grafico-frecuentes
+title: 'Alternativas A y B'
+phase: practica
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<Paso n={1}>
+<Comprobacion titulo="Alternativa A · correcta">
+$T(t)=2t-3$: parte **bajo cero**, $n=-3$, y sube $4$ °C en $2$ min, $m=2$ ✓
+</Comprobacion>
+<GraficoFuncion
+  tipo="afin"
+  m={2}
+  n={-3}
+  xMin={0}
+  xMax={4}
+  yMin={-4}
+  yMax={6}
+  pasoY={2}
+  ejeX="t"
+  ejeY="T"
+  puntosX={[0, 2]}
+  pendienteEn={0}
+  pendienteAncho={2}
+  compacto
+  etiqueta="Muestra: 2t − 3"
+  descripcion="Recta de la muestra, 2t − 3: parte de (0; −3) y en 2 minutos sube 4 °C, hasta (2; 1)."
+/>
+</Paso>
+<Paso n={2}>
+<ErrorTipico titulo="Alternativa B · cambia el signo">
+$T(t)=2t+3$: lee $-3$ °C **sin su signo**. Las rectas son paralelas.
+</ErrorTipico>
+<GraficoComparacion
+  m1={2}
+  n1={-3}
+  m2={2}
+  n2={3}
+  xMin={0}
+  xMax={3}
+  yMin={-5}
+  yMax={7}
+  pasoX={1}
+  pasoY={2}
+  ejeX="t"
+  ejeY="T"
+  compacto
+  etiqueta1="Muestra: 2t − 3"
+  etiqueta2="B: 2t + 3"
+  descripcion="La recta de la muestra, 2t − 3, y la de la alternativa B, 2t + 3, son paralelas: misma pendiente, pero parten de −3 y de 3."
+/>
+</Paso>
+</Columnas>
