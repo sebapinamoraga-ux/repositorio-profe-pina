@@ -36,11 +36,7 @@ tramos:
   - label: 'La función cuadrática: a, b, c, la parábola y el efecto de a y c'
     from: cuadratica
     to: efecto-a-c
-    minutes: 20
-  - label: 'Leer una parábola'
-    from: leer-parabola
-    to: leer-parabola
-    minutes: 6
+    minutes: 26
   - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
     from: ticket-paes-cuadratica
     to: ticket-paes-cuadratica
@@ -66,7 +62,6 @@ slides:
   - identificar-abc.mdx
   - parabola.mdx
   - efecto-a-c.mdx
-  - leer-parabola.mdx
   - ticket-paes-cuadratica.mdx
   - cierre.mdx
 repaso:
