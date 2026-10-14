@@ -1,0 +1,16 @@
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# El título es público: usa un nombre genérico, sin datos privados de cursos.
+title: PAES Matemática M1
+units:
+  - id: m1-numeros
+    title: Números
+    lessons: []
+  - id: m1-algebra-funciones
+    title: Álgebra y funciones
+    lessons: []
+  - id: m1-geometria
+    title: Geometría
+    lessons: []
+  - id: m1-probabilidad-estadistica
+    title: Probabilidad y estadística
+    lessons: []

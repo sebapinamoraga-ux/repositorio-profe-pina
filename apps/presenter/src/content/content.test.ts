@@ -71,7 +71,9 @@ describe('planificación', () => {
   });
 
   it('las clases del repositorio sin planificar quedan en «Sin unidad»', () => {
-    const files = new Map(disk);
+    const files = new Map(
+      [...disk].filter(([path]) => !path.startsWith('content/planning/')),
+    );
     files.set('content/planning/m1-2027.yaml', 'units: []\n');
     const library = libraryOf(parseContentFiles(files));
     expect(library.units).toEqual([UNPLANNED_UNIT]);

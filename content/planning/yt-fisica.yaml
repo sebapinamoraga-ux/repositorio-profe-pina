@@ -1,0 +1,22 @@
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# El título es público: usa un nombre genérico, sin datos privados de cursos.
+title: 'PAES Ciencias: Física'
+units:
+  - id: fis-ondas
+    title: Ondas
+    lessons: []
+  - id: fis-mecanica
+    title: Mecánica
+    lessons: []
+  - id: fis-energia
+    title: Energía
+    lessons: []
+  - id: fis-electricidad-magnetismo
+    title: Electricidad y magnetismo
+    lessons: []
+  - id: fis-tierra-universo
+    title: Tierra y universo
+    lessons: []
+  - id: fis-habilidades-cientificas
+    title: Habilidades científicas
+    lessons: []

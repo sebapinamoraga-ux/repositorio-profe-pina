@@ -1,0 +1,16 @@
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# El título es público: usa un nombre genérico, sin datos privados de cursos.
+title: 'Canal: estrategia y temporada'
+units:
+  - id: canal-estrategia
+    title: Estrategia de prueba
+    lessons: []
+  - id: canal-ensayos
+    title: Ensayos y pruebas liberadas
+    lessons: []
+  - id: canal-temporada
+    title: 'Temporada: calendario, puntajes y postulación'
+    lessons: []
+  - id: canal-puente-u
+    title: Puente a la universidad
+    lessons: []
