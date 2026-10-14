@@ -786,6 +786,13 @@ function LibraryBar({
         title: next,
       }),
     );
+  // Las fechas de una biblioteca de publicación (el canal) no deciden la clase del día.
+  const setPublication = (on: boolean) => {
+    const next = { ...planningOf(content.bundle, libraryId) };
+    if (on) next.calendario = 'publicacion';
+    else delete next.calendario;
+    content.edit(writePlanning(content.bundle, content.files, libraryId, next));
+  };
   const remove = () => {
     if (!current) return;
     const undo = content.snap();
@@ -806,6 +813,14 @@ function LibraryBar({
               placeholder={current.id}
               onChange={(event) => rename(event.target.value)}
             />
+          </label>
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={current.calendario === 'publicacion'}
+              onChange={(event) => setPublication(event.target.checked)}
+            />
+            <span>Fechas de publicación (canal): no cuentan como clase del día</span>
           </label>
           <Button
             variant="danger"
@@ -1008,7 +1023,7 @@ export function Library({
           </>
           }
         />
-        {!organizing && <TodayCard onNavigate={onNavigate} />}
+        {!organizing && <TodayCard libraryId={libraryId} onNavigate={onNavigate} />}
         <LibraryBar libraryId={libraryId} organizing={editable} onNavigate={onNavigate} />
         {organizing && (
           <Notice role="status" tone="info">

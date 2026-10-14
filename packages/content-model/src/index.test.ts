@@ -1,5 +1,11 @@
 import { expect, it } from 'vitest';
-import { activitySchema, mascotPropsSchema, planningSchema, slideSchema } from './index';
+import {
+  activitySchema,
+  mascotPropsSchema,
+  planningCalendar,
+  planningSchema,
+  slideSchema,
+} from './index';
 it('rechaza diapositivas sin fases válidas', () => {
   expect(
     slideSchema.safeParse({
@@ -61,4 +67,12 @@ it('la planificación acepta fechas reales y una sola clase por día', () => {
   ]);
   expect(twice.success).toBe(false);
   expect(twice.error?.issues[0]?.message).toContain('Dos clases planificadas el 2026-10-17');
+});
+
+it('la biblioteca declara si sus fechas son de clase o de publicación', () => {
+  const units = [{ id: 'u1', title: 'U', lessons: [{ id: 'a', date: '2026-11-10' }] }];
+  const canal = planningSchema.parse({ calendario: 'publicacion', units });
+  expect(planningCalendar(canal)).toBe('publicacion');
+  expect(planningCalendar(planningSchema.parse({ units }))).toBe('clases');
+  expect(planningSchema.safeParse({ calendario: 'canal', units }).success).toBe(false);
 });

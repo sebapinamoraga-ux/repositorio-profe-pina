@@ -122,6 +122,44 @@ test('bibliotecas: crear una y copiarle una clase de otra', async ({ page }) => 
   expect(lesson).toContain('repaso:');
 });
 
+test('bibliotecas del canal: sus fechas de publicación no son la clase del día', async ({ page }) => {
+  await unlock(page);
+  await page.setViewportSize({ width: 1366, height: 900 });
+  // El 5 de noviembre el curso ya no tiene clases por delante y el canal sí tiene videos.
+  await page.clock.setFixedTime(new Date('2026-11-05T10:00:00'));
+  const fake = await connectFakeGitHub(page);
+  await page.goto('/#rol=docente&vista=clases&biblioteca=m1-2027');
+  await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
+  await expect(page.getByRole('region', { name: 'Última clase abierta' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Próxima clase' })).toHaveCount(0);
+  await expect(page.locator('.today-card')).not.toContainText('PAES');
+
+  // Dentro de su biblioteca, la tarjeta muestra la próxima publicación; la fecha corta lleva el año.
+  const bar = page.getByRole('group', { name: 'Biblioteca' });
+  await bar.getByRole('button', { name: 'PAES Matemática M1' }).click();
+  const next = page.getByRole('region', { name: 'Próxima publicación' });
+  await expect(next).toContainText('PAES Matemática M1');
+  await expect(next).toContainText('martes, 10 de noviembre');
+  await expect(page.locator('.date-chip', { hasText: 'mar, 2 mar 2027' })).toBeVisible();
+  await page.screenshot({ path: 'output/e2e/biblioteca-publicacion.png' });
+
+  // En Organizar se desmarca: sus fechas vuelven a contar como clases.
+  await page.getByRole('button', { name: 'Organizar' }).click();
+  const publication = page.getByLabel(/Fechas de publicación/);
+  await expect(publication).toBeChecked();
+  await page.screenshot({ path: 'output/e2e/biblioteca-publicacion-organizar.png' });
+  await publication.uncheck();
+  await page.getByRole('button', { name: 'Listo' }).click();
+  await expect(page.getByRole('region', { name: 'Próxima clase' })).toContainText(
+    'martes, 10 de noviembre',
+  );
+  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
+  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  const saved = fake.files()['content/planning/yt-m1.yaml'];
+  expect(saved).toContain('title: PAES Matemática M1');
+  expect(saved).not.toContain('calendario: publicacion');
+});
+
 test('la clase viaja en la URL: pestañas, enlaces directos, Atrás del navegador y clase desconocida', async ({
   page,
 }) => {

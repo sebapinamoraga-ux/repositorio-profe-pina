@@ -1,6 +1,7 @@
 # Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
 # El título es público: usa un nombre genérico, sin datos privados de cursos.
 title: 'Canal: estrategia y temporada'
+calendario: publicacion
 units:
   - id: canal-estrategia
     title: Estrategia de prueba

@@ -226,6 +226,12 @@ export const plannedLessonSchema = z.object({
   date: isoDateSchema.optional(),
 });
 /**
+ * Para qué son las fechas de una biblioteca: `clases` (por omisión) son días de clase y deciden
+ * la «Clase de hoy»; `publicacion` son fechas de publicación (el canal de YouTube) y solo
+ * cuentan dentro de su propia biblioteca.
+ */
+export const planningCalendarSchema = z.enum(['clases', 'publicacion']);
+/**
  * Planificación de unidades (content/planning): una biblioteca docente por archivo (un curso,
  * el canal de YouTube…) con sus unidades, su orden y sus fechas. El título es público: debe ser
  * genérico, sin datos privados de cursos.
@@ -233,6 +239,7 @@ export const plannedLessonSchema = z.object({
 export const planningSchema = z
   .object({
     title: z.string().optional(),
+    calendario: planningCalendarSchema.optional(),
     units: z.array(
       z.object({
         id: z.string().min(1),
@@ -279,6 +286,12 @@ export type Curriculum = z.infer<typeof curriculumSchema>;
 export type LessonMark = z.infer<typeof lessonMarkSchema>;
 export type PlannedLesson = z.infer<typeof plannedLessonSchema>;
 export type Planning = z.infer<typeof planningSchema>;
+export type PlanningCalendar = z.infer<typeof planningCalendarSchema>;
+
+/** Calendario de una biblioteca; sin el campo, sus fechas son días de clase. */
+export function planningCalendar(planning: Pick<Planning, 'calendario'>): PlanningCalendar {
+  return planning.calendario ?? 'clases';
+}
 
 export function mascotTemplateMdx(template: MascotTemplate): string {
   const layout = template.layout === 'portada' ? 'portada' : 'concepto';

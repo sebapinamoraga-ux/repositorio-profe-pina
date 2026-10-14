@@ -30,7 +30,7 @@ export const DEFAULT_LIBRARY_ID = 'm1-2027';
 const PLANNING_HEADER =
   '# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).\n' +
   '# El título es público: usa un nombre genérico, sin datos privados de cursos.\n';
-const PLANNING_KEYS = ['title', 'units'];
+const PLANNING_KEYS = ['title', 'calendario', 'units'];
 
 export function findLesson(bundle: ContentBundle, id: string): LessonEntry | undefined {
   return bundle.lessons.find((lesson) => lesson.meta.id === id);

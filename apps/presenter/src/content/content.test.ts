@@ -14,6 +14,7 @@ import {
   formatPlanDate,
   libraryOf,
   planningReducer,
+  todayLessonIn,
   UNPLANNED_UNIT,
   unitsIn,
   type LibraryEntry,
@@ -28,6 +29,7 @@ import {
   findLesson,
   planningWrites,
   removeLessonFiles,
+  writePlanning,
   writeLesson,
   writeRepaso,
   writeSlides,
@@ -119,6 +121,77 @@ describe('fecha planificada', () => {
     expect(currentLessonIn(library, 'no-existe', '2026-10-12', 'c')).toMatchObject({ id: 'b' });
   });
 
+  it('las fechas de publicación del canal no son la clase del día de los cursos', () => {
+    const info = (id: string, calendario: 'clases' | 'publicacion') => ({
+      id,
+      title: id,
+      path: `content/planning/${id}.yaml`,
+      calendario,
+    });
+    const curso = plan.map((item) => ({ ...item, libraryId: 'curso' }));
+    const video = { ...entry('v', '2026-10-20'), libraryId: 'canal' };
+    const library = {
+      libraries: [info('curso', 'clases'), info('canal', 'publicacion')],
+      units: [],
+      entries: [...curso, video],
+    };
+    // Entre dos clases del curso hay un video: la tarjeta global sigue con la clase del 24.
+    expect(currentLessonIn(library, null, '2026-10-18', 'c')).toMatchObject({ id: 'd', reason: 'proxima' });
+    expect(todayLessonIn(library, 'curso', '2026-10-18', 'c')).toMatchObject({ id: 'd' });
+    expect(todayLessonIn(library, null, '2026-10-20', 'c')).toMatchObject({ id: 'd', reason: 'proxima' });
+    // Sin clases por delante no aparece el video: queda la última clase abierta.
+    expect(todayLessonIn(library, null, '2026-10-25', 'v')).toMatchObject({ id: 'a', reason: 'ultima' });
+    // Con el canal abierto, la tarjeta muestra su próxima publicación.
+    expect(todayLessonIn(library, 'canal', '2026-10-18', 'c')).toMatchObject({ id: 'v', reason: 'proxima' });
+    // Un curso vinculado al canal lo eligió a propósito: ve sus fechas.
+    expect(currentLessonIn(library, 'canal', '2026-10-18', 'c')).toMatchObject({ id: 'v' });
+  });
+
+  it('las bibliotecas del canal del repositorio son de publicación y la del curso, de clases', () => {
+    const library = libraryOf(bundle);
+    const calendars = new Map(library.libraries.map((item) => [item.id, item.calendario]));
+    expect(calendars.get('m1-2027')).toBe('clases');
+    for (const id of ['yt-m1', 'yt-m2', 'yt-fisica', 'yt-ia', 'yt-canal'])
+      expect(calendars.get(id)).toBe('publicacion');
+    // El 2026-11-05 el curso no tiene más clases y el canal sí tiene videos por delante.
+    const current = todayLessonIn(library, null, '2026-11-05', 'funcion-cuadratica-2');
+    expect(current).toMatchObject({ id: 'funcion-cuadratica-2', reason: 'ultima' });
+    expect(todayLessonIn(library, 'yt-m1', '2026-11-05', '')).toMatchObject({ reason: 'proxima' });
+  });
+
+  it('marcar una biblioteca de publicación escribe una línea canónica y pasa content:check', async () => {
+    const path = 'content/planning/m1-2027.yaml';
+    const before = disk.get(path) ?? '';
+    const [write] = planningWrites(bundle, disk, 'm1-2027', {
+      type: 'addUnit',
+      id: 'u-extra',
+      title: 'Extra',
+    });
+    expect(write?.text).not.toMatch(/^calendario:/m);
+    const canal = writePlanning(bundle, disk, 'm1-2027', {
+      ...(bundle.plannings.find((item) => item.id === 'm1-2027')?.planning ?? { units: [] }),
+      calendario: 'publicacion',
+    });
+    const after = canal[0]?.text ?? '';
+    const added = after.split(NL).filter((line) => !before.split(NL).includes(line));
+    expect(added).toEqual(['calendario: publicacion']);
+    expect(after.indexOf('calendario:')).toBeGreaterThan(after.indexOf('title:'));
+    expect(after.indexOf('calendario:')).toBeLessThan(after.indexOf('units:'));
+    const files = apply(disk, canal);
+    // Editar la planificación conserva el calendario.
+    const [kept] = planningWrites(parseContentFiles(files), files, 'm1-2027', {
+      type: 'addUnit',
+      id: 'u-extra',
+      title: 'Extra',
+    });
+    expect(kept?.text).toContain('calendario: publicacion');
+    const result = await checkContentFiles(files, { shouldCompile: () => false });
+    expect(result.problems).toEqual([]);
+    const bad = new Map(files);
+    bad.set(path, after.replace('calendario: publicacion', 'calendario: canal'));
+    expect((await checkContentFiles(bad, { shouldCompile: () => false })).problems).not.toEqual([]);
+  });
+
   it('se escribe en la planificación como una línea y se borra al vaciarla', () => {
     const path = 'content/planning/m1-2027.yaml';
     const before = disk.get(path) ?? '';
@@ -143,7 +216,13 @@ describe('fecha planificada', () => {
   });
 
   it('se muestra con el día de la semana, sin correrse por la zona horaria', () => {
-    expect(formatPlanDate('2026-10-17')).toBe('sábado, 17 de octubre');
+    expect(formatPlanDate('2026-10-17', 'long', 2026)).toBe('sábado, 17 de octubre');
+  });
+
+  it('la fecha lleva el año solo fuera del año en curso', () => {
+    expect(formatPlanDate('2026-10-17', 'short', 2026)).toBe('sáb, 17 oct');
+    expect(formatPlanDate('2027-03-03', 'short', 2026)).toBe('mié, 3 mar 2027');
+    expect(formatPlanDate('2027-03-03', 'long', 2026)).toBe('miércoles, 3 de marzo de 2027');
   });
 });
 

@@ -1,12 +1,12 @@
 import { Play } from 'lucide-react';
 import type { Navigate } from '../../app/routes';
 import { useContent } from '../../content/ContentProvider';
-import { formatPlanDate } from '../../content/library';
+import { calendarOf, formatPlanDate } from '../../content/library';
 import { useAula } from '../../store/AulaProvider';
 import { deckFor } from '../../store/deck';
 import { pendingNotes } from '../../store/teacher';
 import { Button } from '../../ui/Button';
-import { CURRENT_LABEL, useCurrentLesson } from './current';
+import { CURRENT_LABEL, PUBLICATION_LABEL, useCurrentLesson } from './current';
 
 const MARK_LABEL = {
   lista: 'lista',
@@ -15,12 +15,24 @@ const MARK_LABEL = {
 } as const;
 
 /** La clase actual (la de hoy, la próxima o la última abierta) a un toque, al tope de Clases. */
-export function TodayCard({ onNavigate }: { onNavigate: Navigate }) {
+export function TodayCard({
+  libraryId,
+  onNavigate,
+}: {
+  /** Biblioteca abierta: si es de publicación, la tarjeta muestra su próxima publicación. */
+  libraryId: string | null;
+  onNavigate: Navigate;
+}) {
   const { data } = useAula();
   const content = useContent();
-  const current = useCurrentLesson();
+  const current = useCurrentLesson(libraryId);
   const entry = content.library.entries.find((item) => item.id === current?.id);
   if (!entry || !current) return null;
+  const labels =
+    calendarOf(content.library, entry.libraryId) === 'publicacion'
+      ? PUBLICATION_LABEL
+      : CURRENT_LABEL;
+  const label = labels[current.reason];
   const { meta, slides } = deckFor(content, entry.id);
   const notes = pendingNotes(data, entry.id).length;
   // Con varias bibliotecas, la clase de hoy puede venir de cualquiera: se dice de cuál.
@@ -34,10 +46,10 @@ export function TodayCard({ onNavigate }: { onNavigate: Navigate }) {
     notes ? `${notes} ${notes === 1 ? 'comentario pendiente' : 'comentarios pendientes'}` : '',
   ].filter(Boolean);
   return (
-    <section aria-label={CURRENT_LABEL[current.reason]} className="today-card">
+    <section aria-label={label} className="today-card">
       <div className="today-card-copy">
         <p className="kicker">
-          {CURRENT_LABEL[current.reason]} · {from ? `${from} · ` : ''}
+          {label} · {from ? `${from} · ` : ''}
           {MARK_LABEL[entry.status]}
         </p>
         <h2>{meta.title}</h2>

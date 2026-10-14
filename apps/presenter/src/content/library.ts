@@ -1,8 +1,10 @@
-import type {
-  Lesson,
-  LessonMark,
-  PlannedLesson,
-  Planning,
+import {
+  planningCalendar,
+  type Lesson,
+  type LessonMark,
+  type PlannedLesson,
+  type Planning,
+  type PlanningCalendar,
 } from '@aula/content-model';
 import type { ContentBundle } from '@aula/content-model/content-files';
 
@@ -11,6 +13,8 @@ export interface LibraryInfo {
   id: string;
   title: string;
   path: string;
+  /** `publicacion` (el canal): sus fechas no deciden la clase del día de los cursos. */
+  calendario: PlanningCalendar;
 }
 
 export interface Unit {
@@ -102,7 +106,12 @@ export function libraryOf(bundle: ContentBundle): Library {
   const entries: LibraryEntry[] = [];
   const placed = new Set<string>();
   for (const { id: libraryId, path, planning } of bundle.plannings) {
-    libraries.push({ id: libraryId, title: planning.title?.trim() || libraryId, path });
+    libraries.push({
+      id: libraryId,
+      title: planning.title?.trim() || libraryId,
+      path,
+      calendario: planningCalendar(planning),
+    });
     for (const unit of planning.units) {
       units.push({ id: unit.id, title: unit.title, libraryId });
       for (const planned of unit.lessons) {
@@ -165,7 +174,8 @@ const withoutLesson = (planning: Planning, id: string): Planning => ({
  */
 export function planningReducer(planning: Planning, action: PlanningAction): Planning {
   const title = planning.title === undefined ? {} : { title: planning.title };
-  return { ...title, units: unitsReducer(planning, action).units };
+  const calendario = planning.calendario === undefined ? {} : { calendario: planning.calendario };
+  return { ...title, ...calendario, units: unitsReducer(planning, action).units };
 }
 
 function unitsReducer(planning: Planning, action: PlanningAction): Planning {
@@ -276,9 +286,15 @@ export function currentLesson(
   return last ? { id: last.id, reason: 'ultima', date: last.date } : null;
 }
 
+/** Calendario de una biblioteca; las clases sin biblioteca cuentan como clases. */
+export function calendarOf(library: Library, libraryId: string | null): PlanningCalendar {
+  return library.libraries.find((item) => item.id === libraryId)?.calendario ?? 'clases';
+}
+
 /**
  * La clase actual de una biblioteca: como `currentLesson`, pero solo entre sus propias clases.
- * Sin biblioteca (o si no existe o no tiene clases) mira todas.
+ * Sin biblioteca (o si no existe o no tiene clases) mira todas las de clases: las fechas de
+ * publicación del canal no son clases de un curso.
  */
 export function currentLessonIn(
   library: Library,
@@ -287,16 +303,41 @@ export function currentLessonIn(
   lastOpened: string,
 ) {
   const own = libraryId ? library.entries.filter((entry) => entry.libraryId === libraryId) : [];
-  return currentLesson(own.length ? own : library.entries, today, lastOpened);
+  const classes = library.entries.filter(
+    (entry) => calendarOf(library, entry.libraryId) === 'clases',
+  );
+  return currentLesson(own.length ? own : classes, today, lastOpened);
 }
 
-/** «sábado 17 de octubre» a partir de AAAA-MM-DD, sin depender de la zona horaria. */
-export function formatPlanDate(date: string, style: 'long' | 'short' = 'long'): string {
+/**
+ * La clase de la tarjeta de Clases: en una biblioteca de publicación, la de su calendario; en
+ * cualquier otra, la del calendario de clases de todas.
+ */
+export function todayLessonIn(
+  library: Library,
+  openLibraryId: string | null,
+  today: string,
+  lastOpened: string,
+) {
+  const publication = calendarOf(library, openLibraryId) === 'publicacion';
+  return currentLessonIn(library, publication ? openLibraryId : null, today, lastOpened);
+}
+
+/**
+ * «sábado, 17 de octubre» a partir de AAAA-MM-DD, sin depender de la zona horaria. Fuera del
+ * año en curso lleva el año: una biblioteca puede tener fechas de varios años.
+ */
+export function formatPlanDate(
+  date: string,
+  style: 'long' | 'short' = 'long',
+  currentYear: number = new Date().getFullYear(),
+): string {
   const [y = 0, m = 1, d = 1] = date.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('es-CL', {
     timeZone: 'UTC',
     ...(style === 'long'
       ? { weekday: 'long', day: 'numeric', month: 'long' }
       : { weekday: 'short', day: 'numeric', month: 'short' }),
+    ...(y === currentYear ? {} : { year: 'numeric' }),
   });
 }

@@ -2,7 +2,7 @@
 
 Planificación del canal autoinstruccional Profe Piña para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física, más el bloque «Uso de IA como estudiante». Versión del 14-10-2026.
 
-**Fuente de verdad:** las bibliotecas `content/planning/yt-*.yaml` mandan en el orden, las unidades y las fechas tentativas de publicación. La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
+**Fuente de verdad:** las bibliotecas `content/planning/yt-*.yaml` mandan en el orden, las unidades y las fechas tentativas de publicación. Llevan `calendario: publicacion`: sus fechas no aparecen como «Clase de hoy» de los cursos y, con la biblioteca abierta, la tarjeta de Clases muestra la «Próxima publicación». La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
 
 La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este ciclo es un **piloto** y el lanzamiento fuerte es en **marzo de 2027**. Las fechas y la estructura de las pruebas se verifican con DEMRE cada año.
 
@@ -108,7 +108,6 @@ Ya está en las bibliotecas `yt-ia` y `yt-canal`. Quedan como ideas sin fecha:
 
 - **Voz real:** no hay voz sintética en español instalada.
 - **Capacidad real por semana:** se mide con el piloto y define si M1 sigue en dos videos por semana.
-- **La tarjeta «Clase de hoy / Próxima clase»** mira todas las bibliotecas. Con estas fechas, en los días sin clase del curso mostrará un video del canal.
 - **Material de apoyo:** falta decidir si el PDF de láminas o el repaso se enlazan desde la descripción, lo que depende de la entrada pública.
 - **Química y Biología:** si se cubren más adelante.
 - **Plantilla de miniatura, logo e intro/outro:** siguen pendientes en el plan de producción del canal.
