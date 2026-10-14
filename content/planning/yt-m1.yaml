@@ -4,13 +4,241 @@ title: PAES Matemática M1
 units:
   - id: m1-numeros
     title: Números
-    lessons: []
+    lessons:
+      - id: m1-enteros
+        title: 'Números enteros: operaciones y orden'
+        objective: Operar y ordenar números enteros con seguridad en los signos.
+        date: 2027-03-02
+      - id: m1-racionales
+        title: 'Números racionales: operar y comparar'
+        objective: Operar y comparar fracciones y decimales.
+        date: 2027-03-05
+      - id: m1-practica-enteros-racionales
+        title: 'Práctica: Enteros y racionales'
+        objective: Resolver de forma autónoma preguntas tipo PAES de enteros y racionales, con pausas para intentar y comprobar.
+        date: 2027-03-09
+      - id: m1-porcentaje
+        title: Porcentaje
+        objective: Comprender y calcular porcentajes como razón de 100.
+        date: 2027-03-12
+      - id: m1-porcentaje-variaciones
+        title: Aumentos, descuentos y porcentajes sucesivos
+        objective: Resolver problemas de variaciones porcentuales sucesivas.
+        date: 2027-03-16
+      - id: m1-practica-porcentaje
+        title: 'Práctica: Porcentaje'
+        objective: Resolver de forma autónoma preguntas tipo PAES de porcentaje, con pausas para intentar y comprobar.
+        date: 2027-03-19
+      - id: m1-potencias
+        title: Propiedades de las potencias
+        objective: Usar las propiedades de potencias de base y exponente racional.
+        date: 2027-03-23
+      - id: m1-raices
+        title: Raíces enésimas
+        objective: Descomponer y operar raíces enésimas en los números reales.
+        date: 2027-03-26
+      - id: m1-exponente-racional
+        title: 'Exponentes fraccionarios: potencias y raíces a la vez'
+        objective: Relacionar potencias de exponente racional con raíces enésimas.
+        date: 2027-03-30
+      - id: m1-practica-potencias-raices
+        title: 'Práctica: Potencias y raíces'
+        objective: Resolver de forma autónoma preguntas tipo PAES de potencias y raíces, con pausas para intentar y comprobar.
+        date: 2027-04-02
   - id: m1-algebra-funciones
     title: Álgebra y funciones
-    lessons: []
+    lessons:
+      - id: m1-evaluar-expresiones
+        title: El orden que cambia el resultado | Evaluar expresiones algebraicas
+        objective: Evaluar expresiones algebraicas y modelos respetando la prioridad de las operaciones.
+        date: 2026-11-10
+      - id: m1-operar-expresiones
+        title: El error que se esconde en el paso 2 | Multiplicar y simplificar expresiones algebraicas
+        objective: Operar y simplificar expresiones algebraicas sin perder signos ni términos.
+        date: 2026-11-24
+      - id: m1-traducir-expresiones
+        title: Cuando el español esconde una operación distinta | Traducir frases a expresiones algebraicas
+        objective: Traducir enunciados del lenguaje natural a expresiones algebraicas.
+        date: 2026-12-15
+      - id: m1-patrones-secuencias
+        title: Predecir el término 100 sin contarlo | Patrones y secuencias
+        objective: Generalizar un patrón con una expresión algebraica.
+        date: 2027-01-05
+      - id: m1-modelar-expresiones
+        title: El problema no pregunta lo que parece | Modelar con expresiones algebraicas
+        objective: Modelar situaciones con expresiones algebraicas e interpretar lo que se pregunta.
+        date: 2027-01-19
+      - id: m1-cuadrado-binomio
+        title: Por qué (a+b)² nunca es a²+b² | Cuadrado de un binomio
+        objective: Comprender y usar el cuadrado de un binomio.
+        date: 2027-02-02
+      - id: m1-suma-por-diferencia
+        title: Cuando dos identidades se esconden en una sola pregunta | Suma por su diferencia y cuadrado de binomio
+        objective: Reconocer y combinar la suma por su diferencia y el cuadrado de un binomio.
+        date: 2027-02-09
+      - id: m1-binomios-termino-comun
+        title: La pregunta que nunca pide expandir | Multiplicación de binomios con término común
+        objective: Usar el producto de binomios con término común para factorizar sin expandir.
+        date: 2027-02-16
+      - id: m1-practica-expresiones
+        title: 'Práctica: Expresiones algebraicas'
+        objective: Resolver de forma autónoma preguntas tipo PAES de expresiones algebraicas, con pausas para intentar y comprobar.
+        date: 2027-02-23
+      - id: m1-proporcion-directa
+        title: Proporción directa
+        objective: Reconocer y representar la proporcionalidad directa en tablas, gráficos y expresiones.
+        date: 2027-04-06
+      - id: m1-proporcion-inversa
+        title: Proporción inversa
+        objective: Reconocer y representar la proporcionalidad inversa y distinguirla de la directa.
+        date: 2027-04-09
+      - id: m1-practica-proporcionalidad
+        title: 'Práctica: Proporcionalidad'
+        objective: Resolver de forma autónoma preguntas tipo PAES de proporcionalidad, con pausas para intentar y comprobar.
+        date: 2027-04-13
+      - id: m1-ecuaciones-lineales
+        title: Ecuaciones lineales
+        objective: Resolver ecuaciones de primer grado justificando cada paso.
+        date: 2027-04-16
+      - id: m1-ecuaciones-problemas
+        title: Plantear ecuaciones
+        objective: Plantear y resolver ecuaciones lineales a partir de problemas en contexto.
+        date: 2027-04-20
+      - id: m1-inecuaciones-lineales
+        title: Inecuaciones lineales
+        objective: Resolver inecuaciones de primer grado e interpretar su conjunto solución.
+        date: 2027-04-23
+      - id: m1-practica-ecuaciones-inecuaciones
+        title: 'Práctica: Ecuaciones e inecuaciones'
+        objective: Resolver de forma autónoma preguntas tipo PAES de ecuaciones e inecuaciones, con pausas para intentar y comprobar.
+        date: 2027-04-27
+      - id: m1-sistemas-2x2
+        title: Sistemas de ecuaciones 2×2
+        objective: Resolver sistemas de dos ecuaciones lineales por sustitución, igualación y reducción.
+        date: 2027-04-30
+      - id: m1-sistemas-problemas
+        title: Problemas con sistemas 2×2
+        objective: Modelar y resolver problemas en contexto con sistemas de ecuaciones lineales.
+        date: 2027-05-04
+      - id: m1-practica-sistemas
+        title: 'Práctica: Sistemas de ecuaciones'
+        objective: Resolver de forma autónoma preguntas tipo PAES de sistemas de ecuaciones, con pausas para intentar y comprobar.
+        date: 2027-05-07
+      - id: m1-funcion-lineal-afin
+        title: Función lineal y función afín
+        objective: Distinguir la función lineal de la afín e interpretar pendiente y coeficiente de posición.
+        date: 2027-05-11
+      - id: m1-funcion-afin-graficos
+        title: Tablas y gráficos de la función afín
+        objective: Pasar entre tabla, gráfico y expresión de una función afín.
+        date: 2027-05-14
+      - id: m1-practica-funcion-afin
+        title: 'Práctica: Función lineal y afín'
+        objective: Resolver de forma autónoma preguntas tipo PAES de función lineal y afín, con pausas para intentar y comprobar.
+        date: 2027-05-18
+      - id: m1-ecuacion-segundo-grado
+        title: Ecuación de segundo grado
+        objective: Resolver ecuaciones de segundo grado y problemas que las involucran.
+        date: 2027-05-21
+      - id: m1-funcion-cuadratica-parametros
+        title: 'Función cuadrática: efecto de sus parámetros'
+        objective: Interpretar cómo cambian la tabla y el gráfico de una función cuadrática al variar sus parámetros.
+        date: 2027-05-25
+      - id: m1-funcion-cuadratica-puntos
+        title: Vértice, ceros e intersecciones de la parábola
+        objective: Encontrar e interpretar los puntos especiales de la gráfica de una función cuadrática.
+        date: 2027-05-28
+      - id: m1-practica-funcion-cuadratica
+        title: 'Práctica: Función cuadrática'
+        objective: Resolver de forma autónoma preguntas tipo PAES de función cuadrática, con pausas para intentar y comprobar.
+        date: 2027-06-01
   - id: m1-geometria
     title: Geometría
-    lessons: []
+    lessons:
+      - id: m1-pitagoras
+        title: Teorema de Pitágoras
+        objective: Usar el teorema de Pitágoras para resolver problemas en contexto.
+        date: 2027-06-04
+      - id: m1-perimetros-areas
+        title: Perímetros y áreas
+        objective: Calcular perímetros y áreas de triángulos, paralelogramos, trapecios y círculos.
+        date: 2027-06-08
+      - id: m1-practica-figuras
+        title: 'Práctica: Figuras geométricas'
+        objective: Resolver de forma autónoma preguntas tipo PAES de figuras geométricas, con pausas para intentar y comprobar.
+        date: 2027-06-11
+      - id: m1-prismas-cubos
+        title: Área y volumen de paralelepípedos y cubos
+        objective: Calcular área de superficie y volumen de paralelepípedos y cubos.
+        date: 2027-06-15
+      - id: m1-cilindro
+        title: Área y volumen del cilindro
+        objective: Calcular área de superficie y volumen de cilindros.
+        date: 2027-06-18
+      - id: m1-practica-cuerpos
+        title: 'Práctica: Cuerpos geométricos'
+        objective: Resolver de forma autónoma preguntas tipo PAES de cuerpos geométricos, con pausas para intentar y comprobar.
+        date: 2027-06-22
+      - id: m1-vectores-plano
+        title: Puntos y vectores en el plano cartesiano
+        objective: Representar puntos y vectores en el plano cartesiano.
+        date: 2027-06-25
+      - id: m1-isometrias
+        title: Rotación, traslación y reflexión
+        objective: Aplicar transformaciones isométricas a figuras en el plano.
+        date: 2027-06-29
+      - id: m1-practica-isometrias
+        title: 'Práctica: Transformaciones isométricas'
+        objective: Resolver de forma autónoma preguntas tipo PAES de transformaciones isométricas, con pausas para intentar y comprobar.
+        date: 2027-07-02
+      - id: m1-semejanza
+        title: Semejanza de figuras
+        objective: Reconocer figuras semejantes y usar la razón de semejanza.
+        date: 2027-07-06
+      - id: m1-escalas
+        title: Modelos a escala
+        objective: Aplicar semejanza y proporcionalidad a modelos a escala.
+        date: 2027-07-09
+      - id: m1-practica-semejanza
+        title: 'Práctica: Semejanza'
+        objective: Resolver de forma autónoma preguntas tipo PAES de semejanza, con pausas para intentar y comprobar.
+        date: 2027-07-13
   - id: m1-probabilidad-estadistica
     title: Probabilidad y estadística
-    lessons: []
+    lessons:
+      - id: m1-tablas-frecuencia
+        title: Tablas de frecuencia
+        objective: Construir e interpretar tablas de frecuencia absoluta y relativa.
+        date: 2027-07-16
+      - id: m1-graficos-promedio
+        title: Gráficos y promedio
+        objective: Elegir e interpretar gráficos y calcular el promedio de un conjunto de datos.
+        date: 2027-07-20
+      - id: m1-practica-datos
+        title: 'Práctica: Tablas y gráficos'
+        objective: Resolver de forma autónoma preguntas tipo PAES de tablas y gráficos, con pausas para intentar y comprobar.
+        date: 2027-07-23
+      - id: m1-cuartiles-percentiles
+        title: Cuartiles y percentiles
+        objective: Calcular e interpretar cuartiles y percentiles de uno o más grupos de datos.
+        date: 2027-07-27
+      - id: m1-diagrama-cajon
+        title: Diagrama de cajón
+        objective: Representar y comparar distribuciones con diagramas de cajón.
+        date: 2027-07-30
+      - id: m1-practica-posicion
+        title: 'Práctica: Medidas de posición'
+        objective: Resolver de forma autónoma preguntas tipo PAES de medidas de posición, con pausas para intentar y comprobar.
+        date: 2027-08-03
+      - id: m1-probabilidad-evento
+        title: Probabilidad de un evento
+        objective: Calcular la probabilidad de un evento con la regla de Laplace.
+        date: 2027-08-06
+      - id: m1-regla-aditiva-multiplicativa
+        title: Reglas aditiva y multiplicativa
+        objective: Usar las reglas aditiva y multiplicativa de probabilidades.
+        date: 2027-08-10
+      - id: m1-practica-probabilidades
+        title: 'Práctica: Probabilidades'
+        objective: Resolver de forma autónoma preguntas tipo PAES de probabilidades, con pausas para intentar y comprobar.
+        date: 2027-08-13

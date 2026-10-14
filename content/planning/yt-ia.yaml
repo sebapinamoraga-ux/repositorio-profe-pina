@@ -1,0 +1,64 @@
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# El título es público: usa un nombre genérico, sin datos privados de cursos.
+title: Uso de IA como estudiante
+units:
+  - id: ia-aprender
+    title: Aprender con IA
+    lessons:
+      - id: ia-pedir-explicaciones
+        title: Pedir explicaciones sin que la IA haga el trabajo
+        objective: Usar la IA para entender un tema sin delegarle el razonamiento.
+        date: 2026-11-17
+      - id: ia-verificar-antes-de-confiar
+        title: Verificar antes de confiar
+        objective: Contrastar lo que dice la IA con fuentes oficiales antes de usarlo.
+        date: 2026-12-01
+      - id: ia-errores-de-la-ia
+        title: Cuando la IA se equivoca en matemática y física
+        objective: Detectar errores típicos de la IA en cálculos y explicaciones.
+        date: 2027-01-12
+  - id: ia-paes
+    title: Estudiar para la PAES con IA
+    lessons:
+      - id: ia-generar-practica
+        title: Generar práctica a tu medida
+        objective: Pedir ejercicios adecuados al propio nivel y comprobarlos.
+        date: 2027-01-26
+      - id: ia-retroalimentacion
+        title: Que la IA revise tu desarrollo
+        objective: Obtener retroalimentación sobre el propio procedimiento, no solo sobre el resultado.
+        date: 2027-03-14
+      - id: ia-plan-de-estudio
+        title: Un plan de estudio con IA
+        objective: Armar y ajustar un plan de estudio con ayuda de la IA.
+        date: 2027-04-04
+  - id: ia-integridad
+    title: Integridad y cuidado
+    lessons:
+      - id: ia-aprender-vs-copiar
+        title: Aprender o copiar
+        objective: Distinguir el uso de la IA que ayuda a aprender del que lo reemplaza.
+        date: 2027-04-25
+      - id: ia-privacidad
+        title: Qué no compartir con una IA
+        objective: Proteger los datos personales al usar herramientas de IA.
+        date: 2027-05-16
+      - id: ia-declarar-uso
+        title: Declarar y citar el uso de IA
+        objective: Declarar con honestidad cómo se usó la IA en un trabajo.
+        date: 2027-06-06
+  - id: ia-proyectos
+    title: Proyectos con IA
+    lessons:
+      - id: ia-contexto-sin-repetirse
+        title: Darle contexto a la IA sin repetirse
+        objective: Organizar contexto y memorias para trabajar con IA en un proyecto largo.
+        date: 2027-06-27
+      - id: ia-idea-al-video
+        title: De la idea al video, en vivo
+        objective: Mostrar una decisión real de producción del canal tomada con ayuda de la IA.
+        date: 2027-07-18
+      - id: ia-proyecto-personal
+        title: Tu propio proyecto con IA
+        objective: Planificar un proyecto personal con IA desde la idea hasta el resultado.
+        date: 2027-08-08

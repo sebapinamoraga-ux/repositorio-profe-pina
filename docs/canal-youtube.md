@@ -1,102 +1,114 @@
 # Canal de YouTube PAES
 
-Planificación macro (14-10-2026) de un canal autoinstruccional para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física. Las clases del canal viven en sus propias bibliotecas (`content/planning/yt-*.yaml`); los videos se producen en el repositorio aparte de videos, que solo lee la plataforma.
+Planificación del canal autoinstruccional Profe Piña para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física, más el bloque «Uso de IA como estudiante». Versión del 14-10-2026.
 
-La PAES Regular de 2026 llega en unas 7 semanas: este ciclo es un **piloto** y el lanzamiento fuerte es en **marzo de 2027**. Las fechas y la estructura de las pruebas (número de preguntas, módulo común de Ciencias, calendario) se verifican con DEMRE cada año; aquí son aproximadas.
+**Fuente de verdad:** las bibliotecas `content/planning/yt-*.yaml` mandan en el orden, las unidades y las fechas tentativas de publicación. La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
+
+La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este ciclo es un **piloto** y el lanzamiento fuerte es en **marzo de 2027**. Las fechas y la estructura de las pruebas se verifican con DEMRE cada año.
 
 ## 1. Principios
 
-1. **Separar lo durable de lo de temporada.** Los videos de contenido no nombran año, admisión ni fechas; la fecha va solo en los de temporada (calendario, ensayos, resultados). Así una clase sirve 3 a 5 ciclos.
-2. **Cada video sabe a qué ítem del temario responde.** Si DEMRE publica un temario nuevo, la diferencia indica qué videos rehacer, cuáles quedan y cuáles se despublican. Nada se rehace por si acaso.
-3. **Autoinstruccional de verdad:** objetivo al inicio, pausas para resolver (`momento: 'pausa'`), predicción, pista, comprobación y cierre con «recuerda». Consignas en singular, sin trabajo en parejas.
-4. **Un video largo es la unidad monetizable** (≥ 8 min para anuncios a mitad del video; idealmente de 10 a 18). Los Shorts sirven para descubrimiento y son derivados baratos del largo.
-5. **Producir por lotes y publicar a un ritmo constante**, con unas 6 semanas de videos ya listos antes de cada temporada.
+1. **Separar lo durable de lo de temporada.** Los videos de contenido no nombran año, admisión ni fechas, así que una clase sirve de 3 a 5 ciclos. La fecha va solo en los videos de temporada y en los ensayos, cuyo identificador lleva el año (`canal-puntajes-2027`).
+2. **Cada video sabe a qué parte del temario responde.** La unidad de la biblioteca es el eje de DEMRE y la clase es una unidad temática o una parte de ella. Si cambia el temario, la diferencia dice qué rehacer, qué queda y qué se despublica.
+3. **Formato híbrido** (§5). Un video conceptual, en el estilo del canal, explica la idea. Un video de práctica autoinstruccional, por unidad temática, la ejercita.
+4. **El video largo es la unidad monetizable.** Dura 8 minutos o más, para admitir anuncios a mitad del video. Los Shorts sirven para el descubrimiento y son derivados baratos de los largos.
+5. **Producir por lotes.** Enero y febrero son de producción. Conviene tener unas 6 semanas de videos listos antes de marzo.
 
-## 2. Bibliotecas en la plataforma
+## 2. Bibliotecas
 
-Las cuatro bibliotecas ya existen en `content/planning/`. El título es genérico y la unidad corresponde a un eje del temario. `date` es la fecha de publicación prevista.
+| Archivo | Título público | Unidades | Clases | Día de publicación |
+|---|---|---|---|---|
+| `yt-m1.yaml` | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 57 | Martes y viernes (piloto: cada dos semanas) |
+| `yt-fisica.yaml` | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | 35 | Jueves |
+| `yt-m2.yaml` | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | 25 | Sábados, ciclo 2028 |
+| `yt-ia.yaml` | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | 12 | Cada 2 o 3 semanas |
+| `yt-canal.yaml` | Canal: estrategia y temporada | Estrategia de prueba · Ensayos · Temporada · Puente a la universidad | 18 | Según el hito |
 
-| Archivo | Título público | Unidades (macro) |
-|---|---|---|
-| `yt-m1.yaml` | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística |
-| `yt-m2.yaml` | PAES Matemática M2 | Números (reales, logaritmos) · Álgebra y funciones (avanzado) · Geometría · Probabilidad y estadística (avanzado) |
-| `yt-fisica.yaml` | PAES Ciencias: Física | Ondas · Mecánica · Energía · Electricidad y magnetismo · Tierra y universo · Habilidades científicas |
-| `yt-canal.yaml` | Canal: estrategia y temporada | Estrategia de prueba · Ensayos y pruebas liberadas · Temporada (calendario, puntajes, postulación) · Puente a la U |
-
-- **Reutilización:** las clases de `m1-2027` que coinciden con el temario se pasan a `yt-m1` con «Copiar a otra biblioteca» y se adaptan al formato autoinstruccional (sin votación, con pausas). La primera candidata es `funcion-lineal-afin-2-cuadratica-1`, que ya tiene video.
-- **Cambio de temario:** al cambiar el temario se crea la biblioteca siguiente copiando solo lo afectado. Los IDs de las clases que no cambian se mantienen.
-- **Temario como currículo:** un `content/curriculum/paes-m1.yaml` (y equivalentes) con los ítems de DEMRE. Cada clase del canal declara sus ítems.
-- **Punto abierto:** la «Clase de hoy» mira todas las bibliotecas, así que una fecha de publicación del canal aparecería ahí como si fuera una clase. Hay que decidir si eso sirve como recordatorio o si conviene que las bibliotecas del canal no participen.
+- **Temario de referencia:** son los temarios regulares de la Admisión 2027 publicados por DEMRE. M1 tiene 65 preguntas (60 cuentan para el puntaje) y dura 2 h 20 min. M2 tiene 55 preguntas (50 cuentan), incluye suficiencia de datos y dura 2 h 20 min. Ciencias tiene 80 preguntas (75 cuentan) y dura 2 h 40 min: 54 son del módulo común, con los tres ejes, y 26 del módulo electivo. Las áreas de Física son Ondas, Mecánica (incluye sistema solar y universo), Energía–Tierra y Electricidad; las habilidades científicas son transversales. Las copias de los temarios están en las carpetas «Temarios oficiales» del canal.
+- **El canal cubre solo Física.** Las 36 preguntas de Biología y Química del módulo común quedan fuera; hay que decirlo en la descripción de los videos de Física.
+- **Identificadores:** las clases llevan el prefijo `m1-`, `m2-`, `fis-`, `ia-` o `canal-`, y las de práctica, el segmento `-practica-`. Una clase del curso que se reutilice se copia con «Copiar a otra biblioteca», nunca se mueve.
+- **Cambio de temario:** se copia la biblioteca a una nueva solo con lo afectado, y las clases que no cambian conservan su identificador.
 
 ## 3. Ciclo anual y cadencia
 
-El año PAES se repite. El canal publica según la fase del estudiante, no según el currículo escolar.
+| Período | Qué busca el estudiante | Qué hay en las bibliotecas |
+|---|---|---|
+| **Nov 2026–Feb 2027 (piloto)** | Última semana, resultados, postulación | M1: Expresiones algebraicas cada dos semanas y la mini serie de productos notables seguida en febrero. IA: tres videos. Canal: la última semana, puntajes, postulación, puente a la U y el plan para egresados |
+| **Mar–Abr** | Empezar desde cero | M1: Números y Proporcionalidad. Física: Ondas. Canal: cómo es la PAES, por dónde empezar y cálculo sin calculadora |
+| **May–Jun** | PAES de invierno | M1: ecuaciones, sistemas y funciones. Física: Mecánica. Canal: gestión del tiempo, ensayo en vivo de invierno e inscripción |
+| **Jul–Ago** | Vacaciones de invierno; inscripción | M1: Geometría y Probabilidad y estadística (M1 termina el 13 de agosto). Física: universo y Electricidad. Canal: descartar alternativas y suficiencia de datos |
+| **Sep–Oct** | Repaso | Física: Energía–Tierra y Habilidades (Física termina el 28 de octubre). Ensayos en vivo de M1 y Física. Fuera de las bibliotecas: compilaciones por eje y Shorts |
+| **Nov** | Mayor pago por anuncio; la prueba | Ensayo en vivo de M2 y la última semana de 2027 |
+| **Ene–Feb 2028** | Resultados | Se rehacen los videos de temporada y se produce M2 |
+| **Mar–Ago 2028** | Segundo ciclo | M2 los sábados, del 4 de marzo al 19 de agosto. M1 y Física se reciclan |
 
-| Período | Qué busca el estudiante | Qué publica el canal | Ritmo |
+**Carga en temporada:** entre marzo y agosto de 2027 hay unos 3 a 3,5 videos largos por semana (M1 2, Física 1 e IA o canal ocasionales). Está por encima del supuesto de 2 a 3 por semana. Las fechas son tentativas: si el piloto muestra menos capacidad, se espacia M1 a un video por semana y M1 termina hacia noviembre. Los videos de práctica son los más baratos, porque salen de una clase de la plataforma con el flujo del repositorio de videos.
+
+## 4. Formatos
+
+| Formato | Producción | Duración | Rol |
 |---|---|---|---|
-| **Ene** | Resultados, ponderaciones, postulación | Temporada: cómo leer el puntaje y postular. Puente a la U (precálculo, física universitaria inicial) | 1 largo/sem + Shorts. **Lote de producción** |
-| **Feb** | Descanso; los egresados planifican | «Plan para egresados», diagnóstico, rutas. Producción | 1 largo/sem |
-| **Mar–Abr** | Empezar desde cero; nuevo temario DEMRE | Arranque: bases de M1 (números, álgebra) y Física (ondas, mecánica). Revisión del temario → mantenimiento | **2 a 3 largos/sem** + 3 a 4 Shorts |
-| **May–Jun** | PAES de Invierno; modelos oficiales | Mini temporada de invierno: repaso intensivo y ensayo en vivo. Continúa el núcleo de M1/Física | 2 a 3 largos/sem + 1 directo |
-| **Jul–Ago** | Inscripción; vacaciones de invierno = más horas | M1 avanzado (funciones, geometría), arranque de M2 y Física (energía, electricidad). Maratones en vacaciones | 2 a 3 largos/sem |
-| **Sep** | Fiestas Patrias; se acaba el tiempo | Probabilidad y estadística, Física (Tierra y universo). Primeras compilaciones | 2 largos/sem |
-| **Oct–Nov** | Repaso intensivo; **CPM más alto del año (Q4)** | Ensayos en vivo, «los 10 errores de M1», compilaciones por eje (videos largos de muy bajo costo), estrategia de prueba | 2 largos + 1 a 2 directos/sem |
-| **Dic** | Rinden la PAES; después, la prueba liberada | Último repaso, «qué llevar», y luego la resolución de la prueba liberada (pico de búsquedas) | Variable |
+| **Conceptual** (las clases sin `-practica-`) | Manim, según la guía de estilo del canal | 8–10 min | Explicar la idea; búsqueda orgánica; anuncios |
+| **Práctica** (las clases `-practica-`) | Clase de la plataforma convertida a video (Remotion + Manim) | 10–15 min | Ejercitar con pausas; retención; lista de reproducción |
+| **Shorts** | Un tramo de cualquiera de los dos | 30–90 s | Descubrimiento |
+| **Compilación por eje** | Montaje de videos ya publicados | 40–90 min | Horas de reproducción en el último trimestre |
+| **Directo / ensayo** | En vivo, con preguntas propias | 60–140 min | Comunidad y temporada |
+| **Temporada** | Conceptual corto | 6–12 min | Pico de búsquedas anual; se rehace cada año |
 
-**Volumen por ciclo (supuesto: una persona produce, 2 a 3 largos por semana en temporada):** unos 80 a 100 videos largos al año más 150 Shorts. Esto alcanza para cubrir M1 completo y Física en el año 1, y para completar M2 en el año 2. La cadencia se ajusta según la capacidad real de producción (ver §7).
+### Guion tipo del video conceptual
 
-## 4. Hoja de ruta plurianual
+Sigue la guía de estilo del canal (`0.2 Recursos y marca del canal/Estilo de guion y video (referencia 3Blue1Brown).md`):
 
-- **Piloto (oct–dic 2026):** cerrar el flujo (voz real, miniatura, descripción, capítulos) con 3 a 5 videos de M1 de alta demanda: el video ya hecho adaptado y temas frecuentes de la prueba. Agregar una pieza de estrategia para el último mes y la resolución de la prueba liberada de diciembre. Objetivo: medir retención y tiempo de producción real, no monetizar todavía.
-- **Año 1 (ciclo 2027, admisión 2028):** M1 completo (unas 45 a 55 clases), Física con la base de 1.º y 2.º medio (unas 25), estrategia y temporada. Para monetizar, el canal necesita entrar al Programa de Socios (umbral de suscriptores y horas de reproducción); conviene apuntar a lograrlo en la temporada de octubre y noviembre.
-- **Año 2 (ciclo 2028):** M2 completo (unas 25 a 30 clases), Física del electivo y avanzada, segunda capa de práctica PAES para M1. Los videos del año 1 se reciclan: compilaciones, Shorts nuevos y miniaturas renovadas.
-- **Año 3 en adelante:** mantenimiento según el temario, renovación de los videos de bajo rendimiento y nuevos formatos (§6). Se considera ampliar a Química y Biología solo si el canal lo justifica, porque la prueba de Ciencias tiene un módulo común que el canal no cubre por ahora.
+1. **Gancho:** una tensión genuina, no el anuncio del tema ni la promesa de puntaje.
+2. **Caso concreto** en el primer minuto.
+3. **Versión simplificada** antes del caso real.
+4. **Clímax**, con nombre: el momento en que se combinan dos ideas.
+5. **Al menos una pausa** para que el estudiante piense.
+6. **Utilidad PAES** en el desarrollo o el cierre.
+7. **Cierre** que responde al gancho.
 
-## 5. Formatos (indicios de lo micro)
+Las preguntas PAES reales son solo inspiración interna: no se muestran con alternativas ni se citan.
 
-| Formato | Duración | Rol | Vida útil |
-|---|---|---|---|
-| **Clase** (desde una clase de la biblioteca) | 10–18 min | Núcleo, búsqueda orgánica, anuncios | Mientras el temario siga vigente |
-| **Práctica PAES** (de 6 a 10 preguntas tipo, con pausa) | 8–15 min | Retención y lista de reproducción después de la clase | Igual |
-| **Shorts** (9:16, uno por tramo de la clase; ya está pendiente en el repo de videos) | 30–90 s | Descubrimiento y suscripciones | Igual |
-| **Compilación por eje** (montaje de clases ya hechas) | 40–90 min | Horas de reproducción en Q4 a costo casi nulo | Igual |
-| **Directo / ensayo** | 60–140 min | Comunidad, Super Chat, pico de fin de año | De temporada |
-| **Temporada** (calendario, puntajes, postulación) | 6–12 min | Pico de búsquedas anual | 1 ciclo (se rehace cada año) |
+### Guion tipo del video de práctica
 
-Estructura sugerida de un video de clase, alineada con `docs/visual-language.md`:
+Sigue el lenguaje visual de la plataforma (`docs/visual-language.md`):
 
-1. Objetivo (violeta)
-2. Idea o definición (azul)
-3. Procedimiento (piedra)
-4. Pausa con práctica (ocre)
-5. Comprobación (verde)
-6. Pregunta tipo PAES con alternativas
-7. «Recuerda»
-8. Pantalla final hacia el siguiente video de la ruta
+1. **Objetivo** (violeta) y un «recuerda» de 30 s con lo esencial de los videos conceptuales de la unidad (azul).
+2. **De 6 a 8 preguntas tipo PAES propias**, de dificultad creciente. Cada una tiene predicción, pausa de 15 s (20 s con pista), resolución en piedra, comprobación en verde y, cuando aplica, el error típico en ocre.
+3. **Cierre de reflexión** (rosa) y pantalla final hacia el siguiente video de la ruta.
 
-Los capítulos de YouTube coinciden con los tramos (el mapa de capítulos ya existe).
+Las consignas van en singular. Los capítulos de YouTube coinciden con las preguntas.
 
-## 6. Contenido no curricular (desde ya)
+### Miniatura y descripción (pendiente de diseño)
 
-- **Estrategia de prueba:** gestión del tiempo, cuándo omitir (verificar la regla vigente sobre respuestas incorrectas), cómo descartar alternativas y leer los datos que sobran.
-- **Bases sin calculadora:** fracciones, porcentajes, potencias y cálculo mental. Tienen mucha búsqueda y son durables.
-- **Diagnóstico y rutas:** «¿Por dónde empiezo?», un video de diagnóstico con rutas por nivel y planes de 12 y 24 semanas para egresados.
-- **Pruebas liberadas y modelos DEMRE:** resolución completa, en video y en directo.
-- **Puntajes y postulación:** escala, percentil, ponderaciones y qué carreras piden M2 o Ciencias. Es contenido de temporada, se verifica cada año y no es asesoría.
-- **Hábitos y bienestar:** rutina semanal, estudio espaciado y ansiedad ante la prueba (tono informativo, sin reemplazar apoyo profesional).
-- **Puente a la U (enero a marzo):** precálculo y física de primer año, para no perder audiencia después de la PAES.
-- **Física cotidiana y curiosidades:** Shorts con experimentos caseros y «la física detrás de…». Sirven para atraer audiencia fuera de temporada.
-- **Comunidad:** «Resuelvo tu ejercicio» con preguntas de los comentarios, encuestas y errores frecuentes del mes.
-- **Orientación ligera:** qué carreras usan Física o M2 y para qué sirve cada prueba.
+**Miniatura.** Lleva:
+- Profe Piña en una pose de la galería.
+- De 3 a 4 palabras del gancho.
+- Un objeto matemático o físico que lea a tamaño pequeño.
+- Una etiqueta de color por biblioteca (M1, M2, Física, IA).
+- En las prácticas, «Práctica» y el nombre de la unidad.
 
-## 7. Dependencias y decisiones abiertas
+**Descripción.** Incluye:
+- Una línea del gancho.
+- El eje y la unidad temática del temario DEMRE.
+- Los capítulos.
+- El video anterior y el siguiente de la ruta, y la lista de reproducción de la unidad.
+- En Física, el aviso de cobertura del módulo común.
 
-- **Voz real:** es el bloqueo principal, porque no hay TTS en español instalado y un video sin voz difícilmente retiene. Hay que definir si se graba la voz o se usa TTS externo.
-- **Capacidad real de producción por semana:** hoy, un video de unos 12 min se arma en días. Antes de fijar la cadencia hay que medir el tiempo de producción con el piloto.
-- **Ciencias:** el canal cubre solo Física. Hay que decidir si eso basta o si más adelante se buscan colaboraciones para Química y Biología.
-- **Enlaces a la plataforma:** falta decidir si el material de apoyo (PDF de láminas, repaso) se enlaza desde la descripción, lo que depende de la decisión pendiente sobre la «entrada pública».
-- **La «Clase de hoy» y las fechas del canal** (§2).
+## 5. Contenido no curricular
 
-## 8. Próximo paso
+Ya está en las bibliotecas `yt-ia` y `yt-canal`. Quedan como ideas sin fecha:
+- La resolución de pruebas liberadas DEMRE. Choca con la regla de no citar preguntas reales: hay que decidirlo.
+- Hábitos y bienestar ante la prueba.
+- Física cotidiana en Shorts.
+- «Resuelvo tu ejercicio», con preguntas de los comentarios.
+- Orientación ligera sobre qué carreras piden M2 o Ciencias.
 
-El detalle micro queda para una segunda vuelta: lista de clases por unidad con fechas de publicación, guion tipo de un video, plantilla de miniatura y descripción, y el currículo `content/curriculum/paes-*.yaml` con los ítems del temario vigente de DEMRE.
+## 6. Decisiones abiertas
+
+- **Voz real:** no hay voz sintética en español instalada.
+- **Capacidad real por semana:** se mide con el piloto y define si M1 sigue en dos videos por semana.
+- **La tarjeta «Clase de hoy / Próxima clase»** mira todas las bibliotecas. Con estas fechas, en los días sin clase del curso mostrará un video del canal.
+- **Material de apoyo:** falta decidir si el PDF de láminas o el repaso se enlazan desde la descripción, lo que depende de la entrada pública.
+- **Química y Biología:** si se cubren más adelante.
+- **Plantilla de miniatura, logo e intro/outro:** siguen pendientes en el plan de producción del canal.
