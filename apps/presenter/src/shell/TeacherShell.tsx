@@ -115,6 +115,7 @@ export function TeacherShell({
         lesson: target?.lesson ?? (LESSON_VIEWS.has(next) ? lessonId : null),
         section: target?.section,
         slide: target?.slide,
+        library: target?.library,
       }),
     );
 
@@ -122,7 +123,7 @@ export function TeacherShell({
     if (waiting) return <p className="app-loading">Cargando la clase…</p>;
     switch (view) {
       case 'clases':
-        return <Library onNavigate={go} />;
+        return <Library libraryId={route.library} onNavigate={go} />;
       case 'clase':
         return (
           <LessonWorkspace

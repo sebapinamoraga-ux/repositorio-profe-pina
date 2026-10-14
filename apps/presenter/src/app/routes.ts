@@ -28,6 +28,8 @@ export interface TeacherRoute {
   section: Section | null;
   lesson: string | null;
   slide: string | null;
+  /** Biblioteca abierta en Clases; null fuera de «clases» o si no se eligió. */
+  library: string | null;
 }
 
 export type AppRoute =
@@ -47,6 +49,7 @@ export interface NavTarget {
   lesson?: string;
   section?: Section;
   slide?: string;
+  library?: string;
 }
 
 /** Destino de una navegación docente; sin `lesson`, una vista de clase conserva la actual. */
@@ -66,7 +69,12 @@ export function parsePrint(params: URLSearchParams): PrintRoute | null {
 /** Construye una ruta docente válida: la pestaña solo existe en «clase» y vale «resumen» por omisión. */
 export function teacherRoute(
   view: View,
-  target: { lesson?: string | null; section?: Section | null; slide?: string | null } = {},
+  target: {
+    lesson?: string | null;
+    section?: Section | null;
+    slide?: string | null;
+    library?: string | null;
+  } = {},
 ): TeacherRoute {
   return {
     role: 'docente',
@@ -74,6 +82,7 @@ export function teacherRoute(
     section: view === 'clase' ? (target.section ?? 'resumen') : null,
     lesson: target.lesson ?? null,
     slide: target.slide ?? null,
+    library: view === 'clases' ? (target.library ?? null) : null,
   };
 }
 
@@ -86,6 +95,7 @@ function parseTeacher(params: URLSearchParams): TeacherRoute {
     lesson: text(params, 'clase'),
     section: legacy ?? (section.success ? section.data : null),
     slide: text(params, 'slide'),
+    library: text(params, 'biblioteca'),
   });
 }
 
@@ -140,6 +150,7 @@ export function routeParams(route: AppRoute): URLSearchParams {
     params.set('vista', route.view);
     if (route.lesson && LESSON_VIEWS.has(route.view)) params.set('clase', route.lesson);
     if (route.view === 'clase') params.set('seccion', route.section ?? 'resumen');
+    if (route.view === 'clases' && route.library) params.set('biblioteca', route.library);
     const slideHere =
       route.view === 'presentar' ||
       (route.view === 'clase' && route.section !== null && SLIDE_SECTIONS.has(route.section));

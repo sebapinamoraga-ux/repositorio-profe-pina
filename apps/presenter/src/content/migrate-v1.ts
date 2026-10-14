@@ -5,6 +5,7 @@ import { planningReducer, type PlanningAction } from './library';
 import {
   createLesson,
   findLesson,
+  defaultLibraryId,
   planningOf,
   writePlanning,
   writeSlides,
@@ -23,7 +24,9 @@ export function migrateLegacy(
 ): FileWrite[] {
   const writes: FileWrite[] = [];
   const actions: PlanningAction[] = [];
-  const planning = planningOf(bundle);
+  // Lo creado en el navegador va a la primera biblioteca.
+  const libraryId = defaultLibraryId(bundle);
+  const planning = planningOf(bundle, libraryId);
   const planned = new Set(planning.units.flatMap((u) => u.lessons.map((l) => l.id)));
   const units = new Set(planning.units.map((u) => u.id));
   for (const entry of legacy.library) {
@@ -71,6 +74,6 @@ export function migrateLegacy(
     planned.add(entry.id);
   }
   if (actions.length)
-    writes.push(...writePlanning(bundle, files, actions.reduce(planningReducer, planning)));
+    writes.push(...writePlanning(bundle, files, libraryId, actions.reduce(planningReducer, planning)));
   return writes;
 }

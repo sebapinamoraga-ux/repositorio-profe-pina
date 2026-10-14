@@ -106,14 +106,12 @@ export async function checkContentFiles(
     }
   }
 
-  if (bundle.planning) {
-    const path = bundle.planningPath ?? 'content/planning';
-    const known = new Set(bundle.lessons.map((lesson) => lesson.meta.id));
-    for (const unit of bundle.planning.units)
+  const known = new Set(bundle.lessons.map((lesson) => lesson.meta.id));
+  for (const { path, planning } of bundle.plannings)
+    for (const unit of planning.units)
       for (const planned of unit.lessons)
         if (!known.has(planned.id) && !planned.title)
           add(path, `La clase planificada ${planned.id} no tiene lesson.yaml ni título.`);
-  }
 
   if (options.trackedPaths && gallery) {
     const pngs = new Map<number, string[]>();

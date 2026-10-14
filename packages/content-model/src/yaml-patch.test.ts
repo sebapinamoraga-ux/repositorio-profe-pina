@@ -64,3 +64,15 @@ describe('patchYaml', () => {
     expect(stringifyYaml({ title: 'T', id: 'x' }, LESSON_KEYS)).toBe('id: x\ntitle: T\n');
   });
 });
+
+describe('listas vacías', () => {
+  it('una lista `[]` que recibe mapas se escribe en bloque', () => {
+    const text = patchYaml('title: Canal\nunits: []\n', {
+      title: 'Canal',
+      units: [{ id: 'u1', title: 'Funciones', lessons: [{ id: 'a' }] }],
+    });
+    expect(text).toBe(
+      'title: Canal\nunits:\n  - id: u1\n    title: Funciones\n    lessons:\n      - id: a\n',
+    );
+  });
+});

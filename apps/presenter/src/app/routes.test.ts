@@ -12,6 +12,7 @@ describe('parseRoute', () => {
       section: 'laminas',
       lesson: 'a',
       slide: 'b',
+      library: null,
     });
     expect(parse('rol=docente&vista=presentar&clase=sistemas-2x2&slide=signos')).toEqual({
       role: 'docente',
@@ -19,12 +20,21 @@ describe('parseRoute', () => {
       section: null,
       lesson: 'sistemas-2x2',
       slide: 'signos',
+      library: null,
     });
   });
 
   it('una vista desconocida vuelve a Clases y una pestaña desconocida al resumen', () => {
     expect(parse('rol=docente&vista=otra')).toMatchObject({ view: 'clases', section: null });
     expect(parse('rol=docente&vista=clase&seccion=otra')).toMatchObject({ section: 'resumen' });
+  });
+
+  it('Clases lleva la biblioteca elegida; las demás vistas no', () => {
+    expect(parse('rol=docente&vista=clases&biblioteca=canal')).toMatchObject({ library: 'canal' });
+    expect(canonical('rol=docente&vista=clases&biblioteca=canal')).toBe(
+      '#rol=docente&vista=clases&biblioteca=canal',
+    );
+    expect(parse('rol=docente&vista=cursos&biblioteca=canal')).toMatchObject({ library: null });
   });
 
   it('las vistas renombradas siguen abriendo su sección', () => {
@@ -46,6 +56,7 @@ describe('parseRoute', () => {
       section: null,
       lesson: 'sistemas-2x2',
       slide: 'activar',
+      library: null,
     });
     expect(parse('clase=sistemas-2x2&galeria=mascotas')).toEqual({
       role: 'docente',
@@ -53,6 +64,7 @@ describe('parseRoute', () => {
       section: null,
       lesson: 'sistemas-2x2',
       slide: null,
+      library: null,
     });
   });
 
@@ -63,6 +75,7 @@ describe('parseRoute', () => {
       section: null,
       lesson: null,
       slide: null,
+      library: null,
     });
     expect(parse('')).toEqual({ role: null });
   });

@@ -84,6 +84,8 @@ function patchNode(
   }
   if (Array.isArray(value)) {
     if (!isSeq(node)) return doc.createNode(value);
+    // Una lista vacía escrita `[]` pasa a bloque al llenarse con mapas (p. ej. `units`).
+    if (node.flow && !node.items.length && value.some(isRecord)) node.flow = false;
     node.items = value.map((item, k) => patchNode(doc, node.items[k], item, []));
     return node;
   }

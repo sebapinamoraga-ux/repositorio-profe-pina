@@ -81,9 +81,10 @@ export function contentPlugin(): Plugin {
         }
         if (path.startsWith(`${PLANNING_DIR}/`) && !includeDrafts()) {
           // En el sitio público la planificación solo nombra clases publicadas.
-          const planning = bundle.planningPath === path ? bundle.planning : null;
+          const planning = bundle.plannings.find((item) => item.path === path)?.planning;
           if (!planning) continue;
           files[path] = stringify({
+            ...(planning.title ? { title: planning.title } : {}),
             units: planning.units
               .map((unit) => ({
                 ...unit,

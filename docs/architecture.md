@@ -4,7 +4,7 @@ Aplicación Vite/React en apps/presenter; contratos Zod en packages/content-mode
 
 ## Contenido: el repositorio es la fuente de verdad
 
-Todo el contenido vive en `content/` del repositorio: `lessons/**/lesson.yaml` con su lista explícita de `slides/*.mdx` (y, opcionalmente, `repaso`: láminas que solo ve el estudiante), `activities/*.yaml`, `curriculum/*.yaml`, `planning/*.yaml` (unidades y orden de la biblioteca) y la galería de plantillas. Se edita de dos formas equivalentes: a mano en el código o desde la app (rol Docente). La app no tiene servidor propio: lee y escribe en el repositorio con la API de GitHub desde el navegador.
+Todo el contenido vive en `content/` del repositorio: `lessons/**/lesson.yaml` con su lista explícita de `slides/*.mdx` (y, opcionalmente, `repaso`: láminas que solo ve el estudiante), `activities/*.yaml`, `curriculum/*.yaml`, `planning/*.yaml` (una biblioteca por archivo —un curso, el canal de YouTube…— con su título público y genérico, sus unidades, su orden y sus fechas) y la galería de plantillas. Se edita de dos formas equivalentes: a mano en el código o desde la app (rol Docente). La app no tiene servidor propio: lee y escribe en el repositorio con la API de GitHub desde el navegador.
 
 El contenido se maneja como un mapa ruta → texto (`ContentFiles`). `parseContentFiles` (packages/content-model/src/content-files.ts) lo interpreta igual en disco, en el build y desde GitHub, y `checkContentFiles` (check-content.ts) aplica las reglas de content:check sobre ese mapa: el script de Node y el navegador ejecutan el mismo código. La lectura es tolerante: una clase o lámina con un campo vacío sigue visible en la app y su problema se informa.
 
@@ -24,6 +24,8 @@ La interfaz se organiza por área en apps/presenter/src:
 - `ui`: primitivos del sistema de diseño; `slides`: marco, contexto y lienzo escalado; `content`: lectura, edición y guardado del contenido; `store`: datos privados, proyección en vivo (`presentation.ts`, `live.ts`) y comentarios.
 
 Las áreas pueden usar `ui`, `slides`, `content` y `store`, y piezas de otra área cuando son de ella (el editor usa la vista de plantilla de `recursos`); `store` y `content` no importan áreas.
+
+Cada biblioteca tiene sus propias clases: una clase figura en una sola planificación (`content:check` lo exige) y reutilizarla en otra es copiarla con «Copiar a otra biblioteca» (láminas y repaso, con un identificador nuevo) o «Partir de otra clase» al prepararla. Las fechas solo chocan dentro de una misma biblioteca; la «Clase de hoy» las mira todas y dice de cuál viene. Las clases que ninguna planifica aparecen en «Sin unidad» de todas. La biblioteca abierta en Clases viaja en la URL (`biblioteca`); sin ella se abre la de la última clase abierta.
 
 Los datos privados del docente (comentarios, cursos, sesiones y votaciones) nunca van al repositorio, que es público: se guardan en localStorage con un esquema Zod versionado (`profe-pina-aula-v1`, versión 2). La versión 1 también guardaba biblioteca y ediciones: al conectar, la app las convierte en cambios sin guardar para revisarlas. La proyección (lámina, pasos, valores, votación) no se persiste: la pestaña que presenta es la autoridad y la comparte por BroadcastChannel con el control remoto y los estudiantes del mismo navegador. Sincronizar los datos privados entre dispositivos llegará en la etapa 2. El acceso docente es un bloqueo local sin credenciales, no una medida de seguridad.
 

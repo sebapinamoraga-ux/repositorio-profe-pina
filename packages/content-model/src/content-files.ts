@@ -49,13 +49,20 @@ export interface LessonEntry {
   repaso: SlideFile[];
 }
 
+/** Una biblioteca: su identificador es el nombre del archivo sin `.yaml`. */
+export interface PlanningFile {
+  id: string;
+  path: string;
+  planning: Planning;
+}
+
 export interface ContentBundle {
   lessons: LessonEntry[];
   activities: Record<string, Activity>;
   activityPaths: Record<string, string>;
   curriculum: (Curriculum & { path: string })[];
-  planning: Planning | null;
-  planningPath: string | null;
+  /** Bibliotecas: un archivo de content/planning cada una, en orden de ruta. */
+  plannings: PlanningFile[];
   gallery: MascotGallery | null;
   problems: ContentProblem[];
 }
@@ -65,6 +72,11 @@ export const LESSONS_DIR = 'content/lessons';
 export const ACTIVITIES_DIR = 'content/activities';
 export const CURRICULUM_DIR = 'content/curriculum';
 export const PLANNING_DIR = 'content/planning';
+const PLANNING_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/** `content/planning/m1-2027.yaml` → `m1-2027`. */
+export const planningId = (path: string) =>
+  path.slice(path.lastIndexOf('/') + 1).replace(/\.yaml$/, '');
 /** Carpeta por defecto de las clases nuevas, como en `npm run lesson:new`. */
 export const NEW_LESSON_DIR = 'content/lessons/m1/algebra';
 
@@ -155,8 +167,7 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
     activities: {},
     activityPaths: {},
     curriculum: [],
-    planning: null,
-    planningPath: null,
+    plannings: [],
     gallery: null,
     problems: [],
   };
@@ -184,13 +195,11 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
       else bundle.curriculum.push({ ...read.value, path });
     } else if (path.startsWith(`${PLANNING_DIR}/`) && path.endsWith('.yaml')) {
       const read = cached('planning', path, text, () => readPlanning(text));
+      const id = planningId(path);
       if (read.error || !read.value) problem(path, read.error ?? 'Planificación vacía');
-      else if (bundle.planning)
-        problem(path, 'Solo puede haber un archivo de planificación.');
-      else {
-        bundle.planning = read.value;
-        bundle.planningPath = path;
-      }
+      else if (!PLANNING_ID.test(id))
+        problem(path, `Nombre de biblioteca no válido: ${id}. Usa minúsculas, números y guiones.`);
+      else bundle.plannings.push({ id, path, planning: read.value });
     } else if (path.startsWith(`${LESSONS_DIR}/`) && path.endsWith('/lesson.yaml')) {
       const strict = cached('lesson', path, text, () => readLesson(text));
       const read = strict.value
@@ -228,6 +237,19 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
       });
     }
   }
+  // Cada biblioteca tiene sus propias clases: reutilizar una en otra es copiarla.
+  const owner = new Map<string, string>();
+  for (const { id, path, planning } of bundle.plannings)
+    for (const unit of planning.units)
+      for (const lesson of unit.lessons) {
+        const other = owner.get(lesson.id);
+        if (other && other !== id)
+          problem(
+            path,
+            `La clase ${lesson.id} ya está en la biblioteca ${other}. Para usarla aquí, cópiala.`,
+          );
+        else owner.set(lesson.id, id);
+      }
   return bundle;
 }
 

@@ -75,6 +75,53 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   expect(fake.headCommit()?.message).toMatch(/^Aula: /);
 });
 
+test('bibliotecas: crear una y copiarle una clase de otra', async ({ page }) => {
+  await unlock(page);
+  await page.setViewportSize({ width: 1366, height: 900 });
+  const fake = await connectFakeGitHub(page);
+  await page.goto('/#rol=docente&vista=clases');
+  await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
+  const bar = page.getByRole('group', { name: 'Biblioteca' });
+  await expect(bar.getByRole('button', { name: 'Competencia Matemática 3° medio' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await bar.getByRole('button', { name: '+ Nueva biblioteca' }).click();
+  await page.getByLabel(/Nombre de la biblioteca/).fill('Canal de YouTube');
+  await page.getByRole('button', { name: 'Crear biblioteca' }).click();
+  await expect(page).toHaveURL(/vista=clases&biblioteca=canal-de-youtube$/);
+  await expect(page.getByText('Clases · Canal de YouTube')).toBeVisible();
+  await expect(page.locator('.lesson-row')).toHaveCount(0);
+
+  await bar.getByRole('button', { name: 'Competencia Matemática 3° medio' }).click();
+  const source = page.locator('.lesson-row', { hasText: 'Función lineal y afín (parte 2)' });
+  await source.getByRole('button', { name: /^Más acciones/ }).click();
+  await source.getByRole('button', { name: 'Copiar a otra biblioteca' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Copiar a otra biblioteca' });
+  await expect(dialog.getByLabel('Biblioteca de destino')).toHaveValue('canal-de-youtube');
+  await page.screenshot({ path: 'output/e2e/bibliotecas-copiar.png' });
+  await dialog.getByRole('button', { name: 'Copiar clase' }).click();
+  await expect(page).toHaveURL(/biblioteca=canal-de-youtube$/);
+  const copy = page.locator('.lesson-row', { hasText: 'Función lineal y afín (parte 2)' });
+  await expect(copy).toHaveCount(1);
+  await expect(copy).toContainText('En preparación');
+  await expect(page.getByRole('region', { name: /Unidad 1 · Funciones/ })).toBeVisible();
+  await page.screenshot({ path: 'output/e2e/bibliotecas-copia.png' });
+
+  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
+  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  const files = fake.files();
+  expect(files['content/planning/canal-de-youtube.yaml']).toContain('title: Canal de YouTube');
+  expect(files['content/planning/canal-de-youtube.yaml']).toContain(
+    '- id: funcion-lineal-afin-2-cuadratica-1-canal-de-youtube',
+  );
+  const lesson =
+    files['content/lessons/m1/algebra/funcion-lineal-afin-2-cuadratica-1-canal-de-youtube/lesson.yaml'];
+  expect(lesson).toContain('status: draft');
+  expect(lesson).toContain('repaso:');
+});
+
 test('la clase viaja en la URL: pestañas, enlaces directos, Atrás del navegador y clase desconocida', async ({
   page,
 }) => {

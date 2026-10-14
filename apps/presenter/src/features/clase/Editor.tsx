@@ -226,7 +226,7 @@ export function Editor({
                     objective: entry?.objective ?? '',
                     slides: skeleton(meta.title, mascotGallery.templates),
                   }),
-                  ...planningWrites(content.bundle, content.files, {
+                  ...planningWrites(content.bundle, content.files, entry?.libraryId ?? null, {
                     type: 'updateLesson',
                     id: lessonId,
                     patch: { title: undefined, objective: undefined, mark: 'en-preparacion' },

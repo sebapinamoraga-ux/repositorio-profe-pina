@@ -9,15 +9,19 @@ import { mascotGallery } from '../app/gallery';
 import { skeleton, slideFromTemplate } from '../store/mdx';
 import {
   currentLesson,
+  entriesIn,
   formatPlanDate,
   libraryOf,
   planningReducer,
   UNPLANNED_UNIT,
+  unitsIn,
   type LibraryEntry,
 } from './library';
 import { migrateLegacy } from './migrate-v1';
 import {
+  copyLesson,
   createLesson,
+  createLibrary,
   editableRepaso,
   editableSlides,
   findLesson,
@@ -84,6 +88,7 @@ describe('planificación', () => {
 describe('fecha planificada', () => {
   const entry = (id: string, date: string | null): LibraryEntry => ({
     id,
+    libraryId: 'm1-2027',
     unitId: 'u1',
     title: id,
     objective: '',
@@ -105,7 +110,7 @@ describe('fecha planificada', () => {
   it('se escribe en la planificación como una línea y se borra al vaciarla', () => {
     const path = 'content/planning/m1-2027.yaml';
     const before = disk.get(path) ?? '';
-    const [write] = planningWrites(bundle, disk, {
+    const [write] = planningWrites(bundle, disk, 'm1-2027', {
       type: 'updateLesson',
       id: 'funcion-cuadratica-2',
       patch: { date: '2026-10-31' },
@@ -117,7 +122,7 @@ describe('fecha planificada', () => {
     expect(libraryOf(parseContentFiles(files)).entries.find((e) => e.id === 'funcion-cuadratica-2')?.date).toBe(
       '2026-10-31',
     );
-    const [cleared] = planningWrites(parseContentFiles(files), files, {
+    const [cleared] = planningWrites(parseContentFiles(files), files, 'm1-2027', {
       type: 'updateLesson',
       id: 'funcion-cuadratica-2',
       patch: { date: undefined },
@@ -290,7 +295,7 @@ describe('operaciones sobre archivos', () => {
         objective: 'Probar la creación desde la app.',
         slides: skeleton('Clase de prueba', mascotGallery.templates),
       }),
-      ...planningWrites(bundle, disk, {
+      ...planningWrites(bundle, disk, 'm1-2027', {
         type: 'addLesson',
         unitId: 'u2',
         lesson: { id: 'clase-de-prueba' },
@@ -354,5 +359,82 @@ describe('operaciones sobre archivos', () => {
       title: 'Idea para después',
       status: 'por-preparar',
     });
+  });
+});
+
+describe('varias bibliotecas', () => {
+  const youtube = createLibrary(bundle, disk, 'Canal de YouTube');
+  const withYoutube = apply(disk, youtube.writes);
+
+  it('cada archivo de content/planning es una biblioteca con su título', () => {
+    expect(youtube.id).toBe('canal-de-youtube');
+    const library = libraryOf(parseContentFiles(withYoutube));
+    expect(library.libraries.map((item) => item.title)).toContain('Canal de YouTube');
+    expect(unitsIn(library, youtube.id).every((unit) => unit.libraryId !== 'm1-2027')).toBe(true);
+    expect(entriesIn(library, youtube.id)).toEqual([]);
+  });
+
+  it('una clase en dos bibliotecas no pasa la lectura del contenido', () => {
+    const files = apply(
+      withYoutube,
+      planningWrites(parseContentFiles(withYoutube), withYoutube, youtube.id,
+        { type: 'addUnit', id: 'u1', title: 'Funciones' },
+        { type: 'addLesson', unitId: 'u1', lesson: { id: 'sistemas-2x2' } },
+      ),
+    );
+    expect(parseContentFiles(files).problems.map((p) => p.message).join('\n')).toContain(
+      'ya está en la biblioteca',
+    );
+  });
+
+  it('las fechas solo chocan dentro de una misma biblioteca', () => {
+    const files = apply(
+      withYoutube,
+      planningWrites(parseContentFiles(withYoutube), withYoutube, youtube.id,
+        { type: 'addUnit', id: 'u1', title: 'Funciones' },
+        { type: 'addLesson', unitId: 'u1', lesson: { id: 'otra', title: 'Otra', date: '2026-10-17' } },
+      ),
+    );
+    expect(parseContentFiles(files).problems).toEqual([]);
+  });
+
+  it('copiar una clase a otra biblioteca lleva láminas y repaso, y pasa content:check', async () => {
+    const source = findLesson(bundle, 'funcion-lineal-afin-2-cuadratica-1');
+    const youtubeBundle = parseContentFiles(withYoutube);
+    const copy = copyLesson(youtubeBundle, withYoutube, {
+      id: 'funcion-lineal-afin-2-cuadratica-1',
+      title: source?.meta.title ?? '',
+      objective: source?.meta.objectives[0] ?? '',
+      unitTitle: 'Funciones',
+      libraryId: youtube.id,
+      taken: new Set(bundle.lessons.map((lesson) => lesson.meta.id)),
+    });
+    expect(copy.id).toBe('funcion-lineal-afin-2-cuadratica-1-canal-de-youtube');
+    const files = apply(withYoutube, copy.writes);
+    const result = await checkContentFiles(files, {
+      shouldCompile: (path) => path.includes(copy.id),
+    });
+    expect(result.problems).toEqual([]);
+    const copied = findLesson(result.bundle, copy.id);
+    expect(copied?.slides.length).toBe(source?.slides.length);
+    expect(copied?.repaso.length).toBe(source?.repaso.length);
+    const library = libraryOf(result.bundle);
+    expect(library.entries.find((e) => e.id === copy.id)).toMatchObject({
+      libraryId: youtube.id,
+      status: 'en-preparacion',
+    });
+    expect(unitsIn(library, youtube.id).map((unit) => unit.title)).toContain('Funciones');
+    // La original sigue en su biblioteca, sin cambios.
+    expect(library.entries.find((e) => e.id === 'funcion-lineal-afin-2-cuadratica-1')?.libraryId).toBe(
+      'm1-2027',
+    );
+  });
+
+  it('el título se conserva al editar la planificación', () => {
+    const next = planningReducer(
+      { title: 'Canal', units: [] },
+      { type: 'addUnit', id: 'u1', title: 'Funciones' },
+    );
+    expect(next.title).toBe('Canal');
   });
 });

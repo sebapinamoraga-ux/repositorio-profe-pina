@@ -4,18 +4,26 @@ import { mascotGallery } from '../../app/gallery';
 import type { Navigate } from '../../app/routes';
 import { useContent } from '../../content/ContentProvider';
 import {
+  entriesIn,
   formatPlanDate,
+  unitsIn,
   UNPLANNED_UNIT,
   type LibraryEntry,
   type PlanningAction,
 } from '../../content/library';
 import {
+  copyLesson,
   createLesson,
+  createLibrary,
+  defaultLibraryId,
   editableSlides,
   findLesson,
+  planningOf,
   planningWrites,
   removeLessonFiles,
+  removeLibrary,
   writeLesson,
+  writePlanning,
 } from '../../content/ops';
 import { useAula } from '../../store/AulaProvider';
 import { hasSlides, lessonEntry, skeleton } from '../../store/deck';
@@ -30,11 +38,19 @@ import { TodayCard } from './TodayCard';
 import { Button, IconButton } from '../../ui/Button';
 import { Notice, Page, PageHeader } from '../../ui/Layout';
 
-/** Aplica cambios de la planificación sobre el contenido efectivo. */
-function usePlanning() {
+/** Aplica cambios de la planificación de una biblioteca sobre el contenido efectivo. */
+function usePlanning(libraryId: string) {
   const content = useContent();
   return (...actions: PlanningAction[]) =>
-    content.edit(planningWrites(content.bundle, content.files, ...actions));
+    content.edit(planningWrites(content.bundle, content.files, libraryId, ...actions));
+}
+
+/** Identificadores de clase ya usados, en cualquier biblioteca. */
+function takenIds(content: ReturnType<typeof useContent>) {
+  return new Set([
+    ...content.library.entries.map((item) => item.id),
+    ...content.bundle.lessons.map((item) => item.meta.id),
+  ]);
 }
 
 type Filter = 'todas' | LessonMark;
@@ -52,6 +68,7 @@ const MARK: Record<LessonMark, string> = {
 
 function LessonRow({
   entry,
+  libraryId,
   organizing,
   first,
   last,
@@ -61,9 +78,12 @@ function LessonRow({
   onEditing,
   onPrepare,
   onDetails,
+  onCopy,
   onNavigate,
 }: {
   entry: LibraryEntry;
+  /** Biblioteca abierta: la de la clase o, si ninguna la planifica, la que la recibe. */
+  libraryId: string;
   organizing: boolean;
   first: boolean;
   last: boolean;
@@ -73,11 +93,12 @@ function LessonRow({
   onEditing: (open: boolean) => void;
   onPrepare: () => void;
   onDetails: () => void;
+  onCopy: () => void;
   onNavigate: Navigate;
 }) {
   const { data, dispatch } = useAula();
   const content = useContent();
-  const planning = usePlanning();
+  const planning = usePlanning(libraryId);
   const { library, canEdit } = content;
   const ui = useUi();
   const has = hasSlides(content, entry.id);
@@ -85,7 +106,9 @@ function LessonRow({
   const count = issues?.count ?? lessonEntry(content, entry.id)?.slides.length ?? 0;
   const original = entry.id === ORIGINAL_LESSON_ID;
   const planned = entry.unitId !== UNPLANNED_UNIT.id;
-  const firstUnit = library.units.find((u) => u.id !== UNPLANNED_UNIT.id)?.id ?? 'u1';
+  const units = unitsIn(library, libraryId);
+  const firstUnit = units.find((u) => u.id !== UNPLANNED_UNIT.id)?.id ?? 'u1';
+  const others = library.libraries.some((item) => item.id !== libraryId);
   const active = data.lessonId === entry.id;
   const notes = pendingNotes(data, entry.id).length;
   const blocked = !issues || issues.errors > 0;
@@ -117,9 +140,11 @@ function LessonRow({
     objectives[0] = objective;
     content.edit(writeLesson(content.bundle, entry.id, { objectives }));
   };
-  // La fecha vive en la planificación; cada día tiene una sola clase.
+  // La fecha vive en la planificación; en cada biblioteca, cada día tiene una sola clase.
   const setDate = (date: string) => {
-    const taken = library.entries.find((item) => item.id !== entry.id && item.date === date);
+    const taken = entriesIn(library, libraryId).find(
+      (item) => item.id !== entry.id && item.date === date,
+    );
     if (date && taken) {
       ui.toast(`Ese día ya está planificada «${taken.title}».`);
       return;
@@ -144,10 +169,7 @@ function LessonRow({
   const duplicate = () => {
     const lesson = findLesson(content.bundle, entry.id);
     if (!lesson) return;
-    const taken = new Set([
-      ...library.entries.map((item) => item.id),
-      ...content.bundle.lessons.map((item) => item.meta.id),
-    ]);
+    const taken = takenIds(content);
     let id = `${entry.id}-copia`;
     for (let k = 2; taken.has(id); k++) id = `${entry.id}-copia-${k}`;
     const title = `${entry.title} (copia)`;
@@ -159,7 +181,7 @@ function LessonRow({
         slides: editableSlides(lesson),
         base: lesson.meta,
       }),
-      ...planningWrites(content.bundle, content.files, {
+      ...planningWrites(content.bundle, content.files, libraryId, {
         type: 'addLesson',
         unitId: planned ? entry.unitId : firstUnit,
         lesson: { id },
@@ -173,7 +195,7 @@ function LessonRow({
     const undo = content.snap();
     content.edit([
       ...removeLessonFiles(content.bundle, content.files, entry.id),
-      ...planningWrites(content.bundle, content.files, {
+      ...planningWrites(content.bundle, content.files, entry.libraryId, {
         type: 'removeLesson',
         id: entry.id,
       }),
@@ -261,11 +283,11 @@ function LessonRow({
                   onChange={(event) => {
                     const undo = content.snap();
                     planning({ type: 'setLessonUnit', id: entry.id, unitId: event.target.value });
-                    const k = library.units.findIndex((u) => u.id === event.target.value);
+                    const k = units.findIndex((u) => u.id === event.target.value);
                     ui.toast(`«${entry.title}» movida a la unidad ${k + 1}`, undo);
                   }}
                 >
-                  {library.units.map((unit, k) => (
+                  {units.map((unit, k) => (
                     <option
                       key={unit.id}
                       value={unit.id}
@@ -368,6 +390,17 @@ function LessonRow({
               Duplicar
             </Button>
           )}
+          {others && (
+            <Button
+              size="sm"
+              onClick={() => {
+                onCopy();
+                onMenu(false);
+              }}
+            >
+              Copiar a otra biblioteca
+            </Button>
+          )}
           {has && entry.status === 'en-preparacion' && (
             <>
               <Button
@@ -407,16 +440,30 @@ function LessonRow({
 
 function PrepareDialog({
   entry,
+  libraryId,
   onClose,
   onNavigate,
 }: {
   entry: LibraryEntry;
+  libraryId: string;
   onClose: () => void;
   onNavigate: Navigate;
 }) {
   const { data } = useAula();
   const content = useContent();
   const sources = content.library.entries.filter((item) => hasSlides(content, item.id));
+  // Se puede partir de una clase de cualquier biblioteca: la de esta, primero.
+  const groups = [
+    ...[...content.library.libraries]
+      .sort((a, b) => Number(b.id === libraryId) - Number(a.id === libraryId))
+      .map((item) => ({ id: item.id, title: item.title })),
+    { id: null, title: 'Sin biblioteca' },
+  ]
+    .map((group) => ({
+      ...group,
+      items: sources.filter((item) => item.libraryId === group.id),
+    }))
+    .filter((group) => group.items.length);
   const [mode, setMode] = useState<'base' | 'other'>('base');
   const [source, setSource] = useState(
     (sources.find((item) => item.id === data.lessonId) ?? sources[0])?.id ?? '',
@@ -435,7 +482,7 @@ function PrepareDialog({
         slides,
         base: from?.meta,
       }),
-      ...planningWrites(content.bundle, content.files, {
+      ...planningWrites(content.bundle, content.files, entry.libraryId, {
         type: 'updateLesson',
         id: entry.id,
         patch: { title: undefined, objective: undefined, mark: 'en-preparacion' },
@@ -478,17 +525,24 @@ function PrepareDialog({
           onClick={() => setMode('other')}
         >
           <b>Partir de otra clase</b>
-          <span>Copia sus láminas para adaptarlas. La clase original no cambia.</span>
+          <span>
+            Copia sus láminas para adaptarlas, también desde otra biblioteca. La clase original
+            no cambia.
+          </span>
         </button>
       </div>
       {mode === 'other' && (
         <label className="field">
           Clase de origen
           <select value={source} onChange={(event) => setSource(event.target.value)}>
-            {sources.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.title}
-              </option>
+            {groups.map((group) => (
+              <optgroup key={group.id ?? ''} label={group.title}>
+                {group.items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>
@@ -505,17 +559,94 @@ function PrepareDialog({
   );
 }
 
-function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => void }) {
+function CopyDialog({
+  entry,
+  libraryId,
+  onClose,
+  onNavigate,
+}: {
+  entry: LibraryEntry;
+  libraryId: string;
+  onClose: () => void;
+  onNavigate: Navigate;
+}) {
   const content = useContent();
   const { library } = content;
   const ui = useUi();
-  const k = library.units.findIndex((u) => u.id === unitId);
-  const unit = library.units[k];
-  const lessons = library.entries.filter((entry) => entry.unitId === unitId);
-  const hasOriginal = lessons.some((entry) => entry.id === ORIGINAL_LESSON_ID);
-  const targets = library.units.filter(
-    (u) => u.id !== unitId && u.id !== UNPLANNED_UNIT.id,
+  const targets = library.libraries.filter((item) => item.id !== libraryId);
+  const [target, setTarget] = useState(targets[0]?.id ?? '');
+  const unitTitle =
+    unitsIn(library, libraryId).find((unit) => unit.id === entry.unitId && unit !== UNPLANNED_UNIT)
+      ?.title ?? 'Clases copiadas';
+  const destination = targets.find((item) => item.id === target);
+  const confirm = () => {
+    if (!destination) return;
+    const { writes } = copyLesson(content.bundle, content.files, {
+      id: entry.id,
+      title: entry.title,
+      objective: entry.objective,
+      unitTitle,
+      libraryId: destination.id,
+      taken: takenIds(content),
+    });
+    content.edit(writes);
+    onClose();
+    onNavigate('clases', { library: destination.id });
+    ui.toast(`«${entry.title}» copiada a «${destination.title}»`);
+  };
+  return (
+    <Modal label="Copiar a otra biblioteca" onClose={onClose}>
+      <div className="modal-head">
+        <div>
+          <p className="kicker">Copiar a otra biblioteca</p>
+          <h2>{entry.title}</h2>
+        </div>
+        <IconButton label="Cerrar" onClick={onClose}>
+          <X size={22} aria-hidden="true" />
+        </IconButton>
+      </div>
+      <p className="muted modal-lead">
+        La copia lleva sus láminas y su repaso, y queda en preparación en la unidad «{unitTitle}»
+        de la otra biblioteca. Cada copia se edita por separado: esta clase no cambia.
+      </p>
+      <label className="field">
+        Biblioteca de destino
+        <select value={target} onChange={(event) => setTarget(event.target.value)}>
+          {targets.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="modal-actions">
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button variant="primary" disabled={!destination} onClick={confirm}>
+          Copiar clase
+        </Button>
+      </div>
+    </Modal>
   );
+}
+
+function RemoveUnitDialog({
+  unitId,
+  libraryId,
+  onClose,
+}: {
+  unitId: string;
+  libraryId: string;
+  onClose: () => void;
+}) {
+  const content = useContent();
+  const { library } = content;
+  const ui = useUi();
+  const units = unitsIn(library, libraryId);
+  const k = units.findIndex((u) => u.id === unitId);
+  const unit = units[k];
+  const lessons = entriesIn(library, libraryId).filter((entry) => entry.unitId === unitId);
+  const hasOriginal = lessons.some((entry) => entry.id === ORIGINAL_LESSON_ID);
+  const targets = units.filter((u) => u.id !== unitId && u.id !== UNPLANNED_UNIT.id);
   const [mode, setMode] = useState<'move' | 'all'>(targets.length ? 'move' : 'all');
   const [target, setTarget] = useState(targets[0]?.id ?? '');
   if (!unit) return null;
@@ -523,13 +654,13 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
     const undo = content.snap();
     if (mode === 'move' && target) {
       content.edit(
-        planningWrites(content.bundle, content.files, {
+        planningWrites(content.bundle, content.files, libraryId, {
           type: 'removeUnit',
           id: unitId,
           targetId: target,
         }),
       );
-      const n = library.units.findIndex((u) => u.id === target) + 1;
+      const n = units.findIndex((u) => u.id === target) + 1;
       ui.toast(`Unidad «${unit.title}» eliminada; sus clases pasaron a la unidad ${n}`, undo);
     } else {
       if (hasOriginal) return;
@@ -537,7 +668,7 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
         ...lessons.flatMap((entry) =>
           removeLessonFiles(content.bundle, content.files, entry.id),
         ),
-        ...planningWrites(content.bundle, content.files, {
+        ...planningWrites(content.bundle, content.files, libraryId, {
           type: 'removeUnit',
           id: unitId,
           targetId: null,
@@ -578,7 +709,7 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
           >
             {targets.map((u) => (
               <option key={u.id} value={u.id}>
-                Unidad {library.units.indexOf(u) + 1} · {u.title}
+                Unidad {units.indexOf(u) + 1} · {u.title}
               </option>
             ))}
           </select>
@@ -611,10 +742,167 @@ function RemoveUnitDialog({ unitId, onClose }: { unitId: string; onClose: () => 
   );
 }
 
-export function Library({ onNavigate }: { onNavigate: Navigate }) {
+/**
+ * Elección de biblioteca: cada una (un curso, el canal de YouTube…) es un archivo de
+ * content/planning con sus propias clases. En modo organizar se renombra o elimina.
+ */
+function LibraryBar({
+  libraryId,
+  organizing,
+  onNavigate,
+}: {
+  libraryId: string;
+  organizing: boolean;
+  onNavigate: Navigate;
+}) {
   const content = useContent();
   const { library, canEdit } = content;
-  const planning = usePlanning();
+  const ui = useUi();
+  const [adding, setAdding] = useState(false);
+  const [title, setTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (adding) inputRef.current?.focus();
+  }, [adding]);
+  const current = library.libraries.find((item) => item.id === libraryId);
+  const owned = library.entries.filter((entry) => entry.libraryId === libraryId).length;
+  // En solo lectura, con una sola biblioteca no hay nada que elegir.
+  if (library.libraries.length < 2 && !canEdit) return null;
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!title.trim()) return;
+    const { id, writes } = createLibrary(content.bundle, content.files, title);
+    content.edit(writes);
+    setAdding(false);
+    setTitle('');
+    onNavigate('clases', { library: id });
+    ui.toast(`Biblioteca «${title.trim()}» creada`);
+  };
+  const rename = (next: string) =>
+    content.edit(
+      writePlanning(content.bundle, content.files, libraryId, {
+        ...planningOf(content.bundle, libraryId),
+        title: next,
+      }),
+    );
+  const remove = () => {
+    if (!current) return;
+    const undo = content.snap();
+    content.edit(removeLibrary(content.bundle, libraryId));
+    onNavigate('clases');
+    ui.toast(`Biblioteca «${current.title}» eliminada`, undo);
+  };
+
+  return (
+    <div className="library-bar">
+      {organizing && canEdit && current ? (
+        <div className="library-rename">
+          <label className="field">
+            Nombre de la biblioteca
+            <input
+              className="input"
+              value={current.title === current.id ? '' : current.title}
+              placeholder={current.id}
+              onChange={(event) => rename(event.target.value)}
+            />
+          </label>
+          <Button
+            variant="danger"
+            size="sm"
+            disabled={owned > 0}
+            title={owned > 0 ? 'Solo se elimina una biblioteca sin clases.' : undefined}
+            onClick={remove}
+          >
+            Eliminar biblioteca
+          </Button>
+        </div>
+      ) : (
+        <div role="group" aria-label="Biblioteca" className="pill-group">
+          {library.libraries.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className="pill"
+              aria-pressed={item.id === libraryId}
+              onClick={() => onNavigate('clases', { library: item.id })}
+            >
+              {item.title}
+            </button>
+          ))}
+          {canEdit && !adding && (
+            <button
+              type="button"
+              className="pill pill-add"
+              onClick={() => {
+                setAdding(true);
+                setTitle('');
+              }}
+            >
+              + Nueva biblioteca
+            </button>
+          )}
+        </div>
+      )}
+      {adding && (
+        <form className="add-form add-unit" onSubmit={submit}>
+          <label className="field">
+            <span>
+              Nombre de la biblioteca{' '}
+              <span className="field-note">
+                (es público: usa uno genérico, sin datos de tus cursos)
+              </span>
+            </span>
+            <input
+              ref={inputRef}
+              value={title}
+              placeholder="p. ej. Canal de YouTube"
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </label>
+          <div className="row">
+            <Button
+              onClick={() => {
+                setAdding(false);
+                setTitle('');
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button type="submit" variant="primary" disabled={!title.trim()}>
+              Crear biblioteca
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
+export function Library({
+  libraryId: wanted,
+  onNavigate,
+}: {
+  libraryId: string | null;
+  onNavigate: Navigate;
+}) {
+  const content = useContent();
+  const { data } = useAula();
+  const { canEdit } = content;
+  const all = content.library;
+  // La biblioteca sale de la URL; sin ella, la de la última clase abierta o la primera.
+  const libraryId =
+    (wanted && all.libraries.some((item) => item.id === wanted) ? wanted : null) ??
+    all.entries.find((entry) => entry.id === data.lessonId)?.libraryId ??
+    defaultLibraryId(content.bundle);
+  const library = {
+    libraries: all.libraries,
+    units: unitsIn(all, libraryId),
+    entries: entriesIn(all, libraryId),
+  };
+  const libraryTitle =
+    all.libraries.find((item) => item.id === libraryId)?.title ?? 'M1 · Álgebra y funciones';
+  const planning = usePlanning(libraryId);
   const ui = useUi();
   const [filter, setFilter] = useState<Filter>('todas');
   const [organizing, setOrganizing] = useState(false);
@@ -622,6 +910,7 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [prepare, setPrepare] = useState<string | null>(null);
   const [details, setDetails] = useState<string | null>(null);
+  const [copy, setCopy] = useState<string | null>(null);
   const [removeUnit, setRemoveUnit] = useState<string | null>(null);
   const [addFor, setAddFor] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
@@ -644,13 +933,7 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
     event.preventDefault();
     const title = newTitle.trim();
     if (!title) return;
-    const id = slugify(
-      title,
-      new Set([
-        ...library.entries.map((entry) => entry.id),
-        ...content.bundle.lessons.map((lesson) => lesson.meta.id),
-      ]),
-    );
+    const id = slugify(title, takenIds(content));
     const objective = newObjective.trim();
     planning({
       type: 'addLesson',
@@ -682,11 +965,12 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
   const prepareEntry = prepare
     ? library.entries.find((entry) => entry.id === prepare)
     : undefined;
+  const copyEntry = copy ? library.entries.find((entry) => entry.id === copy) : undefined;
 
   return (
     <Page>
         <PageHeader
-          kicker="Clases · M1 · Álgebra y funciones"
+          kicker={`Clases · ${libraryTitle}`}
           title="Tus clases"
           lead="Abre una clase para prepararla, revisarla o proyectarla. Las que están por preparar parten de la estructura base o de otra clase."
           actions={
@@ -725,10 +1009,11 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
           }
         />
         {!organizing && <TodayCard onNavigate={onNavigate} />}
+        <LibraryBar libraryId={libraryId} organizing={editable} onNavigate={onNavigate} />
         {organizing && (
           <Notice role="status" tone="info">
-            Modo organizar: cambia el nombre y el orden de las unidades, mueve clases entre
-            unidades o elimínalas. Cada eliminación se puede deshacer; los cambios quedan
+            Modo organizar: cambia el nombre de la biblioteca y el nombre y el orden de sus
+            unidades, mueve clases entre unidades o elimínalas. Cada eliminación se puede deshacer; los cambios quedan
             pendientes hasta que los guardes en el repositorio.
           </Notice>
         )}
@@ -813,6 +1098,7 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
                   <LessonRow
                     key={entry.id}
                     entry={entry}
+                    libraryId={libraryId}
                     organizing={editable}
                     first={i === 0}
                     last={i === siblings.length - 1}
@@ -822,6 +1108,7 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
                     onEditing={(open) => setEditing(open ? entry.id : null)}
                     onPrepare={() => setPrepare(entry.id)}
                     onDetails={() => setDetails(entry.id)}
+                    onCopy={() => setCopy(entry.id)}
                     onNavigate={onNavigate}
                   />
                 );
@@ -928,11 +1215,26 @@ export function Library({ onNavigate }: { onNavigate: Navigate }) {
       {prepareEntry && (
         <PrepareDialog
           entry={prepareEntry}
+          libraryId={libraryId}
           onClose={() => setPrepare(null)}
           onNavigate={onNavigate}
         />
       )}
-      {removeUnit && <RemoveUnitDialog unitId={removeUnit} onClose={() => setRemoveUnit(null)} />}
+      {copyEntry && (
+        <CopyDialog
+          entry={copyEntry}
+          libraryId={libraryId}
+          onClose={() => setCopy(null)}
+          onNavigate={onNavigate}
+        />
+      )}
+      {removeUnit && (
+        <RemoveUnitDialog
+          unitId={removeUnit}
+          libraryId={libraryId}
+          onClose={() => setRemoveUnit(null)}
+        />
+      )}
       {details && <LessonDialog lessonId={details} onClose={() => setDetails(null)} />}
     </Page>
   );

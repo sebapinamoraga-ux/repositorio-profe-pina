@@ -23,6 +23,10 @@ export function TodayCard({ onNavigate }: { onNavigate: Navigate }) {
   if (!entry || !current) return null;
   const { meta, slides } = deckFor(content, entry.id);
   const notes = pendingNotes(data, entry.id).length;
+  // Con varias bibliotecas, la clase de hoy puede venir de cualquiera: se dice de cuál.
+  const libraries = content.library.libraries;
+  const from =
+    libraries.length > 1 ? libraries.find((item) => item.id === entry.libraryId)?.title : undefined;
   const details = [
     current.reason !== 'hoy' && entry.date ? formatPlanDate(entry.date) : '',
     `${meta.duration} minutos`,
@@ -33,7 +37,8 @@ export function TodayCard({ onNavigate }: { onNavigate: Navigate }) {
     <section aria-label={CURRENT_LABEL[current.reason]} className="today-card">
       <div className="today-card-copy">
         <p className="kicker">
-          {CURRENT_LABEL[current.reason]} · {MARK_LABEL[entry.status]}
+          {CURRENT_LABEL[current.reason]} · {from ? `${from} · ` : ''}
+          {MARK_LABEL[entry.status]}
         </p>
         <h2>{meta.title}</h2>
         {meta.objectives[0] && <p className="today-card-objective">{meta.objectives[0]}</p>}

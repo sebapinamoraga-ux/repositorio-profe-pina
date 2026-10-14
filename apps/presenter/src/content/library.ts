@@ -6,14 +6,25 @@ import type {
 } from '@aula/content-model';
 import type { ContentBundle } from '@aula/content-model/content-files';
 
+/** Una biblioteca (un archivo de content/planning): un curso, el canal de YouTube… */
+export interface LibraryInfo {
+  id: string;
+  title: string;
+  path: string;
+}
+
 export interface Unit {
   id: string;
   title: string;
+  /** Biblioteca de la unidad; null en «Sin unidad», que se ve en todas. */
+  libraryId: string | null;
 }
 
 /** Una clase en la biblioteca: lo planificado, completado con su lesson.yaml si existe. */
 export interface LibraryEntry {
   id: string;
+  /** Biblioteca dueña de la clase; null si ninguna la planifica aún. */
+  libraryId: string | null;
   unitId: string;
   title: string;
   objective: string;
@@ -26,22 +37,37 @@ export interface LibraryEntry {
 }
 
 export interface Library {
+  libraries: LibraryInfo[];
   units: Unit[];
   entries: LibraryEntry[];
 }
 
-/** Clases del repositorio que la planificación aún no ubica. */
-export const UNPLANNED_UNIT: Unit = { id: 'sin-unidad', title: 'Sin unidad' };
+/** Clases del repositorio que ninguna biblioteca ubica: se muestran en todas. */
+export const UNPLANNED_UNIT: Unit = { id: 'sin-unidad', title: 'Sin unidad', libraryId: null };
+
+/** Unidades que se ven en una biblioteca: las suyas y, al final, «Sin unidad». */
+export function unitsIn(library: Library, libraryId: string | null): Unit[] {
+  return library.units.filter((unit) => unit.libraryId === libraryId || unit.libraryId === null);
+}
+
+/** Clases que se ven en una biblioteca: las suyas y las que ninguna planifica. */
+export function entriesIn(library: Library, libraryId: string | null): LibraryEntry[] {
+  return library.entries.filter(
+    (entry) => entry.libraryId === libraryId || entry.libraryId === null,
+  );
+}
 
 export function entryOf(
   planned: PlannedLesson | undefined,
   lesson: Lesson | undefined,
   id: string,
   unitId: string,
+  libraryId: string | null = null,
 ): LibraryEntry {
   if (!lesson)
     return {
       id,
+      libraryId,
       unitId,
       title: planned?.title ?? id,
       objective: planned?.objective ?? '',
@@ -58,6 +84,7 @@ export function entryOf(
         : 'en-preparacion';
   return {
     id,
+    libraryId,
     unitId,
     title: lesson.title,
     objective: lesson.objectives[0] ?? '',
@@ -70,15 +97,21 @@ export function entryOf(
 
 export function libraryOf(bundle: ContentBundle): Library {
   const lessons = new Map(bundle.lessons.map((l) => [l.meta.id, l.meta]));
+  const libraries: LibraryInfo[] = [];
   const units: Unit[] = [];
   const entries: LibraryEntry[] = [];
   const placed = new Set<string>();
-  for (const unit of bundle.planning?.units ?? []) {
-    units.push({ id: unit.id, title: unit.title });
-    for (const planned of unit.lessons) {
-      if (placed.has(planned.id)) continue;
-      placed.add(planned.id);
-      entries.push(entryOf(planned, lessons.get(planned.id), planned.id, unit.id));
+  for (const { id: libraryId, path, planning } of bundle.plannings) {
+    libraries.push({ id: libraryId, title: planning.title?.trim() || libraryId, path });
+    for (const unit of planning.units) {
+      units.push({ id: unit.id, title: unit.title, libraryId });
+      for (const planned of unit.lessons) {
+        if (placed.has(planned.id)) continue;
+        placed.add(planned.id);
+        entries.push(
+          entryOf(planned, lessons.get(planned.id), planned.id, unit.id, libraryId),
+        );
+      }
     }
   }
   const loose = bundle.lessons.filter((l) => !placed.has(l.meta.id));
@@ -87,7 +120,7 @@ export function libraryOf(bundle: ContentBundle): Library {
     for (const lesson of loose)
       entries.push(entryOf(undefined, lesson.meta, lesson.meta.id, UNPLANNED_UNIT.id));
   }
-  return { units, entries };
+  return { libraries, units, entries };
 }
 
 export type PlanningAction =
@@ -131,6 +164,11 @@ const withoutLesson = (planning: Planning, id: string): Planning => ({
  * incorporan al moverlas a una unidad.
  */
 export function planningReducer(planning: Planning, action: PlanningAction): Planning {
+  const title = planning.title === undefined ? {} : { title: planning.title };
+  return { ...title, units: unitsReducer(planning, action).units };
+}
+
+function unitsReducer(planning: Planning, action: PlanningAction): Planning {
   switch (action.type) {
     case 'addLesson': {
       const base = withoutLesson(planning, action.lesson.id);

@@ -225,9 +225,14 @@ export const plannedLessonSchema = z.object({
   /** Día en que se hace la clase según el calendario; decide la «Clase de hoy». */
   date: isoDateSchema.optional(),
 });
-/** Planificación de unidades (content/planning): el orden de la biblioteca docente. */
+/**
+ * Planificación de unidades (content/planning): una biblioteca docente por archivo (un curso,
+ * el canal de YouTube…) con sus unidades, su orden y sus fechas. El título es público: debe ser
+ * genérico, sin datos privados de cursos.
+ */
 export const planningSchema = z
   .object({
+    title: z.string().optional(),
     units: z.array(
       z.object({
         id: z.string().min(1),

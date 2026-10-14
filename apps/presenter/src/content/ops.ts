@@ -1,4 +1,4 @@
-import type { Activity, Lesson, Planning } from '@aula/content-model';
+import type { Activity, Lesson, Planning, PlannedLesson } from '@aula/content-model';
 import {
   ACTIVITIES_DIR,
   NEW_LESSON_DIR,
@@ -6,6 +6,7 @@ import {
   slidePath,
   type ContentBundle,
   type LessonEntry,
+  type PlanningFile,
 } from '@aula/content-model/content-files';
 import { toMdx } from '@aula/content-model/frontmatter';
 import {
@@ -15,6 +16,7 @@ import {
   stringifyYaml,
 } from '@aula/content-model/yaml-patch';
 import type { EditedSlide } from '../store/schema';
+import { slugify } from '../store/teacher';
 import { planningReducer, type PlanningAction } from './library';
 
 /** Escritura de un archivo del repositorio; `null` lo borra. */
@@ -23,9 +25,12 @@ export interface FileWrite {
   text: string | null;
 }
 
-export const DEFAULT_PLANNING_PATH = `${PLANNING_DIR}/m1-2027.yaml`;
+/** Biblioteca de las clases nuevas cuando aún no hay ninguna. */
+export const DEFAULT_LIBRARY_ID = 'm1-2027';
 const PLANNING_HEADER =
-  '# Planificación de unidades: orden de la biblioteca docente. Se edita desde la app (Biblioteca).\n';
+  '# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).\n' +
+  '# El título es público: usa un nombre genérico, sin datos privados de cursos.\n';
+const PLANNING_KEYS = ['title', 'units'];
 
 export function findLesson(bundle: ContentBundle, id: string): LessonEntry | undefined {
   return bundle.lessons.find((lesson) => lesson.meta.id === id);
@@ -102,40 +107,139 @@ export function writeLesson(
   return [{ path: lesson.path, text: patchYaml(lesson.text, next, LESSON_KEYS) }];
 }
 
-export function planningOf(bundle: ContentBundle): Planning {
-  return bundle.planning ?? { units: [] };
+export function planningFile(
+  bundle: ContentBundle,
+  libraryId: string,
+): PlanningFile | undefined {
+  return bundle.plannings.find((item) => item.id === libraryId);
+}
+
+/** Biblioteca por omisión: la primera, o la de siempre si aún no hay ninguna. */
+export function defaultLibraryId(bundle: ContentBundle): string {
+  return bundle.plannings[0]?.id ?? DEFAULT_LIBRARY_ID;
+}
+
+/** Biblioteca que planifica una clase; null si ninguna. */
+export function libraryOfLesson(bundle: ContentBundle, lessonId: string): string | null {
+  return (
+    bundle.plannings.find(({ planning }) =>
+      planning.units.some((unit) => unit.lessons.some((item) => item.id === lessonId)),
+    )?.id ?? null
+  );
+}
+
+export function planningOf(bundle: ContentBundle, libraryId: string): Planning {
+  return planningFile(bundle, libraryId)?.planning ?? { units: [] };
 }
 
 export function writePlanning(
   bundle: ContentBundle,
   files: ReadonlyMap<string, string>,
+  libraryId: string,
   next: Planning,
 ): FileWrite[] {
-  const path = bundle.planningPath ?? DEFAULT_PLANNING_PATH;
+  const path = planningFile(bundle, libraryId)?.path ?? `${PLANNING_DIR}/${libraryId}.yaml`;
   const original = files.get(path);
+  const value: Record<string, unknown> = { ...next };
+  if (!next.title) delete value.title;
   return [
     {
       path,
       text: original
-        ? patchYaml(original, next, ['units'])
-        : PLANNING_HEADER + stringifyYaml(next, ['units']),
+        ? patchYaml(original, value, PLANNING_KEYS)
+        : PLANNING_HEADER + stringifyYaml(value, PLANNING_KEYS),
     },
   ];
 }
 
+/** Cambios de la planificación de una biblioteca; sin biblioteca no hay nada que escribir. */
 export function planningWrites(
   bundle: ContentBundle,
   files: ReadonlyMap<string, string>,
+  libraryId: string | null,
   ...actions: PlanningAction[]
 ): FileWrite[] {
-  const next = actions.reduce(planningReducer, planningOf(bundle));
-  return writePlanning(bundle, files, next);
+  if (!libraryId) return [];
+  const next = actions.reduce(planningReducer, planningOf(bundle, libraryId));
+  return writePlanning(bundle, files, libraryId, next);
+}
+
+/** Crea una biblioteca vacía; el identificador (nombre del archivo) sale del título. */
+export function createLibrary(
+  bundle: ContentBundle,
+  files: ReadonlyMap<string, string>,
+  title: string,
+): { id: string; writes: FileWrite[] } {
+  const taken = new Set([
+    ...bundle.plannings.map((item) => item.id),
+    ...[...files.keys()]
+      .filter((path) => path.startsWith(`${PLANNING_DIR}/`))
+      .map((path) => path.slice(PLANNING_DIR.length + 1).replace(/\.yaml$/, '')),
+  ]);
+  const id = slugify(title, taken);
+  return {
+    id,
+    writes: writePlanning(bundle, files, id, { title: title.trim(), units: [] }),
+  };
+}
+
+/** Borra el archivo de una biblioteca; sus clases quedan «Sin unidad». */
+export function removeLibrary(bundle: ContentBundle, libraryId: string): FileWrite[] {
+  const file = planningFile(bundle, libraryId);
+  return file ? [{ path: file.path, text: null }] : [];
+}
+
+/**
+ * Copia una clase a otra biblioteca: láminas, repaso y datos con un identificador nuevo, en la
+ * unidad del mismo nombre (que se crea si falta). La clase original no cambia.
+ */
+export function copyLesson(
+  bundle: ContentBundle,
+  files: ReadonlyMap<string, string>,
+  input: {
+    id: string;
+    title: string;
+    objective: string;
+    unitTitle: string;
+    libraryId: string;
+    taken: ReadonlySet<string>;
+  },
+): { id: string; writes: FileWrite[] } {
+  let id = `${input.id}-${input.libraryId}`;
+  for (let k = 2; input.taken.has(id); k++) id = `${input.id}-${input.libraryId}-${k}`;
+  const planning = planningOf(bundle, input.libraryId);
+  const units = new Set(planning.units.map((unit) => unit.id));
+  let unitId = planning.units.find((unit) => unit.title === input.unitTitle)?.id;
+  const actions: PlanningAction[] = [];
+  if (!unitId) {
+    let n = units.size + 1;
+    while (units.has(`u${n}`)) n++;
+    unitId = `u${n}`;
+    actions.push({ type: 'addUnit', id: unitId, title: input.unitTitle });
+  }
+  const source = findLesson(bundle, input.id);
+  const lesson: PlannedLesson = source
+    ? { id }
+    : { id, title: input.title, ...(input.objective ? { objective: input.objective } : {}) };
+  actions.push({ type: 'addLesson', unitId, lesson });
+  const writes: FileWrite[] = source
+    ? createLesson(bundle, {
+        id,
+        title: input.title,
+        objective: input.objective,
+        slides: editableSlides(source),
+        repaso: editableRepaso(source),
+        base: source.meta,
+      })
+    : [];
+  writes.push(...planningWrites(bundle, files, input.libraryId, ...actions));
+  return { id, writes };
 }
 
 /** lesson.yaml de una clase nueva: borrador con los mínimos que pide content:check. */
 export function newLessonMeta(
   bundle: ContentBundle,
-  input: { id: string; title: string; objective: string; slides: string[] },
+  input: { id: string; title: string; objective: string; slides: string[]; repaso?: string[] },
   base?: Lesson,
 ): Lesson {
   const curriculum = base?.curriculum.length
@@ -155,6 +259,7 @@ export function newLessonMeta(
     curriculum: [...curriculum],
     status: 'draft',
     slides: input.slides,
+    ...(input.repaso?.length ? { repaso: input.repaso } : {}),
   };
 }
 
@@ -166,13 +271,15 @@ export function createLesson(
     title: string;
     objective: string;
     slides: readonly EditedSlide[];
+    repaso?: readonly EditedSlide[];
     base?: Lesson;
   },
 ): FileWrite[] {
   const dir = `${NEW_LESSON_DIR}/${input.id}`;
+  const repaso = input.repaso ?? [];
   const meta = newLessonMeta(
     bundle,
-    { ...input, slides: input.slides.map(slideFile) },
+    { ...input, slides: input.slides.map(slideFile), repaso: repaso.map(slideFile) },
     input.base,
   );
   return [
@@ -180,7 +287,7 @@ export function createLesson(
       path: `${dir}/lesson.yaml`,
       text: stringifyYaml({ ...meta }, LESSON_KEYS),
     },
-    ...input.slides.map((slide) => ({
+    ...[...input.slides, ...repaso].map((slide) => ({
       path: slidePath(dir, slideFile(slide)),
       text: toMdx(slide),
     })),

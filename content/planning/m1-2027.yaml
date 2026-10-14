@@ -1,6 +1,8 @@
-# Planificación de unidades: orden de la biblioteca docente. Se edita desde la app (Clases).
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# Cada archivo de content/planning es una biblioteca; el título es público y genérico.
 # Las clases con lesson.yaml toman de ahí su título y objetivo; aquí basta el identificador.
 # `date` (AAAA-MM-DD) es el día de la clase según el calendario y decide la «Clase de hoy».
+title: Competencia Matemática 3° medio
 units:
   - id: u3
     title: Sistemas de ecuaciones lineales
