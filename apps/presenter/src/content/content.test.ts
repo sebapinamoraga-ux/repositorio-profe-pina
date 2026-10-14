@@ -9,6 +9,7 @@ import { mascotGallery } from '../app/gallery';
 import { skeleton, slideFromTemplate } from '../store/mdx';
 import {
   currentLesson,
+  currentLessonIn,
   entriesIn,
   formatPlanDate,
   libraryOf,
@@ -105,6 +106,15 @@ describe('fecha planificada', () => {
     expect(currentLesson(plan, '2026-10-18', 'a')).toMatchObject({ id: 'd', reason: 'proxima' });
     expect(currentLesson(plan, '2026-12-01', 'c')).toEqual({ id: 'c', reason: 'ultima', date: null });
     expect(currentLesson([], '2026-12-01', 'c')).toBeNull();
+  });
+
+  it('la clase actual de un curso sale de su biblioteca y, sin ella, de todas', () => {
+    const canal = { ...entry('e', '2026-10-31'), libraryId: 'canal' };
+    const library = { libraries: [], units: [], entries: [...plan, canal] };
+    expect(currentLessonIn(library, 'canal', '2026-10-12', 'c')).toMatchObject({ id: 'e', reason: 'proxima' });
+    expect(currentLessonIn(library, 'canal', '2026-12-01', 'c')).toMatchObject({ id: 'e', reason: 'ultima' });
+    expect(currentLessonIn(library, null, '2026-10-12', 'c')).toMatchObject({ id: 'b' });
+    expect(currentLessonIn(library, 'no-existe', '2026-10-12', 'c')).toMatchObject({ id: 'b' });
   });
 
   it('se escribe en la planificación como una línea y se borra al vaciarla', () => {

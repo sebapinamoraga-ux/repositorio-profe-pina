@@ -22,7 +22,12 @@ export function Summary({
   const content = useContent();
   const deck = deckFor(content, lessonId);
   const { meta, slides } = deck;
-  const [courseId, setCourseId] = useState(data.courses[0]?.id ?? '');
+  // Se propone primero un curso vinculado a la biblioteca de esta clase.
+  const libraryId = content.library.entries.find((entry) => entry.id === lessonId)?.libraryId;
+  const [courseId, setCourseId] = useState(
+    (data.courses.find((course) => libraryId && course.biblioteca === libraryId) ?? data.courses[0])
+      ?.id ?? '',
+  );
   const session = data.activeSession;
   const notes = pendingNotes(data, lessonId);
   const indexOf = (id: string) => slides.findIndex((slide) => slide.id === id);

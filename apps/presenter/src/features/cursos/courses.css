@@ -146,3 +146,19 @@
 .vote-summary b {
   color: var(--ok);
 }
+.course-library {
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.course-library p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.course-library b {
+  color: var(--ink);
+  font-weight: 650;
+}

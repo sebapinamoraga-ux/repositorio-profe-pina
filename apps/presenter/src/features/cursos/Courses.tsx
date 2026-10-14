@@ -4,17 +4,23 @@ import { useContent } from '../../content/ContentProvider';
 import { deckFor } from '../../store/deck';
 import type { Navigate } from '../../app/routes';
 import { nowParts, uid } from '../../store/teacher';
+import type { Course } from '../../store/schema';
+import { currentLessonIn, type CurrentReason } from '../../content/library';
 import { useUi } from '../../ui/UiProvider';
 import { EndSessionForm } from '../../shell/Session';
-import { useCurrentLesson } from '../clases/current';
 import { Button } from '../../ui/Button';
 import { Card, Page, PageHeader } from '../../ui/Layout';
 
-const CURRENT_REASON = {
+const CURRENT_REASON: Record<CurrentReason, string> = {
   hoy: 'la clase de hoy',
   proxima: 'la próxima clase de la planificación',
   ultima: 'la última clase que abriste',
-} as const;
+};
+const LIBRARY_REASON: Record<CurrentReason, string> = {
+  hoy: 'la clase de hoy en su biblioteca',
+  proxima: 'la próxima clase de su biblioteca',
+  ultima: 'la última clase que abriste de su biblioteca',
+};
 
 export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const { data, dispatch, snap } = useAula();
@@ -24,18 +30,49 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
   const [nombre, setNombre] = useState('');
   const [nivel, setNivel] = useState('');
   const [observaciones, setObservaciones] = useState('');
+  const [biblioteca, setBiblioteca] = useState('');
+  const { libraries } = content.library;
+  // Un curso cuya biblioteca ya no existe se trata como sin biblioteca.
+  const libraryOf = (course: Course) =>
+    libraries.find((library) => library.id === course.biblioteca) ?? null;
+  const libraryOptions = (
+    <>
+      <option value="">Sin biblioteca (todas las clases)</option>
+      {libraries.map((library) => (
+        <option key={library.id} value={library.id}>
+          {library.title}
+        </option>
+      ))}
+    </>
+  );
   const active = data.activeSession;
   const courseName = (id: string) =>
     data.courses.find((c) => c.id === id)?.nombre ?? 'Curso eliminado';
 
-  const current = useCurrentLesson();
-  const start = (courseId: string) => {
+  // Al iniciar, el curso ofrece primero las clases de su biblioteca.
+  const lessonFor = (course: Course) => {
+    const library = libraryOf(course);
+    const current = currentLessonIn(
+      content.library,
+      library?.id ?? null,
+      nowParts().date,
+      data.lessonId,
+    );
     const deck = deckFor(content, current?.id ?? data.lessonId);
+    const reason = !current
+      ? ''
+      : library && current.reason === 'ultima' && current.id !== data.lessonId
+        ? 'la primera clase de su biblioteca'
+        : (library ? LIBRARY_REASON : CURRENT_REASON)[current.reason];
+    return { deck, reason };
+  };
+  const start = (course: Course) => {
+    const { deck } = lessonFor(course);
     const t = nowParts();
     dispatch({
       type: 'startSession',
       session: {
-        courseId,
+        courseId: course.id,
         lessonId: deck.meta.id,
         lessonTitle: deck.meta.title,
         date: t.date,
@@ -55,11 +92,13 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
         nombre: nombre.trim(),
         nivel: nivel.trim() || 'Sin nivel',
         observaciones: observaciones.trim(),
+        ...(biblioteca ? { biblioteca } : {}),
       },
     });
     setNombre('');
     setNivel('');
     setObservaciones('');
+    setBiblioteca('');
   };
 
   return (
@@ -67,17 +106,8 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
         <PageHeader
           kicker="Cursos e historial docente"
           title="Tus cursos"
-          lead="Elige un curso al iniciar una clase. Cada sesión registra curso, clase, fecha, inicio, término y tu observación. Nada de esto aparece en el contenido público ni en el PDF."
+          lead="Elige un curso al iniciar una clase. Cada sesión registra curso, clase, fecha, inicio, término y tu observación. Vincula cada curso a una biblioteca para partir de sus clases. Nada de esto aparece en el contenido público ni en el PDF."
         />
-        {!active && (
-          <p className="hint">
-            «Iniciar clase» proyecta «{deckFor(content, current?.id ?? data.lessonId).meta.title}»
-            {current ? `, ${CURRENT_REASON[current.reason]}` : ''}.{' '}
-            <Button variant="quiet" size="sm" onClick={() => onNavigate('clases')}>
-              Elegir otra clase
-            </Button>
-          </p>
-        )}
         {active && (
           <Card aria-label="Clase en curso" tone="comprobacion" className="active-session">
             <p className="card-tab">Clase en curso · desde {active.start}</p>
@@ -95,6 +125,8 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
         <section aria-label="Cursos" className="course-grid">
           {data.courses.map((course) => {
             const count = data.sessions.filter((s) => s.courseId === course.id).length;
+            const library = libraryOf(course);
+            const next = lessonFor(course);
             return (
               <article key={course.id} className="course-card">
                 {editing === course.id ? (
@@ -116,6 +148,21 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
                           dispatch({ type: 'updateCourse', id: course.id, patch: { nivel: event.target.value } })
                         }
                       />
+                    </label>
+                    <label className="field">
+                      Biblioteca
+                      <select
+                        value={library?.id ?? ''}
+                        onChange={(event) =>
+                          dispatch({
+                            type: 'updateCourse',
+                            id: course.id,
+                            patch: { biblioteca: event.target.value || undefined },
+                          })
+                        }
+                      >
+                        {libraryOptions}
+                      </select>
                     </label>
                     <label className="field">
                       Observaciones
@@ -158,16 +205,33 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
                         {count === 1 ? '1 sesión registrada' : `${count} sesiones registradas`}
                       </p>
                     </div>
+                    <div className="course-library">
+                      <p>
+                        <span>Biblioteca</span> <b>{library?.title ?? 'Sin biblioteca'}</b>
+                      </p>
+                      {!active && (
+                        <p>
+                          «Iniciar clase» proyecta «{next.deck.meta.title}»
+                          {next.reason ? `, ${next.reason}` : ''}.
+                        </p>
+                      )}
+                    </div>
                     <div className="row course-actions">
                       <Button
                         variant="present"
                         disabled={Boolean(active)}
-                        onClick={() => start(course.id)}
+                        onClick={() => start(course)}
                       >
                         Iniciar clase
                       </Button>
                       <Button onClick={() => setEditing(course.id)}>
                         Editar
+                      </Button>
+                      <Button
+                        variant="quiet"
+                        onClick={() => onNavigate('clases', library ? { library: library.id } : {})}
+                      >
+                        {library ? 'Ver sus clases' : 'Elegir otra clase'}
                       </Button>
                     </div>
                   </>
@@ -199,6 +263,14 @@ export function Courses({ onNavigate }: { onNavigate: Navigate }) {
               value={observaciones}
               onChange={(event) => setObservaciones(event.target.value)}
             />
+            <select
+              className="input"
+              aria-label="Biblioteca"
+              value={biblioteca}
+              onChange={(event) => setBiblioteca(event.target.value)}
+            >
+              {libraryOptions}
+            </select>
             <Button type="submit" variant="primary" disabled={!nombre.trim()}>
               Agregar curso
             </Button>

@@ -343,6 +343,49 @@ test('cursos: iniciar y cerrar una sesión deja historial y comentario de cierre
   await expect(page.getByText('Acortar la comparación.')).toBeVisible();
 });
 
+test('cursos: un curso vinculado a una biblioteca parte de sus clases', async ({ page }) => {
+  await unlock(page);
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await page.clock.setFixedTime(new Date('2026-10-12T10:00:00'));
+  await page.goto('/#rol=docente&vista=cursos');
+  // En edición el nombre está en un campo: se ubica la tarjeta por su posición.
+  const card = page.locator('.course-card').nth(1);
+  await expect(card).toContainText('3° Medio B');
+  await expect(card).toContainText('Biblioteca Sin biblioteca');
+  await card.getByRole('button', { name: 'Editar' }).click();
+  await card.getByLabel('Biblioteca').selectOption({ label: 'Competencia Matemática 3° medio' });
+  await card.getByRole('button', { name: 'Listo' }).click();
+  await expect(card).toContainText('Biblioteca Competencia Matemática 3° medio');
+  await expect(card).toContainText(
+    '«Iniciar clase» proyecta «Función lineal y afín (parte 2) y función cuadrática (parte 1)», la próxima clase de su biblioteca.',
+  );
+  await page.screenshot({ path: 'output/e2e/cursos-biblioteca.png' });
+
+  // El vínculo es privado: queda en este navegador y sobrevive a recargar.
+  await page.reload();
+  await card.getByRole('button', { name: 'Ver sus clases' }).click();
+  await expect(page).toHaveURL(/vista=clases&biblioteca=m1-2027$/);
+  await expect(page.getByText('Clases · Competencia Matemática 3° medio')).toBeVisible();
+
+  // Un curso nuevo puede nacer vinculado; desde la clase se propone el curso de su biblioteca.
+  await page.getByRole('button', { name: 'Cursos', exact: true }).click();
+  const form = page.locator('.course-new');
+  await form.getByLabel('Nombre').fill('Electivo');
+  await form.getByLabel('Biblioteca').selectOption({ label: 'Competencia Matemática 3° medio' });
+  await form.getByRole('button', { name: 'Agregar curso' }).click();
+  await expect(page.locator('.course-card', { hasText: 'Electivo' })).toContainText(
+    'Biblioteca Competencia Matemática 3° medio',
+  );
+  await page.goto('/#rol=docente&vista=clase&clase=funcion-lineal-afin-2-cuadratica-1&seccion=resumen');
+  await expect(page.getByLabel('Curso')).toHaveValue('c2');
+
+  await page.goto('/#rol=docente&vista=cursos');
+  await card.getByRole('button', { name: 'Iniciar clase' }).click();
+  await expect(page).toHaveURL(/vista=presentar&clase=funcion-lineal-afin-2-cuadratica-1/);
+  const stored = await page.evaluate(() => localStorage.getItem('profe-pina-aula-v1') ?? '');
+  expect(stored).toContain('"biblioteca":"m1-2027"');
+});
+
 test('sin conexión con GitHub la biblioteca es de solo lectura y explica cómo conectar', async ({ page }) => {
   await unlock(page);
   await page.goto('/#rol=docente&vista=biblioteca');

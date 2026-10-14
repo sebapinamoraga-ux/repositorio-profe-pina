@@ -58,6 +58,23 @@ describe('datos docentes privados', () => {
     expect(teacherReducer(data, { type: 'clearLegacy' }).legacy).toBeUndefined();
   });
 
+  it('un curso apunta a una biblioteca sin invalidar los cursos guardados antes', () => {
+    // Datos de la versión 2 anteriores al campo: siguen siendo válidos tal cual.
+    expect(parseTeacherData(JSON.stringify(seed))).toEqual(seed);
+    const linked = teacherReducer(seed, {
+      type: 'updateCourse',
+      id: 'c1',
+      patch: { biblioteca: 'm1-2027' },
+    });
+    expect(parseTeacherData(JSON.stringify(linked)).courses[0]?.biblioteca).toBe('m1-2027');
+    const unlinked = teacherReducer(linked, {
+      type: 'updateCourse',
+      id: 'c1',
+      patch: { biblioteca: undefined },
+    });
+    expect(JSON.stringify(unlinked)).not.toContain('biblioteca');
+  });
+
   it('datos dañados se reemplazan por la siembra', () => {
     expect(parseTeacherData('{no es json')).toEqual(seed);
   });

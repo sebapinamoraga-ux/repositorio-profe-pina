@@ -3,7 +3,8 @@ import { lessonMarkSchema, slideSchema } from '@aula/content-model';
 
 /**
  * Datos docentes privados guardados en este navegador (notas, cursos, sesiones). El contenido
- * de las clases vive en el repositorio. Cambiar la forma exige subir `version` y migrar.
+ * de las clases vive en el repositorio. Cambiar la forma exige subir `version` y migrar; un
+ * campo opcional nuevo no: los datos guardados sin él siguen siendo válidos.
  */
 export const STORAGE_KEY = 'profe-pina-aula-v1';
 export const ROLE_KEY = 'profe-pina-aula-rol';
@@ -53,6 +54,8 @@ export const courseSchema = z.object({
   nombre: z.string(),
   nivel: z.string(),
   observaciones: z.string(),
+  /** Biblioteca (archivo de content/planning) del curso. Solo el curso apunta a ella. */
+  biblioteca: z.string().optional(),
 });
 export type Course = z.infer<typeof courseSchema>;
 

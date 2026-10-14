@@ -276,6 +276,20 @@ export function currentLesson(
   return last ? { id: last.id, reason: 'ultima', date: last.date } : null;
 }
 
+/**
+ * La clase actual de una biblioteca: como `currentLesson`, pero solo entre sus propias clases.
+ * Sin biblioteca (o si no existe o no tiene clases) mira todas.
+ */
+export function currentLessonIn(
+  library: Library,
+  libraryId: string | null,
+  today: string,
+  lastOpened: string,
+) {
+  const own = libraryId ? library.entries.filter((entry) => entry.libraryId === libraryId) : [];
+  return currentLesson(own.length ? own : library.entries, today, lastOpened);
+}
+
 /** «sábado 17 de octubre» a partir de AAAA-MM-DD, sin depender de la zona horaria. */
 export function formatPlanDate(date: string, style: 'long' | 'short' = 'long'): string {
   const [y = 0, m = 1, d = 1] = date.split('-').map(Number);
