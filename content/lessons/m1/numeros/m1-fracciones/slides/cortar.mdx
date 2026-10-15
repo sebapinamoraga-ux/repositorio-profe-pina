@@ -1,0 +1,28 @@
+---
+id: cortar
+title: 'Cortar cada pizza en 4'
+phase: inicio
+momento: caso
+layout: escena
+steps: 2
+activities: []
+---
+
+<BarraFraccion
+  barras={3}
+  partes={4}
+  tomadas={1}
+  porBarra
+  pasoTomadas={1}
+  descripcion="Tres barras cortadas en cuatro partes; en cada una se pinta una parte: lo que recibe una persona."
+/>
+
+<Paso n={2}>
+<Comprobacion titulo="Un cuarto de cada pizza">
+Tres trozos de un cuarto para cada persona:
+
+$$
+3\cdot\frac14=\frac34
+$$
+</Comprobacion>
+</Paso>

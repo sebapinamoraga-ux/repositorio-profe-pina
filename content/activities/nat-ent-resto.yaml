@@ -1,0 +1,26 @@
+id: nat-ent-resto
+type: paes
+prompt: 'Se guardan 158 lápices en cajas de 12. ¿Cuántos lápices quedan fuera de las cajas llenas?'
+answer: B · 2
+solution: '158 = 12 · 13 + 2, con 0 ≤ 2 < 12: se llenan 13 cajas y quedan 2 lápices fuera.'
+skills: [Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '13'
+    correct: false
+    explanation: '13 es el cociente, la cantidad de cajas llenas; la pregunta pide el resto.'
+  - id: B
+    text: '2'
+    correct: true
+    explanation: '12 · 13 = 156 y 158 − 156 = 2, que es menor que 12.'
+  - id: C
+    text: '10'
+    correct: false
+    explanation: '10 es lo que falta para llenar otra caja (12 − 2), no lo que queda fuera.'
+  - id: D
+    text: '14'
+    correct: false
+    explanation: 'Redondea 158 : 12 hacia arriba; ni es el resto ni caben 14 cajas llenas.'

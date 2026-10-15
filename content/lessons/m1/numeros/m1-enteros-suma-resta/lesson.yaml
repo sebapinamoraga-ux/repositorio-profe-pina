@@ -1,0 +1,50 @@
+id: m1-enteros-suma-resta
+title: '¿Por qué 4 − (−3) da 7? Sumar y restar enteros'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Números enteros y opuestos en la recta.
+objectives:
+  - Sumar enteros como desplazamientos en la recta numérica.
+  - Restar enteros como la suma del opuesto y comprobar con la suma.
+skills: [Representar, Argumentar, Resolver problemas]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: Si restar quita, ¿por qué 4 − (−3) da 7, más que 4?
+previos:
+  - clase: m1-enteros
+    idea: El opuesto de a es −a, a la misma distancia del 0 y al otro lado.
+tramos:
+  - label: 'Restar y obtener más'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Sumar en la recta'
+    from: sumar-positivo
+    to: recuerda-opuesto
+    minutes: 2
+  - label: 'Restar es sumar el opuesto'
+    from: restar-opuesto
+    to: mismo-movimiento
+    minutes: 2
+  - label: 'Pausa y error'
+    from: pausa
+    to: error-achicar
+    minutes: 1.5
+  - label: 'Vuelta a 4 − (−3)'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - sumar-positivo.mdx
+  - sumar-negativo.mdx
+  - recuerda-opuesto.mdx
+  - restar-opuesto.mdx
+  - mismo-movimiento.mdx
+  - pausa.mdx
+  - error-achicar.mdx
+  - cierre.mdx

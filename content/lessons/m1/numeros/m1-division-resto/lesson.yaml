@@ -1,0 +1,49 @@
+id: m1-division-resto
+title: '¿Pueden sobrar 5 alfajores? División con resto'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Multiplicar y dividir números naturales.
+objectives:
+  - Escribir una división con resto como D = d · q + r, con 0 ≤ r < d.
+  - Usar el resto para decidir paridad y divisibilidad.
+skills: [Representar, Argumentar, Resolver problemas]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: Se guardan 23 alfajores en cajas de 5. ¿Cuántas cajas llenas salen y cuántos alfajores quedan fuera?
+previos:
+  - base: Multiplicar y dividir naturales.
+tramos:
+  - label: 'Los alfajores y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Cajas, cociente y resto'
+    from: cajas
+    to: resto-menor
+    minutes: 2
+  - label: 'El resto decide'
+    from: dividir-por-10
+    to: el-resto-decide
+    minutes: 2
+  - label: 'Pausa y error'
+    from: pausa-137
+    to: error-resto-grande
+    minutes: 1.5
+  - label: 'Vuelta a los alfajores'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - cajas.mdx
+  - algoritmo.mdx
+  - resto-menor.mdx
+  - dividir-por-10.mdx
+  - el-resto-decide.mdx
+  - pausa-137.mdx
+  - error-resto-grande.mdx
+  - cierre.mdx

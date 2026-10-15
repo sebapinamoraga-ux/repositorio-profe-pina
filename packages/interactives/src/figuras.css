@@ -103,3 +103,13 @@
   fill: var(--yellow);
   font-weight: 750;
 }
+.natural-sieve-cross {
+  stroke: var(--muted);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.natural-fraction-split {
+  stroke: var(--blue);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+}

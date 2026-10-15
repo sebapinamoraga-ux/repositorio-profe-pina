@@ -1,0 +1,19 @@
+---
+id: error-resto-grande
+title: 'Error: un resto mayor que el divisor'
+phase: desarrollo
+momento: error
+layout: escena
+steps: 1
+activities: []
+---
+
+<ErrorTipico titulo="Error: el resto que no cabe">
+Escribir $23=5\cdot 3+8$ como la división de $23$ por $5$.
+</ErrorTipico>
+
+<Paso n={1}>
+<Comprobacion titulo="La igualdad es cierta, pero">
+$8\ge 5$: cabe otra caja. La división es $23=5\cdot 4+3$.
+</Comprobacion>
+</Paso>

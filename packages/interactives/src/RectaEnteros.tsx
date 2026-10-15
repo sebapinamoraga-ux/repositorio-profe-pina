@@ -17,8 +17,17 @@ interface Dibujo {
   opuestos: readonly number[];
   /** Reserva el alto del salto más largo posible (interactivos): la recta no se mueve. */
   saltoMaximo?: number;
+  /** Qué saltos, distancias y opuestos se ven en el paso actual (por defecto, todos). */
+  mostrar?: Mostrar;
   descripcion: string;
 }
+
+interface Mostrar {
+  salto: (index: number) => boolean;
+  distancia: (index: number) => boolean;
+  opuesto: (index: number) => boolean;
+}
+const TODO: Mostrar = { salto: () => true, distancia: () => true, opuesto: () => true };
 
 /**
  * Dibujo común: saltos sobre la recta, rótulos, distancias al cero y opuestos bajo ella.
@@ -35,6 +44,7 @@ function DibujoRecta({
   distancias,
   opuestos,
   saltoMaximo,
+  mostrar = TODO,
   descripcion,
 }: Dibujo) {
   const markerId = useId().replaceAll(':', '');
@@ -72,7 +82,13 @@ function DibujoRecta({
   const filasDistancia = distancias.map(() => (y += 62));
   const filasOpuesto = opuestos.map(() => (y += 58));
   const alto = y + 6;
-  const fuertes = new Set(marcados);
+  const llegadas = posiciones.filter((_, k) => k === 0 || mostrar.salto(k - 1));
+  const fuertes = new Set([
+    ...puntos,
+    ...llegadas,
+    ...distancias.filter((_, k) => mostrar.distancia(k)),
+    ...opuestos.filter((_, k) => mostrar.opuesto(k)).flatMap((v) => [v, -v]),
+  ]);
   // Un valor marcado fuera de los rótulos regulares oculta el rótulo vecino que lo taparía.
   const unidad = (right - left) / (max - min);
   const regulares = etiquetas.filter(
@@ -135,7 +151,7 @@ function DibujoRecta({
           const tone = salto < 0 ? 'neg' : 'pos';
           if (salto === 0) return null;
           return (
-            <g key={`s${index}`}>
+            <g key={`s${index}`} visibility={mostrar.salto(index) ? 'visible' : 'hidden'}>
               <path
                 className={`integer-jump integer-stroke-${tone}`}
                 d={`M${x1} ${axis - 6} Q${(x1 + x2) / 2} ${axis - 6 - 2 * alturaPico} ${x2} ${axis - 6}`}
@@ -155,7 +171,7 @@ function DibujoRecta({
             </g>
           );
         })}
-        {[...new Set([...puntos, ...posiciones])].map((v) => (
+        {[...new Set([...puntos, ...llegadas])].map((v) => (
           <circle key={`p${v}`} className={`integer-fill-${signo(v)}`} cx={sx(v)} cy={axis} r="13" />
         ))}
         {puntos.map((v, index) =>
@@ -177,7 +193,7 @@ function DibujoRecta({
           const fila = filasDistancia[index] ?? 0;
           const tone = signo(v);
           return (
-            <g key={`d${index}`}>
+            <g key={`d${index}`} visibility={mostrar.distancia(index) ? 'visible' : 'hidden'}>
               <line className={`integer-stroke-${tone}`} strokeWidth="5" x1={sx(0)} x2={sx(v)} y1={fila - 34} y2={fila - 34} />
               {[0, v].map((extremo) => (
                 <line
@@ -208,7 +224,7 @@ function DibujoRecta({
           const a = sx(-Math.abs(v));
           const b = sx(Math.abs(v));
           return (
-            <g key={`o${index}`}>
+            <g key={`o${index}`} visibility={mostrar.opuesto(index) ? 'visible' : 'hidden'}>
               <path
                 className="integer-mirror"
                 d={`M${a} ${fila - 58} Q${(a + b) / 2} ${fila - 6} ${b} ${fila - 58}`}
@@ -238,6 +254,9 @@ export function RectaEnteros({
   rotulosSaltos = [],
   distancias = [],
   opuestos = [],
+  pasosSaltos,
+  pasosDistancias,
+  pasosOpuestos,
   descripcion,
 }: {
   min: number;
@@ -255,10 +274,20 @@ export function RectaEnteros({
   distancias?: number[];
   /** Enteros que se unen con su opuesto por un arco simétrico respecto del cero. */
   opuestos?: number[];
+  /** Paso en que aparece cada salto, cada distancia y cada opuesto (uno por elemento). */
+  pasosSaltos?: number[];
+  pasosDistancias?: number[];
+  pasosOpuestos?: number[];
   descripcion: string;
 }) {
+  const { step, print } = useSlide();
+  const en = (pasos: number[] | undefined) => (index: number) => {
+    const paso = pasos?.[index];
+    return print || paso === undefined || step >= paso;
+  };
   return (
     <DibujoRecta
+      mostrar={{ salto: en(pasosSaltos), distancia: en(pasosDistancias), opuesto: en(pasosOpuestos) }}
       min={min}
       max={max}
       puntos={puntos}

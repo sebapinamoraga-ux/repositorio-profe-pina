@@ -225,12 +225,16 @@ export function videoLessonWarnings(
       warn(`La clase previa ${clase} no está en ninguna biblioteca.`);
       continue;
     }
-    if (here && there.planning !== here.planning)
+    if (!here) continue;
+    if (there.planning !== here.planning)
       warn(`La clase previa ${clase} está en otra biblioteca (${there.planning}).`);
-    else if (here && there.index >= here.index)
+    // Con las dos fechas manda la publicación (las unidades no van en orden de fecha);
+    // si solo la previa tiene fecha, este video aún no se programa y no hay con qué comparar.
+    else if (here.date && there.date) {
+      if (there.date >= here.date)
+        warn(`La clase previa ${clase} se publica el ${there.date}, no antes que este video.`);
+    } else if (!there.date && there.index >= here.index)
       warn(`La clase previa ${clase} va después de este video en la biblioteca.`);
-    else if (here?.date && there.date && there.date >= here.date)
-      warn(`La clase previa ${clase} se publica el ${there.date}, no antes que este video.`);
   }
 
   let recuerdas = 0;

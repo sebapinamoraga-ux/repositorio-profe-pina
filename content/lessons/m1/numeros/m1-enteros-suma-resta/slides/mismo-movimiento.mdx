@@ -1,0 +1,31 @@
+---
+id: mismo-movimiento
+title: 'El mismo salto'
+phase: desarrollo
+momento: climax
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={-2}
+  max={10}
+  desde={4}
+  saltos={[3]}
+  rotulosSaltos={['− (−3) = +3']}
+  pasosSaltos={[1]}
+  descripcion="Recta de −2 a 10. Desde 4 un salto azul de 3 llega a 7: restar −3 es sumar 3."
+/>
+
+<Paso n={1}>
+$$
+4-(-3)=4+3=7
+$$
+</Paso>
+
+<Paso n={2}>
+<Comprobacion titulo="Restar −3 y sumar 3">
+Son el mismo salto: $3$ hacia la derecha.
+</Comprobacion>
+</Paso>

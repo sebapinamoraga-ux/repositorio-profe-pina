@@ -1,18 +1,27 @@
 ---
 id: cierre
-title: 'Antes de seguir'
+title: 'Volvemos al termómetro'
 phase: cierre
-layout: concepto
-steps: 0
+momento: cierre
+layout: escena
+steps: 2
 activities: []
 ---
 
-<Composicion plantilla="sutil-metacognicion" nota="Próximo video: números racionales.">
-<Cierre titulo="Para pensar">
-¿Por qué restar $8$ es lo mismo que sumar $-8$? Explícalo con la recta.
+<RectaEnteros
+  min={-5}
+  max={10}
+  puntos={[5]}
+  rotulos={['5 °C']}
+  desde={5}
+  saltos={[-8]}
+  rotulosSaltos={['baja 8']}
+  pasosSaltos={[1]}
+  descripcion="Recta de −5 a 10. Desde 5 una flecha baja 8 lugares y llega a −3."
+/>
 
-¿Qué te ayuda más a recordar la regla de los signos: el reflejo en el cero o la tabla?
-</Cierre>
-
-Hoy los enteros nacieron de una resta sin respuesta. En el próximo video, $3:4$ tampoco tiene respuesta en los enteros: otra vez hace falta un número nuevo.
-</Composicion>
+<Paso n={2}>
+<Comprobacion titulo="Marca −3 °C">
+Bajar $8$ desde $5$ deja en $-3$: $5+(-8)=-3$.
+</Comprobacion>
+</Paso>

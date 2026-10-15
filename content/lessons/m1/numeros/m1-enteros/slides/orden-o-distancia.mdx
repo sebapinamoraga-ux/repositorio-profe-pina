@@ -1,0 +1,29 @@
+---
+id: orden-o-distancia
+title: 'Orden y distancia no son lo mismo'
+phase: desarrollo
+momento: climax
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={-10}
+  max={10}
+  distancias={[-7, -2]}
+  descripcion="Recta de −10 a 10 con las distancias al cero de −7 y de −2: 7 y 2."
+/>
+
+<Paneles>
+<Tarjeta titulo="Orden">
+<Paso n={1}>
+$-7<-2$: está más a la izquierda.
+</Paso>
+</Tarjeta>
+<Tarjeta titulo="Distancia">
+<Paso n={2}>
+$|-7|=7>|-2|=2$: está más lejos.
+</Paso>
+</Tarjeta>
+</Paneles>

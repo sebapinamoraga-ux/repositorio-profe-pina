@@ -20,6 +20,7 @@ export {
   RectangulosDivisores,
   ValorPosicional,
 } from './FigurasNaturales';
+export { BarraFraccion } from './BarraFraccion';
 export { DiagramaSagital } from './DiagramaSagital';
 export { MaquinaFuncion } from './MaquinaFuncion';
 export { ExploradorCuadratica } from './ExploradorCuadratica';

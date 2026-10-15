@@ -63,6 +63,7 @@ const components = new Set([
   'RectaEnteros',
   'ExploradorResta',
   'ArbolFactores',
+  'BarraFraccion',
   'BarrasDivision',
   'CribaPrimos',
   'GruposPuntos',
@@ -108,6 +109,20 @@ const STEP_ATTRIBUTES: Partial<
   BarrasDivision: [
     { name: 'pasosIntentos', required: false, list: { of: 'intentos' } },
     { name: 'pasoTrozo', required: false },
+  ],
+  CribaPrimos: [
+    { name: 'pasosCriba', required: false, list: { of: 'criba' } },
+    { name: 'pasoPrimos', required: false },
+  ],
+  RectaEnteros: [
+    { name: 'pasosSaltos', required: false, list: { of: 'saltos' } },
+    { name: 'pasosDistancias', required: false, list: { of: 'distancias' } },
+    { name: 'pasosOpuestos', required: false, list: { of: 'opuestos' } },
+  ],
+  BarraFraccion: [
+    { name: 'pasoTomadas', required: false },
+    { name: 'pasoSubdividir', required: false },
+    { name: 'pasoRecta', required: false },
   ],
 };
 export function validateMdxTree(

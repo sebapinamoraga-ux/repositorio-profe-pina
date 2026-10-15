@@ -189,6 +189,29 @@ describe('avisos de una clase de video', () => {
     expect(messages).toContain('La clase previa m1-despues va después de este video en la biblioteca.');
     expect(messages).toContain('Recuerda nombra m1-otra, que no está en `previos` de lesson.yaml.');
   });
+  it('con fechas manda la publicación; sin fecha propia no compara con una previa fechada', () => {
+    const biblioteca = (antes?: string, despues?: string): { id: string; planning: Planning }[] => [
+      {
+        id: 'yt',
+        planning: {
+          units: [
+            { id: 'u1', title: 'U1', lessons: [{ id: 'm1-video', ...(despues ? { date: despues } : {}) }] },
+            { id: 'u2', title: 'U2', lessons: [{ id: 'm1-antes', ...(antes ? { date: antes } : {}) }] },
+          ],
+        },
+      },
+    ];
+    const avisos = (planning: { id: string; planning: Planning }[]) =>
+      videoLessonWarnings(lesson(), ordenada, planning).map((w) => w.message);
+    expect(avisos(biblioteca('2026-12-15', '2027-03-02'))).toEqual([]);
+    expect(avisos(biblioteca('2027-04-01', '2027-03-02'))).toEqual([
+      'La clase previa m1-antes se publica el 2027-04-01, no antes que este video.',
+    ]);
+    expect(avisos(biblioteca('2026-12-15'))).toEqual([]);
+    expect(avisos(biblioteca())).toEqual([
+      'La clase previa m1-antes va después de este video en la biblioteca.',
+    ]);
+  });
   it('en una clase de aula solo avisa lo propio del video', () => {
     const aula = lesson({ formato: undefined, gancho: undefined, previos: undefined });
     const text = source({ id: 'a', phase: 'inicio', layout: 'concepto' }, 'Texto.');

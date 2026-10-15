@@ -1,0 +1,26 @@
+id: nat-ent-consecutivos
+type: paes
+prompt: 'La suma de tres números naturales consecutivos es 87. ¿Cuál es el mayor de ellos?'
+answer: C · 30
+solution: 'Con n, n + 1 y n + 2: 3n + 3 = 87, así que 3n = 84 y n = 28. Los números son 28, 29 y 30, y el mayor es 30. Comprobación: 28 + 29 + 30 = 87.'
+skills: [Representar, Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '28'
+    correct: false
+    explanation: 'Es el menor de los tres: n = 28. La pregunta pide el mayor, n + 2.'
+  - id: B
+    text: '29'
+    correct: false
+    explanation: '87 : 3 = 29 es el número del medio, no el mayor.'
+  - id: C
+    text: '30'
+    correct: true
+    explanation: '3n + 3 = 87 da n = 28; el mayor es n + 2 = 30, y 28 + 29 + 30 = 87.'
+  - id: D
+    text: '31'
+    correct: false
+    explanation: 'Suma 3 al menor: el mayor de tres consecutivos es n + 2, no n + 3.'

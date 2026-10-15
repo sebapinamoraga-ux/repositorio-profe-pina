@@ -1,0 +1,26 @@
+---
+id: cierre
+title: 'Volvemos a las pizzas'
+phase: cierre
+momento: cierre
+layout: escena
+steps: 1
+activities: []
+---
+
+<BarraFraccion
+  partes={4}
+  tomadas={3}
+  recta
+  descripcion="Una barra en cuatro partes con tres pintadas y el punto 3/4 en la recta de 0 a 1."
+/>
+
+<Paso n={1}>
+<Comprobacion titulo="Menos de una pizza">
+Cada persona recibe tres cuartos de pizza:
+
+$$
+3:4=\frac34<1
+$$
+</Comprobacion>
+</Paso>

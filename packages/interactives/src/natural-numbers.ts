@@ -114,3 +114,13 @@ export function trozoVigente(
   if (imprimir) return etapas.at(-1)?.trozo;
   return etapas.filter((etapa) => etapa.paso <= paso).at(-1)?.trozo;
 }
+
+/** Números tachados por la criba: los múltiplos de cada primo indicado, sin el primo. */
+export function tachadosPorCriba(max: number, primos: readonly number[]): Set<number> {
+  const tachados = new Set<number>();
+  for (const p of primos) {
+    if (!esPrimo(p)) throw new Error(`La criba tacha múltiplos de primos: ${p} no es primo.`);
+    for (let m = 2 * p; m <= max; m += p) tachados.add(m);
+  }
+  return tachados;
+}

@@ -1,28 +1,22 @@
 ---
 id: orden
-title: 'Orden y comparación en ℤ'
+title: 'Más a la derecha, mayor'
 phase: desarrollo
-layout: concepto
-steps: 2
+momento: desarrollo
+layout: escena
+steps: 1
 activities: []
 ---
-
-<Definicion titulo="Orden en ℤ">
-Dados $a,b\in\mathbb{Z}$, se cumple **solo una** de tres relaciones: $a<b$, $a=b$ o $a>b$. En la recta, $a<b$ cuando $a$ está **a la izquierda** de $b$.
-</Definicion>
 
 <RectaEnteros
   min={-10}
   max={10}
-  puntos={[-7, -2, 2, 7]}
-  descripcion="Recta de los enteros de −10 a 10 con los puntos −7 y −2 en ocre y 2 y 7 en azul."
+  puntos={[-7, -2]}
+  descripcion="Recta de −10 a 10 con −7 y −2 marcados en ocre; −2 está más a la derecha."
 />
 
 <Paso n={1}>
-$7>2$, pero $-7<-2$: el $-7$ está **más a la izquierda**.
-</Paso>
-<Paso n={2}>
-<Propiedad titulo="Para comparar rápido">
-Todo positivo es mayor que $0$ y que todo negativo. Entre dos negativos, es mayor el que está **más cerca del cero**: $-2>-7$.
-</Propiedad>
+$$
+-2>-7
+$$
 </Paso>

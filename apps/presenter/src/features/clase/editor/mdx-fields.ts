@@ -107,6 +107,7 @@ const FIXED: Record<string, string> = {
   RectaEnteros: 'Recta numérica',
   ExploradorResta: 'Recta interactiva',
   ArbolFactores: 'Árbol de factores',
+  BarraFraccion: 'Barras de fracción',
   BarrasDivision: 'Barras en trozos',
   CribaPrimos: 'Tabla de primos',
   GruposPuntos: 'Puntos agrupados',

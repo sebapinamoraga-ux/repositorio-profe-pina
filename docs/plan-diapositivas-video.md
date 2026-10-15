@@ -370,7 +370,26 @@ El umbral de 25 palabras se cumplió en las 12 láminas con poco ajuste (una lá
 
 **Pendiente:** que el docente vea el MP4 completo y decida si el enfoque se generaliza (criterios de arriba). Mientras la rama de la plataforma no esté en `main`, el video necesita `PLATAFORMA_DIR` apuntando a la carpeta de esa rama.
 
-Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
+### Los primeros 10 videos (15-10-2026)
+
+El docente aprobó el piloto y pidió las láminas de los primeros 10 videos de §5 antes de hacer ajustes. Están como borradores `formato: video` en `content/lessons/m1/numeros`, planificados sin fecha en `yt-m1.yaml` en el orden de §5, y pasan content:check sin avisos propios:
+
+| # | Clase | Láminas | Figuras y momentos |
+|---|---|---|---|
+| 1 | `m1-consecutivos-paridad` | 11 | Recta con saltos +1 en el Recuerda; clímax «tres veces el del medio» |
+| 2 | `m1-division-resto` | 10 | Puntos en cajas, valor posicional; clímax «el resto decide» |
+| 3 | `m1-divisores-multiplos` | 11 | Rectángulos de 12; clímax «por qué funciona la regla del 3» |
+| 4 | `m1-primos` | 11 | Criba por pasos (2, 3, 5), árbol de factores; clímax «descomposición única» |
+| 5 | `m1-mcm-mcd` | 12 | El piloto |
+| 6 | `m1-enteros` | 10 | Rehecha desde cero: termómetro, opuestos y distancias por paso; clímax «orden y distancia no son lo mismo» |
+| 7 | `m1-enteros-suma-resta` | 10 | Saltos en la recta; clímax «el mismo salto» |
+| 8 | `m1-enteros-signos` | 10 | Suma repetida y tabla; clímax «multiplicar por −1 da el opuesto» |
+| 9 | `m1-practica-naturales-enteros` | 10 | Siete preguntas propias (`nat-ent-*` en content/activities) y un paso con error que se resuelve al final |
+| 10 | `m1-fracciones` | 11 | `BarraFraccion` nueva: reparto, punto en la recta y equivalencia |
+
+Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figura nueva (`BarraFraccion`). La regla de `previos` ahora compara fechas cuando las dos clases las tienen, porque las unidades del canal no se publican en el orden del archivo.
+
+**Pendiente:** `m1-naturales` sigue planificada como clase de aula hasta la replanificación; los videos 1–9 la reemplazan. Para convertirlos en video falta que el motor de video dibuje `GruposPuntos`, `RectangulosDivisores`, `CribaPrimos`, `ValorPosicional`, `RectaEnteros` y `BarraFraccion` (hoy dibuja tres figuras), escribir los nueve guiones y renderizar. Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
 
 ## 7. Decisiones del docente (15-10-2026)
 

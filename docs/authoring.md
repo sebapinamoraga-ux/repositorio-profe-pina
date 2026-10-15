@@ -97,6 +97,10 @@ Figuras de los números naturales (los números van en el contenido y se validan
 
 Estados por paso de esas figuras (opcionales; el PDF muestra siempre el último estado): en `LineasMultiplos`, `pasosNumeros` da el paso en que aparece cada recta (uno por número) y `pasoComunes` el paso en que se destacan los múltiplos comunes; en `ArbolFactores`, `pasoArbol` hace crecer las ramas y `pasoEscritura` muestra n con potencias; en `BarrasDivision`, `intentos` son trozos que se prueban antes del final, cada uno en su paso (`pasosIntentos`), y pueden no dividir a todas: lo que sobra queda en ocre. Con intentos, `pasoTrozo` (el paso del trozo final) es obligatorio, y los pasos deben crecer.
 
+`CribaPrimos` también admite la criba de Eratóstenes: `criba` son los primos cuyos múltiplos se tachan (sin tachar el primo), cada uno en su paso (`pasosCriba`), y `pasoPrimos` es el paso en que se destacan los primos. `RectaEnteros` acepta `pasosSaltos`, `pasosDistancias` y `pasosOpuestos` (un paso por elemento); un salto que aún no aparece tampoco marca su punto de llegada.
+
+`BarraFraccion` muestra una fracción como partes de barras iguales: `barras` (1 por defecto, hasta 6), `partes`, `tomadas` (en azul; con `porBarra`, esa cantidad en cada barra, como un reparto), `subdividir` (parte cada parte en k, para una fracción equivalente) y `recta` (con una sola barra, el punto en la recta de 0 a 1). Sus pasos son `pasoTomadas`, `pasoSubdividir` y `pasoRecta`. La lógica está en `packages/interactives/src/fractions.ts`.
+
 ## Clases de video
 
 Una clase con `formato: video` en lesson.yaml es el guion gráfico de un video del canal (plan en [plan-diapositivas-video.md](plan-diapositivas-video.md)). Lleva además `gancho` (la pregunta central en una frase) y `previos`: cada uno es `clase` + `idea` (otra clase que el video recuerda) o `base` (lo que se supone sabido). Los tramos son los capítulos de YouTube y sus minutos aceptan decimales.

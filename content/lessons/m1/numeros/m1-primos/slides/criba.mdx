@@ -1,0 +1,23 @@
+---
+id: criba
+title: 'La criba hasta 30'
+phase: inicio
+momento: caso
+layout: escena
+steps: 4
+activities: []
+---
+
+<CribaPrimos
+  max={30}
+  criba={[2, 3, 5]}
+  pasosCriba={[1, 2, 3]}
+  pasoPrimos={4}
+  descripcion="Tabla del 1 al 30. Se tachan los múltiplos de 2, de 3 y de 5 sin tachar esos primos; quedan destacados en azul 2, 3, 5, 7, 11, 13, 17, 19, 23 y 29."
+/>
+
+<Paso n={4}>
+<Comprobacion titulo="Diez primos">
+Lo que no se tachó, salvo el $1$, es primo.
+</Comprobacion>
+</Paso>

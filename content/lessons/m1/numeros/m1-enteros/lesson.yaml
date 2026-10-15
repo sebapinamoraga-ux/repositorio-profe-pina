@@ -1,66 +1,49 @@
 id: m1-enteros
-title: 'Números enteros: operaciones y orden'
+title: '5 − 8 no tenía respuesta: los números enteros'
 subject: m1
 axis: Números
-duration: 12
+duration: 7
 prerequisites:
-  - Números naturales y cardinales, y la clausura de sus operaciones.
-  - Prioridad de las operaciones (PaPoMuDAS).
+  - Números naturales y el cero en la recta numérica.
 objectives:
-  - Operar y ordenar números enteros con seguridad en los signos.
-  - Reconocer el conjunto de los enteros, sus subconjuntos y el inverso aditivo.
-  - Comparar enteros y calcular su valor absoluto, distinguiendo orden de distancia al cero.
-  - Representar sumas y restas de enteros como desplazamientos en la recta numérica.
-  - Justificar la regla de los signos con el opuesto del opuesto y evitar el error −2² = 4.
-skills: [Representar, Argumentar, Resolver problemas]
+  - Reconocer los números enteros y el opuesto de un entero en la recta.
+  - Ordenar enteros y distinguir el orden de la distancia al cero (valor absoluto).
+skills: [Representar, Argumentar]
 curriculum: [m1-2027-enteros-racionales]
 status: draft
+formato: video
+gancho: Un termómetro marca 5 °C y la temperatura baja 8 grados. ¿Qué marca ahora?
+previos:
+  - base: Números naturales, el cero y la recta numérica.
 tramos:
-  - label: 'Gancho: el termómetro que baja 8 grados'
-    from: apertura
-    to: termometro
-    minutes: 1
-  - label: 'Teoría: conjunto, inverso aditivo, orden y valor absoluto'
-    from: conjunto-enteros
-    to: pausa-orden
-    minutes: 3.5
-  - label: 'Adición y sustracción: reglas y movimiento en la recta'
-    from: adicion-enteros
-    to: mismo-movimiento
+  - label: 'El termómetro y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Los enteros y el opuesto'
+    from: recta-sigue
+    to: opuestos
+    minutes: 1.75
+  - label: 'Orden y valor absoluto'
+    from: orden
+    to: orden-o-distancia
     minutes: 2.5
-  - label: 'Multiplicación, división y clausura en ℤ'
-    from: multiplicar-negativo
-    to: clausura-enteros
-    minutes: 2
-  - label: 'Error con nombre: el menos que se pierde'
-    from: menos-que-se-pierde
-    to: menos-que-se-pierde
-    minutes: 1
-  - label: 'Utilidad PAES: contexto y paso con error'
-    from: enteros-en-contexto
-    to: paso-con-error
-    minutes: 1.5
-  - label: 'Cierre: vuelve al termómetro'
-    from: vuelta-termometro
+  - label: 'Pausa y error'
+    from: pausa
+    to: error-orden
+    minutes: 1.25
+  - label: 'Vuelta al termómetro'
+    from: cierre
     to: cierre
-    minutes: 0.5
+    minutes: 0.75
 slides:
-  - apertura.mdx
-  - termometro.mdx
-  - conjunto-enteros.mdx
-  - recta-enteros.mdx
+  - gancho.mdx
+  - prediccion.mdx
+  - recta-sigue.mdx
+  - opuestos.mdx
   - orden.mdx
   - valor-absoluto.mdx
-  - pausa-orden.mdx
-  - adicion-enteros.mdx
-  - sumar-avanzar.mdx
-  - restar-opuesto.mdx
-  - mismo-movimiento.mdx
-  - multiplicar-negativo.mdx
-  - regla-signos.mdx
-  - clausura-enteros.mdx
-  - menos-que-se-pierde.mdx
-  - enteros-en-contexto.mdx
-  - paso-con-error.mdx
-  - vuelta-termometro.mdx
+  - orden-o-distancia.mdx
+  - pausa.mdx
+  - error-orden.mdx
   - cierre.mdx

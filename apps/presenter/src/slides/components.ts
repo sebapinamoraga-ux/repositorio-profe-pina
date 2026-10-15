@@ -1,6 +1,7 @@
 import * as blocks from '@aula/pedagogical-ui';
 import {
   ArbolFactores,
+  BarraFraccion,
   BarrasDivision,
   CribaPrimos,
   DiagramaSagital,
@@ -61,6 +62,7 @@ export const mdxComponents = {
   ExploradorResta,
   MaquinaFuncion,
   ArbolFactores,
+  BarraFraccion,
   BarrasDivision,
   CribaPrimos,
   GruposPuntos,

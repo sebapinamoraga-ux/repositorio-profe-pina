@@ -11,6 +11,7 @@ import {
   mcm,
   multiplosHasta,
   paresDivisores,
+  tachadosPorCriba,
   trozoVigente,
 } from './natural-numbers';
 
@@ -84,4 +85,14 @@ describe('números naturales', () => {
     expect(() => trozoVigente([{ trozo: 4, paso: 2 }, { trozo: 6, paso: 2 }], 2, false)).toThrow('crecer');
     expect(dividir(18, 4)).toEqual({ cociente: 4, resto: 2 });
   });
+
+  it('tacha los múltiplos de los primos de la criba, sin los primos', () => {
+    const tachados = tachadosPorCriba(30, [2, 3]);
+    expect(tachados.has(2)).toBe(false);
+    expect(tachados.has(9)).toBe(true);
+    expect(tachados.has(25)).toBe(false);
+    expect([...tachadosPorCriba(30, [2, 3, 5])].length).toBe(19);
+    expect(() => tachadosPorCriba(30, [4])).toThrow('no es primo');
+  });
 });
+

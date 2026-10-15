@@ -1,0 +1,30 @@
+---
+id: restar-opuesto
+title: 'Restar es sumar el opuesto'
+phase: desarrollo
+momento: desarrollo
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={-6}
+  max={8}
+  desde={5}
+  saltos={[-8]}
+  pasosSaltos={[1]}
+  descripcion="Recta de −6 a 8. Desde 5 un salto ocre de −8 llega a −3."
+/>
+
+<Paso n={1}>
+$$
+5-8=5+(-8)=-3
+$$
+</Paso>
+
+<Paso n={2}>
+<Definicion titulo="Resta de enteros">
+$a-b=a+(-b)$: restar $b$ es sumar su opuesto.
+</Definicion>
+</Paso>

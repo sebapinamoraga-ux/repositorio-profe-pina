@@ -11,6 +11,7 @@ import {
   mcm,
   multiplosHasta,
   paresDivisores,
+  tachadosPorCriba,
   trozoVigente,
 } from './natural-numbers';
 
@@ -245,14 +246,31 @@ export function CribaPrimos({
   max,
   columnas = 10,
   marcar = [],
+  criba = [],
+  pasosCriba,
+  pasoPrimos,
   descripcion,
 }: {
   max: number;
   columnas?: number;
   marcar?: number[];
+  /** Primos cuyos múltiplos (sin el primo) se tachan, en orden: la criba de Eratóstenes. */
+  criba?: number[];
+  /** Paso en que se tachan los múltiplos de cada primo de `criba`. */
+  pasosCriba?: number[];
+  /** Paso en que se destacan los primos; antes, todas las casillas son iguales. */
+  pasoPrimos?: number;
   descripcion: string;
 }) {
+  const visible = useVisible();
   if (max > 60) throw new Error('CribaPrimos admite hasta 60 números.');
+  if (pasosCriba && pasosCriba.length !== criba.length)
+    throw new Error('CribaPrimos: pasosCriba lleva un paso por primo de criba.');
+  const tachados = tachadosPorCriba(
+    max,
+    criba.filter((_, k) => visible(pasosCriba?.[k])),
+  );
+  const destacar = visible(pasoPrimos);
   const ancho = 1120 / columnas;
   const altoCelda = 66;
   const filas = Math.ceil(max / columnas);
@@ -264,7 +282,8 @@ export function CribaPrimos({
           const n = i + 1;
           const x = (i % columnas) * ancho;
           const y = Math.floor(i / columnas) * altoCelda;
-          const primo = esPrimo(n);
+          const primo = destacar && esPrimo(n);
+          const tachado = tachados.has(n);
           return (
             <g key={n}>
               <rect
@@ -284,11 +303,20 @@ export function CribaPrimos({
               >
                 {n}
               </text>
+              {tachado && (
+                <line
+                  className="natural-sieve-cross"
+                  x1={x + 14}
+                  y1={y + altoCelda - 14}
+                  x2={x + ancho - 14}
+                  y2={y + 14}
+                />
+              )}
             </g>
           );
         })}
       </g>
-      <g transform={`translate(40 ${filas * altoCelda + 26})`}>
+      <g transform={`translate(40 ${filas * altoCelda + 26})`} visibility={visibility(destacar)}>
         <rect className="natural-sieve natural-sieve-prime" x="0" y="0" width="40" height="34" rx="6" />
         <text className="natural-text" x="54" y="27" fontSize="26">primo</text>
         <rect className="natural-sieve" x="200" y="0" width="40" height="34" rx="6" />

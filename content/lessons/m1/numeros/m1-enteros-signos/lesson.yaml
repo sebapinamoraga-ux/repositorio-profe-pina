@@ -1,0 +1,52 @@
+id: m1-enteros-signos
+title: '¿Por qué menos por menos es más? Multiplicar y dividir enteros'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Sumar y restar enteros; el opuesto de un entero.
+objectives:
+  - Multiplicar y dividir enteros con la regla de los signos.
+  - Justificar la regla con el patrón de una tabla y el opuesto del opuesto, y evitar el error −2² = 4.
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: ¿Por qué el producto de dos números negativos es positivo?
+previos:
+  - clase: m1-enteros
+    idea: El opuesto del opuesto de un número es el mismo número.
+  - clase: m1-enteros-suma-resta
+    idea: Sumar un negativo es retroceder en la recta.
+tramos:
+  - label: 'Menos por menos'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Suma repetida y el patrón'
+    from: suma-repetida
+    to: patron
+    minutes: 1.75
+  - label: 'El opuesto del opuesto'
+    from: recuerda-opuesto
+    to: menos-por-menos
+    minutes: 1.75
+  - label: 'Regla, pausa y error'
+    from: regla
+    to: menos-que-se-pierde
+    minutes: 2
+  - label: 'Vuelta a (−2) · (−3)'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - suma-repetida.mdx
+  - patron.mdx
+  - recuerda-opuesto.mdx
+  - menos-por-menos.mdx
+  - regla.mdx
+  - pausa.mdx
+  - menos-que-se-pierde.mdx
+  - cierre.mdx
