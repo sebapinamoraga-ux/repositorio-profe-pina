@@ -1,31 +1,23 @@
 ---
 id: mcm-mcd-contexto
-title: '¿MCM o mcd? Depende de la pregunta'
+title: 'Coincidir: los buses y el MCM'
 phase: practica
 layout: concepto
-steps: 3
+steps: 1
 activities: []
 ---
 
-<Paneles>
-<Tarjeta titulo="Coincidir: MCM">
 Tres buses salen juntos a las 8:00: uno cada $12$ min, otro cada $18$ y otro cada $24$. ¿A qué hora vuelven a salir juntos?
 
+<LineasMultiplos
+  numeros={[12, 18, 24]}
+  hasta={72}
+  rotulos={['cada 12 min', 'cada 18 min', 'cada 24 min']}
+  descripcion="Tres rectas de 0 a 72 minutos con las salidas de cada bus: múltiplos de 12, de 18 y de 24. Una guía azul une el 0 y el 72, donde coinciden los tres."
+/>
+
 <Paso n={1}>
-$\text{MCM}(12,18,24)=72$ min, es decir, $1$ h $12$ min: a las **9:12**.
-</Paso>
-</Tarjeta>
-<Tarjeta titulo="Repartir: mcd">
-Tres cintas miden $12$, $18$ y $24$ cm. Se cortan en trozos iguales, lo más largos posible y sin sobrantes. ¿Cuánto mide cada trozo?
-
-<Paso n={2}>
-$\text{mcd}(12,18,24)=6$ cm: salen $2+3+4=9$ trozos.
-</Paso>
-</Tarjeta>
-</Paneles>
-
-<Paso n={3}>
-<Comprobacion titulo="Comprobación">
-$72$ es múltiplo de los tres: $72=12\cdot 6=18\cdot 4=24\cdot 3$. Y $6$ divide a los tres: $12=6\cdot 2$, $18=6\cdot 3$, $24=6\cdot 4$.
+<Comprobacion titulo="El menor múltiplo común">
+$\text{MCM}(12,18,24)=72$ min $=1$ h $12$ min: salen juntos a las **9:12**. Comprobación: $72=12\cdot 6=18\cdot 4=24\cdot 3$.
 </Comprobacion>
 </Paso>

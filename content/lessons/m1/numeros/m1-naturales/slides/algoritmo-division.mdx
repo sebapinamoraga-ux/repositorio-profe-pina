@@ -8,18 +8,20 @@ activities: []
 ---
 
 <Definicion titulo="Algoritmo de la división">
-Al dividir $D$ por $d\ne 0$ se obtienen un cociente $q$ y un resto $r$ únicos tales que
-
-$$
-D=d\cdot q+r,\qquad 0\le r<d
-$$
+Al dividir $D$ por $d\ne 0$ se obtienen un cociente $q$ y un resto $r$ únicos tales que $D=d\cdot q+r$, con $0\le r<d$.
 </Definicion>
 
+Guardas $23$ alfajores en cajas de $5$. ¿Cuántas cajas llenas salen y cuántos alfajores quedan fuera?
+
 <Paso n={1}>
-$137:3=45$ y sobran $2$: dividendo $137$, divisor $3$, cociente $45$, resto $2$.
+<GruposPuntos
+  total={23}
+  grupo={5}
+  descripcion="Veintitrés puntos en cajas de cinco: cuatro cajas llenas y tres puntos ocres que quedan fuera."
+/>
 </Paso>
 <Paso n={2}>
 <Comprobacion titulo="Comprobación">
-$3\cdot 45+2=135+2=137$ y el resto cumple $0\le 2<3$. Si el resto es $0$, la división es **exacta**.
+$4$ cajas y sobran $3$: $5\cdot 4+3=23$, con $0\le 3<5$. Con números grandes no hace falta dibujar: $137=3\cdot 45+2$.
 </Comprobacion>
 </Paso>

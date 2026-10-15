@@ -11,15 +11,16 @@ activities: []
 Un natural es **primo** si tiene exactamente **dos** divisores: el $1$ y él mismo. Es **compuesto** si tiene más de dos. El $0$ y el $1$ no son primos ni compuestos.
 </Definicion>
 
-Primos menores que $30$: $2,\ 3,\ 5,\ 7,\ 11,\ 13,\ 17,\ 19,\ 23,\ 29$.
+Con $12$ baldosas cuadradas se arman tres rectángulos distintos. ¿Y con $13$?
 
 <Paso n={1}>
-<ErrorTipico titulo="Error: «todo impar es primo»">
-$9=3\cdot 3$, $15=3\cdot 5$ y $21=3\cdot 7$ son impares y compuestos.
-</ErrorTipico>
+<RectangulosDivisores
+  n={13}
+  descripcion="Con 13 cuadrados solo se forma un rectángulo: 1 × 13."
+/>
 </Paso>
 <Paso n={2}>
-<Comprobacion titulo="El único primo par">
-El $2$ es primo; todo otro par tiene al $2$ como divisor, así que tiene más de dos divisores.
+<Comprobacion titulo="Respuesta">
+Solo $1\times 13$: sus únicos divisores son $1$ y $13$, así que $13$ es **primo**. El $12$, con seis divisores, es **compuesto**.
 </Comprobacion>
 </Paso>

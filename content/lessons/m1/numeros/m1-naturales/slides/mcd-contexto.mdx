@@ -1,0 +1,26 @@
+---
+id: mcd-contexto
+title: 'Repartir: las cintas y el mcd'
+phase: practica
+layout: concepto
+steps: 2
+activities: []
+---
+
+Tres cintas miden $12$, $18$ y $24$ cm. Se cortan en trozos iguales, lo más largos posible y sin sobrantes. ¿Cuánto mide cada trozo?
+
+<BarrasDivision
+  longitudes={[12, 18, 24]}
+  trozo={6}
+  unidad="cm"
+  descripcion="Tres barras de 12, 18 y 24 cm cortadas en trozos de 6 cm: 2, 3 y 4 trozos."
+/>
+
+<Paso n={1}>
+El trozo debe **dividir** a las tres longitudes y ser el mayor posible: $\text{mcd}(12,18,24)=6$ cm. Salen $2+3+4=9$ trozos.
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$12=6\cdot 2$, $18=6\cdot 3$ y $24=6\cdot 4$. Un trozo de $12$ cm no sirve: no divide a $18$.
+</Comprobacion>
+</Paso>

@@ -1,5 +1,8 @@
 import * as blocks from '@aula/pedagogical-ui';
 import {
+  ArbolFactores,
+  BarrasDivision,
+  CribaPrimos,
   DiagramaSagital,
   ExploradorCuadratica,
   ExploradorResta,
@@ -8,9 +11,13 @@ import {
   GraficoFuncion,
   GraficoRectas,
   GraficoSistema,
+  GruposPuntos,
+  LineasMultiplos,
   MaquinaFuncion,
   RectaEnteros,
   RectaIntervalos,
+  RectangulosDivisores,
+  ValorPosicional,
 } from '@aula/interactives';
 
 /** Componentes registrados para el MDX; validate-mdx usa la misma lista. */
@@ -52,5 +59,12 @@ export const mdxComponents = {
   ExploradorCuadratica,
   ExploradorResta,
   MaquinaFuncion,
+  ArbolFactores,
+  BarrasDivision,
+  CribaPrimos,
+  GruposPuntos,
+  LineasMultiplos,
+  RectangulosDivisores,
+  ValorPosicional,
   MascotaProfePina: blocks.MascotaProfePina,
 };

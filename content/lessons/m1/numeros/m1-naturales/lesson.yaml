@@ -2,7 +2,7 @@ id: m1-naturales
 title: 'Números naturales: divisibilidad, primos, MCM y mcd'
 subject: m1
 axis: Números
-duration: 14
+duration: 16
 prerequisites:
   - Sumar, restar, multiplicar y dividir números naturales.
 objectives:
@@ -26,7 +26,7 @@ tramos:
   - label: 'Pares, impares y algoritmo de la división'
     from: pares-impares
     to: algoritmo-division
-    minutes: 1.5
+    minutes: 2
   - label: 'Divisores, múltiplos y reglas de divisibilidad'
     from: divisores-multiplos
     to: reglas-divisibilidad
@@ -34,15 +34,15 @@ tramos:
   - label: 'Primos, compuestos y descomposición única'
     from: primos-compuestos
     to: descomposicion-prima
-    minutes: 1.5
-  - label: 'MCM y mcd: definición, cálculo y contexto'
+    minutes: 2
+  - label: 'MCM y mcd: definición, cálculo y contextos'
     from: mcm-mcd
     to: pausa-mcm
-    minutes: 3
+    minutes: 3.5
   - label: 'Prioridad de las operaciones'
     from: prioridad-operaciones
     to: prioridad-ejemplo
-    minutes: 1
+    minutes: 1.5
   - label: 'Clausura: ¿por qué crear más conjuntos?'
     from: clausura
     to: cierre
@@ -54,16 +54,21 @@ slides:
   - sucesor-antecesor.mdx
   - expresiones-usuales.mdx
   - pares-impares.mdx
+  - paridad-propiedades.mdx
   - algoritmo-division.mdx
   - divisores-multiplos.mdx
   - reglas-divisibilidad.mdx
   - primos-compuestos.mdx
+  - criba-primos.mdx
   - descomposicion-prima.mdx
   - mcm-mcd.mdx
   - mcm-mcd-primos.mdx
   - mcm-mcd-contexto.mdx
+  - mcd-contexto.mdx
+  - mcm-o-mcd.mdx
   - pausa-mcm.mdx
   - prioridad-operaciones.mdx
+  - prioridad-contexto.mdx
   - prioridad-ejemplo.mdx
   - clausura.mdx
   - cierre.mdx

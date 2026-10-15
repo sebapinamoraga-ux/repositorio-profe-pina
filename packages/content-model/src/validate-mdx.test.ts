@@ -219,6 +219,17 @@ it('exige los atributos de RectaEnteros y ExploradorResta', () => {
     ),
   ).toThrow('aEstatico');
 });
+it('exige los atributos de las figuras de naturales', () => {
+  expect(() =>
+    validateMdxTree(componente('BarrasDivision', ['longitudes', 'descripcion']), sinPasos),
+  ).toThrow('trozo');
+  expect(() =>
+    validateMdxTree(componente('LineasMultiplos', ['numeros', 'descripcion']), sinPasos),
+  ).toThrow('hasta');
+  expect(() =>
+    validateMdxTree(componente('GruposPuntos', ['total', 'grupo', 'descripcion']), sinPasos),
+  ).not.toThrow();
+});
 it('cuenta la señal como paso y valida su posición y texto', () => {
   const senal = (attrs: Record<string, string | { value: string }>) => ({
     type: 'root',

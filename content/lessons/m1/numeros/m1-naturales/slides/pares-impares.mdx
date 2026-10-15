@@ -11,13 +11,17 @@ activities: []
 Un número es **par** si se escribe $2n$ e **impar** si se escribe $2n+1$, con $n\in\mathbb{N}_0$ (o $2n-1$, con $n\in\mathbb{N}$).
 </Definicion>
 
+En un cajón hay $13$ calcetines sueltos. ¿Se pueden ordenar en pares sin que sobre ninguno?
+
 <Paso n={1}>
-<Propiedad titulo="Propiedades útiles">
-Par + par = par. Impar + impar = par. Par + impar = impar. Par por cualquier natural = par.
-</Propiedad>
+<GruposPuntos
+  total={13}
+  grupo={2}
+  descripcion="Trece puntos agrupados de a dos: seis pares completos y un punto ocre que sobra."
+/>
 </Paso>
 <Paso n={2}>
-<Comprobacion titulo="Por qué impar + impar es par">
-$(2a+1)+(2b+1)=2a+2b+2=2(a+b+1)$: es el doble de un natural.
+<Comprobacion titulo="Respuesta">
+Salen $6$ pares y sobra $1$: $13=2\cdot 6+1$, así que $13$ es **impar**.
 </Comprobacion>
 </Paso>

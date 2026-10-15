@@ -221,6 +221,49 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       descripcion,
     ],
   },
+  ValorPosicional: {
+    label: 'Valor posicional con billetes y monedas',
+    params: [n('numero', 'Número (hasta seis cifras)'), descripcion],
+  },
+  GruposPuntos: {
+    label: 'Puntos agrupados (división con resto)',
+    params: [n('total', 'Total de puntos (hasta 60)'), n('grupo', 'Puntos por grupo'), descripcion],
+  },
+  RectangulosDivisores: {
+    label: 'Rectángulos de divisores',
+    params: [n('n', 'Número de cuadrados (hasta 30)'), descripcion],
+  },
+  CribaPrimos: {
+    label: 'Tabla de números primos',
+    params: [
+      n('max', 'Último número (hasta 60)'),
+      n('columnas', 'Columnas', false, 10),
+      { name: 'marcar', label: 'Números marcados en ocre', kind: 'numbers' },
+      descripcion,
+    ],
+  },
+  ArbolFactores: {
+    label: 'Árbol de factores primos',
+    params: [n('n', 'Número compuesto'), descripcion],
+  },
+  LineasMultiplos: {
+    label: 'Rectas de múltiplos',
+    params: [
+      { name: 'numeros', label: 'Números (de dos a cuatro)', kind: 'numbers', required: true },
+      n('hasta', 'Último valor de las rectas'),
+      { name: 'rotulos', label: 'Rótulo de cada recta', kind: 'texts' },
+      descripcion,
+    ],
+  },
+  BarrasDivision: {
+    label: 'Barras cortadas en trozos iguales',
+    params: [
+      { name: 'longitudes', label: 'Longitudes', kind: 'numbers', required: true },
+      n('trozo', 'Largo de cada trozo'),
+      t('unidad', 'Unidad', false),
+      descripcion,
+    ],
+  },
   DiagramaSagital: {
     label: 'Diagrama sagital',
     params: [

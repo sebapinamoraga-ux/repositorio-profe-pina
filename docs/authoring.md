@@ -93,6 +93,8 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 `RectaEnteros` dibuja una recta de enteros entre `min` y `max` (enteros; con más de 24 unidades rotula cada 5). Marca `puntos` con su rótulo opcional (`rotulos`), dibuja `saltos` sucesivos desde `desde` como arcos con flecha, acota la distancia al cero de cada valor de `distancias` (con su rótulo |a|) y une cada valor de `opuestos` con su opuesto. Positivos en azul y negativos en ocre, siempre. Un valor fuera de la recta se rechaza. `ExploradorResta` dibuja la resta a − b como el salto −b desde a, con sus dos lecturas (a − b y a + (−b)); tiene controles para a y b, «Restablecer» y valores impresos (`aEstatico`, `bEstatico`).
 
+Figuras de los números naturales (estáticas; los números van en el contenido y se validan): `ValorPosicional` (`numero`) muestra cada cifra como billetes o monedas de su posición; `GruposPuntos` (`total`, `grupo`) agrupa puntos y deja el resto en ocre, con la igualdad D = d · q + r; `RectangulosDivisores` (`n`) dibuja todos los rectángulos de n cuadrados, cuyos lados son los divisores; `CribaPrimos` (`max`, `columnas`, `marcar`) destaca los primos hasta `max` y marca en ocre los números de `marcar`; `ArbolFactores` (`n`) separa en cada nivel el menor primo; `LineasMultiplos` (`numeros`, `hasta`, `rotulos`) une con una guía los múltiplos comunes, y `BarrasDivision` (`longitudes`, `trozo`, `unidad`) corta cada barra en trozos iguales y rechaza un trozo que no divida a todas.
+
 ## Editar desde la app
 
 Todo lo que se describe arriba también se edita desde la app (rol Docente), en cualquier dispositivo, y queda guardado en el repositorio. La primera vez en cada dispositivo, conecta la app en **Ajustes**:

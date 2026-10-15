@@ -7,14 +7,21 @@ steps: 1
 activities: []
 ---
 
-<Composicion plantilla="pedagogica-pista" nota="¿Buscas coincidir o repartir?">
+<Composicion plantilla="sutil-practica">
 <PracticaIndividual titulo="Pausa y piensa">
 Dos luces parpadean juntas ahora. Una parpadea cada $8$ segundos y la otra cada $12$. ¿En cuántos segundos vuelven a parpadear juntas?
 </PracticaIndividual>
 
 <Paso n={1}>
+<LineasMultiplos
+  numeros={[8, 12]}
+  hasta={48}
+  rotulos={['cada 8 s', 'cada 12 s']}
+  descripcion="Dos rectas de 0 a 48 segundos: múltiplos de 8 y de 12. Las guías azules marcan 0, 24 y 48, donde coinciden."
+/>
+
 <Comprobacion titulo="Respuesta">
-Es una coincidencia: $8=2^3$ y $12=2^2\cdot 3$, así que $\text{MCM}=2^3\cdot 3=24$ segundos. Comprobación: $24=8\cdot 3=12\cdot 2$.
+Es una coincidencia: $\text{MCM}(8,12)=24$ segundos. Comprobación: $24=8\cdot 3=12\cdot 2$.
 </Comprobacion>
 </Paso>
 </Composicion>
