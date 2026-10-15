@@ -1,0 +1,28 @@
+---
+id: mcm-o-mcd
+title: 'Error: ¿MCM o mcd?'
+phase: desarrollo
+momento: error
+layout: escena
+steps: 3
+activities: []
+---
+
+<Paso n={1}>
+<ErrorTipico titulo="Error: usar el mcd para coincidir">
+$\text{mcd}(12,18,24)=6$: «los buses salen juntos a las 8:06».
+</ErrorTipico>
+</Paso>
+
+<Paso n={2}>
+<Comprobacion titulo="No puede ser">
+A las 8:06 no sale ningún bus: $6$ no es múltiplo de $12$.
+</Comprobacion>
+</Paso>
+
+<Paso n={3}>
+<Paneles>
+<Tarjeta titulo="Coincidir">Múltiplo común: **MCM**.</Tarjeta>
+<Tarjeta titulo="Repartir sin que sobre">Divisor común: **mcd**.</Tarjeta>
+</Paneles>
+</Paso>

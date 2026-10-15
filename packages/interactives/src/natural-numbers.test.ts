@@ -11,6 +11,7 @@ import {
   mcm,
   multiplosHasta,
   paresDivisores,
+  trozoVigente,
 } from './natural-numbers';
 
 describe('números naturales', () => {
@@ -66,5 +67,21 @@ describe('números naturales', () => {
   it('separa cifras y escribe miles con punto', () => {
     expect(cifras(3623)).toEqual([3, 6, 2, 3]);
     expect(formatNatural(3623)).toBe('3.623');
+  });
+
+  it('elige el trozo vigente de cada paso', () => {
+    const etapas = [
+      { trozo: 4, paso: 1 },
+      { trozo: 3, paso: 2 },
+      { trozo: 6, paso: 3 },
+    ];
+    expect(trozoVigente(etapas, 0, false)).toBeUndefined();
+    expect(trozoVigente(etapas, 1, false)).toBe(4);
+    expect(trozoVigente(etapas, 2, false)).toBe(3);
+    expect(trozoVigente(etapas, 5, false)).toBe(6);
+    expect(trozoVigente(etapas, 0, true)).toBe(6);
+    expect(trozoVigente([{ trozo: 6, paso: 0 }], 0, false)).toBe(6);
+    expect(() => trozoVigente([{ trozo: 4, paso: 2 }, { trozo: 6, paso: 2 }], 2, false)).toThrow('crecer');
+    expect(dividir(18, 4)).toEqual({ cociente: 4, resto: 2 });
   });
 });

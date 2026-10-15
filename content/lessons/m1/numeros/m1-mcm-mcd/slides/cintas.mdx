@@ -1,0 +1,27 @@
+---
+id: cintas
+title: 'Repartir sin que sobre: tres cintas'
+phase: desarrollo
+momento: desarrollo
+layout: escena
+steps: 4
+activities: []
+---
+
+Cintas de $12$, $18$ y $24$ cm: trozos iguales, lo más largos posible, sin que sobre.
+
+<BarrasDivision
+  longitudes={[12, 18, 24]}
+  trozo={6}
+  unidad="cm"
+  intentos={[4, 3]}
+  pasosIntentos={[1, 2]}
+  pasoTrozo={3}
+  descripcion="Tres barras de 12, 18 y 24 cm cortadas en trozos de 6 cm: 2, 3 y 4 trozos, sin que sobre nada."
+/>
+
+<Paso n={4}>
+<Definicion titulo="Máximo común divisor (mcd)">
+El mayor de los divisores comunes de varios naturales.
+</Definicion>
+</Paso>

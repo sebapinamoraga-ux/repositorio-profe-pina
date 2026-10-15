@@ -80,9 +80,11 @@ const BLOCK_NAMES: Record<string, string> = {
   Cierre: 'Cierre',
   Composicion: 'Composición',
   Etiqueta: 'Etiqueta',
+  Recuerda: 'Recuerda',
 };
 const ATTR_LABELS: Record<string, string> = {
   titulo: 'Título',
+  clase: 'Clase recordada (identificador)',
   etiqueta: 'Etiqueta',
   nota: 'Nota de la mascota',
   tex: 'Fórmula (TeX)',

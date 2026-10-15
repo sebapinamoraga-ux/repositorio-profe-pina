@@ -48,6 +48,7 @@ export const mdxComponents = {
   Semaforo: blocks.Semaforo,
   Formula: blocks.Formula,
   PreguntaPAES: blocks.PreguntaPAES,
+  Recuerda: blocks.Recuerda,
   GraficoSistema,
   GraficoDosCondiciones,
   GraficoRectas,

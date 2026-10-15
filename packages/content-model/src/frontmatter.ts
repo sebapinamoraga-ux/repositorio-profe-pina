@@ -26,6 +26,7 @@ export function toMdx(slide: Slide & { body: string }): string {
     `id: ${slide.id}`,
     `title: ${quote(slide.title)}`,
     `phase: ${slide.phase}`,
+    ...(slide.momento ? [`momento: ${slide.momento}`] : []),
     `layout: ${slide.layout}`,
     `steps: ${slide.steps}`,
     `activities: [${slide.activities.join(', ')}]`,

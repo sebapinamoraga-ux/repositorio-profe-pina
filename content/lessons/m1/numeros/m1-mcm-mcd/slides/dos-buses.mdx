@@ -1,0 +1,24 @@
+---
+id: dos-buses
+title: 'Primero, dos buses: cada 4 y cada 6 minutos'
+phase: desarrollo
+momento: simplificada
+layout: escena
+steps: 3
+activities: []
+---
+
+<LineasMultiplos
+  numeros={[4, 6]}
+  hasta={24}
+  rotulos={['cada 4 min', 'cada 6 min']}
+  pasosNumeros={[1, 2]}
+  pasoComunes={3}
+  descripcion="Dos rectas de 0 a 24 minutos con las salidas de cada bus: múltiplos de 4 y de 6. Las guías azules marcan 0, 12 y 24, donde coinciden."
+/>
+
+<Paso n={3}>
+<Comprobacion titulo="Coinciden">
+A los $12$ min: el primer múltiplo de $4$ y de $6$ a la vez.
+</Comprobacion>
+</Paso>

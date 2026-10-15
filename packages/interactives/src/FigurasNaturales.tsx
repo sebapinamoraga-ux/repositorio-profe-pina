@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useSlide } from '@aula/pedagogical-ui';
 import {
   cifras,
   dividir,
@@ -10,9 +11,20 @@ import {
   mcm,
   multiplosHasta,
   paresDivisores,
+  trozoVigente,
 } from './natural-numbers';
 
-/** Figuras estáticas de los números naturales; los números pertenecen al contenido. */
+/**
+ * Figuras de los números naturales; los números pertenecen al contenido. Algunas cambian de
+ * estado por paso (para el aula y el video); el PDF muestra siempre el último estado.
+ */
+
+/** ¿Se ve un elemento que aparece en `paso`? Sin paso, siempre; al imprimir, siempre. */
+function useVisible() {
+  const { step, print } = useSlide();
+  return (paso: number | undefined) => print || paso === undefined || step >= paso;
+}
+const visibility = (shown: boolean) => (shown ? 'visible' : 'hidden');
 
 const ANCHO = 1200;
 
@@ -293,7 +305,21 @@ export function CribaPrimos({
 }
 
 /** Árbol de factores: en cada nivel sale el menor primo y sigue el otro factor. */
-export function ArbolFactores({ n, descripcion }: { n: number; descripcion: string }) {
+export function ArbolFactores({
+  n,
+  pasoArbol,
+  pasoEscritura,
+  descripcion,
+}: {
+  n: number;
+  /** Paso en que crecen las ramas; antes solo se ve n. */
+  pasoArbol?: number;
+  /** Paso en que aparece n escrito con potencias. */
+  pasoEscritura?: number;
+  descripcion: string;
+}) {
+  const visible = useVisible();
+  const ramas = visibility(visible(pasoArbol));
   const factores = factoresPrimos(n);
   if (factores.length < 2) throw new Error('ArbolFactores requiere un número compuesto.');
   if (factores.length > 7) throw new Error('ArbolFactores admite hasta siete factores.');
@@ -312,16 +338,16 @@ export function ArbolFactores({ n, descripcion }: { n: number; descripcion: stri
         const ultimo = k === nodos.length - 1;
         const primo = factores[k] ?? 0;
         return (
-          <g key={k}>
+          <g key={k} visibility={k === 0 ? 'visible' : ramas}>
             {!ultimo && (
-              <>
+              <g visibility={ramas}>
                 <line className="natural-branch" x1={x} y1={y + 12} x2={x - dx + 12} y2={y + dy - 26} />
                 <line className="natural-branch" x1={x} y1={y + 12} x2={x + dx} y2={y + dy - 26} />
                 <circle className="natural-prime-leaf" cx={x - dx} cy={y + dy} r="24" />
                 <text className="natural-text natural-text-strong" x={x - dx} y={y + dy + 10} textAnchor="middle" fontSize="28">
                   {primo}
                 </text>
-              </>
+              </g>
             )}
             {ultimo && <circle className="natural-prime-leaf" cx={x} cy={y} r="24" />}
             <text
@@ -336,7 +362,14 @@ export function ArbolFactores({ n, descripcion }: { n: number; descripcion: stri
           </g>
         );
       })}
-      <text className="natural-text natural-text-strong" x={300} y={alto - 24} textAnchor="middle" fontSize="32">
+      <text
+        className="natural-text natural-text-strong"
+        x={300}
+        y={alto - 24}
+        textAnchor="middle"
+        fontSize="32"
+        visibility={visibility(visible(pasoEscritura))}
+      >
         {formatNatural(n)} = {escrituraPrima(n)}
       </text>
     </Figura>
@@ -348,15 +381,25 @@ export function LineasMultiplos({
   numeros,
   hasta,
   rotulos = [],
+  pasosNumeros,
+  pasoComunes,
   descripcion,
 }: {
   numeros: number[];
   hasta: number;
   rotulos?: string[];
+  /** Paso en que aparece la recta de cada número. */
+  pasosNumeros?: number[];
+  /** Paso en que se destacan los múltiplos comunes; antes son puntos como los demás. */
+  pasoComunes?: number;
   descripcion: string;
 }) {
+  const visible = useVisible();
   if (numeros.length < 2 || numeros.length > 4)
     throw new Error('LineasMultiplos admite de dos a cuatro números.');
+  if (pasosNumeros && pasosNumeros.length !== numeros.length)
+    throw new Error('LineasMultiplos: pasosNumeros lleva un paso por número.');
+  const destacar = visible(pasoComunes);
   const comun = mcm(numeros);
   const comunes = [0, ...multiplosHasta(comun, hasta)];
   const izquierda = 250;
@@ -368,18 +411,18 @@ export function LineasMultiplos({
   return (
     <Figura alto={alto} descripcion={descripcion}>
       {comunes.map((v) => (
-        <line key={`g${v}`} className="natural-guide" x1={sx(v)} x2={sx(v)} y1={top - 30} y2={top + (numeros.length - 1) * fila + 22} />
+        <line key={`g${v}`} visibility={visibility(destacar)} className="natural-guide" x1={sx(v)} x2={sx(v)} y1={top - 30} y2={top + (numeros.length - 1) * fila + 22} />
       ))}
       {numeros.map((n, i) => {
         const y = top + i * fila;
         return (
-          <g key={n}>
+          <g key={n} visibility={visibility(visible(pasosNumeros?.[i]))}>
             <text className="natural-text natural-text-strong" x={20} y={y + 10} fontSize="28">
               {rotulos[i] ?? `múltiplos de ${n}`}
             </text>
             <line className="natural-axis" x1={izquierda} x2={derecha} y1={y} y2={y} />
             {[0, ...multiplosHasta(n, hasta)].map((m) => {
-              const destacado = comunes.includes(m);
+              const destacado = destacar && comunes.includes(m);
               return (
                 <g key={m}>
                   <circle className={destacado ? 'natural-dot-common' : 'natural-dot'} cx={sx(m)} cy={y} r={destacado ? 13 : 10} />
@@ -402,21 +445,43 @@ export function LineasMultiplos({
   );
 }
 
-/** Barras cortadas en trozos iguales de largo `trozo`, que debe dividir a todas. */
+/**
+ * Barras cortadas en trozos iguales de largo `trozo`, que debe dividir a todas. Con `intentos`,
+ * antes se prueban otros trozos, uno por paso: lo que sobra de cada barra queda en ocre.
+ */
 export function BarrasDivision({
   longitudes,
   trozo,
   unidad = '',
+  intentos = [],
+  pasosIntentos = [],
+  pasoTrozo,
   descripcion,
 }: {
   longitudes: number[];
   trozo: number;
   unidad?: string;
+  /** Trozos que se prueban antes del final; pueden no dividir a todas las barras. */
+  intentos?: number[];
+  /** Paso de cada intento, en orden creciente. */
+  pasosIntentos?: number[];
+  /** Paso en que se corta con el trozo final; antes del primer paso las barras están enteras. */
+  pasoTrozo?: number;
   descripcion: string;
 }) {
+  const { step, print } = useSlide();
+  if (!Number.isInteger(trozo) || trozo < 1) throw new Error('El trozo debe ser natural.');
   if (longitudes.some((l) => l % trozo !== 0))
     throw new Error(`BarrasDivision: ${trozo} no divide a todas las longitudes.`);
-  if (!Number.isInteger(trozo) || trozo < 1) throw new Error('El trozo debe ser natural.');
+  if (pasosIntentos.length !== intentos.length)
+    throw new Error('BarrasDivision: pasosIntentos lleva un paso por intento.');
+  if (intentos.length && pasoTrozo === undefined)
+    throw new Error('BarrasDivision: con intentos, declara pasoTrozo.');
+  const etapas = [
+    ...intentos.map((t, k) => ({ trozo: t, paso: pasosIntentos[k] ?? 0 })),
+    { trozo, paso: pasoTrozo ?? 0 },
+  ];
+  const corte = trozoVigente(etapas, step, print);
   const izquierda = 170;
   const largo = 760;
   const escala = largo / Math.max(...longitudes);
@@ -427,29 +492,45 @@ export function BarrasDivision({
     <Figura alto={alto} descripcion={descripcion}>
       {longitudes.map((l, i) => {
         const y = 14 + i * fila;
-        const trozos = l / trozo;
+        const { cociente: trozos, resto: sobra } = corte ? dividir(l, corte) : { cociente: 0, resto: 0 };
         return (
           <g key={i}>
             <text className="natural-text natural-text-strong" x={20} y={y + 38} fontSize="28">
               {l}{sufijo}
             </text>
-            {Array.from({ length: trozos }, (_, k) => (
-              <g key={k}>
-                <rect
-                  className={k % 2 ? 'natural-piece natural-piece-alt' : 'natural-piece'}
-                  x={izquierda + k * trozo * escala}
-                  y={y}
-                  width={trozo * escala}
-                  height="54"
-                />
-                <text className="natural-text" x={izquierda + (k + 0.5) * trozo * escala} y={y + 37} textAnchor="middle" fontSize="26">
-                  {trozo}
+            {corte === undefined ? (
+              <rect className="natural-piece natural-piece-alt" x={izquierda} y={y} width={l * escala} height="54" />
+            ) : (
+              <>
+                {Array.from({ length: trozos }, (_, k) => (
+                  <g key={k}>
+                    <rect
+                      className={k % 2 ? 'natural-piece natural-piece-alt' : 'natural-piece'}
+                      x={izquierda + k * corte * escala}
+                      y={y}
+                      width={corte * escala}
+                      height="54"
+                    />
+                    <text className="natural-text" x={izquierda + (k + 0.5) * corte * escala} y={y + 37} textAnchor="middle" fontSize="26">
+                      {corte}
+                    </text>
+                  </g>
+                ))}
+                {sobra > 0 && (
+                  <rect
+                    className="natural-piece-rest"
+                    x={izquierda + trozos * corte * escala}
+                    y={y}
+                    width={sobra * escala}
+                    height="54"
+                  />
+                )}
+                <text className="natural-text" x={izquierda + l * escala + 22} y={y + 38} fontSize="28">
+                  = {trozos} {trozos === 1 ? 'trozo' : 'trozos'}
+                  {sobra > 0 && <tspan className="natural-text-rest"> y sobran {sobra}</tspan>}
                 </text>
-              </g>
-            ))}
-            <text className="natural-text" x={izquierda + l * escala + 22} y={y + 38} fontSize="28">
-              = {trozos} {trozos === 1 ? 'trozo' : 'trozos'}
-            </text>
+              </>
+            )}
           </g>
         );
       })}

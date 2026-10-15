@@ -348,6 +348,19 @@ La utilidad PAES (los contextos de coincidir y repartir) entra en la voz entre l
 - El tiempo de producción del piloto queda registrado: es el dato que decide el calendario de §5.
 - El docente ve el MP4 completo de corrido y decide si el enfoque se generaliza. Hasta entonces no hay revisión docente ni ensayo que afirmar.
 
+### Estado del piloto (15-10-2026)
+
+**Hecho en la plataforma** (pasos 1 a 3):
+- `content-model`: `formato`, `gancho` y `previos` en lesson.yaml; `momento` en el frontmatter (va después de `phase` en la forma canónica); el diseño `escena`; el bloque `Recuerda`; las reglas de §4.3 como avisos en `video-rules.ts`, con pruebas. Se ven en content:check y en la pestaña Revisión de la clase.
+- Editor: el selector «Momento del video» (solo en clases de video) ajusta la fase; `escena` aparece entre los diseños; `Recuerda` y los pasos nuevos de las figuras se editan como los demás bloques y parámetros.
+- Figuras con estados por paso: `LineasMultiplos` (`pasosNumeros`, `pasoComunes`), `ArbolFactores` (`pasoArbol`, `pasoEscritura`) y `BarrasDivision` (`intentos`, `pasosIntentos`, `pasoTrozo`; el resto de un intento queda en ocre). La elección del trozo vigente es una función pura con pruebas.
+- La clase `m1-mcm-mcd` (12 láminas, borrador) con el guion gráfico de la tabla anterior, sin avisos propios salvo uno esperado: `m1-primos`, que recuerda, todavía no está planificada.
+- `m1-mcm-mcd` quedó en `yt-m1.yaml` como una línea sin fecha después de `m1-naturales`, porque las pruebas exigen que toda clase esté planificada. Es el único cambio en la planificación.
+
+**Diferencias con lo propuesto:** solo se creó el diseño `escena` (no `gancho` ni `pausa`), porque bastó para las 12 láminas. Los estilos de las figuras siguen en `theme.css`, y `progreso` en `useSlide` todavía no existe: los dos se hacen junto con el paso 4, cuando el video necesite renderizar las figuras.
+
+**Pendiente:** el paso 4 en el repositorio de videos, la revisión del MP4 por el docente y los criterios de generalización. El umbral de 25 palabras se cumplió en las 12 láminas con poco ajuste (una lámina tenía 29).
+
 Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
 
 ## 7. Decisiones del docente (15-10-2026)

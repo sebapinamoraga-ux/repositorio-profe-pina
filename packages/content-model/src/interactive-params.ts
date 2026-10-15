@@ -244,7 +244,12 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
   },
   ArbolFactores: {
     label: 'Árbol de factores primos',
-    params: [n('n', 'Número compuesto'), descripcion],
+    params: [
+      n('n', 'Número compuesto'),
+      n('pasoArbol', 'Paso en que crecen las ramas', false),
+      n('pasoEscritura', 'Paso en que aparece la escritura con potencias', false),
+      descripcion,
+    ],
   },
   LineasMultiplos: {
     label: 'Rectas de múltiplos',
@@ -252,6 +257,13 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       { name: 'numeros', label: 'Números (de dos a cuatro)', kind: 'numbers', required: true },
       n('hasta', 'Último valor de las rectas'),
       { name: 'rotulos', label: 'Rótulo de cada recta', kind: 'texts' },
+      {
+        name: 'pasosNumeros',
+        label: 'Paso en que aparece cada recta',
+        kind: 'numbers',
+        help: 'Uno por número, en el mismo orden. Sin pasos, todas se ven desde el inicio.',
+      },
+      n('pasoComunes', 'Paso en que se destacan los múltiplos comunes', false),
       descripcion,
     ],
   },
@@ -261,6 +273,14 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       { name: 'longitudes', label: 'Longitudes', kind: 'numbers', required: true },
       n('trozo', 'Largo de cada trozo'),
       t('unidad', 'Unidad', false),
+      {
+        name: 'intentos',
+        label: 'Trozos que se prueban antes',
+        kind: 'numbers',
+        help: 'Pueden no dividir a todas las barras: lo que sobra se marca en ocre.',
+      },
+      { name: 'pasosIntentos', label: 'Paso de cada intento', kind: 'numbers' },
+      n('pasoTrozo', 'Paso en que se corta con el trozo final', false),
       descripcion,
     ],
   },

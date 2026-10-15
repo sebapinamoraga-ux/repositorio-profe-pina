@@ -89,3 +89,28 @@ export function cifras(n: number): number[] {
   requireNatural(n, 'n');
   return String(n).split('').map(Number);
 }
+
+/** Una etapa de corte: el largo del trozo y el paso en que se prueba. */
+export interface EtapaCorte {
+  trozo: number;
+  paso: number;
+}
+
+/**
+ * Trozo con que se cortan las barras en un paso: la última etapa alcanzada, o ninguno si
+ * todavía no empieza. Al imprimir, el de la última etapa. Los pasos deben crecer.
+ */
+export function trozoVigente(
+  etapas: readonly EtapaCorte[],
+  paso: number,
+  imprimir: boolean,
+): number | undefined {
+  etapas.forEach((etapa, k) => {
+    requireNatural(etapa.trozo, 'Cada trozo');
+    const anterior = etapas[k - 1];
+    if (anterior && etapa.paso <= anterior.paso)
+      throw new Error('Los pasos de los intentos y del trozo final deben crecer.');
+  });
+  if (imprimir) return etapas.at(-1)?.trozo;
+  return etapas.filter((etapa) => etapa.paso <= paso).at(-1)?.trozo;
+}

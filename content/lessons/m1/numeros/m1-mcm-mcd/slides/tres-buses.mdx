@@ -1,0 +1,24 @@
+---
+id: tres-buses
+title: 'Ahora, los tres buses'
+phase: inicio
+momento: caso
+layout: escena
+steps: 4
+activities: []
+---
+
+<LineasMultiplos
+  numeros={[12, 18, 24]}
+  hasta={72}
+  rotulos={['cada 12 min', 'cada 18 min', 'cada 24 min']}
+  pasosNumeros={[1, 2, 3]}
+  pasoComunes={4}
+  descripcion="Tres rectas de 0 a 72 minutos con las salidas de cada bus: múltiplos de 12, de 18 y de 24. Una guía azul une el 0 y el 72, donde coinciden los tres."
+/>
+
+<Paso n={4}>
+<Definicion titulo="Mínimo común múltiplo (MCM)">
+El menor de los múltiplos comunes de varios naturales, sin contar el $0$.
+</Definicion>
+</Paso>
