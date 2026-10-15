@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { checkSlideSource } from './check-source';
 import { splitSource, toMdx } from './frontmatter';
 import { lessonSchema, slideSchema, type Lesson, type Planning, type Slide } from './index';
-import { videoLessonWarnings, videoSlideStats, type VideoSlide } from './video-rules';
+import {
+  slideFigures,
+  videoLessonWarnings,
+  videoSlideStats,
+  type VideoSlide,
+} from './video-rules';
 
 const context = { templateIds: new Set<string>(), activityIds: new Set<string>() };
 const source = (frontmatter: Partial<Slide>, body: string) =>
@@ -190,5 +195,27 @@ describe('avisos de una clase de video', () => {
     expect(videoLessonWarnings(aula, [{ slide: splitSource(text).slide, text }], [])).toEqual([]);
     // Momento y diseño escena: dos avisos.
     expect(videoLessonWarnings(aula, [slide('g', 'gancho')], [])).toHaveLength(2);
+  });
+});
+
+describe('figuras de una lámina para el video', () => {
+  it('lee cada figura con sus atributos literales y el paso que la contiene', () => {
+    const figuras = slideFigures(
+      source(
+        { steps: 1 },
+        [
+          `<LineasMultiplos numeros={[4, 6]} hasta={24} rotulos={['a', 'b']} descripcion="D" />`,
+          '<Paso n={1}>\n<ArbolFactores n={72} descripcion="E" />\n</Paso>',
+          '$$\nx\n$$',
+        ].join('\n\n'),
+      ),
+    );
+    expect(figuras).toEqual([
+      {
+        componente: 'LineasMultiplos',
+        props: { numeros: [4, 6], hasta: 24, rotulos: ['a', 'b'], descripcion: 'D' },
+      },
+      { componente: 'ArbolFactores', props: { n: 72, descripcion: 'E' }, enPaso: 1 },
+    ]);
   });
 });

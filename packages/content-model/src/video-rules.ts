@@ -10,7 +10,7 @@ import {
   type Slide,
   type VideoMoment,
 } from './index.ts';
-import { INTERACTIVE_SPECS } from './interactive-params.ts';
+import { INTERACTIVE_SPECS, parseLiteral, type ParamValue } from './interactive-params.ts';
 
 /**
  * Reglas de las clases de video (docs/plan-diapositivas-video.md §4.3). Durante el piloto
@@ -96,6 +96,47 @@ export function videoSlideStats(source: string): VideoSlideStats {
   const tree: unknown = processor.parse(source);
   if (isNode(tree)) visit(tree);
   return stats;
+}
+
+/** Una figura o interactivo de una lámina, con sus atributos literales. */
+export interface SlideFigure {
+  componente: string;
+  props: Record<string, ParamValue>;
+  /** Paso del bloque Paso que la contiene, si lo hay. */
+  enPaso?: number;
+}
+
+/**
+ * Figuras e interactivos de una lámina, en orden, para que el video los dibuje con los
+ * mismos componentes. Un atributo que no es literal hace fallar la lectura.
+ */
+export function slideFigures(source: string): SlideFigure[] {
+  const figures: SlideFigure[] = [];
+  const visit = (node: Node, enPaso: number | undefined) => {
+    let paso = enPaso;
+    if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
+      const name = node.name ?? '';
+      if (name === 'Paso') {
+        const n = parseLiteral(node.attributes?.find((attr) => attr.name === 'n')?.value);
+        if (typeof n === 'number') paso = n;
+      }
+      if (VISUALS.has(name) && name !== 'Formula') {
+        const props: Record<string, ParamValue> = {};
+        for (const attr of node.attributes ?? []) {
+          if (typeof attr.name !== 'string') continue;
+          const value = parseLiteral(attr.value);
+          if (value === null)
+            throw new Error(`${name}: el atributo ${attr.name} no es literal.`);
+          props[attr.name] = value;
+        }
+        figures.push({ componente: name, props, ...(paso ? { enPaso: paso } : {}) });
+      }
+    }
+    for (const child of node.children ?? []) if (isNode(child)) visit(child, paso);
+  };
+  const tree: unknown = processor.parse(source);
+  if (isNode(tree)) visit(tree, undefined);
+  return figures;
 }
 
 export interface VideoSlide {

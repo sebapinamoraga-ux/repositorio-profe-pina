@@ -359,7 +359,16 @@ La utilidad PAES (los contextos de coincidir y repartir) entra en la voz entre l
 
 **Diferencias con lo propuesto:** solo se creó el diseño `escena` (no `gancho` ni `pausa`), porque bastó para las 12 láminas. Los estilos de las figuras siguen en `theme.css`, y `progreso` en `useSlide` todavía no existe: los dos se hacen junto con el paso 4, cuando el video necesite renderizar las figuras.
 
-**Pendiente:** el paso 4 en el repositorio de videos, la revisión del MP4 por el docente y los criterios de generalización. El umbral de 25 palabras se cumplió en las 12 láminas con poco ajuste (una lámina tenía 29).
+El umbral de 25 palabras se cumplió en las 12 láminas con poco ajuste (una lámina tenía 29).
+
+**Hecho en el repositorio de videos** (paso 4, rama `piloto-mcm-mcd` de `H:\Videos Profe Pina`):
+- La plataforma ofrece `slideFigures` (las figuras de una lámina con sus atributos literales) y los estilos de las figuras pasaron a `packages/interactives/src/figuras.css`, que importan el presentador y el video.
+- `estructura.json` trae `formato`, `gancho`, `previos` y, por lámina, `momento` y `figuras`.
+- El guion usa `tipo: 'figura'` (la figura de la lámina, dibujada con el mismo componente, con un beat por paso) y `tipo: 'recuerda'`. `guion:check` comprueba las figuras y que las láminas de pausa o predicción tengan su beat.
+- En vez de `progreso` en `useSlide`, cada cambio de estado es un fundido entre el estado anterior y el nuevo: no hizo falta tocar las figuras.
+- Guion de `m1-mcm-mcd`: 12 escenas, unos **6 min 11 s** con la voz estimada (2,4 palabras por segundo), por debajo de la meta de 8 minutos. Con la decisión 2 se publica así; la duración real depende de la voz grabada.
+
+**Pendiente:** que el docente vea el MP4 completo y decida si el enfoque se generaliza (criterios de arriba). Mientras la rama de la plataforma no esté en `main`, el video necesita `PLATAFORMA_DIR` apuntando a la carpeta de esa rama.
 
 Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
 
