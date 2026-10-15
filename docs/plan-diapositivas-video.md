@@ -389,7 +389,24 @@ El docente aprobó el piloto y pidió las láminas de los primeros 10 videos de 
 
 Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figura nueva (`BarraFraccion`). La regla de `previos` ahora compara fechas cuando las dos clases las tienen, porque las unidades del canal no se publican en el orden del archivo.
 
-**Pendiente:** `m1-naturales` sigue planificada como clase de aula hasta la replanificación; los videos 1–9 la reemplazan. Para convertirlos en video falta que el motor de video dibuje `GruposPuntos`, `RectangulosDivisores`, `CribaPrimos`, `ValorPosicional`, `RectaEnteros` y `BarraFraccion` (hoy dibuja tres figuras), escribir los nueve guiones y renderizar. Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
+**Videos renderizados (15-10-2026).** Los diez están en `H:\Videos Profe Pina\out` (rama `piloto-mcm-mcd`), sin voz. El motor dibuja ahora las nueve figuras que usan, y los estilos de la recta numérica pasaron también a `figuras.css`. Duración con la voz estimada (2,4 palabras por segundo):
+
+| Video | Duración |
+|---|---|
+| 1 `m1-consecutivos-paridad` | 4:11 |
+| 2 `m1-division-resto` | 3:37 |
+| 3 `m1-divisores-multiplos` | 3:45 |
+| 4 `m1-primos` | 4:00 |
+| 5 `m1-mcm-mcd` | 6:11 |
+| 6 `m1-enteros` | 4:04 |
+| 7 `m1-enteros-suma-resta` | 3:22 |
+| 8 `m1-enteros-signos` | 3:41 |
+| 9 `m1-practica-naturales-enteros` | 6:08 |
+| 10 `m1-fracciones` | 3:34 |
+
+**Hallazgo para la revisión:** con una idea por video y una narración que acompaña lo que está en pantalla, los videos conceptuales quedan en 3½ a 4 minutos, bajo el mínimo de 5 de la decisión 2 («si da menos de 5, se une con su vecino o se vuelve un Short»). La voz real suele ser más lenta que la estimada, pero no alcanza para llegar a 8. Las salidas posibles se deciden al revisar: unir videos vecinos (por ejemplo, 2 y 3, o 7 y 8), ampliar la narración con un segundo ejemplo o un caso PAES, o aceptar videos cortos con compilaciones por bloque.
+
+**Pendiente:** `m1-naturales` sigue planificada como clase de aula hasta la replanificación; los videos 1–9 la reemplazan. Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
 
 ## 7. Decisiones del docente (15-10-2026)
 
