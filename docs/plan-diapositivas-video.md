@@ -1,6 +1,6 @@
 # Plan: láminas para los videos del canal
 
-Propuesta del 15-10-2026. Las decisiones del docente están en §7; la duración sigue pendiente (§9). **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
+Propuesta del 15-10-2026. Las decisiones del docente están en §7 y el análisis de duración en §9. **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
 
 Lo que pidió el docente: que las láminas de video se estructuren distinto a las de aula, con más elementos visuales e interactivos; que un tema se detalle cuanto haga falta, sin limitar el número de videos, y que casi cada video sea autocontenido, con referencias a contenidos previos cuando no haya otra opción.
 
@@ -102,7 +102,7 @@ $72=2^3\cdot 3^2$: cada natural se escribe como producto de primos de una sola f
 **Criterio de tamaño para dividir un tema:**
 1. **Una pregunta, un clímax.** Si el gancho no cabe en una pregunta, o si hay dos momentos en que «se combinan las piezas», son dos videos.
 2. **Una idea nueva central,** con a lo sumo dos de apoyo. Tres definiciones nuevas en un video señalan que hay que dividirlo.
-3. **Duración: 6–10 min de contenido sin relleno.** Si un tema da menos de 5 min, se une con su vecino natural o se vuelve un Short. Si pasa de 12, se divide.
+3. **Duración: meta de 8 min, sin obligarla (decisión 2).** Se diseña para 7–10 min de contenido sin relleno. Una idea de 5–7 min se publica así si unirla con su vecina rompería la regla de un clímax; con menos de 5, se une o se vuelve un Short. Si pasa de 12, se divide. Las compilaciones por bloque aportan las horas y los anuncios a mitad de video.
 4. **Cada error típico PAES tiene dónde vivir.** Si un error frecuente no tiene espacio para cometerse, nombrarse y contrastarse, falta un video.
 5. **De 8 a 16 láminas por video conceptual,** con 2 a 6 pasos cada una. Más de 18 láminas indica que hay que dividir.
 
@@ -355,7 +355,7 @@ Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y ci
 | # | Pregunta | Decisión |
 |---|---|---|
 | 1 | ¿Dónde viven las láminas de video? | **En la plataforma**, como clases con `formato: video`. Se editan desde la app, pasan por content:check, comparten figuras con el aula y alimentan el video sin reescribirse. La narración sigue en el repositorio de videos. |
-| 2 | ¿Se mantiene el mínimo de 8 minutos? | **Pendiente.** El docente pidió el análisis de §9 antes de decidir. |
+| 2 | ¿Se mantiene el mínimo de 8 minutos? | **Opción A de §9.3: meta de 8 minutos, sin obligarla, con compilaciones por bloque.** Ningún video se rellena para llegar a 8. |
 | 3 | ¿Los videos conceptuales también parten de la plataforma? | **Sí.** Ambos tipos parten de una clase de video de la plataforma (guion gráfico y figuras), con Remotion para la composición y Manim solo para transformaciones continuas. La tabla de formatos de `canal-youtube.md` §4 se actualiza cuando se cierre la revisión en curso de ese archivo. |
 | 4 | ¿Cuántos videos en Números y con qué calendario? | **La lista de §5 como dirección, sin fechas.** El calendario se decide con la capacidad medida en el piloto. |
 | 5 | ¿Qué pasa con `m1-naturales` y `m1-enteros`? | Delegada; ver abajo. |
@@ -367,7 +367,7 @@ Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y ci
 
 **Decisión 5 (delegada).** Se empieza desde cero en el formato de video:
 - `m1-enteros` **conserva su id** como el primer video de enteros (video 6 de §5), acotado a conjunto, orden y valor absoluto. Sus láminas se rehacen desde cero y las actuales quedan como referencia en el historial de git. Se reutilizan `RectaEnteros` y `ExploradorResta`, ampliadas con estados por paso.
-- `m1-naturales` **se retira**. Sus ideas pasan a los videos 1–5 de §5, que se escriben desde cero con las figuras de `FigurasNaturales.tsx`. La carpeta y su entrada en `yt-m1.yaml` se quitan en el paso de replanificación (§8, paso 5), no antes, para no tocar la planificación mientras sigue en revisión. Como es borrador sin fecha ni publicación, retirarla no rompe enlaces.
+- `m1-naturales` **se retira**. Sus ideas pasan a los videos 1–5 de §5, que se escriben desde cero con las figuras de `FigurasNaturales.tsx`. La carpeta y su entrada en `yt-m1.yaml` se quitan en el paso de replanificación (§8, paso 4), no antes, para no tocar la planificación mientras sigue en revisión. Como es borrador sin fecha ni publicación, retirarla no rompe enlaces.
 - El sistema decimal y los naturales frente a los cardinales, que hoy solo están en `m1-naturales`, quedan como 30 s dentro de `m1-division-resto` (video 2) o como Short. No se pierden.
 - El piloto `m1-mcm-mcd` se escribe desde cero, sin copiar láminas de `m1-naturales`.
 
@@ -382,12 +382,11 @@ Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. S
 
 ## 8. Orden de trabajo
 
-1. Decidir la duración (§9).
-2. Piloto `m1-mcm-mcd` (§6): plataforma primero, luego el repositorio de videos.
-3. Revisión del MP4 por el docente y ajuste de umbrales.
-4. Convertir avisos en errores, documentar en `docs/authoring.md` y `docs/visual-language.md` y actualizar `canal-youtube.md` §4.
-5. Rehacer la planificación de Números en `yt-m1.yaml` con lo aprobado, retirar `m1-naturales` y completar el guion de `m1-traducir-expresiones`. Se hace cuando se cierre la revisión en curso de la planificación.
-6. Interactivos para el estudiante desde la descripción (decisión 10), cuando se decida la entrada pública.
+1. Piloto `m1-mcm-mcd` (§6): plataforma primero, luego el repositorio de videos.
+2. Revisión del MP4 por el docente y ajuste de umbrales, incluida la duración real frente a la meta de 8 minutos.
+3. Convertir avisos en errores, documentar en `docs/authoring.md` y `docs/visual-language.md` y actualizar `canal-youtube.md` §4, incluida la duración (decisión 2) y las compilaciones por bloque.
+4. Rehacer la planificación de Números en `yt-m1.yaml` con lo aprobado: retirar `m1-naturales`, completar el guion de `m1-traducir-expresiones` y agregar las compilaciones por bloque (por ejemplo, «Números enteros» con los videos 6–8). Se hace cuando se cierre la revisión en curso de la planificación.
+5. Interactivos para el estudiante desde la descripción (decisión 10), cuando se decida la entrada pública.
 
 ## 9. Duración: monetización, pedagogía y planificación
 
@@ -416,7 +415,7 @@ Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. S
 
 ### 9.3 Opciones y recomendación
 
-- **A. Meta de 8 minutos, sin obligarla (recomendada).** Cada video se diseña con una idea y su marco completo, y llega a 7–10 min en forma natural. Si una idea da 5–7 min y unirla con su vecina rompería la regla de un clímax, se publica así. Las compilaciones por bloque aportan las horas y los anuncios a mitad de video. Números quedaría en unos 24–27 videos.
+- **A. Meta de 8 minutos, sin obligarla (elegida por el docente).** Cada video se diseña con una idea y su marco completo, y llega a 7–10 min en forma natural. Si una idea da 5–7 min y unirla con su vecina rompería la regla de un clímax, se publica así. Las compilaciones por bloque aportan las horas y los anuncios a mitad de video. Números quedaría en unos 24–27 videos.
 - **B. Mínimo estricto de 8 minutos.** Todos los videos admiten anuncios a mitad de video cuando el canal entre al programa. Obliga a juntar ideas (Números bajaría a unos 18–20 videos, con dos clímax en varios) o a alargar. Pierde parte del criterio «una pregunta, un video».
 - **C. Libre entre 4 y 10 minutos.** Lo más fiel a la pedagogía y a la búsqueda. Más videos y más costo fijo, y la mayoría no admitiría anuncios a mitad de video.
 
