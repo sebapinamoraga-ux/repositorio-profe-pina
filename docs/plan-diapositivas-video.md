@@ -1,8 +1,8 @@
 # Plan: láminas para los videos del canal
 
-Propuesta del 15-10-2026 para conversar con la docente. **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
+Propuesta del 15-10-2026. Las decisiones del docente están en §7; la duración sigue pendiente (§9). **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
 
-Lo que pidió la docente: que las láminas de video se estructuren distinto a las de aula, con más elementos visuales e interactivos; que un tema se detalle cuanto haga falta, sin limitar el número de videos, y que casi cada video sea autocontenido, con referencias a contenidos previos cuando no haya otra opción.
+Lo que pidió el docente: que las láminas de video se estructuren distinto a las de aula, con más elementos visuales e interactivos; que un tema se detalle cuanto haga falta, sin limitar el número de videos, y que casi cada video sea autocontenido, con referencias a contenidos previos cuando no haya otra opción.
 
 Fuentes revisadas: `AGENTS.md`, README, `docs/architecture.md`, `docs/visual-language.md`, `docs/authoring.md`, `docs/canal-youtube.md` y `content/planning/yt-m1.yaml` de esta plataforma; las clases borrador `m1-naturales` (24 láminas) y `m1-enteros` (19 láminas) frente a `sistemas-2x2`; «Plan de producción - Números.md» y «Estilo de guion y video (referencia 3Blue1Brown).md» de la carpeta del canal; y el README, `AGENTS.md`, `docs/recursos.md`, `src/plataforma/` y `src/motor/tipos.ts` del repositorio `H:\Videos Profe Pina`.
 
@@ -21,20 +21,20 @@ Fuentes revisadas: `AGENTS.md`, README, `docs/architecture.md`, `docs/visual-lan
 
 **El puente hacia los videos es manual.** El repositorio de videos lee de cada clase `lesson.yaml` (tramos, orden), el frontmatter y el cuerpo de las láminas, la galería y los tokens. Con eso genera `estructura.json`: tramos, láminas, pasos, componentes usados y mascota. Lo que se ve en pantalla se **vuelve a escribir a mano** en `guion.ts`. De `packages/interactives` reutiliza solo la matemática de `function-graph.ts`. Las figuras de la plataforma (`RectaEnteros`, `LineasMultiplos`…) no llegan al video. Sus estilos viven en `apps/presenter/src/styles/theme.css`, y el motor de video no puede importarlos.
 
-**Conclusión:** hoy una «clase de video» es una clase de aula más corta. Para lo que pide la docente hacen falta tres cosas: otro molde de clase, figuras que se puedan animar y un puente que lleve esas figuras al video sin reescribirlas.
+**Conclusión:** hoy una «clase de video» es una clase de aula más corta. Para lo que pide el docente hacen falta tres cosas: otro molde de clase, figuras que se puedan animar y un puente que lleve esas figuras al video sin reescribirlas.
 
 ## 1. Lámina de aula frente a lámina de video
 
 | Aspecto | Aula (hoy) | Video (propuesta) |
 |---|---|---|
-| **Unidad** | La clase de 80 min, con tramos para la docente | Un video = una pregunta central y una idea (6–10 min) |
+| **Unidad** | La clase de 80 min, con tramos para el docente | Un video = una pregunta central y una idea (duración en §9) |
 | **Estructura** | Portada con Objetivo → activación → desarrollo → práctica → cierre metacognitivo | Gancho → caso concreto → versión simplificada → desarrollo → **clímax** → pausa → utilidad PAES → cierre que responde al gancho |
 | **Apertura** | Portada con título y Objetivo (violeta) | Una lámina-gancho: la tensión y un objeto (el termómetro, los buses). Sin portada ni Objetivo en pantalla: el objetivo queda en `lesson.yaml` y en la descripción |
-| **Ritmo** | Una idea por lámina; la docente regula el tiempo | Una idea por lámina y **un cambio visible por paso**. Cada paso es un beat de la narración (5–15 s) |
+| **Ritmo** | Una idea por lámina; el docente regula el tiempo | Una idea por lámina y **un cambio visible por paso**. Cada paso es un beat de la narración (5–15 s) |
 | **Texto en pantalla** | Bloques completos que se leen en voz alta o en silencio | Lo que se dice no se escribe. En pantalla quedan objetos, rótulos, la fórmula clave y como máximo una frase. La narración explica |
 | **Definiciones** | Al inicio de la lámina, en azul | Después del caso, como **síntesis** de lo que ya se vio. Una por video como idea central y pocas de apoyo |
 | **Revelados** | `Paso` muestra bloques enteros | `Paso` cambia el **estado** de una figura: un salto más, un múltiplo más, un rectángulo que se reordena. El bloque de texto entra al final |
-| **Interactivos** | Deslizadores que la docente mueve en vivo | Secuencias de estados declaradas en la lámina. El video las anima; en el aula se avanzan con la flecha |
+| **Interactivos** | Deslizadores que el docente mueve en vivo | Secuencias de estados declaradas en la lámina. El video las anima; en el aula se avanzan con la flecha |
 | **Práctica** | Guiada o individual, con tiempo y modalidad | Predicción (6 s) o pausa (15–20 s) con pista que no da la respuesta |
 | **Error típico** | Bloque ocre con la evidencia | Primero se **comete** en pantalla, después se nombra y al final se contrasta (dos estados de la misma figura) |
 | **Cierre** | `Cierre` rosa con preguntas y semáforo | Vuelta al gancho con la respuesta. Opcional: una pregunta para comentarios. La pantalla final de YouTube lleva al siguiente video |
@@ -106,7 +106,7 @@ $72=2^3\cdot 3^2$: cada natural se escribe como producto de primos de una sola f
 4. **Cada error típico PAES tiene dónde vivir.** Si un error frecuente no tiene espacio para cometerse, nombrarse y contrastarse, falta un video.
 5. **De 8 a 16 láminas por video conceptual,** con 2 a 6 pasos cada una. Más de 18 láminas indica que hay que dividir.
 
-La regla del canal dice que el video largo monetizable dura **8 minutos o más** (`canal-youtube.md`, principio 4). Dividir en videos autocontenidos empuja algunos temas por debajo de ese umbral. Es una decisión de la docente (§7, pregunta 2).
+La regla del canal dice que el video largo monetizable dura **8 minutos o más** (`canal-youtube.md`, principio 4). Dividir en videos autocontenidos empuja algunos temas por debajo de ese umbral. Es una decisión del docente (§7, pregunta 2); el análisis está en §9.
 
 ## 3. Elementos visuales e interactivos
 
@@ -335,38 +335,91 @@ La utilidad PAES (los contextos de coincidir y repartir) entra en la voz entre l
 **Pasos del piloto:**
 1. **Modelo mínimo en `content-model`:** `formato`, `momento`, `previos` y `Recuerda`, con sus pruebas y las reglas de §4.3 solo como avisos.
 2. **Figuras con estados:** `pasos…` o `avance="paso"` en `LineasMultiplos`, `ArbolFactores` y `BarrasDivision`, con pruebas de la geometría pura. Sus estilos pasan a usar solo tokens.
-3. **La clase `m1-mcm-mcd` como borrador** en `yt-m1`, sin fecha, sin tocar `m1-naturales`. La docente la revisa en la app.
+3. **La clase `m1-mcm-mcd` como borrador** en `yt-m1`, sin fecha, sin tocar `m1-naturales`. El docente la revisa en la app.
 4. **En el repositorio de videos:** el adaptador lee los campos nuevos; una escena que renderice una figura de la plataforma con `progreso`; `guion.ts` con beats por paso; `npm run revision` y render.
 5. **Verificación:** las comprobaciones de `AGENTS.md` de ambos repositorios; revisión visual de láminas y PDF.
 
 **Criterios para generalizar** (se miden; ninguno se da por cumplido sin hacerlo):
 - La prueba del recién llegado pasa con un solo `Recuerda`.
-- Ninguna lámina supera el umbral de densidad sin una razón que la docente acepte.
+- Ninguna lámina supera el umbral de densidad sin una razón que el docente acepte.
 - Cada paso tiene un beat de ≤ 16 s.
 - La duración queda entre 6 y 10 min.
 - El guion cumple el checklist de la guía 3Blue1Brown.
 - El tiempo de producción del piloto queda registrado: es el dato que decide el calendario de §5.
-- La docente ve el MP4 completo de corrido y decide si el enfoque se generaliza. Hasta entonces no hay revisión docente ni ensayo que afirmar.
+- El docente ve el MP4 completo de corrido y decide si el enfoque se generaliza. Hasta entonces no hay revisión docente ni ensayo que afirmar.
 
 Si el piloto resulta, sigue `m1-enteros` acotado (video 6). Ya tiene gancho y cierre y probaría `RectaEnteros` con estados y una `Animacion` de Manim (termómetro → recta).
 
-## 7. Decisiones de la docente
+## 7. Decisiones del docente (15-10-2026)
 
-1. **¿Dónde viven las láminas de video?** *Recomendación:* en la plataforma, como clases con `formato: video`. Se editan desde la app, pasan por content:check, comparten figuras con el aula y alimentan el video sin reescribirse. La narración sigue en el repositorio de videos.
-2. **¿Se mantiene el mínimo de 8 minutos?** *Recomendación:* apuntar a 6–10 min sin relleno. Se llega a 8 o más cuando el tema lo da naturalmente; si un tema da menos de 5, se une con su vecino o se vuelve un Short. Así se renuncia a anuncios a mitad de video en algunos videos, a cambio de videos más precisos y de más videos.
-3. **¿Los videos conceptuales también parten de la plataforma?** Hoy `canal-youtube.md` dice que el conceptual es Manim y el de práctica sale de la plataforma. *Recomendación:* ambos parten de una clase de video de la plataforma (guion gráfico y figuras), con Remotion para la composición y Manim solo para transformaciones continuas. Cambiaría la tabla de formatos de `canal-youtube.md` §4 cuando se apruebe.
-4. **¿Cuántos videos en Números y con qué calendario?** *Recomendación:* aprobar la lista de §5 como dirección, sin fechas; decidir el calendario con la capacidad medida en el piloto.
-5. **¿Qué pasa con `m1-naturales` y `m1-enteros`?** *Recomendación:* `m1-enteros` conserva su id como el primer video de enteros, acotado. `m1-naturales` se reparte en los videos 1–5 y se retira. Si se quiere como clase de aula, se copia a la biblioteca de un curso con `formato: aula`.
-6. **¿Quién pone la mascota en video?** *Recomendación:* el motor de video según el momento (ya lo hace con `MascotaViva`). La lámina solo la declara en el gancho o el cierre, si cumple una función.
-7. **¿Cómo se ve un `Recuerda`?** *Recomendación:* un marco con etiqueta y nombre del video de origen, sin fondo propio. El contenido conserva su color funcional.
-8. **¿Prioridad de las operaciones y lenguaje algebraico se quedan en Álgebra?** *Recomendación:* sí, y Números los recuerda. Evita duplicar videos y respeta que Expresiones se publica antes.
-9. **¿Se publica el PDF de una clase de video?** *Recomendación:* se genera siempre como guion gráfico, pero no se enlaza hasta decidir el material de apoyo.
-10. **¿Interactivos para el estudiante desde la descripción?** *Recomendación:* sí, más adelante: una lámina de repaso con el explorador del video. Depende de la entrada pública.
+| # | Pregunta | Decisión |
+|---|---|---|
+| 1 | ¿Dónde viven las láminas de video? | **En la plataforma**, como clases con `formato: video`. Se editan desde la app, pasan por content:check, comparten figuras con el aula y alimentan el video sin reescribirse. La narración sigue en el repositorio de videos. |
+| 2 | ¿Se mantiene el mínimo de 8 minutos? | **Pendiente.** El docente pidió el análisis de §9 antes de decidir. |
+| 3 | ¿Los videos conceptuales también parten de la plataforma? | **Sí.** Ambos tipos parten de una clase de video de la plataforma (guion gráfico y figuras), con Remotion para la composición y Manim solo para transformaciones continuas. La tabla de formatos de `canal-youtube.md` §4 se actualiza cuando se cierre la revisión en curso de ese archivo. |
+| 4 | ¿Cuántos videos en Números y con qué calendario? | **La lista de §5 como dirección, sin fechas.** El calendario se decide con la capacidad medida en el piloto. |
+| 5 | ¿Qué pasa con `m1-naturales` y `m1-enteros`? | Delegada; ver abajo. |
+| 6 | ¿Quién pone la mascota en video? | **El motor de video, según el momento.** La lámina solo la declara en el gancho o el cierre, si cumple una función. |
+| 7 | ¿Cómo se ve un `Recuerda`? | **Un marco** con etiqueta y nombre del video de origen, sin fondo propio. El contenido conserva su color funcional. |
+| 8 | ¿Prioridad de las operaciones y lenguaje algebraico se quedan en Álgebra? | **Sí, con la condición de que quede ordenado y planificado** acorde a ese cambio; ver abajo. |
+| 9 | ¿Se publica el PDF de una clase de video? | **Se genera siempre como guion gráfico**, pero no se enlaza hasta decidir el material de apoyo. |
+| 10 | ¿Interactivos para el estudiante desde la descripción? | **Sí, más adelante.** No es prioridad. |
 
-## 8. Orden sugerido después de las decisiones
+**Decisión 5 (delegada).** Se empieza desde cero en el formato de video:
+- `m1-enteros` **conserva su id** como el primer video de enteros (video 6 de §5), acotado a conjunto, orden y valor absoluto. Sus láminas se rehacen desde cero y las actuales quedan como referencia en el historial de git. Se reutilizan `RectaEnteros` y `ExploradorResta`, ampliadas con estados por paso.
+- `m1-naturales` **se retira**. Sus ideas pasan a los videos 1–5 de §5, que se escriben desde cero con las figuras de `FigurasNaturales.tsx`. La carpeta y su entrada en `yt-m1.yaml` se quitan en el paso de replanificación (§8, paso 5), no antes, para no tocar la planificación mientras sigue en revisión. Como es borrador sin fecha ni publicación, retirarla no rompe enlaces.
+- El sistema decimal y los naturales frente a los cardinales, que hoy solo están en `m1-naturales`, quedan como 30 s dentro de `m1-division-resto` (video 2) o como Short. No se pierden.
+- El piloto `m1-mcm-mcd` se escribe desde cero, sin copiar láminas de `m1-naturales`.
 
-1. Responder §7 (sobre todo 1, 2, 3 y 5).
+**Condición de la decisión 8.** Para que Números pueda recordar en vez de enseñar, Álgebra tiene que cubrirlo antes y con lo que Números necesita:
+
+| Lo que Números recuerda | Video de Álgebra que lo enseña | Fecha en `yt-m1` (esta rama) | Qué hay que asegurar en su guion |
+|---|---|---|---|
+| Prioridad de las operaciones | `m1-evaluar-expresiones` | 2026-11-10 | Ya es su tema central; nombrar la regla igual que en Números |
+| Sucesor, antecesor, doble, «excede en» | `m1-traducir-expresiones` | 2026-12-15 | El glosario del plan de producción ya incluye «el doble de» y «el sucesor de». Falta agregar antecesor, **consecutivos** (n, n + 1, n + 2) y «excede en», que usa el video 1 de Números |
+
+Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. Si la revisión en curso de `yt-m1.yaml` mueve esas fechas, hay que comprobar que sigan antes de los videos que los recuerdan. Se propone que la regla de `previos` de §4.2 lo compruebe sola: que la clase recordada tenga una fecha anterior, además de un lugar anterior en el orden.
+
+## 8. Orden de trabajo
+
+1. Decidir la duración (§9).
 2. Piloto `m1-mcm-mcd` (§6): plataforma primero, luego el repositorio de videos.
-3. Revisión del MP4 por la docente y ajuste de umbrales.
+3. Revisión del MP4 por el docente y ajuste de umbrales.
 4. Convertir avisos en errores, documentar en `docs/authoring.md` y `docs/visual-language.md` y actualizar `canal-youtube.md` §4.
-5. Rehacer la planificación de Números en `yt-m1.yaml` con lo aprobado, desde la app o en una rama, después de que se cierre la revisión en curso.
+5. Rehacer la planificación de Números en `yt-m1.yaml` con lo aprobado, retirar `m1-naturales` y completar el guion de `m1-traducir-expresiones`. Se hace cuando se cierre la revisión en curso de la planificación.
+6. Interactivos para el estudiante desde la descripción (decisión 10), cuando se decida la entrada pública.
+
+## 9. Duración: monetización, pedagogía y planificación
+
+### 9.1 Cómo funciona YouTube, con los datos verificados
+
+- **Anuncios a mitad de video (mid-roll).** Solo se pueden poner en videos de **8 minutos o más**. Ese umbral existe desde 2020 (antes era de 10). YouTube los ubica solo en pausas naturales, o el creador los marca a mano. Un video de 7:59 solo admite anuncios antes y después.
+- **No hay anuncios hasta entrar al Programa de Socios (YPP).** Hoy se exigen 1.000 suscriptores y 4.000 horas de visualización públicas en 12 meses, o 10 millones de vistas de Shorts en 90 días. **Desde el 1 de febrero de 2027, los canales nuevos necesitan 8.000 horas en 365 días o 20 millones de vistas de Shorts en 90 días**, además de los 1.000 suscriptores (página oficial «Changes to the YouTube Partner Program»). Los canales que ya están en el programa no se ven afectados. El nivel inicial (500 suscriptores y 3.000 horas o 3 millones de vistas de Shorts), que da acceso a funciones como las membresías pero no a anuncios, no cambia.
+- **Consecuencia para este canal.** El piloto parte en noviembre de 2026, y es muy improbable reunir 4.000 horas antes del 31 de enero de 2027. En la práctica, el canal tendrá que llegar a **8.000 horas**. Hasta entonces **ningún video genera ingresos por anuncios, dure lo que dure**. Durante el primer año, lo que importa no es cuántos anuncios caben en un video, sino **cuántas horas de visualización y suscriptores reúne el canal**.
+- **Las horas de Shorts no suman a esas horas.** Según las reglas vigentes, cuentan las horas de videos largos y los Shorts tienen su propio camino, por vistas. Conviene confirmarlo en YouTube Studio cuando el canal esté creado.
+- **El algoritmo no premia la duración en sí.** Recomienda lo que la gente mira y la deja satisfecha: retención (qué porcentaje del video se ve), clics en la miniatura y si después sigue mirando el canal. Un video de 6 minutos visto al 70 % le va mejor que uno de 12 visto al 30 %.
+- **La búsqueda premia la precisión.** Un estudiante busca «por qué menos por menos es más», no «números enteros, clase completa». Cada video autocontenido con una pregunta en el título es una puerta de entrada más desde la búsqueda.
+- **Capítulos.** YouTube los muestra con al menos tres marcas de tiempo desde 0:00. Sirven en cualquier duración y son clave en las prácticas y las compilaciones.
+- **Ingresos después de entrar al programa.** Con anuncios a mitad de video, una vista vale más. Cuánto más depende del público, del país y de la retención: no tengo una cifra confiable, y las que circulan en guías no son oficiales. Lo seguro es que **un anuncio a mitad de video mal ubicado baja la retención**, y la retención es la que trae vistas.
+
+### 9.2 Las duraciones posibles
+
+| Duración | YouTube | Pedagogía | Planificación |
+|---|---|---|---|
+| **≤ 3 min (Short)** | Descubrimiento; camino propio al programa (20 M de vistas desde 2027, difícil para un canal educativo de nicho); no suma horas | Sirve para un error con nombre o un dato; no para construir una idea con gancho y clímax | Barato si se recorta de un video largo; ya está previsto como derivado |
+| **4–7 min** | Sin anuncios a mitad de video; buena retención; muchas puertas de entrada desde la búsqueda; pocas horas por vista | Lo más cercano a lo que mantiene la atención: en un estudio de 6,9 millones de sesiones de edX (Guo, Kim y Rubin, 2014), el interés caía con fuerza pasados unos 6 minutos. Una idea por video. Pero el marco de un video autocontenido (gancho, recuerdo, pausa, cierre ≈ 2 min) ocupa un tercio del tiempo | Más videos para el mismo temario (unos 27 en Números) y más costo fijo por video: miniatura, título, descripción, capítulos, subida y render |
+| **8–10 min** | Habilita 1 o 2 anuncios a mitad de video; más horas por vista; la retención sigue siendo alcanzable | Cabe una idea con su marco completo, que ocupa un quinto. El riesgo es **rellenar** para llegar a 8, que se nota y baja la retención | Unos 20–24 videos en Números; es lo que suponía el plan del canal |
+| **11–15 min** | Varios anuncios a mitad de video; más horas por vista; retención más difícil | Suele traer dos ideas y dos clímax, lo que contradice la regla de un video por pregunta. Es razonable para las **prácticas**, donde cada pregunta es un capítulo | Menos videos, pero cada uno más caro de revisar y de corregir |
+| **20–40 min (compilación)** | Varios anuncios; muchas horas por vista; búsquedas tipo «enteros completo» en época de repaso | El estudiante elige la parte por capítulos; sirve para repasar, no para aprender por primera vez | Casi gratis: es un montaje de videos ya publicados. Ya está previsto en `canal-youtube.md` §4 |
+
+**La idea central:** la duración de cada video no tiene que resolver a la vez la pedagogía y la monetización. Los videos conceptuales cortos y autocontenidos sirven al aprendizaje y a la búsqueda. Las **compilaciones por bloque** (por ejemplo, «Números enteros» con los videos 6–8, ≈ 25 min) juntan horas de visualización y llevan anuncios a mitad de video sin rellenar ningún video.
+
+### 9.3 Opciones y recomendación
+
+- **A. Meta de 8 minutos, sin obligarla (recomendada).** Cada video se diseña con una idea y su marco completo, y llega a 7–10 min en forma natural. Si una idea da 5–7 min y unirla con su vecina rompería la regla de un clímax, se publica así. Las compilaciones por bloque aportan las horas y los anuncios a mitad de video. Números quedaría en unos 24–27 videos.
+- **B. Mínimo estricto de 8 minutos.** Todos los videos admiten anuncios a mitad de video cuando el canal entre al programa. Obliga a juntar ideas (Números bajaría a unos 18–20 videos, con dos clímax en varios) o a alargar. Pierde parte del criterio «una pregunta, un video».
+- **C. Libre entre 4 y 10 minutos.** Lo más fiel a la pedagogía y a la búsqueda. Más videos y más costo fijo, y la mayoría no admitiría anuncios a mitad de video.
+
+Con cualquiera de las tres, el piloto `m1-mcm-mcd` mide dos cosas que hoy son estimaciones: cuánto dura de verdad un video autocontenido de una idea y cuántas horas de producción cuesta.
+
+**Fuentes:** [YouTube Help: Changes to the YouTube Partner Program](https://support.google.com/youtube/answer/12843009?hl=en) · [Tubefilter: umbral de 10 a 8 minutos (2020)](https://www.tubefilter.com/2020/07/07/youtube-lowering-minimum-video-length-mid-roll-ads/) · [Guo, Kim y Rubin (2014), How video production affects student engagement](https://up.csail.mit.edu/other-pubs/las2014-pguo-engagement.pdf).
