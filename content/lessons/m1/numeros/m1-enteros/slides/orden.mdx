@@ -1,15 +1,15 @@
 ---
 id: orden
-title: 'Mayor es el que está más a la derecha'
+title: 'Orden y comparación en ℤ'
 phase: desarrollo
 layout: concepto
 steps: 2
 activities: []
 ---
 
-<Propiedad titulo="Orden en la recta">
-$a<b$ cuando $a$ está **a la izquierda** de $b$ en la recta.
-</Propiedad>
+<Definicion titulo="Orden en ℤ">
+Dados $a,b\in\mathbb{Z}$, se cumple **solo una** de tres relaciones: $a<b$, $a=b$ o $a>b$. En la recta, $a<b$ cuando $a$ está **a la izquierda** de $b$.
+</Definicion>
 
 <RectaEnteros
   min={-10}
@@ -22,7 +22,7 @@ $a<b$ cuando $a$ está **a la izquierda** de $b$ en la recta.
 $7>2$, pero $-7<-2$: el $-7$ está **más a la izquierda**.
 </Paso>
 <Paso n={2}>
-<Tarjeta titulo="Entre dos negativos">
-Es mayor el que está **más cerca del cero**: $-2>-7$. Todo positivo es mayor que todo negativo.
-</Tarjeta>
+<Propiedad titulo="Para comparar rápido">
+Todo positivo es mayor que $0$ y que todo negativo. Entre dos negativos, es mayor el que está **más cerca del cero**: $-2>-7$.
+</Propiedad>
 </Paso>

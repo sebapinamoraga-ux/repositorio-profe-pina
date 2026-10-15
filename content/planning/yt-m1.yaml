@@ -6,6 +6,7 @@ units:
   - id: m1-numeros
     title: Números
     lessons:
+      - id: m1-naturales
       - id: m1-enteros
         title: 'Números enteros: operaciones y orden'
         objective: Operar y ordenar números enteros con seguridad en los signos.

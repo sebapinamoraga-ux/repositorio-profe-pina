@@ -1,0 +1,41 @@
+---
+id: descomposicion-prima
+title: 'Descomposición única en factores primos'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Teorema
+  hipotesis="n es un número natural mayor que 1."
+  conclusion="n se escribe como producto de números primos de una única forma, salvo el orden de los factores."
+/>
+
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$2^3\cdot 3^2\cdot 5=8\cdot 9\cdot 5=360$ y $28=2\cdot 2\cdot 7=2^2\cdot 7$.
+</Comprobacion>
+</Paso>
+</div>
+<Paso n={1}>
+<EjemploResuelto>
+Divido por el menor primo posible hasta llegar a $1$:
+
+$$
+\begin{array}{r|l}
+360 & 2\\
+180 & 2\\
+90 & 2\\
+45 & 3\\
+15 & 3\\
+5 & 5\\
+1 &
+\end{array}
+\qquad 360=2^3\cdot 3^2\cdot 5
+$$
+</EjemploResuelto>
+</Paso>
+</Columnas>
