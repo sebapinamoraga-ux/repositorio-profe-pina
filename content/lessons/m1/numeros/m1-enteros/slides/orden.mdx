@@ -1,0 +1,28 @@
+---
+id: orden
+title: 'Mayor es el que está más a la derecha'
+phase: desarrollo
+layout: concepto
+steps: 2
+activities: []
+---
+
+<Propiedad titulo="Orden en la recta">
+$a<b$ cuando $a$ está **a la izquierda** de $b$ en la recta.
+</Propiedad>
+
+<RectaEnteros
+  min={-10}
+  max={10}
+  puntos={[-7, -2, 2, 7]}
+  descripcion="Recta de los enteros de −10 a 10 con los puntos −7 y −2 en ocre y 2 y 7 en azul."
+/>
+
+<Paso n={1}>
+$7>2$, pero $-7<-2$: el $-7$ está **más a la izquierda**.
+</Paso>
+<Paso n={2}>
+<Tarjeta titulo="Entre dos negativos">
+Es mayor el que está **más cerca del cero**: $-2>-7$. Todo positivo es mayor que todo negativo.
+</Tarjeta>
+</Paso>

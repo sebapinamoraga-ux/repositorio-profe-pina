@@ -1,0 +1,66 @@
+id: m1-enteros
+title: 'Números enteros: operaciones y orden'
+subject: m1
+axis: Números
+duration: 10
+prerequisites:
+  - Sumar, restar y multiplicar números naturales.
+  - Ubicar números naturales en una recta numérica.
+objectives:
+  - Operar y ordenar números enteros con seguridad en los signos.
+  - Representar sumas y restas de enteros como desplazamientos en la recta numérica.
+  - Distinguir el orden de dos enteros de su distancia al cero (valor absoluto).
+  - Justificar la regla de los signos con el opuesto del opuesto y evitar el error −2² = 4.
+skills: [Representar, Argumentar, Resolver problemas]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+tramos:
+  - label: 'Gancho: el termómetro que baja 8 grados'
+    from: apertura
+    to: termometro
+    minutes: 1
+  - label: 'La recta de los enteros y el opuesto'
+    from: recta-enteros
+    to: recta-enteros
+    minutes: 1
+  - label: 'Sumar es avanzar; restar es sumar el opuesto'
+    from: sumar-avanzar
+    to: mismo-movimiento
+    minutes: 2
+  - label: 'Orden, valor absoluto y pausa'
+    from: orden
+    to: pausa-orden
+    minutes: 2
+  - label: 'Regla de los signos: el opuesto del opuesto'
+    from: multiplicar-negativo
+    to: regla-signos
+    minutes: 1.5
+  - label: 'Error con nombre: el menos que se pierde'
+    from: menos-que-se-pierde
+    to: menos-que-se-pierde
+    minutes: 1
+  - label: 'Utilidad PAES: contexto y paso con error'
+    from: enteros-en-contexto
+    to: paso-con-error
+    minutes: 1
+  - label: 'Cierre: vuelve al termómetro'
+    from: vuelta-termometro
+    to: cierre
+    minutes: 0.5
+slides:
+  - apertura.mdx
+  - termometro.mdx
+  - recta-enteros.mdx
+  - sumar-avanzar.mdx
+  - restar-opuesto.mdx
+  - mismo-movimiento.mdx
+  - orden.mdx
+  - valor-absoluto.mdx
+  - pausa-orden.mdx
+  - multiplicar-negativo.mdx
+  - regla-signos.mdx
+  - menos-que-se-pierde.mdx
+  - enteros-en-contexto.mdx
+  - paso-con-error.mdx
+  - vuelta-termometro.mdx
+  - cierre.mdx

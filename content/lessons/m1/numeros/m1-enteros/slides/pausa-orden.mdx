@@ -1,0 +1,28 @@
+---
+id: pausa-orden
+title: 'Pausa y piensa: ¿cuál es mayor?'
+phase: practica
+layout: concepto
+steps: 1
+activities: []
+---
+
+<Composicion plantilla="sutil-practica">
+<PracticaIndividual titulo="Pausa y piensa">
+¿Cuál es mayor, $-3$ o $-10$? ¿Y cuál está **más lejos del cero**?
+</PracticaIndividual>
+
+<Paso n={1}>
+<RectaEnteros
+  min={-12}
+  max={4}
+  puntos={[-10, -3]}
+  distancias={[-10, -3]}
+  descripcion="Recta de los enteros de −12 a 4 con los puntos −10 y −3. Bajo la recta, sus distancias al cero: |−10| = 10 y |−3| = 3."
+/>
+
+<Comprobacion titulo="Respuesta">
+$-3>-10$, porque está más a la derecha. Pero $\lvert -10\rvert=10>\lvert -3\rvert=3$: el $-10$ está más lejos del cero. **Mayor** no es lo mismo que **más lejos del cero**.
+</Comprobacion>
+</Paso>
+</Composicion>

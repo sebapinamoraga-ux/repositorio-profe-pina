@@ -659,6 +659,57 @@ a {
 .interval-open-2 {
   stroke: var(--yellow);
 }
+.integer-line {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.integer-line svg {
+  max-height: none;
+}
+.integer-fill-pos {
+  fill: var(--blue);
+}
+.integer-fill-neg {
+  fill: var(--yellow);
+}
+.integer-fill-cero {
+  fill: var(--ink);
+}
+.integer-stroke-pos {
+  stroke: var(--blue);
+}
+.integer-stroke-neg {
+  stroke: var(--yellow);
+}
+.integer-stroke-cero {
+  stroke: var(--ink);
+}
+.integer-text-pos {
+  fill: var(--blue);
+}
+.integer-text-neg {
+  fill: var(--yellow);
+}
+.integer-text-cero {
+  fill: var(--ink);
+}
+.integer-jump {
+  stroke-linecap: round;
+}
+.integer-jump-label {
+  font-weight: 750;
+}
+.integer-mirror {
+  stroke: var(--muted);
+}
+.integer-readings {
+  display: flex;
+  justify-content: center;
+  gap: 70px;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+}
 .sagittal svg,
 .machine svg {
   width: 100%;

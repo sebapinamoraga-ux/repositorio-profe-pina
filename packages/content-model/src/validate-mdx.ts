@@ -59,6 +59,8 @@ const components = new Set([
   'GraficoFuncion',
   'GraficoComparacion',
   'RectaIntervalos',
+  'RectaEnteros',
+  'ExploradorResta',
   'DiagramaSagital',
   'MaquinaFuncion',
   'ExploradorCuadratica',

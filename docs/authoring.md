@@ -91,6 +91,8 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 
 `RectaIntervalos` representa uno o dos intervalos en una recta numérica (`min`, `max`, `paso`, `intervalos`, `etiquetas`, `descripcion`). Los intervalos se escriben en notación escolar con punto y coma entre extremos para no confundirlos con la coma decimal: `intervalos={['[0; 7,5[', ']7,5; +∞[']}`. `tonos` elige el color de cada intervalo (1 o 2) para mantener la correspondencia con otros gráficos. Un extremo cerrado se dibuja con círculo lleno, uno abierto con círculo vacío y el infinito con flecha; un extremo infinito cerrado se rechaza.
 
+`RectaEnteros` dibuja una recta de enteros entre `min` y `max` (enteros; con más de 24 unidades rotula cada 5). Marca `puntos` con su rótulo opcional (`rotulos`), dibuja `saltos` sucesivos desde `desde` como arcos con flecha, acota la distancia al cero de cada valor de `distancias` (con su rótulo |a|) y une cada valor de `opuestos` con su opuesto. Positivos en azul y negativos en ocre, siempre. Un valor fuera de la recta se rechaza. `ExploradorResta` dibuja la resta a − b como el salto −b desde a, con sus dos lecturas (a − b y a + (−b)); tiene controles para a y b, «Restablecer» y valores impresos (`aEstatico`, `bEstatico`).
+
 ## Editar desde la app
 
 Todo lo que se describe arriba también se edita desde la app (rol Docente), en cualquier dispositivo, y queda guardado en el repositorio. La primera vez en cada dispositivo, conecta la app en **Ajustes**:

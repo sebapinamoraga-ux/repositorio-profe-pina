@@ -186,6 +186,41 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       descripcion,
     ],
   },
+  RectaEnteros: {
+    label: 'Recta de los enteros',
+    params: [
+      n('min', 'Mínimo (entero)'),
+      n('max', 'Máximo (entero)'),
+      { name: 'puntos', label: 'Puntos marcados', kind: 'numbers' },
+      { name: 'rotulos', label: 'Rótulo de cada punto', kind: 'texts' },
+      n('desde', 'Partida de los saltos', false),
+      {
+        name: 'saltos',
+        label: 'Saltos sucesivos',
+        kind: 'numbers',
+        help: 'Positivo hacia la derecha, negativo hacia la izquierda.',
+      },
+      { name: 'rotulosSaltos', label: 'Rótulo de cada salto', kind: 'texts' },
+      { name: 'distancias', label: 'Distancias al cero', kind: 'numbers' },
+      { name: 'opuestos', label: 'Unir con su opuesto', kind: 'numbers' },
+      descripcion,
+    ],
+  },
+  ExploradorResta: {
+    label: 'Resta en la recta (interactivo)',
+    params: [
+      t('id', 'Identificador del interactivo'),
+      n('aInicial', 'a inicial'),
+      n('bInicial', 'b inicial'),
+      n('aEstatico', 'a en la versión impresa'),
+      n('bEstatico', 'b en la versión impresa'),
+      n('aMin', 'a mínimo', false, -10),
+      n('aMax', 'a máximo', false, 10),
+      n('bMin', 'b mínimo', false, -10),
+      n('bMax', 'b máximo', false, 10),
+      descripcion,
+    ],
+  },
   DiagramaSagital: {
     label: 'Diagrama sagital',
     params: [

@@ -1,0 +1,25 @@
+---
+id: mismo-movimiento
+title: 'La resta y la suma del opuesto son el mismo movimiento'
+phase: desarrollo
+layout: concepto
+steps: 1
+activities: []
+---
+
+Mueve $a$ y $b$: la flecha dibuja $a-b$ y, al mismo tiempo, $a+(-b)$.
+
+<ExploradorResta
+  id="resta-suma-opuesto"
+  aInicial={5}
+  bInicial={8}
+  aEstatico={5}
+  bEstatico={8}
+  descripcion="Recta de los enteros de −20 a 20. Desde a = 5 una flecha avanza 8 hacia la izquierda y llega a −3; debajo se lee 5 − 8 = −3 y 5 + (−8) = −3."
+/>
+
+<Paso n={1}>
+<Comprobacion titulo="Una sola flecha, dos lecturas">
+Para cualquier $a$ y $b$, las dos expresiones llegan al **mismo punto**. Restar deja de ser una operación aparte: es sumar el opuesto.
+</Comprobacion>
+</Paso>

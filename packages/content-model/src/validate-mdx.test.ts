@@ -202,6 +202,23 @@ it('exige los atributos de GraficoComparacion y RectaIntervalos', () => {
     ),
   ).toThrow('xMin');
 });
+it('exige los atributos de RectaEnteros y ExploradorResta', () => {
+  expect(() =>
+    validateMdxTree(componente('RectaEnteros', ['min', 'max']), sinPasos),
+  ).toThrow('descripcion');
+  expect(() =>
+    validateMdxTree(
+      componente('RectaEnteros', ['min', 'max', 'descripcion']),
+      sinPasos,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(
+      componente('ExploradorResta', ['id', 'aInicial', 'bInicial', 'descripcion']),
+      sinPasos,
+    ),
+  ).toThrow('aEstatico');
+});
 it('cuenta la señal como paso y valida su posición y texto', () => {
   const senal = (attrs: Record<string, string | { value: string }>) => ({
     type: 'root',

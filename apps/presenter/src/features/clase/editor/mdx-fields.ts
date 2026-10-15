@@ -102,6 +102,8 @@ const FIXED: Record<string, string> = {
   GraficoFuncion: 'Gráfico',
   GraficoComparacion: 'Gráfico',
   RectaIntervalos: 'Recta numérica',
+  RectaEnteros: 'Recta numérica',
+  ExploradorResta: 'Recta interactiva',
   DiagramaSagital: 'Diagrama sagital',
   MaquinaFuncion: 'Máquina de función',
   ExploradorCuadratica: 'Gráfico interactivo',
