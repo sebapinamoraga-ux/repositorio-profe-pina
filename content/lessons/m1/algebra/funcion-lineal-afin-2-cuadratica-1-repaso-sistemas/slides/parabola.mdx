@@ -1,0 +1,41 @@
+---
+id: parabola
+title: 'El gráfico es una parábola'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+La función cuadrática más simple: $f(x)=x^2$.
+
+$$
+\begin{array}{c|c|c|c|c|c}
+x & -2 & -1 & 0 & 1 & 2\\ \hline
+f(x) & 4 & 1 & 0 & 1 & 4
+\end{array}
+$$
+
+<Paso n={1}>
+Los puntos no quedan alineados: el gráfico es una curva llamada **parábola**.
+</Paso>
+<Paso n={2}>
+Es **simétrica** respecto del eje $y$, y su punto más bajo, $(0;\ 0)$, es el **vértice**.
+</Paso>
+</div>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={0}
+  c={0}
+  xMin={-3}
+  xMax={3}
+  yMin={-1}
+  yMax={9}
+  puntosX={[-2, -1, 0, 1, 2]}
+  etiqueta="f(x) = x²"
+  descripcion="Parábola f(x) = x² que pasa por (−2; 4), (−1; 1), (0; 0), (1; 1) y (2; 4)."
+/>
+</Columnas>

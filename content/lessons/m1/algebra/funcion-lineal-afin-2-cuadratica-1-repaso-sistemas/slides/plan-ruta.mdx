@@ -1,0 +1,46 @@
+---
+id: plan-ruta
+title: 'Un tercer plan de arriendo'
+phase: inicio
+layout: dos-columnas
+steps: 6
+activities: []
+---
+
+<Columnas>
+<div>
+<TablaLectura encabezados="Plan|Expresión|Tipo">
+<FilaLectura nombre="Libre" rasgo="lineal" paso={1}>
+<Asociacion tono={1}>$L(x)=500x$</Asociacion>
+</FilaLectura>
+<FilaLectura nombre="Base" rasgo="afín" paso={2}>
+<Asociacion tono={2}>$B(x)={}$<Senal paso={3} numero={1} texto="pendiente" posicion="arriba">$300$</Senal>$x+{}$<Senal paso={4} numero={2} texto="coeficiente de posición" posicion="abajo">$1.500$</Senal></Asociacion>
+</FilaLectura>
+</TablaLectura>
+
+<Paso n={3}>
+<Leyenda>
+<ItemLeyenda numero={1}>$300$: **pendiente** (\$300 por km, cargo dependiente)</ItemLeyenda>
+<ItemLeyenda numero={2} paso={4}>$1.500$: **coeficiente de posición** (cargo fijo)</ItemLeyenda>
+</Leyenda>
+</Paso>
+
+<Paso n={5}>
+La empresa lanzó el **Plan Ruta**, pero no publicó su tarifa. Solo tenemos dos boletas.
+</Paso>
+</div>
+<div>
+<Paso n={5}>
+<Tarjeta titulo="Boletas del Plan Ruta" tono={3}>
+**2 km** → **\$2.000**
+
+**6 km** → **\$3.600**
+</Tarjeta>
+</Paso>
+<Paso n={6}>
+<PracticaGuiada titulo="Pregunta central">
+¿Cuál es la expresión $R(x)$ del Plan Ruta?
+</PracticaGuiada>
+</Paso>
+</div>
+</Columnas>

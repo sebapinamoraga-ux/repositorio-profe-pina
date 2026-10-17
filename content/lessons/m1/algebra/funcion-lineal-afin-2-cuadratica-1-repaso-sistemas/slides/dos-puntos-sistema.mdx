@@ -1,0 +1,43 @@
+---
+id: dos-puntos-sistema
+title: 'Otro camino: un sistema 2×2'
+phase: desarrollo
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+En $R(x)=mx+n$, **cada boleta da una ecuación** con incógnitas $m$ y $n$.
+
+<Etiquetas>
+<Etiqueta tono={3}>$(2;\ 2.000)$: $2m+n=2.000$</Etiqueta>
+<Etiqueta tono={3}>$(6;\ 3.600)$: $6m+n=3.600$</Etiqueta>
+</Etiquetas>
+
+$$
+\begin{cases}2m+n=2.000\\6m+n=3.600\end{cases}
+$$
+
+</div>
+<div>
+<Paso n={1}>
+**Reducción:** multiplicamos la primera por $-1$ y sumamos.
+
+$$
+\begin{array}{rrrrr}&-2m&-n&=&-2.000\\+&6m&+n&=&3.600\\\hline&4m&&=&1.600\end{array}
+$$
+
+$m=400$
+</Paso>
+<Paso n={2}>
+**Recuperar:** $2(400)+n=2.000\ \Rightarrow\ n=1.200$.
+</Paso>
+<Paso n={3}>
+<Comprobacion titulo="El mismo resultado">
+$R(x)=400x+1.200$, igual que con la pendiente.
+</Comprobacion>
+</Paso>
+</div>
+</Columnas>

@@ -1,0 +1,40 @@
+---
+id: efecto-a-c
+title: '¿Qué hacen a y c?'
+phase: desarrollo
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+Mueve $a$ y $c$ en $y=ax^2+c$. La curva discontinua es la inicial, $y=x^2$.
+
+<Propiedad titulo="Lo que observamos">
+<Paso n={1}>
+**Signo de $a$:** si $a>0$, la parábola abre **hacia arriba**; si $a<0$, **hacia abajo**.
+</Paso>
+<Paso n={2}>
+**Tamaño de $a$:** mientras mayor es $|a|$, más **cerrada** es la parábola.
+</Paso>
+<Paso n={3}>
+**Valor de $c$:** la parábola corta el eje $y$ en $(0;\ c)$.
+</Paso>
+</Propiedad>
+</div>
+<ExploradorCuadratica
+  id="efecto-a-c"
+  b={0}
+  aInicial={1}
+  cInicial={0}
+  aEstatico={-0.5}
+  cEstatico={3}
+  xMin={-4}
+  xMax={4}
+  yMin={-6}
+  yMax={8}
+  pasoY={2}
+  descripcion="Parábola y = ax² + c con controles para a y c; la curva inicial y = x² queda discontinua como referencia."
+/>
+</Columnas>

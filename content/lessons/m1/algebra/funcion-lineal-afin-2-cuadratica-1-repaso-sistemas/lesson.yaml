@@ -1,0 +1,77 @@
+id: funcion-lineal-afin-2-cuadratica-1-repaso-sistemas
+title: Repaso de sistemas, función afín (parte 2) y función cuadrática (parte 1)
+subject: m1
+axis: Álgebra y funciones
+duration: 80
+prerequisites:
+  - Calcular la pendiente con dos puntos e interpretar m y n (función lineal y afín, parte 1).
+  - Resolver ecuaciones de primer grado y sistemas 2×2.
+  - Valorizar expresiones con potencias.
+  - Ubicar pares ordenados en el plano cartesiano.
+objectives:
+  - Recordar qué es la solución de un sistema 2×2 y resolverlo por reducción.
+  - Determinar la expresión de una función afín a partir de dos puntos (también con un sistema 2×2), de un punto y la pendiente, o de su gráfico.
+  - Modelar una situación con una función afín a partir de un enunciado, e interpretar m y n.
+  - Reconocer una función cuadrática en su expresión y su tabla, y distinguirla de una afín porque sus variaciones no son constantes.
+  - Relacionar el signo de a con la concavidad de la parábola y el valor de c con su intersección con el eje Y.
+skills: [Representar, Modelar, Resolver problemas, Argumentar]
+curriculum: [m1-2027-funcion-lineal-afin, m1-2027-funcion-cuadratica]
+status: published
+tramos:
+  - label: 'Inicio y repaso: sistemas 2×2 por reducción'
+    from: apertura
+    to: repaso-practica
+    minutes: 9
+  - label: 'Un tercer plan de arriendo'
+    from: plan-ruta
+    to: plan-ruta
+    minutes: 3
+  - label: 'De dos puntos a la expresión (también con un sistema) y comparar con el Plan Base'
+    from: dos-puntos
+    to: comparar-planes
+    minutes: 19
+  - label: 'Desde el gráfico a la expresión'
+    from: desde-grafico
+    to: errores-grafico-cociente
+    minutes: 11
+  - label: 'Puente: el ingreso de la empresa'
+    from: ingreso-cantidad
+    to: ingreso-tabla
+    minutes: 8
+  - label: 'La función cuadrática: a, b, c, la parábola y el efecto de a y c'
+    from: cuadratica
+    to: efecto-a-c
+    minutes: 22
+  - label: 'Ticket tipo PAES: resolver, contrastar y corregir'
+    from: ticket-paes-cuadratica
+    to: ticket-paes-cuadratica
+    minutes: 4
+  - label: 'Cierre: semáforo de aprendizaje'
+    from: cierre
+    to: cierre
+    minutes: 4
+slides:
+  - apertura.mdx
+  - repaso-sistemas.mdx
+  - repaso-reduccion.mdx
+  - repaso-practica.mdx
+  - plan-ruta.mdx
+  - dos-puntos.mdx
+  - dos-puntos-n.mdx
+  - dos-puntos-expresion.mdx
+  - dos-puntos-sistema.mdx
+  - comparar-planes.mdx
+  - desde-grafico.mdx
+  - errores-grafico.mdx
+  - errores-grafico-frecuentes.mdx
+  - errores-grafico-cociente.mdx
+  - ingreso-cantidad.mdx
+  - ingreso-tabla.mdx
+  - cuadratica.mdx
+  - identificar-abc.mdx
+  - parabola.mdx
+  - efecto-a-c.mdx
+  - ticket-paes-cuadratica.mdx
+  - cierre.mdx
+repaso:
+  - modelar-tabla.mdx

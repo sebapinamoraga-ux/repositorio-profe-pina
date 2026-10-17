@@ -1,0 +1,28 @@
+---
+id: errores-grafico
+title: 'Práctica individual'
+phase: practica
+layout: dos-columnas
+steps: 0
+activities: [afin-grafico-errores]
+---
+
+<Columnas amplia="izquierda">
+<div>
+<PreguntaPAES id="afin-grafico-errores" mostrarRespuesta={false} />
+</div>
+<GraficoFuncion
+  tipo="afin"
+  m={2}
+  n={-3}
+  xMin={0}
+  xMax={4}
+  yMin={-4}
+  yMax={6}
+  ejeX="t (min)"
+  ejeY="T (°C)"
+  puntosX={[0, 2]}
+  etiqueta="Temperatura de la muestra"
+  descripcion="Recta de la temperatura T de la muestra según el tiempo t: pasa por (0; −3) y (2; 1)."
+/>
+</Columnas>
