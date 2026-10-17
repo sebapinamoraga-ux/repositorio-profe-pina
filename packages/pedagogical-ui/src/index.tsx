@@ -10,7 +10,9 @@ import type {
 } from '@aula/content-model';
 import { katexOptions } from '@aula/content-model';
 export interface SlideRuntime {
+  /** Paso visible; la impresión completa usa Infinity para revelar todo. */
   step: number;
+  /** Modo estático: sin animaciones ni controles, con parámetros iniciales. No revela por sí solo. */
   print: boolean;
   values: Record<string, string>;
   setValue: (key: string, value: string) => void;
@@ -204,7 +206,7 @@ export function MascotaProfePina({
 export function Paso({ n, children }: { n: number; children: ReactNode }) {
   const { step, print } = useSlide();
   const reduced = useReducedMotion();
-  const visible = print || step >= n;
+  const visible = step >= n;
   return (
     <motion.div
       className="step"
@@ -230,7 +232,7 @@ function Revela({
 }) {
   const { step, print } = useSlide();
   const reduced = useReducedMotion();
-  const visible = print || paso === undefined || step >= paso;
+  const visible = paso === undefined || step >= paso;
   return (
     <motion.span
       className={className}
@@ -407,7 +409,7 @@ export function PreguntaPAES({
   const runtime = useSlide();
   const activity = runtime.activities[id];
   if (!activity) throw new Error(`Actividad desconocida: ${id}`);
-  const revealed = mostrarRespuesta && (runtime.print || runtime.step >= paso);
+  const revealed = mostrarRespuesta && runtime.step >= paso;
   return (
     <section className="question">
       <div className="block-label">

@@ -126,7 +126,9 @@ describe('parsePrint', () => {
       lesson: 'a',
       autoPrint: true,
       local: true,
+      stepped: false,
     });
+    expect(parsePrint(new URLSearchParams('clase=a&modo=pdf&pasos=1'))?.stepped).toBe(true);
     expect(parsePrint(new URLSearchParams('rol=docente&vista=pdf'))).toBeNull();
   });
 });

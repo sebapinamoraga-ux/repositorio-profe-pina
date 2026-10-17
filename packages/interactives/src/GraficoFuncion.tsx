@@ -126,9 +126,9 @@ export function GraficoFuncion({
   descripcion: string;
 }) {
   const clipId = useId().replaceAll(':', '');
-  const { step, print } = useSlide();
+  const { step } = useSlide();
   const shown = (paso: number | undefined) =>
-    print || paso === undefined || step >= paso ? 'visible' : 'hidden';
+    paso === undefined || step >= paso ? 'visible' : 'hidden';
   const referencia =
     referenciaM !== undefined
       ? { m: referenciaM, n: referenciaN ?? 0 }

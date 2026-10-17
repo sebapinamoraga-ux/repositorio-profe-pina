@@ -142,6 +142,32 @@ test('25 diapositivas exportables sin recortes ni controles', async ({
   expect(overflow).toEqual([]);
   await expect(page.locator('.answer')).toBeVisible();
 });
+test('el PDF con pasos imprime una página por paso y termina cada lámina completa', async ({
+  page,
+}) => {
+  await page.goto('/#clase=sistemas-2x2&modo=pdf&pasos=1');
+  await page.evaluate(() => document.fonts.ready);
+  // 25 láminas y 33 pasos en total: una página por estado.
+  await expect(page.locator('.slide')).toHaveCount(58);
+  await expect(page.locator('button,input,textarea')).toHaveCount(0);
+  const idea = page.locator('[data-slide="idea"]');
+  await expect(idea).toHaveCount(5);
+  await expect(idea.first()).toHaveAttribute('data-paso', '0');
+  await expect(idea.first().locator('.step').first()).toBeHidden();
+  await expect(idea.last().locator('.step').first()).toBeVisible();
+  const overflow = await page.locator('.slide').evaluateAll((slides) =>
+    slides.flatMap((slide) => {
+      const content = slide.querySelector('.slide-content');
+      const footer = slide.querySelector('footer');
+      if (!content || !footer) return ['estructura'];
+      return content.getBoundingClientRect().bottom >
+        footer.getBoundingClientRect().top - 5
+        ? [slide.getAttribute('data-slide')]
+        : [];
+    }),
+  );
+  expect(overflow).toEqual([]);
+});
 test('las láminas de repaso no se proyectan ni salen en el PDF', async ({ page }) => {
   await page.goto('/#clase=funcion-cuadratica-2&modo=pdf');
   await expect(page.locator('.slide')).toHaveCount(19);

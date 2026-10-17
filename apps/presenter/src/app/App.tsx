@@ -37,7 +37,7 @@ function PrintRouteView({ print }: { print: PrintRoute }) {
   if (!id) return <p>No hay clases publicadas.</p>;
   const deck = repoDeck(id);
   if (!deck || !deck.slides.length) return <p>No hay clases publicadas.</p>;
-  return <PrintDeck deck={deck} autoPrint={print.autoPrint} />;
+  return <PrintDeck deck={deck} autoPrint={print.autoPrint} stepped={print.stepped} />;
 }
 
 /** Impresión con el contenido efectivo de este navegador (borradores y cambios sin guardar). */
@@ -50,7 +50,7 @@ function LocalPrintRoute({ print }: { print: PrintRoute }) {
   if (!deck.slides.length) return <p>Esta clase aún no tiene láminas.</p>;
   return (
     <ActivitiesContext.Provider value={content.bundle.activities}>
-      <PrintDeck deck={deck} autoPrint={print.autoPrint} />
+      <PrintDeck deck={deck} autoPrint={print.autoPrint} stepped={print.stepped} />
     </ActivitiesContext.Provider>
   );
 }

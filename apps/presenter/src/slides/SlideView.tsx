@@ -17,16 +17,23 @@ export function Frame({
   slide,
   index,
   total,
+  step,
   children,
 }: {
   meta: LessonMeta;
   slide: DeckSlide;
   index: number;
   total: number;
+  /** Paso impreso, solo en el PDF con pasos. */
+  step?: number;
   children: ReactNode;
 }) {
   return (
-    <article className={`slide layout-${slide.layout}`} data-slide={slide.id}>
+    <article
+      className={`slide layout-${slide.layout}`}
+      data-slide={slide.id}
+      data-paso={step}
+    >
       <header>
         <span className="brand">
           p<span className="brand-dot">.</span> <span>PROFE PIÑA</span>
@@ -61,13 +68,17 @@ export function SlideBodyContent({ slide }: { slide: DeckSlide }) {
   );
 }
 
-/** Una lámina con su contexto de pasos y valores. `print` revela todo y usa parámetros estáticos. */
+/**
+ * Una lámina con su contexto de pasos y valores. `print` usa parámetros estáticos; con el
+ * último paso (o más) revela todo, incluso lo marcado con un paso mayor que `steps`.
+ */
 export function SlideView({
   meta,
   slides,
   index,
   step,
   print = false,
+  stepped = false,
   values = {},
   setValue = () => {},
   contentKey,
@@ -77,6 +88,8 @@ export function SlideView({
   index: number;
   step: number;
   print?: boolean;
+  /** PDF con pasos: marca la página con su paso. */
+  stepped?: boolean;
   values?: Record<string, string>;
   setValue?: (key: string, value: string) => void;
   contentKey?: string;
@@ -87,7 +100,7 @@ export function SlideView({
   return (
     <blocks.SlideContext.Provider
       value={{
-        step: print ? slide.steps : step,
+        step: print && step >= slide.steps ? Number.POSITIVE_INFINITY : step,
         print,
         values: print ? {} : values,
         setValue,
@@ -96,7 +109,13 @@ export function SlideView({
         templates: mascotGallery.templates,
       }}
     >
-      <Frame meta={meta} slide={slide} index={index} total={slides.length}>
+      <Frame
+        meta={meta}
+        slide={slide}
+        index={index}
+        total={slides.length}
+        step={stepped ? step : undefined}
+      >
         <SlideBodyContent key={contentKey} slide={slide} />
       </Frame>
     </blocks.SlideContext.Provider>

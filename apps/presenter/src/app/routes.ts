@@ -43,6 +43,8 @@ export interface PrintRoute {
   autoPrint: boolean;
   /** Imprime el contenido efectivo de este navegador (borradores y cambios sin guardar). */
   local: boolean;
+  /** Una página por paso de cada lámina (`pasos=1`). */
+  stepped: boolean;
 }
 
 export interface NavTarget {
@@ -63,6 +65,7 @@ export function parsePrint(params: URLSearchParams): PrintRoute | null {
     lesson: text(params, 'clase'),
     autoPrint: params.get('imprimir') === '1',
     local: params.get('fuente') === 'local',
+    stepped: params.get('pasos') === '1',
   };
 }
 

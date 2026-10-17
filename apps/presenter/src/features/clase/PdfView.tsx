@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FitSlide } from '../../slides/FitSlide';
 import { SlideView } from '../../slides/SlideView';
+import { printedSteps } from '../../slides/PrintDeck';
 import { useContent } from '../../content/ContentProvider';
 import { deckFor } from '../../store/deck';
 import { buttonClass } from '../../ui/Button';
@@ -23,7 +24,7 @@ function usePublishedPdf(id: string, enabled: boolean) {
   return enabled ? url : null;
 }
 
-/** Vista previa del PDF de la clase: una página por lámina, todo revelado. */
+/** Vista previa del PDF de la clase: una página por lámina, todo revelado, o una por paso. */
 export function PdfView({ lessonId }: { lessonId: string }) {
   const content = useContent();
   const deck = deckFor(content, lessonId);
@@ -33,20 +34,46 @@ export function PdfView({ lessonId }: { lessonId: string }) {
     meta.id,
     meta.repoStatus === 'published' && !local,
   );
-  const printHref = `#clase=${meta.id}&modo=pdf&imprimir=1${local ? '&fuente=local' : ''}`;
+  const [stepped, setStepped] = useState(false);
+  const pages = slides.reduce(
+    (sum, slide) => sum + printedSteps(slide, stepped).length,
+    0,
+  );
+  const printHref = `#clase=${meta.id}&modo=pdf&imprimir=1${stepped ? '&pasos=1' : ''}${local ? '&fuente=local' : ''}`;
 
   return (
     <main className="pdf-view">
       <header className="pdf-head">
         <div>
-          <b>PDF con respuestas</b>
+          <b>{stepped ? 'PDF con pasos' : 'PDF con respuestas'}</b>
           <span>
-            {slides.length} diapositivas, pasos y respuestas visibles, sin notas.
-            Una página por diapositiva.
+            {stepped
+              ? `${slides.length} diapositivas en ${pages} páginas: una por paso, como se proyectan; la última de cada diapositiva queda completa. Sin notas.`
+              : `${slides.length} diapositivas, pasos y respuestas visibles, sin notas. Una página por diapositiva.`}
           </span>
         </div>
         <div className="row">
-          {published && (
+          <div role="radiogroup" aria-label="Páginas del PDF" className="pill-group">
+            <button
+              type="button"
+              role="radio"
+              className="pill"
+              aria-checked={!stepped}
+              onClick={() => setStepped(false)}
+            >
+              Todo revelado
+            </button>
+            <button
+              type="button"
+              role="radio"
+              className="pill"
+              aria-checked={stepped}
+              onClick={() => setStepped(true)}
+            >
+              Con pasos
+            </button>
+          </div>
+          {published && !stepped && (
             <a className={buttonClass()} href={published} download>
               Descargar PDF publicado
             </a>
@@ -67,11 +94,20 @@ export function PdfView({ lessonId }: { lessonId: string }) {
         <p className="pdf-note">Esta clase aún no tiene láminas.</p>
       ) : (
         <div className="pdf-deck">
-          {slides.map((slide, i) => (
-            <FitSlide key={slide.id} mode="width" className="pdf-page">
-              <SlideView meta={meta} slides={slides} index={i} step={slide.steps} print />
-            </FitSlide>
-          ))}
+          {slides.flatMap((slide, i) =>
+            printedSteps(slide, stepped).map((step) => (
+              <FitSlide key={`${slide.id}-${step}`} mode="width" className="pdf-page">
+                <SlideView
+                  meta={meta}
+                  slides={slides}
+                  index={i}
+                  step={step}
+                  print
+                  stepped={stepped}
+                />
+              </FitSlide>
+            )),
+          )}
         </div>
       )}
     </main>

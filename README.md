@@ -36,7 +36,7 @@ npm run test:e2e
 npm run export:pdf -- --lesson sistemas-2x2
 ```
 
-El PDF aparece en `output/pdf/sistemas-2x2.pdf`: una página por diapositiva, pasos y respuestas visibles, sin notas. `npm run export:pdf -- --published` exporta todas las clases publicadas (lo usa CI). El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión. El PDF se genera también para clases en borrador, pero solo se publica en el sitio el de las clases con `status: published` (ver [Publicación](docs/deployment.md)).
+El PDF aparece en `output/pdf/sistemas-2x2.pdf`: una página por diapositiva, pasos y respuestas visibles, sin notas. `npm run export:pdf -- --published` exporta todas las clases publicadas (lo usa CI). Con `--pasos` se crea además `output/pdf/<clase>-pasos.pdf`, con una página por paso de cada diapositiva tal como se proyecta (la última de cada una queda completa); en la pestaña PDF de la clase, «Con pasos» imprime esa misma versión. El comando inicia una vista previa en el puerto 4173 y la cierra al terminar. Descarga el PDF antes de la clase para usarlo sin conexión. El PDF se genera también para clases en borrador, pero solo se publica en el sitio el de las clases con `status: published` (ver [Publicación](docs/deployment.md)).
 
 Consulta también el [lenguaje visual común](docs/visual-language.md), que rige las clases y la galería.
 
