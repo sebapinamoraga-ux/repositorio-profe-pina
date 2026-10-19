@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import type { BlobCache, Snapshot, WorkingCopy } from '@aula/content-repo';
+import {
+  SNAPSHOT_FORMAT,
+  type BlobCache,
+  type Snapshot,
+  type WorkingCopy,
+} from '@aula/content-repo';
 import { read, write } from '../store/persist';
 
 /** Repositorio del sitio publicado; la pantalla Conexión permite usar otro. */
@@ -62,7 +67,9 @@ export const saveWorkingCopy = (wc: WorkingCopy) =>
     Object.keys(wc.changes).length || wc.conflicts.length ? JSON.stringify(wc) : null,
   );
 
+// Un snapshot guardado por otra versión de la app (sin `format` o con otro) se descarta.
 const snapshotSchema = z.object({
+  format: z.literal(SNAPSHOT_FORMAT),
   repo: z.string(),
   commit: z.string(),
   tree: z.string(),

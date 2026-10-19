@@ -1,8 +1,15 @@
 import { isContentText } from '@aula/content-model/content-files';
 import type { GitHubClient } from './github.ts';
 
+/**
+ * Sube cuando cambia qué archivos entran en `files` (p. ej. la carpeta del contenido):
+ * un snapshot de otro formato no se reutiliza aunque apunte al mismo commit.
+ */
+export const SNAPSHOT_FORMAT = 2;
+
 /** Estado del repositorio en un commit: todas las rutas y el texto del contenido. */
 export interface Snapshot {
+  format: number;
   repo: string;
   commit: string;
   tree: string;
@@ -68,7 +75,10 @@ export async function loadSnapshot(
 ): Promise<Snapshot> {
   const repo = `${client.repo.owner}/${client.repo.name}@${client.repo.branch}`;
   const head = options.head ?? (await client.getHead());
-  const previous = options.previous?.repo === repo ? options.previous : null;
+  const previous =
+    options.previous?.repo === repo && options.previous.format === SNAPSHOT_FORMAT
+      ? options.previous
+      : null;
   if (previous?.commit === head) return previous;
   const commit = await client.getCommit(head);
   const entries = (await client.getTree(commit.tree)).filter(
@@ -92,6 +102,7 @@ export async function loadSnapshot(
     files[entry.path] = { sha: entry.sha, text };
   });
   return {
+    format: SNAPSHOT_FORMAT,
     repo,
     commit: head,
     tree: commit.tree,

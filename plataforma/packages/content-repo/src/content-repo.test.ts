@@ -7,7 +7,7 @@ import {
   type GitHubClient,
 } from './github';
 import { saveChanges } from './commit';
-import { loadSnapshot, memoryBlobCache, snapshotFiles } from './snapshot';
+import { SNAPSHOT_FORMAT, loadSnapshot, memoryBlobCache, snapshotFiles } from './snapshot';
 import {
   deleteFile,
   emptyWorkingCopy,
@@ -110,6 +110,16 @@ describe('snapshot', () => {
     fake.requests.length = 0;
     expect(await loadSnapshot(client, cache, { previous: second })).toBe(second);
     expect(fake.requests).toHaveLength(1);
+  });
+
+  it('no reutiliza un snapshot de otro formato aunque apunte al mismo commit', async () => {
+    const { client, cache } = setup();
+    const current = await loadSnapshot(client, cache);
+    // Lo que guardó una versión anterior de la app, que buscaba el contenido en otra carpeta.
+    const stale = { ...current, format: SNAPSHOT_FORMAT - 1, files: {} };
+    const next = await loadSnapshot(client, cache, { previous: stale });
+    expect(next).not.toBe(stale);
+    expect(Object.keys(next.files)).toHaveLength(2);
   });
 });
 
