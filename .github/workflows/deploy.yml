@@ -2,7 +2,8 @@ name: Verificar y publicar Aula
 on:
   push:
     branches: [main]
-    paths-ignore: ['docs/**', '**/*.md']
+    # Los documentos no se publican; la guía de cada clase sí (y content:check la revisa).
+    paths: ['**', '!docs/**', '!**/*.md', 'contenido/**/clases/*/guia.md']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -37,9 +38,9 @@ jobs:
           if [[ "${{ github.event_name }}" == "push" && -n "$before" && ! "$before" =~ ^0+$ ]] && git cat-file -e "$before^{commit}" 2>/dev/null; then
             changed="$(git diff --name-only "$before" "${{ github.sha }}")"
           fi
-          # Un commit que solo toca content/ (lo que guarda la app) se valida con content:check,
+          # Un commit que solo toca contenido/ (lo que guarda la app) se valida con content:check,
           # build, dist:check y PDF; las pruebas de código no dependen de él.
-          if [[ -n "$changed" ]] && ! grep -qv '^content/' <<< "$changed"; then
+          if [[ -n "$changed" ]] && ! grep -qv '^contenido/' <<< "$changed"; then
             echo "content_only=true" >> "$GITHUB_OUTPUT"
           else
             echo "content_only=false" >> "$GITHUB_OUTPUT"

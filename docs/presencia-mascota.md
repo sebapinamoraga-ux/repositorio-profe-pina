@@ -24,8 +24,8 @@ Cada incorporación debe resolver una necesidad docente distinta. No se crea una
 
 ## Incorporación operativa · versión 2
 
-La galería filtra por nivel y momento; ofrece un archivo MDX por plantilla. El contenido de ejemplo y su función semántica viven en content/galleries/mascot-presence.json. El archivo descargado utiliza los mismos bloques y Composicion que las clases. content:check compila las 17 plantillas y rechaza referencias inexistentes y duplicación de mascotas.
+La galería filtra por nivel y momento; ofrece un archivo MDX por plantilla. El contenido de ejemplo y su función semántica viven en `contenido/comun/galeria/plantillas-mascota.json`. El archivo descargado utiliza los mismos bloques y Composicion que las clases. content:check compila las 17 plantillas y rechaza referencias inexistentes y duplicación de mascotas.
 
 La previsualización de galería es esquemática; el archivo incorpora contenido editable, no una captura. Adapta los textos, conserva el ID de plantilla y revisa la diapositiva con todos sus pasos revelados. Las plantillas de práctica no muestran resultados anticipados. El filtro puede no tener coincidencias; se puede cambiar sin perder acceso a los controles.
 
-El color corresponde a la función del bloque, no al nivel ni a la pose: solo la definición formal es azul. Consulta [Lenguaje visual](visual-language.md) para las composiciones de modelación, métodos, operación vertical, práctica y comparación.
+El color corresponde a la función del bloque, no al nivel ni a la pose: solo la definición formal es azul. Consulta [Lenguaje visual](lenguaje-visual.md) para las composiciones de modelación, métodos, operación vertical, práctica y comparación.

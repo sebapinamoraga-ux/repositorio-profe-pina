@@ -1,5 +1,7 @@
 # Plan: láminas para los videos del canal
 
+> Nota del 19-10-2026: el contenido se reorganizó por curso. `content/planning/yt-m1.yaml` es ahora `contenido/youtube/paes-m1/curso.yaml`, `docs/canal-youtube.md` es `contenido/youtube/LEEME.md`, `docs/visual-language.md` es `docs/lenguaje-visual.md` y `docs/authoring.md` es `contenido/como-escribir-clases.md`.
+
 Propuesta del 15-10-2026. Las decisiones del docente están en §7 y el análisis de duración en §9. **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
 
 Lo que pidió el docente: que las láminas de video se estructuren distinto a las de aula, con más elementos visuales e interactivos; que un tema se detalle cuanto haga falta, sin limitar el número de videos, y que casi cada video sea autocontenido, con referencias a contenidos previos cuando no haya otra opción.

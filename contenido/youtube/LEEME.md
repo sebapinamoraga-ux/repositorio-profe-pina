@@ -2,7 +2,7 @@
 
 Planificación del canal autoinstruccional Profe Piña para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física, más el bloque «Uso de IA como estudiante». Versión del 14-10-2026.
 
-**Fuente de verdad:** las bibliotecas `content/planning/yt-*.yaml` mandan en el orden, las unidades y las fechas tentativas de publicación. Llevan `calendario: publicacion`: sus fechas no aparecen como «Clase de hoy» de los cursos y, con la biblioteca abierta, la tarjeta de Clases muestra la «Próxima publicación». La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
+**Fuente de verdad:** los `curso.yaml` de cada lista en `youtube/` (bibliotecas `yt-*`) mandan en el orden, las unidades y las fechas tentativas de publicación. Llevan `calendario: publicacion`: sus fechas no aparecen como «Clase de hoy» de los cursos y, con la biblioteca abierta, la tarjeta de Clases muestra la «Próxima publicación». La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
 
 La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este ciclo es un **piloto** y el lanzamiento fuerte es en **marzo de 2027**. Las fechas y la estructura de las pruebas se verifican con DEMRE cada año.
 
@@ -16,13 +16,13 @@ La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este cicl
 
 ## 2. Bibliotecas
 
-| Archivo | Título público | Unidades | Clases | Día de publicación |
+| Carpeta (biblioteca) | Título público | Unidades | Clases | Día de publicación |
 |---|---|---|---|---|
-| `yt-m1.yaml` | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 58 | Martes y viernes, en el orden de los ejes (piloto: cada dos semanas) |
-| `yt-fisica.yaml` | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | 35 | Jueves |
-| `yt-m2.yaml` | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | 25 | Sábados, ciclo 2028 |
-| `yt-ia.yaml` | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | 12 | Cada 2 o 3 semanas |
-| `yt-canal.yaml` | Canal: estrategia y temporada | Estrategia de prueba · Ensayos · Temporada · Puente a la universidad | 18 | Según el hito |
+| `paes-m1/` (`yt-m1`) | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 58 | Martes y viernes, en el orden de los ejes (piloto: cada dos semanas) |
+| `fisica/` (`yt-fisica`) | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | 35 | Jueves |
+| `paes-m2/` (`yt-m2`) | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | 25 | Sábados, ciclo 2028 |
+| `ia/` (`yt-ia`) | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | 12 | Cada 2 o 3 semanas |
+| `estrategia/` (`yt-canal`) | Canal: estrategia y temporada | Estrategia de prueba · Ensayos · Temporada · Puente a la universidad | 18 | Según el hito |
 
 - **Temario de referencia:** son los temarios regulares de la Admisión 2027 publicados por DEMRE. M1 tiene 65 preguntas (60 cuentan para el puntaje) y dura 2 h 20 min. M2 tiene 55 preguntas (50 cuentan), incluye suficiencia de datos y dura 2 h 20 min. Ciencias tiene 80 preguntas (75 cuentan) y dura 2 h 40 min: 54 son del módulo común, con los tres ejes, y 26 del módulo electivo. Las áreas de Física son Ondas, Mecánica (incluye sistema solar y universo), Energía–Tierra y Electricidad; las habilidades científicas son transversales. Las copias de los temarios están en las carpetas «Temarios oficiales» del canal.
 - **El canal cubre solo Física.** Las 36 preguntas de Biología y Química del módulo común quedan fuera; hay que decirlo en la descripción de los videos de Física.
@@ -71,7 +71,7 @@ Las preguntas PAES reales son solo inspiración interna: no se muestran con alte
 
 ### Guion tipo del video de práctica
 
-Sigue el lenguaje visual de la plataforma (`docs/visual-language.md`):
+Sigue el lenguaje visual de la plataforma (`docs/lenguaje-visual.md`):
 
 1. **Objetivo** (violeta) y un «recuerda» de 30 s con lo esencial de los videos conceptuales de la unidad (azul).
 2. **De 6 a 8 preguntas tipo PAES propias**, de dificultad creciente. Cada una tiene predicción, pausa de 15 s (20 s con pista), resolución en piedra, comprobación en verde y, cuando aplica, el error típico en ocre.

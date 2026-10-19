@@ -64,7 +64,7 @@ export function PageHeader({
   );
 }
 
-/** Familias del lenguaje visual (docs/visual-language.md). */
+/** Familias del lenguaje visual (docs/lenguaje-visual.md). */
 export type Tone =
   | 'definicion'
   | 'objetivo'

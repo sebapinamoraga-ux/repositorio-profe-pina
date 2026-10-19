@@ -9,7 +9,7 @@ La aplicación es pública, incluidos los datos con respuestas. No contiene clav
 
 ## Guardados desde la app
 
-Cada «Guardar en el repositorio» de la app es un commit en `main` que dispara el workflow. Un commit que solo toca `content/` se valida con content:check, build, dist:check y la exportación de PDF; typecheck, lint y las pruebas de código se omiten porque no dependen del contenido (y algunas pruebas e2e revisan clases concretas). La verificación de varios guardados seguidos se reduce al último; un despliegue en curso nunca se interrumpe. Si la verificación falla, el sitio conserva la versión anterior y la app lo muestra.
+Cada «Guardar en el repositorio» de la app es un commit en `main` que dispara el workflow. Un commit que solo toca `contenido/` se valida con content:check, build, dist:check y la exportación de PDF; typecheck, lint y las pruebas de código se omiten porque no dependen del contenido (y algunas pruebas e2e revisan clases concretas). La verificación de varios guardados seguidos se reduce al último; un despliegue en curso nunca se interrumpe. Si la verificación falla, el sitio conserva la versión anterior y la app lo muestra.
 
 Para que la app pueda guardar, `main` no debe exigir pull requests. Si en el futuro se protege la rama, la app tendría que guardar en otra rama y abrir un pull request.
 

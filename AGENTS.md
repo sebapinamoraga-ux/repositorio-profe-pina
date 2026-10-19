@@ -1,26 +1,16 @@
-# Reglas del proyecto
+# Profe Piña · Aula
 
-Objetivo actual: motor docente y clase M1 Sistemas 2×2, 80 minutos, énfasis en reducción.
+Lo más importante es el objetivo pedagógico de cada clase; el diseño y la plataforma existen para servirlo ([docs/pedagogia.md](docs/pedagogia.md)).
 
-- Leer README y docs/architecture.md antes de cambiar la estructura.
-- TypeScript estricto; no any, ts-ignore, eval ni conversiones que oculten errores.
-- El contenido vive en content; el motor no debe contener ejercicios específicos.
-- Conservar IDs estables, autoría española y ecuaciones verificadas en ambos miembros.
-- Paquetes compartidos no importan aplicaciones. Matemática pura fuera de React.
-- Interactivos con parámetros iniciales, reinicio y representación estática determinista.
-- PDF: exactamente una página por diapositiva, todo revelado, sin notas ni controles.
-- PDF sin sombras ni desenfoques (box-shadow, text-shadow, filter blur/drop-shadow): Chrome los rasteriza y los visores antiguos (iPad) los muestran mal. @media print los anula y export:pdf falla si aparecen; separar con bordes y fondos.
-- Evitar recortes y scroll dentro del lienzo. Dividir contenido antes de reducir tipografía.
-- Ejecutar content:check, typecheck, lint, test, build y test:e2e antes de entregar.
-- Revisar visualmente diapositivas y PDF después de cambios de composición.
-- No publicar borradores: dist solo contiene clases published (dist:check lo verifica) y el PDF de borradores se compila en output/pdf-site. Conservar archive y atribución del prototipo.
-- No introducir dependencias o backend sin una necesidad del hito.
-- El contenido se edita también desde la app, que guarda en `main` con la API de GitHub. Lo que escribe la app debe pasar `checkContentFiles` (el mismo código que content:check); las reglas nuevas de contenido van en packages/content-model para que rijan en ambos lados.
-- Datos privados del docente (cursos, sesiones, comentarios, votaciones) nunca van al repositorio.
-- No manejar tokens de GitHub: la docente los crea y pega en Conexión. Las pruebas usan el GitHub falso de packages/content-repo.
-- La planificación de unidades vive en content/planning; el frontmatter de las láminas usa la forma canónica de `toMdx`; cada interactivo nuevo necesita su ficha en interactive-params.ts.
-- No afirmar ensayo en proyector ni revisión docente si no se han realizado.
+El repositorio tiene tres partes:
 
-- Aplicar docs/visual-language.md a toda clase y plantilla: definiciones formales azules, objetivos violetas, procedimientos piedra, práctica y errores ocres, comprobaciones verdes y reflexión rosa.
-- Reservar los tonos de asociación para referentes locales: solo fondo, correspondencia estable y sin cambiar tipografía, borde ni subrayado.
-- Preferir Composicion con un ID de la galería para reservar espacio a la mascota; mantener una por lámina y validar las plantillas descargables.
+- `contenido/`: las clases, ordenadas por curso y por clase, cada una con su guía pedagógica. Para crear o mejorar clases, seguir [contenido/AGENTS.md](contenido/AGENTS.md).
+- `plataforma/`: el motor de láminas y la app docente. Para cambiar código, seguir [plataforma/AGENTS.md](plataforma/AGENTS.md).
+- `docs/`: lo que rige a ambos: [principios pedagógicos](docs/pedagogia.md), [lenguaje visual](docs/lenguaje-visual.md) y [presencia de Profe Piña](docs/presencia-mascota.md).
+
+Reglas comunes:
+
+- Español neutro, sin voseo. Las decisiones pedagógicas son del docente.
+- Datos privados (cursos, estudiantes, sesiones, comentarios, votaciones) nunca van al repositorio.
+- No publicar borradores ni afirmar revisión docente o ensayo en proyector que no hayan ocurrido.
+- Antes de entregar, desde `plataforma/`: content:check, typecheck, lint, test, build y test:e2e; revisar láminas y PDF si cambió la composición.

@@ -49,4 +49,4 @@ Plantillas incorporadas: pedagogica-punto-clave (03), pedagogica-modelado (10 y 
 
 ## Validación antes de entregar
 
-Conservar los IDs, contenido en content y ecuaciones verificadas. Ejecutar content:check, typecheck, lint, test, build y test:e2e. Revisar estados inicial y revelado, miniaturas de galería, plantillas descargadas y PDF. Una página por diapositiva; sin controles, notas, recortes ni scroll interno. Dividir antes de reducir la tipografía. No publicar borradores ni afirmar revisión docente o ensayo en proyector.
+Conservar los IDs, contenido en contenido/ y ecuaciones verificadas. Ejecutar content:check, typecheck, lint, test, build y test:e2e. Revisar estados inicial y revelado, miniaturas de galería, plantillas descargadas y PDF. Una página por diapositiva; sin controles, notas, recortes ni scroll interno. Dividir antes de reducir la tipografía. No publicar borradores ni afirmar revisión docente o ensayo en proyector.

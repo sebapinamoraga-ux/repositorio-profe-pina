@@ -145,7 +145,7 @@ M2 o desaparece) · **Agregar** (no existía en 2021).
 
 ## 3. Cómo llevar ese estilo a las clases actuales
 
-Correspondencia entre las piezas de 2021 y el motor actual (láminas, `docs/visual-language.md`,
+Correspondencia entre las piezas de 2021 y el motor actual (láminas, `docs/lenguaje-visual.md`,
 biblioteca `yt-m1` y la clase de 80 minutos):
 
 | Rasgo 2021 | Ajuste en las clases actuales |
