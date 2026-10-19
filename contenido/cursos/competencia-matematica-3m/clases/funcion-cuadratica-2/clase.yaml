@@ -20,10 +20,10 @@ tramos:
     from: apertura
     to: precio-optimo
     minutes: 5
-  - label: 'Repaso de la parte 1'
-    from: repaso
+  - label: 'Repaso de la parte 1: a y c'
+    from: repaso-a-c
     to: repaso
-    minutes: 5
+    minutes: 12
   - label: 'Ceros por factorización'
     from: ceros-factorizacion
     to: ceros-trinomio
@@ -43,18 +43,20 @@ tramos:
   - label: 'Esbozar la parábola y cerrar el contexto'
     from: esbozo-ingreso
     to: respuesta-ingreso
-    minutes: 12
+    minutes: 10
   - label: 'Ticket tipo PAES'
     from: ticket-paes
     to: ticket-paes-maximo
-    minutes: 9
+    minutes: 6
   - label: 'Cierre'
     from: cierre
     to: cierre
-    minutes: 4
+    minutes: 2
 slides:
   - apertura.mdx
   - precio-optimo.mdx
+  - repaso-a-c.mdx
+  - repaso-a-c-practica.mdx
   - repaso.mdx
   - ceros-factorizacion.mdx
   - ceros-trinomio.mdx
@@ -69,7 +71,6 @@ slides:
   - esbozo-ingreso.mdx
   - respuesta-ingreso.mdx
   - ticket-paes.mdx
-  - ticket-paes-discriminante.mdx
   - ticket-paes-maximo.mdx
   - cierre.mdx
 repaso:
@@ -77,3 +78,4 @@ repaso:
   - comprueba-apertura.mdx
   - explorar-b.mdx
   - comprueba-b-vertice.mdx
+  - ticket-paes-discriminante.mdx

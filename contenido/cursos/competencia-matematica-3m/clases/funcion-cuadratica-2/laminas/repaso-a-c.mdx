@@ -1,0 +1,44 @@
+---
+id: repaso-a-c
+title: 'Repaso: ¿qué hacen a y c?'
+phase: activacion
+layout: dos-columnas
+steps: 3
+activities: []
+---
+
+<Columnas>
+<div>
+<PracticaGuiada titulo="Todo el curso · 4 minutos">
+Predice qué cambia en $y=ax^2+c$ y lo comprobamos:
+
+1. $a$ pasa de $1$ a $-1$.
+2. $a$ pasa de $1$ a $3$; de $1$ a $\tfrac{1}{2}$.
+3. $c$ pasa de $0$ a $3$.
+</PracticaGuiada>
+
+<Paso n={1}>
+**1.** Con $a<0$ abre **hacia abajo**.
+</Paso>
+<Paso n={2}>
+**2.** Mayor $|a|$: más **cerrada**.
+</Paso>
+<Paso n={3}>
+**3.** Corta el eje $y$ en $(0;\ c)$.
+</Paso>
+</div>
+<ExploradorCuadratica
+  id="repaso-clase-a-c"
+  b={0}
+  aInicial={1}
+  cInicial={0}
+  aEstatico={-1}
+  cEstatico={3}
+  xMin={-4}
+  xMax={4}
+  yMin={-6}
+  yMax={8}
+  pasoY={2}
+  descripcion="Parábola y = ax² + c con controles para a y c; la curva inicial y = x² queda discontinua como referencia."
+/>
+</Columnas>
