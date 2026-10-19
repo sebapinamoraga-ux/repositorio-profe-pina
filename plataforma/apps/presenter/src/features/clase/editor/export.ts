@@ -6,8 +6,8 @@ export interface LessonExport {
 }
 
 /**
- * Copia de respaldo de una clase (lesson.yaml + slides/*.mdx), tal como está en la app,
- * con la estructura de content/lessons. Guardar en el repositorio no depende de esto.
+ * Copia de respaldo de una clase (clase.yaml, guia.md, laminas/*.mdx y sus actividades), tal como está en la app,
+ * con la estructura de su carpeta en contenido/. Guardar en el repositorio no depende de esto.
  */
 export function buildExport(
   files: ReadonlyMap<string, string>,

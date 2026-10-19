@@ -22,7 +22,7 @@ async function yamlFiles(dir: string): Promise<string[]> {
 
 describe('patchYaml', () => {
   it('reescribir cada YAML del repositorio con su propio valor no cambia ningún byte', async () => {
-    const files = await yamlFiles(repoPath('content'));
+    const files = await yamlFiles(repoPath('contenido'));
     expect(files.length).toBeGreaterThan(5);
     for (const file of files) {
       const text = (await readFile(file, 'utf8')).replaceAll('\r\n', '\n');

@@ -1,8 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { connectFakeGitHub } from './fake-github';
 
-const SISTEMAS = 'content/lessons/m1/algebra/sistemas-2x2';
-const APERTURA = `${SISTEMAS}/slides/apertura.mdx`;
+const SISTEMAS = 'contenido/cursos/competencia-matematica-3m/clases/sistemas-2x2';
+const APERTURA = `${SISTEMAS}/laminas/apertura.mdx`;
 
 async function openTeacher(page: Page, hash: string) {
   await page.addInitScript(() => localStorage.setItem('profe-pina-aula-acceso', '1'));
@@ -77,12 +77,12 @@ test('los parámetros de un interactivo se editan con un formulario', async ({ p
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const file =
-    fake.files()['content/lessons/m1/algebra/funcion-lineal-afin-2-cuadratica-1/slides/efecto-a-c.mdx'] ?? '';
+    fake.files()['contenido/cursos/competencia-matematica-3m/clases/funcion-lineal-afin-2-cuadratica-1/laminas/efecto-a-c.mdx'] ?? '';
   expect(file).toContain('aInicial={2}');
   expect(file).not.toContain('aInicial={1}');
 });
 
-test('datos de la clase: publicar un borrador pide confirmación y cambia lesson.yaml', async ({ page }) => {
+test('datos de la clase: publicar un borrador pide confirmación y cambia clase.yaml', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
   await openTeacher(page, 'vista=biblioteca');
   const row = page.locator('.lesson-row', { hasText: 'Función cuadrática (parte 2)' });
@@ -96,16 +96,28 @@ test('datos de la clase: publicar un borrador pide confirmación y cambia lesson
   await page.getByRole('button', { name: 'Publicar al guardar' }).click();
   await dialog.getByRole('button', { name: 'Listo' }).click();
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
+  // Una clase publicada necesita su guía pedagógica completa.
+  await expect(page.getByText('Completa en la guía: Evidencia, Errores esperados.')).toBeVisible();
+  await page.goto('/#rol=docente&vista=clase&clase=funcion-cuadratica-2&seccion=resumen');
+  const guide = page.getByRole('region', { name: 'Guía pedagógica' });
+  await guide.getByRole('button', { name: 'Editar la guía' }).click();
+  await guide.getByLabel(/^Evidencia/).fill('Ticket tipo PAES sobre el vértice.');
+  await guide.getByLabel(/^Errores esperados/).fill('Confundir el signo de b al calcular el vértice.');
+  await guide.getByRole('button', { name: 'Aplicar' }).click();
+  await expect(guide.getByText('Ticket tipo PAES sobre el vértice.')).toBeVisible();
+  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
-  const lesson = fake.files()['content/lessons/m1/algebra/funcion-cuadratica-2/lesson.yaml'] ?? '';
+  const dir = 'contenido/cursos/competencia-matematica-3m/clases/funcion-cuadratica-2';
+  const lesson = fake.files()[`${dir}/clase.yaml`] ?? '';
   expect(lesson).toContain('status: published');
   expect(lesson).toContain('duration: 80');
+  expect(fake.files()[`${dir}/guia.md`]).toContain('## Evidencia\n\nTicket tipo PAES sobre el vértice.');
 });
 
 test('actividades: editar una pregunta PAES y guardarla', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
   await openTeacher(page, 'vista=actividades');
-  const before = fake.files()['content/activities/entradas.yaml'] ?? '';
+  const before = fake.files()['contenido/cursos/competencia-matematica-3m/clases/sistemas-2x2/actividades/entradas.yaml'] ?? '';
   await page.locator('.lesson-row', { hasText: 'entradas' }).getByRole('button', { name: 'Editar' }).click();
   const dialog = page.getByRole('dialog', { name: 'Editar actividad' });
   await dialog.getByLabel('Texto de la alternativa A').fill('');
@@ -117,7 +129,7 @@ test('actividades: editar una pregunta PAES y guardarla', async ({ page }) => {
   await dialog.getByRole('button', { name: 'Aplicar cambios' }).click();
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
-  const after = fake.files()['content/activities/entradas.yaml'] ?? '';
+  const after = fake.files()['contenido/cursos/competencia-matematica-3m/clases/sistemas-2x2/actividades/entradas.yaml'] ?? '';
   const changed = after.split('\n').filter((line, k) => line !== before.split('\n')[k]);
   expect(changed).toHaveLength(1);
   expect(changed[0]).toMatch(/^prompt: .*Justifica\.'$/);
@@ -125,8 +137,8 @@ test('actividades: editar una pregunta PAES y guardarla', async ({ page }) => {
 
 test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la clase', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
-  const dir = 'content/lessons/m1/algebra/funcion-cuadratica-2';
-  const before = fake.files()[`${dir}/lesson.yaml`] ?? '';
+  const dir = 'contenido/cursos/competencia-matematica-3m/clases/funcion-cuadratica-2';
+  const before = fake.files()[`${dir}/clase.yaml`] ?? '';
   await openTeacher(page, 'vista=presentar&clase=funcion-cuadratica-2');
   await expect(page.locator('.slide')).toBeVisible();
   await page.getByRole('button', { name: 'Salir de la presentación' }).click();
@@ -154,15 +166,15 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const files = fake.files();
-  const lesson = files[`${dir}/lesson.yaml`] ?? '';
+  const lesson = files[`${dir}/clase.yaml`] ?? '';
   // slides y tramos quedan igual: solo cambia la lista `repaso`, al final del archivo.
   expect(lesson.split('\nrepaso:')[0]).toBe(before.split('\nrepaso:')[0]);
   expect(lesson).toContain(
     `repaso:\n  - comprueba-apertura.mdx\n  - explorar-a-c.mdx\n  - explorar-b.mdx\n  - ${added}.mdx\n`,
   );
-  expect(files[`${dir}/slides/comprueba-apertura.mdx`]).toContain('Comprueba la apertura (editada)');
-  expect(files[`${dir}/slides/comprueba-b-vertice.mdx`]).toBeUndefined();
-  expect(files[`${dir}/slides/${added}.mdx`]).toBeDefined();
+  expect(files[`${dir}/laminas/comprueba-apertura.mdx`]).toContain('Comprueba la apertura (editada)');
+  expect(files[`${dir}/laminas/comprueba-b-vertice.mdx`]).toBeUndefined();
+  expect(files[`${dir}/laminas/${added}.mdx`]).toBeDefined();
 });
 
 test('la fecha de una clase se edita en Clases y se guarda en la planificación', async ({ page }) => {
@@ -182,6 +194,6 @@ test('la fecha de una clase se edita en Clases y se guarda en la planificación'
   await page.locator('.lesson-row', { has: date }).getByRole('button', { name: 'Listo' }).click();
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
-  const plan = fake.files()['content/planning/m1-2027.yaml'] ?? '';
+  const plan = fake.files()['contenido/cursos/competencia-matematica-3m/curso.yaml'] ?? '';
   expect(plan).toContain('      - id: funcion-cuadratica-2\n        date: 2026-10-31\n');
 });

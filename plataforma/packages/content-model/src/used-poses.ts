@@ -2,6 +2,8 @@ import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { mascotGallerySchema } from './index.ts';
 import { usedPosesFromSources } from './poses.ts';
+import { CONTENT_ROOT, GALLERY_PATH } from './content-files.ts';
+import { repoRoot } from './read-content.ts';
 
 async function mdxFiles(dir: string): Promise<string[]> {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -18,17 +20,15 @@ async function mdxFiles(dir: string): Promise<string[]> {
   ).flat();
 }
 
-export async function usedMascotPoses(contentRoot: string): Promise<number[]> {
+/** Poses que usan las láminas y las plantillas, leídas del disco desde la raíz del repositorio. */
+export async function usedMascotPoses(
+  root: string = repoRoot(),
+): Promise<number[]> {
   const gallery = mascotGallerySchema.parse(
-    JSON.parse(
-      await readFile(
-        join(contentRoot, 'galleries', 'mascot-presence.json'),
-        'utf8',
-      ),
-    ),
+    JSON.parse(await readFile(join(root, GALLERY_PATH), 'utf8')),
   );
   const texts = await Promise.all(
-    (await mdxFiles(join(contentRoot, 'lessons'))).map((file) =>
+    (await mdxFiles(join(root, CONTENT_ROOT))).map((file) =>
       readFile(file, 'utf8'),
     ),
   );

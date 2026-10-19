@@ -180,6 +180,8 @@ function LessonRow({
         objective: entry.objective,
         slides: editableSlides(lesson),
         base: lesson.meta,
+        libraryId,
+        guide: lesson.guide?.text,
       }),
       ...planningWrites(content.bundle, content.files, libraryId, {
         type: 'addLesson',
@@ -473,7 +475,7 @@ function PrepareDialog({
     const slides = from
       ? editableSlides(from)
       : skeleton(entry.title, mascotGallery.templates);
-    // lesson.yaml pasa a ser la fuente del título y el objetivo.
+    // clase.yaml pasa a ser la fuente del título y el objetivo.
     content.edit([
       ...createLesson(content.bundle, {
         id: entry.id,
@@ -481,6 +483,7 @@ function PrepareDialog({
         objective: entry.objective,
         slides,
         base: from?.meta,
+        libraryId: entry.libraryId,
       }),
       ...planningWrites(content.bundle, content.files, entry.libraryId, {
         type: 'updateLesson',
@@ -744,7 +747,7 @@ function RemoveUnitDialog({
 
 /**
  * Elección de biblioteca: cada una (un curso, el canal de YouTube…) es un archivo de
- * content/planning con sus propias clases. En modo organizar se renombra o elimina.
+ * un curso.yaml con sus propias clases. En modo organizar se renombra o elimina.
  */
 function LibraryBar({
   libraryId,

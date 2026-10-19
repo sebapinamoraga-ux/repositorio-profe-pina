@@ -52,6 +52,7 @@ export function migrateLegacy(
           title: entry.title,
           objective: entry.objective,
           slides,
+          libraryId,
         }),
       );
     }

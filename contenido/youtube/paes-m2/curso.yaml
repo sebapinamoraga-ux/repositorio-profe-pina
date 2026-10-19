@@ -1,0 +1,118 @@
+# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
+# El título es público: usa un nombre genérico, sin datos privados de cursos.
+id: yt-m2
+title: PAES Matemática M2
+calendario: publicacion
+units:
+  - id: m2-numeros
+    title: Números
+    lessons:
+      - id: m2-numeros-reales
+        title: Números reales
+        objective: Operar en los números reales y reconocer números irracionales.
+        date: 2028-03-04
+      - id: m2-interes
+        title: Interés simple y compuesto
+        objective: Modelar el crecimiento de un capital con interés simple y compuesto.
+        date: 2028-03-11
+      - id: m2-creditos-afp
+        title: Créditos, AFP y jubilación
+        objective: Resolver problemas de créditos de consumo, hipotecarios y ahorro previsional.
+        date: 2028-03-18
+      - id: m2-logaritmos
+        title: Logaritmos
+        objective: Relacionar potencias, raíces y logaritmos.
+        date: 2028-03-25
+      - id: m2-logaritmos-propiedades
+        title: Propiedades de los logaritmos
+        objective: Usar las propiedades de los logaritmos para resolver problemas.
+        date: 2028-04-01
+      - id: m2-practica-numeros
+        title: 'Práctica: Números en M2'
+        objective: Resolver de forma autónoma preguntas tipo PAES de números en m2, con pausas para intentar y comprobar.
+        date: 2028-04-08
+  - id: m2-algebra-funciones
+    title: Álgebra y funciones
+    lessons:
+      - id: m2-sistemas-casos
+        title: Sistemas con una, infinitas o ninguna solución
+        objective: Determinar cuándo un sistema 2×2 tiene solución única, infinitas o ninguna.
+        date: 2028-04-15
+      - id: m2-funcion-potencia
+        title: Función potencia
+        objective: Graficar e interpretar funciones potencia.
+        date: 2028-04-22
+      - id: m2-funcion-exponencial
+        title: Función exponencial
+        objective: Graficar e interpretar funciones exponenciales en contexto.
+        date: 2028-04-29
+      - id: m2-funcion-logaritmica
+        title: Función logarítmica
+        objective: Graficar e interpretar funciones logarítmicas en contexto.
+        date: 2028-05-06
+      - id: m2-seno-coseno
+        title: Funciones seno y coseno
+        objective: Graficar e interpretar las funciones seno y coseno.
+        date: 2028-05-13
+      - id: m2-practica-funciones
+        title: 'Práctica: Funciones en M2'
+        objective: Resolver de forma autónoma preguntas tipo PAES de funciones en m2, con pausas para intentar y comprobar.
+        date: 2028-05-20
+  - id: m2-geometria
+    title: Geometría
+    lessons:
+      - id: m2-homotecia
+        title: Homotecia
+        objective: Resolver problemas de homotecia de figuras planas.
+        date: 2028-05-27
+      - id: m2-razones-trigonometricas
+        title: Razones trigonométricas
+        objective: Usar seno, coseno y tangente en triángulos rectángulos.
+        date: 2028-06-03
+      - id: m2-circunferencia-angulos
+        title: Ángulos y arcos en la circunferencia
+        objective: Relacionar ángulos y arcos en la circunferencia.
+        date: 2028-06-10
+      - id: m2-circunferencia-cuerdas
+        title: Cuerdas y secantes
+        objective: Usar las relaciones métricas de cuerdas y secantes.
+        date: 2028-06-17
+      - id: m2-esfera
+        title: Superficie y volumen de la esfera
+        objective: Calcular el área de la superficie y el volumen de la esfera.
+        date: 2028-06-24
+      - id: m2-rectas-plano
+        title: Rectas en el plano
+        objective: Resolver problemas sobre rectas y sus posiciones relativas.
+        date: 2028-07-01
+      - id: m2-practica-geometria
+        title: 'Práctica: Geometría en M2'
+        objective: Resolver de forma autónoma preguntas tipo PAES de geometría en m2, con pausas para intentar y comprobar.
+        date: 2028-07-08
+  - id: m2-probabilidad-estadistica
+    title: Probabilidad y estadística
+    lessons:
+      - id: m2-dispersion
+        title: Medidas de dispersión
+        objective: Calcular e interpretar medidas de dispersión de uno o más grupos de datos.
+        date: 2028-07-15
+      - id: m2-probabilidad-condicional
+        title: Probabilidad condicional
+        objective: Resolver problemas de probabilidad condicional.
+        date: 2028-07-22
+      - id: m2-permutacion-combinatoria
+        title: Permutación y combinatoria
+        objective: Contar con permutaciones y combinaciones.
+        date: 2028-07-29
+      - id: m2-modelo-binomial
+        title: Modelo binomial
+        objective: Resolver problemas con el modelo binomial.
+        date: 2028-08-05
+      - id: m2-distribucion-normal
+        title: Distribución normal
+        objective: Resolver problemas con la distribución normal.
+        date: 2028-08-12
+      - id: m2-practica-probabilidad
+        title: 'Práctica: Probabilidad y estadística en M2'
+        objective: Resolver de forma autónoma preguntas tipo PAES de probabilidad y estadística en m2, con pausas para intentar y comprobar.
+        date: 2028-08-19

@@ -1,17 +1,11 @@
-import { copyFile, mkdir, readFile } from 'node:fs/promises';
+import { copyFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-
-import { parse } from 'yaml';
-import { lessonSchema } from '../packages/content-model/src/index';
-import { walk } from './content-check';
-import { repoPath } from '../packages/content-model/src/read-content';
+import { readContentBundle } from '../packages/content-model/src/read-content';
 
 /** Copia a dist/pdf solo los PDF de clases publicadas; los borradores quedan fuera del sitio. */
 await mkdir('dist/pdf', { recursive: true });
 let copied = 0;
-for (const file of await walk(repoPath('content/lessons'))) {
-  if (!file.endsWith('lesson.yaml')) continue;
-  const lesson = lessonSchema.parse(parse(await readFile(file, 'utf8')));
+for (const { meta: lesson } of (await readContentBundle()).lessons) {
   if (lesson.status !== 'published') {
     console.log(`Se omite el PDF de ${lesson.id}: la clase está en borrador.`);
     continue;

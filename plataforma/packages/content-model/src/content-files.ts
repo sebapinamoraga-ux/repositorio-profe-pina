@@ -18,7 +18,7 @@ import { parseFrontmatter, splitSource } from './frontmatter.ts';
 
 /**
  * Contenido como mapa ruta → texto, con rutas relativas a la raíz del repositorio
- * (`content/lessons/…/lesson.yaml`) y saltos de línea LF. Es la misma forma en disco,
+ * (`contenido/cursos/…/clases/<id>/clase.yaml`) y saltos de línea LF. Es la misma forma en disco,
  * en el build y en la API de GitHub, así que las tres fuentes se leen igual.
  */
 export type ContentFiles = ReadonlyMap<string, string>;
@@ -29,7 +29,7 @@ export interface ContentProblem {
 }
 
 export interface SlideFile {
-  /** Nombre en lesson.yaml (`apertura.mdx`). */
+  /** Nombre en clase.yaml (`apertura.mdx`). */
   file: string;
   path: string;
   text: string;
@@ -39,8 +39,12 @@ export interface SlideFile {
 
 export interface LessonEntry {
   meta: Lesson;
-  /** Carpeta de la clase (`content/lessons/m1/algebra/sistemas-2x2`). */
+  /** Carpeta de la clase (`contenido/cursos/competencia-matematica-3m/clases/sistemas-2x2`). */
   dir: string;
+  /** Biblioteca de la carpeta en que vive la clase; null si no está dentro de un curso. */
+  home: string | null;
+  /** Guía pedagógica (`guia.md`), si existe. */
+  guide: { path: string; text: string } | null;
   path: string;
   text: string;
   /** Solo las láminas que se pudieron leer; las demás quedan en `problems`. */
@@ -49,10 +53,12 @@ export interface LessonEntry {
   repaso: SlideFile[];
 }
 
-/** Una biblioteca: su identificador es el nombre del archivo sin `.yaml`. */
+/** Una biblioteca: `curso.yaml` en su carpeta; el identificador es `id` o el nombre de la carpeta. */
 export interface PlanningFile {
   id: string;
   path: string;
+  /** Carpeta del curso: sus clases viven en `<dir>/clases/<id>`. */
+  dir: string;
   planning: Planning;
 }
 
@@ -61,32 +67,69 @@ export interface ContentBundle {
   activities: Record<string, Activity>;
   activityPaths: Record<string, string>;
   curriculum: (Curriculum & { path: string })[];
-  /** Bibliotecas: un archivo de content/planning cada una, en orden de ruta. */
+  /** Bibliotecas: un `curso.yaml` cada una, en orden de ruta. */
   plannings: PlanningFile[];
   gallery: MascotGallery | null;
   problems: ContentProblem[];
 }
 
-export const GALLERY_PATH = 'content/galleries/mascot-presence.json';
-export const LESSONS_DIR = 'content/lessons';
-export const ACTIVITIES_DIR = 'content/activities';
-export const CURRICULUM_DIR = 'content/curriculum';
-export const PLANNING_DIR = 'content/planning';
+/** Carpeta del contenido, en la raíz del repositorio. */
+export const CONTENT_ROOT = 'contenido';
+export const SHARED_DIR = `${CONTENT_ROOT}/comun`;
+export const GALLERY_PATH = `${SHARED_DIR}/galeria/plantillas-mascota.json`;
+export const CURRICULUM_DIR = `${SHARED_DIR}/curriculo`;
+/** Banco de actividades compartido; las de una sola clase viven en su carpeta. */
+export const SHARED_ACTIVITIES_DIR = `${SHARED_DIR}/actividades`;
+/** Carpeta de los cursos nuevos. */
+export const COURSES_DIR = `${CONTENT_ROOT}/cursos`;
+/** Clases que no están dentro de ningún curso. */
+export const UNASSIGNED_DIR = `${CONTENT_ROOT}/sin-curso`;
+export const PLANNING_FILE = 'curso.yaml';
+export const LESSON_FILE = 'clase.yaml';
+export const GUIDE_FILE = 'guia.md';
+export const SLIDES_DIR = 'laminas';
 const PLANNING_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-/** `content/planning/m1-2027.yaml` → `m1-2027`. */
-export const planningId = (path: string) =>
-  path.slice(path.lastIndexOf('/') + 1).replace(/\.yaml$/, '');
-/** Carpeta por defecto de las clases nuevas, como en `npm run lesson:new`. */
-export const NEW_LESSON_DIR = 'content/lessons/m1/algebra';
+const inContent = (path: string) => path.startsWith(`${CONTENT_ROOT}/`);
+const dirOf = (path: string) => path.slice(0, path.lastIndexOf('/'));
+const nameOf = (path: string) => path.slice(path.lastIndexOf('/') + 1);
+export const isPlanningPath = (path: string) =>
+  inContent(path) && path.endsWith(`/${PLANNING_FILE}`);
+/** `contenido/…/clases/<id>/clase.yaml`. */
+export const isLessonPath = (path: string) =>
+  inContent(path) && /\/clases\/[^/]+\/clase\.yaml$/.test(path);
+/** `contenido/…/actividades/<id>.yaml`. */
+export const isActivityPath = (path: string) =>
+  inContent(path) && /\/actividades\/[^/]+\.yaml$/.test(path);
+/** `contenido/…/clases/<id>/guia.md`. */
+export const isGuidePath = (path: string) =>
+  inContent(path) && /\/clases\/[^/]+\/guia\.md$/.test(path);
+const isCurriculumPath = (path: string) =>
+  path.startsWith(`${CURRICULUM_DIR}/`) && path.endsWith('.yaml');
+
+/** Identificador de una biblioteca: `id` en curso.yaml o, si falta, el nombre de su carpeta. */
+export const planningId = (path: string, planning?: { id?: string | undefined }) =>
+  planning?.id ?? nameOf(dirOf(path));
+/** Carpeta de un curso nuevo con ese identificador. */
+export const courseDir = (id: string) => `${COURSES_DIR}/${id}`;
+/** Carpeta de una clase dentro de la carpeta de su curso (o fuera de todo curso). */
+export const lessonDirIn = (libraryDir: string | null, lessonId: string) =>
+  `${libraryDir ?? UNASSIGNED_DIR}/clases/${lessonId}`;
+/** Ruta de una actividad nueva: en la carpeta de su clase o en el banco compartido. */
+export const activityPathIn = (lessonDir: string | null, activityId: string) =>
+  `${lessonDir ? `${lessonDir}/actividades` : SHARED_ACTIVITIES_DIR}/${activityId}.yaml`;
 
 /** Archivos de texto que forman el contenido (las imágenes no se leen). */
 export function isContentText(path: string) {
-  return path.startsWith('content/') && /\.(?:ya?ml|mdx|json)$/.test(path);
+  return inContent(path) && (/\.(?:ya?ml|mdx|json)$/.test(path) || isGuidePath(path));
 }
 
-export const lessonDir = (path: string) => path.slice(0, path.lastIndexOf('/'));
-export const slidePath = (dir: string, file: string) => `${dir}/slides/${file}`;
+export const lessonDir = dirOf;
+export const lessonPath = (dir: string) => `${dir}/${LESSON_FILE}`;
+export const guidePath = (dir: string) => `${dir}/${GUIDE_FILE}`;
+export const slidePath = (dir: string, file: string) => `${dir}/${SLIDES_DIR}/${file}`;
+/** Carpeta del curso al que pertenece una carpeta de clase (`…/clases/<id>` → `…`). */
+const courseOfLesson = (dir: string) => dir.slice(0, dir.lastIndexOf('/clases/'));
 
 export function zodMessage(error: ZodError): string {
   return error.issues
@@ -180,7 +223,7 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
       const read = cached('gallery', path, text, () => readGallery(text, true));
       if (read.error) problem(path, read.error);
       else bundle.gallery = read.value;
-    } else if (path.startsWith(`${ACTIVITIES_DIR}/`) && path.endsWith('.yaml')) {
+    } else if (isActivityPath(path)) {
       const read = cached('activity', path, text, () => readActivity(text));
       if (read.error || !read.value) problem(path, read.error ?? 'Actividad vacía');
       else if (bundle.activities[read.value.id])
@@ -189,18 +232,20 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
         bundle.activities[read.value.id] = read.value;
         bundle.activityPaths[read.value.id] = path;
       }
-    } else if (path.startsWith(`${CURRICULUM_DIR}/`) && path.endsWith('.yaml')) {
+    } else if (isCurriculumPath(path)) {
       const read = cached('curriculum', path, text, () => readCurriculum(text));
       if (read.error || !read.value) problem(path, read.error ?? 'Referencia vacía');
       else bundle.curriculum.push({ ...read.value, path });
-    } else if (path.startsWith(`${PLANNING_DIR}/`) && path.endsWith('.yaml')) {
+    } else if (isPlanningPath(path)) {
       const read = cached('planning', path, text, () => readPlanning(text));
-      const id = planningId(path);
+      const id = planningId(path, read.value ?? undefined);
       if (read.error || !read.value) problem(path, read.error ?? 'Planificación vacía');
       else if (!PLANNING_ID.test(id))
         problem(path, `Nombre de biblioteca no válido: ${id}. Usa minúsculas, números y guiones.`);
-      else bundle.plannings.push({ id, path, planning: read.value });
-    } else if (path.startsWith(`${LESSONS_DIR}/`) && path.endsWith('/lesson.yaml')) {
+      else if (bundle.plannings.some((item) => item.id === id))
+        problem(path, `Biblioteca duplicada: ${id}.`);
+      else bundle.plannings.push({ id, path, dir: dirOf(path), planning: read.value });
+    } else if (isLessonPath(path)) {
       const strict = cached('lesson', path, text, () => readLesson(text));
       const read = strict.value
         ? strict
@@ -227,15 +272,28 @@ export function parseContentFiles(files: ContentFiles): ContentBundle {
         }
         return read;
       };
+      const guideText = files.get(guidePath(dir));
       bundle.lessons.push({
         meta,
         dir,
+        home: null,
+        guide: guideText === undefined ? null : { path: guidePath(dir), text: guideText },
         path,
         text,
         slides: readSlides(meta.slides),
         repaso: readSlides(meta.repaso ?? []),
       });
     }
+  }
+  // Una clase vive en la carpeta de su curso y se llama como su carpeta.
+  const byDir = new Map(bundle.plannings.map((item) => [item.dir, item.id]));
+  for (const lesson of bundle.lessons) {
+    lesson.home = byDir.get(courseOfLesson(lesson.dir)) ?? null;
+    if (nameOf(lesson.dir) !== lesson.meta.id)
+      problem(
+        lesson.path,
+        `La carpeta de la clase debe llamarse como su identificador (${lesson.meta.id}).`,
+      );
   }
   // Cada biblioteca tiene sus propias clases: reutilizar una en otra es copiarla.
   const owner = new Map<string, string>();

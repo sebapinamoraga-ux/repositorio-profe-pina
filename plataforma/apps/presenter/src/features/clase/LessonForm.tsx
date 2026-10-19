@@ -183,7 +183,7 @@ function TramosField({
   );
 }
 
-/** Datos de la clase (lesson.yaml): cada cambio queda pendiente hasta guardar. */
+/** Datos de la clase (clase.yaml): cada cambio queda pendiente hasta guardar. */
 export function LessonDialog({
   lessonId,
   onClose,

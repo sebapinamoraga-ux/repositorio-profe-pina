@@ -3,11 +3,9 @@ import { preview } from 'vite';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
-import { parse } from 'yaml';
-import { lessonSchema } from '../packages/content-model/src/index';
 import { walk } from './content-check';
 import { PDF_BUILD_DIR } from './build-dirs';
-import { repoPath } from '../packages/content-model/src/read-content';
+import { readContentBundle } from '../packages/content-model/src/read-content';
 process.env.AULA_OUT_DIR = PDF_BUILD_DIR;
 const at = process.argv.indexOf('--lesson');
 /** --published exporta todas las clases publicadas (lo que necesita publish:pdf en CI). */
@@ -19,9 +17,7 @@ const wanted = at >= 0 ? process.argv[at + 1] : 'sistemas-2x2';
 if (!all && (!wanted || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(wanted)))
   throw new Error('Identificador de clase inválido');
 const lessons: { id: string; expected: number }[] = [];
-for (const file of (await walk(repoPath('content/lessons'))).sort()) {
-  if (!file.endsWith('lesson.yaml')) continue;
-  const lesson = lessonSchema.parse(parse(await readFile(file, 'utf8')));
+for (const { meta: lesson } of (await readContentBundle()).lessons) {
   if (all ? lesson.status === 'published' : lesson.id === wanted)
     lessons.push({ id: lesson.id, expected: lesson.slides.length });
 }

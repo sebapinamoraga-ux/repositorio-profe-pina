@@ -1,11 +1,14 @@
 import { normalizePath, type Plugin } from 'vite';
 import { stringify } from 'yaml';
 import {
-  ACTIVITIES_DIR,
+  CONTENT_ROOT,
   GALLERY_PATH,
-  PLANNING_DIR,
+  isActivityPath,
+  isLessonPath,
+  isPlanningPath,
   parseContentFiles,
 } from '../../packages/content-model/src/content-files.ts';
+import { MASCOT_PNG_DIR } from '../../packages/content-model/src/poses.ts';
 import {
   readContentFiles,
   repoPath,
@@ -35,9 +38,9 @@ export function contentPlugin(): Plugin {
       if (names.includes(id)) return '\0' + id;
     },
     configureServer(server) {
-      server.watcher.add(repoPath('content'));
+      server.watcher.add(repoPath(CONTENT_ROOT));
       server.watcher.on('all', (_event, file) => {
-        if (!normalizePath(file).includes('/content/')) return;
+        if (!normalizePath(file).includes(`/${CONTENT_ROOT}/`)) return;
         for (const name of names) {
           const mod = server.moduleGraph.getModuleById('\0' + name);
           if (mod) server.moduleGraph.invalidateModule(mod);
@@ -47,8 +50,8 @@ export function contentPlugin(): Plugin {
     },
     async load(id) {
       if (id === '\0' + virtualMascots) {
-        const poses = await usedMascotPoses(repoPath('content'));
-        const dir = repoPath('content/assets/mascotas/png');
+        const poses = await usedMascotPoses();
+        const dir = repoPath(MASCOT_PNG_DIR);
         const paths = await Promise.all(
           poses.map((pose) => mascotPngPath(dir, pose)),
         );
@@ -73,22 +76,31 @@ export function contentPlugin(): Plugin {
         ),
       );
       const files: Record<string, string> = {};
+      // Los archivos de cada clase (clase.yaml, guía y láminas) se agregan abajo, solo si entra.
+      const lessonDirs = bundle.lessons.map((lesson) => `${lesson.dir}/`);
       for (const [path, text] of all) {
-        if (path === GALLERY_PATH || path.startsWith('content/lessons/'))
-          continue;
-        if (path.startsWith(`${ACTIVITIES_DIR}/`)) {
+        if (path === GALLERY_PATH) continue;
+        if (isActivityPath(path)) {
           const activity = Object.entries(bundle.activityPaths).find(
             ([, p]) => p === path,
           )?.[0];
           if (!includeDrafts() && (!activity || !used.has(activity))) continue;
+          files[path] = text;
+          continue;
         }
-        if (path.startsWith(`${PLANNING_DIR}/`) && !includeDrafts()) {
+        if (
+          isLessonPath(path) ||
+          lessonDirs.some((dir) => path.startsWith(dir))
+        )
+          continue;
+        if (isPlanningPath(path) && !includeDrafts()) {
           // En el sitio público la planificación solo nombra clases publicadas.
           const planning = bundle.plannings.find(
             (item) => item.path === path,
           )?.planning;
           if (!planning) continue;
           files[path] = stringify({
+            ...(planning.id ? { id: planning.id } : {}),
             ...(planning.title ? { title: planning.title } : {}),
             units: planning.units
               .map((unit) => ({
@@ -106,6 +118,7 @@ export function contentPlugin(): Plugin {
       let counter = 0;
       for (const lesson of lessons) {
         files[lesson.path] = lesson.text;
+        if (lesson.guide) files[lesson.guide.path] = lesson.guide.text;
         for (const slide of [...lesson.slides, ...lesson.repaso]) {
           files[slide.path] = slide.text;
           const name = `slide${counter++}`;

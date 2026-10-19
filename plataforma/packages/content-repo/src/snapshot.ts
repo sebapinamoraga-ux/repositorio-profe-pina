@@ -8,7 +8,7 @@ export interface Snapshot {
   tree: string;
   /** Todas las rutas versionadas (incluye imágenes, para comprobar las poses). */
   paths: string[];
-  /** Archivos de texto de `content/`, con el SHA de su blob. */
+  /** Archivos de texto de `contenido/`, con el SHA de su blob. */
   files: Record<string, { sha: string; text: string }>;
   loadedAt: string;
 }

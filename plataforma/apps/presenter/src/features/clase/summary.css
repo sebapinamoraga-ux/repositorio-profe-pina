@@ -80,3 +80,31 @@
   background: var(--accent);
   opacity: 0.75;
 }
+
+/* Guía pedagógica */
+.guide-sections {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 16px;
+}
+.guide-section dt {
+  font-weight: 700;
+}
+.guide-section dd {
+  margin: 2px 0 0;
+}
+.guide-text p,
+.guide-text ul {
+  margin: 0 0 6px;
+}
+.guide-text ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.guide-missing,
+.guide-required {
+  color: var(--err);
+}
+.guide-card .field + .field {
+  margin-top: 12px;
+}

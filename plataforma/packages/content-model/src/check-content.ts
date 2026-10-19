@@ -1,5 +1,6 @@
 import { mascotTemplateMdx } from './index.ts';
 import {
+  GALLERY_PATH,
   parseContentFiles,
   type ContentBundle,
   type ContentFiles,
@@ -12,6 +13,7 @@ import { verifyActivity } from './verify-model.ts';
 import { verifyLessonPlan } from './verify-plan.ts';
 import { publicationPlanningWarnings, videoLessonWarnings } from './video-rules.ts';
 import { MASCOT_PNG_DIR, poseOfPng, usedPosesFromSources } from './poses.ts';
+import { missingGuideSections } from './guide.ts';
 
 export interface CheckOptions {
   /**
@@ -49,10 +51,10 @@ export async function checkContentFiles(
   const compile = options.shouldCompile ?? (() => true);
   const gallery = bundle.gallery;
   const templateIds = new Set(gallery?.templates.map((t) => t.id) ?? []);
-  if (!gallery) add('content/galleries/mascot-presence.json', 'Falta la galería de plantillas.');
+  if (!gallery) add(GALLERY_PATH, 'Falta la galería de plantillas.');
   else
     for (const template of gallery.templates) {
-      const path = `content/galleries/mascot-presence.json#${template.id}`;
+      const path = `${GALLERY_PATH}#${template.id}`;
       if (!compile(path)) continue;
       try {
         const source = mascotTemplateMdx(template);
@@ -107,6 +109,19 @@ export async function checkContentFiles(
     }
   }
 
+  // La guía pedagógica: una clase publicada declara propósito, evidencia y errores esperados.
+  for (const lesson of bundle.lessons) {
+    const published = lesson.meta.status === 'published';
+    const report = published ? add : (path: string, text: string) => warnings.push({ path, message: text });
+    if (!lesson.guide)
+      report(lesson.path, 'Falta guia.md con la intención pedagógica de la clase.');
+    else {
+      const missing = missingGuideSections(lesson.guide.text);
+      if (missing.length)
+        report(lesson.guide.path, `Completa en la guía: ${missing.join(', ')}.`);
+    }
+  }
+
   for (const lesson of bundle.lessons)
     for (const found of videoLessonWarnings(lesson.meta, lesson.slides, bundle.plannings)) {
       const file = found.slide && lesson.slides.find((s) => s.slide.id === found.slide);
@@ -119,12 +134,19 @@ export async function checkContentFiles(
     ),
   );
 
-  const known = new Set(bundle.lessons.map((lesson) => lesson.meta.id));
-  for (const { path, planning } of bundle.plannings)
+  const known = new Map(bundle.lessons.map((lesson) => [lesson.meta.id, lesson]));
+  for (const { id, path, planning } of bundle.plannings)
     for (const unit of planning.units)
-      for (const planned of unit.lessons)
-        if (!known.has(planned.id) && !planned.title)
-          add(path, `La clase planificada ${planned.id} no tiene lesson.yaml ni título.`);
+      for (const planned of unit.lessons) {
+        const lesson = known.get(planned.id);
+        if (!lesson && !planned.title)
+          add(path, `La clase planificada ${planned.id} no tiene clase.yaml ni título.`);
+        else if (lesson && lesson.home !== id)
+          add(
+            lesson.path,
+            `La biblioteca ${id} planifica esta clase: su carpeta debe estar en ${bundle.plannings.find((item) => item.id === id)?.dir ?? id}/clases.`,
+          );
+      }
 
   if (options.trackedPaths && gallery) {
     const pngs = new Map<number, string[]>();

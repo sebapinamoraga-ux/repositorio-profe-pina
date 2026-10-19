@@ -96,9 +96,9 @@ describe('planificación', () => {
 
   it('las clases del repositorio sin planificar quedan en «Sin unidad»', () => {
     const files = new Map(
-      [...disk].filter(([path]) => !path.startsWith('content/planning/')),
+      [...disk].filter(([path]) => !path.endsWith('/curso.yaml')),
     );
-    files.set('content/planning/m1-2027.yaml', 'units: []\n');
+    files.set('contenido/cursos/competencia-matematica-3m/curso.yaml', 'units: []\n');
     const library = libraryOf(parseContentFiles(files));
     expect(library.units).toEqual([UNPLANNED_UNIT]);
     expect(library.entries.length).toBe(bundle.lessons.length);
@@ -180,7 +180,7 @@ describe('fecha planificada', () => {
     const info = (id: string, calendario: 'clases' | 'publicacion') => ({
       id,
       title: id,
-      path: `content/planning/${id}.yaml`,
+      path: `contenido/cursos/${id}/curso.yaml`,
       calendario,
     });
     const curso = plan.map((item) => ({ ...item, libraryId: 'curso' }));
@@ -243,7 +243,7 @@ describe('fecha planificada', () => {
   });
 
   it('marcar una biblioteca de publicación escribe una línea canónica y pasa content:check', async () => {
-    const path = 'content/planning/m1-2027.yaml';
+    const path = 'contenido/cursos/competencia-matematica-3m/curso.yaml';
     const before = disk.get(path) ?? '';
     const [write] = planningWrites(bundle, disk, 'm1-2027', {
       type: 'addUnit',
@@ -289,7 +289,7 @@ describe('fecha planificada', () => {
   });
 
   it('se escribe en la planificación como una línea y se borra al vaciarla', () => {
-    const path = 'content/planning/m1-2027.yaml';
+    const path = 'contenido/cursos/competencia-matematica-3m/curso.yaml';
     const before = disk.get(path) ?? '';
     const [write] = planningWrites(bundle, disk, 'm1-2027', {
       type: 'updateLesson',
@@ -365,7 +365,7 @@ describe('láminas de repaso', () => {
     const meta = parse(files.get(lesson.path) ?? '') as { repaso: string[] };
     expect(meta.repaso).toEqual(REPASO.map((id) => `${id}.mdx`));
     for (const id of REPASO)
-      expect(files.has(`${lesson.dir}/slides/${id}.mdx`)).toBe(true);
+      expect(files.has(`${lesson.dir}/laminas/${id}.mdx`)).toBe(true);
   });
 
   it('una lámina en la clase y en el repaso no pasa content:check', async () => {
@@ -393,7 +393,7 @@ describe('edición del repaso desde la app', () => {
       tramos: unknown;
       repaso?: string[];
     };
-  const slidePathOf = (id: string) => `${lesson.dir}/slides/${id}.mdx`;
+  const slidePathOf = (id: string) => `${lesson.dir}/laminas/${id}.mdx`;
   const check = (files: ReadonlyMap<string, string>) =>
     checkContentFiles(files, {
       shouldCompile: (path) => path.startsWith(`${lesson.dir}/`),
@@ -444,11 +444,11 @@ describe('edición del repaso desde la app', () => {
     for (const slide of repaso)
       expect(files.has(slidePathOf(slide.id))).toBe(false);
     for (const file of lesson.meta.slides)
-      expect(files.has(`${lesson.dir}/slides/${file}`)).toBe(true);
+      expect(files.has(`${lesson.dir}/laminas/${file}`)).toBe(true);
     expect((await check(files)).problems).toEqual([]);
   });
 
-  it('agregar un repaso a una clase sin él lo escribe al final de lesson.yaml', async () => {
+  it('agregar un repaso a una clase sin él lo escribe al final de clase.yaml', async () => {
     const sistemas = findLesson(bundle, 'sistemas-2x2');
     const template = mascotGallery.templates[0];
     if (!sistemas || !template) throw new Error('Falta la clase base');
@@ -495,11 +495,11 @@ describe('operaciones sobre archivos', () => {
     ]);
     const changed = writes.filter((w) => disk.get(w.path) !== w.text);
     expect(changed.map((w) => w.path)).toEqual([
-      `${lesson.dir}/slides/${first.id}.mdx`,
+      `${lesson.dir}/laminas/${first.id}.mdx`,
     ]);
   });
 
-  it('quitar una lámina borra su archivo y la saca de lesson.yaml', () => {
+  it('quitar una lámina borra su archivo y la saca de clase.yaml', () => {
     const lesson = findLesson(bundle, 'sistemas-2x2');
     if (!lesson) throw new Error('Falta la clase base');
     const slides = editableSlides(lesson);
@@ -509,10 +509,10 @@ describe('operaciones sobre archivos', () => {
     );
     const meta = parse(files.get(lesson.path) ?? '') as { slides: string[] };
     expect(meta.slides).toHaveLength(slides.length - 1);
-    expect(files.has(`${lesson.dir}/slides/${slides[0]?.id}.mdx`)).toBe(false);
+    expect(files.has(`${lesson.dir}/laminas/${slides[0]?.id}.mdx`)).toBe(false);
   });
 
-  it('cambiar un campo de lesson.yaml cambia una sola línea', () => {
+  it('cambiar un campo de clase.yaml cambia una sola línea', () => {
     const lesson = findLesson(bundle, 'sistemas-2x2');
     if (!lesson) throw new Error('Falta la clase base');
     const [write] = writeLesson(bundle, 'sistemas-2x2', {
@@ -533,6 +533,7 @@ describe('operaciones sobre archivos', () => {
         title: 'Clase de prueba',
         objective: 'Probar la creación desde la app.',
         slides: skeleton('Clase de prueba', mascotGallery.templates),
+        libraryId: 'm1-2027',
       }),
       ...planningWrites(bundle, disk, 'm1-2027', {
         type: 'addLesson',
@@ -596,7 +597,7 @@ describe('operaciones sobre archivos', () => {
     const changed = writes
       .filter((w) => disk.get(w.path) !== w.text)
       .map((w) => w.path);
-    expect(changed).toContain(`${lesson.dir}/slides/${slides[0]?.id}.mdx`);
+    expect(changed).toContain(`${lesson.dir}/laminas/${slides[0]?.id}.mdx`);
     const next = parseContentFiles(apply(disk, writes));
     const library = libraryOf(next);
     expect(library.units.map((u) => u.id)).toContain('u9');
@@ -613,7 +614,7 @@ describe('varias bibliotecas', () => {
   const youtube = createLibrary(bundle, disk, 'Canal de YouTube');
   const withYoutube = apply(disk, youtube.writes);
 
-  it('cada archivo de content/planning es una biblioteca con su título', () => {
+  it('cada curso.yaml es una biblioteca con su título', () => {
     expect(youtube.id).toBe('canal-de-youtube');
     const library = libraryOf(parseContentFiles(withYoutube));
     expect(library.libraries.map((item) => item.title)).toContain(

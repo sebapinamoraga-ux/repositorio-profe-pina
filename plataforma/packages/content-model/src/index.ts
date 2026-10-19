@@ -228,7 +228,7 @@ export const activitySchema = z
     )
       ctx.addIssue({ code: 'custom', message: 'Alternativas duplicadas.' });
   });
-/** Referencia curricular (content/curriculum): el editor ofrece sus ejes y habilidades. */
+/** Referencia curricular (contenido/comun/curriculo): el editor ofrece sus ejes y habilidades. */
 export const curriculumSchema = z
   .object({
     id,
@@ -239,7 +239,7 @@ export const curriculumSchema = z
     skills: z.array(z.string()).optional(),
   })
   .passthrough();
-/** Marca docente de una clase en la biblioteca; «por preparar» se deduce de que no exista lesson.yaml. */
+/** Marca docente de una clase en la biblioteca; «por preparar» se deduce de que no exista clase.yaml. */
 export const lessonMarkSchema = z.enum(['lista', 'en-preparacion', 'por-preparar']);
 /** Fecha de calendario AAAA-MM-DD que existe (no 2026-02-30). */
 export const isoDateSchema = z
@@ -252,7 +252,7 @@ export const isoDateSchema = z
   }, 'La fecha no existe en el calendario.');
 export const plannedLessonSchema = z.object({
   id,
-  /** Título y objetivo de una clase aún sin lesson.yaml; si existe, manda lesson.yaml. */
+  /** Título y objetivo de una clase aún sin clase.yaml; si existe, manda clase.yaml. */
   title: z.string().optional(),
   objective: z.string().optional(),
   mark: lessonMarkSchema.optional(),
@@ -266,12 +266,14 @@ export const plannedLessonSchema = z.object({
  */
 export const planningCalendarSchema = z.enum(['clases', 'publicacion']);
 /**
- * Planificación de unidades (content/planning): una biblioteca docente por archivo (un curso,
- * el canal de YouTube…) con sus unidades, su orden y sus fechas. El título es público: debe ser
- * genérico, sin datos privados de cursos.
+ * Planificación de unidades (`curso.yaml` en la carpeta de cada curso): una biblioteca docente
+ * (un curso, una lista del canal de YouTube…) con sus unidades, su orden y sus fechas. El título
+ * es público: debe ser genérico, sin datos privados de cursos. `id` conserva el identificador
+ * cuando la carpeta tiene otro nombre.
  */
 export const planningSchema = z
   .object({
+    id: id.optional(),
     title: z.string().optional(),
     calendario: planningCalendarSchema.optional(),
     units: z.array(

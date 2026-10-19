@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readdir } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { compileChecked } from '../packages/content-model/src/check-source';
+import { MASCOT_PNG_DIR } from '../packages/content-model/src/poses';
 import { checkContentFiles } from '../packages/content-model/src/check-content';
 import {
   readContentFiles,
@@ -40,9 +41,9 @@ function git(...args: string[]): string | undefined {
  * Una pose usada que git ignora es un error; una versionada que ya nadie usa, un aviso
  * (la app puede dejar de usar una pose al guardar y no debe romper la publicación).
  */
-async function checkMascotAssets(root: string) {
-  const pngDir = join(root, 'assets', 'mascotas', 'png');
-  const used = await usedMascotPoses(root);
+async function checkMascotAssets() {
+  const pngDir = repoPath(MASCOT_PNG_DIR);
+  const used = await usedMascotPoses();
   const usedSet = new Set(used);
   const problems: string[] = [];
   const warnings: string[] = [];
@@ -51,13 +52,13 @@ async function checkMascotAssets(root: string) {
       const path = await mascotPngPath(pngDir, pose);
       if (git('check-ignore', '-q', path) !== undefined)
         problems.push(
-          `La pose ${pose} se usa pero git la ignora: añade "!content/assets/mascotas/png/${pose}-*.png" a .gitignore.`,
+          `La pose ${pose} se usa pero git la ignora: añade "!${MASCOT_PNG_DIR}/${pose}-*.png" a .gitignore.`,
         );
     } catch (error) {
       problems.push(error instanceof Error ? error.message : String(error));
     }
   }
-  const tracked = git('ls-files', '-z', '--', 'content/assets/mascotas/png');
+  const tracked = git('ls-files', '-z', '--', MASCOT_PNG_DIR);
   for (const file of (tracked ?? '').split('\0').filter(Boolean)) {
     const pose = Number(/^(\d+)-/.exec(basename(file))?.[1]);
     if (!usedSet.has(pose))
@@ -70,7 +71,7 @@ async function checkMascotAssets(root: string) {
 export { compileChecked };
 export async function checkContent() {
   const result = await checkContentFiles(await readContentFiles());
-  const assets = await checkMascotAssets(repoPath('content'));
+  const assets = await checkMascotAssets();
   const problems = [
     ...result.problems.map((p) => `${p.path}: ${p.message}`),
     ...assets.problems,

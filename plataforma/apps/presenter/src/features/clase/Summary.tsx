@@ -8,8 +8,9 @@ import { deckFor, pad2 } from '../../store/deck';
 import { nowParts, pendingNotes } from '../../store/teacher';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Layout';
+import { GuideCard } from './GuideCard';
 
-/** Resumen de la clase: objetivos, tramos, inicio de la clase y lo pendiente. */
+/** Resumen de la clase: objetivos, guía pedagógica, tramos, inicio de la clase y lo pendiente. */
 export function Summary({
   lessonId,
   onNavigate,
@@ -84,6 +85,7 @@ export function Summary({
                 <p className="muted">Aún no tiene objetivo.</p>
               )}
             </Card>
+            <GuideCard lessonId={meta.id} />
             {hasTramos ? (
               <Card title="Tramos de la clase">
                 <ol className="tramos">

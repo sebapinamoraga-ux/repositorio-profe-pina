@@ -1,10 +1,9 @@
-import { repoPath } from '../../../../packages/content-model/src/read-content.ts';
 import { expect, it } from 'vitest';
 import { usedMascotPoses } from '../../../../packages/content-model/src/used-poses';
 import { bundledMascotPoses, mascotUrl } from './mascot-assets';
 
 it('carga exactamente las poses que usa el contenido', async () => {
-  const used = await usedMascotPoses(repoPath('content'));
+  const used = await usedMascotPoses();
   expect(used.length).toBeGreaterThan(0);
   expect(bundledMascotPoses).toEqual(used);
 });

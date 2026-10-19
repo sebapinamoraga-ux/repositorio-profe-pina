@@ -18,9 +18,9 @@ import {
 } from './working-copy';
 
 const FILES = {
-  'content/lessons/a/lesson.yaml': 'id: a\ntitle: Á\n',
-  'content/lessons/a/slides/uno.mdx': '---\nid: uno\n---\nHola ñandú\n',
-  'content/assets/mascotas/png/1-hola.png': 'binario',
+  'contenido/cursos/c/clases/a/clase.yaml': 'id: a\ntitle: Á\n',
+  'contenido/cursos/c/clases/a/laminas/uno.mdx': '---\nid: uno\n---\nHola ñandú\n',
+  'contenido/comun/mascotas/png/1-hola.png': 'binario',
   'README.md': 'Léeme',
 };
 
@@ -90,22 +90,22 @@ describe('cliente de GitHub', () => {
 });
 
 describe('snapshot', () => {
-  it('lee solo el texto de content/ y reutiliza blobs sin cambios', async () => {
+  it('lee solo el texto de contenido/ y reutiliza blobs sin cambios', async () => {
     const { fake, client, cache } = setup();
     const first = await loadSnapshot(client, cache);
     expect(Object.keys(first.files).sort()).toEqual([
-      'content/lessons/a/lesson.yaml',
-      'content/lessons/a/slides/uno.mdx',
+      'contenido/cursos/c/clases/a/clase.yaml',
+      'contenido/cursos/c/clases/a/laminas/uno.mdx',
     ]);
-    expect(first.paths).toContain('content/assets/mascotas/png/1-hola.png');
-    expect(first.files['content/lessons/a/slides/uno.mdx']?.text).toContain('ñandú');
+    expect(first.paths).toContain('contenido/comun/mascotas/png/1-hola.png');
+    expect(first.files['contenido/cursos/c/clases/a/laminas/uno.mdx']?.text).toContain('ñandú');
 
-    fake.pushExternal({ 'content/lessons/a/lesson.yaml': 'id: a\ntitle: B\n' });
+    fake.pushExternal({ 'contenido/cursos/c/clases/a/clase.yaml': 'id: a\ntitle: B\n' });
     fake.requests.length = 0;
     const second = await loadSnapshot(client, cache, { previous: first });
     const blobs = fake.requests.filter((r) => r.path.includes('/git/blobs/'));
     expect(blobs).toHaveLength(1);
-    expect(second.files['content/lessons/a/lesson.yaml']?.text).toBe('id: a\ntitle: B\n');
+    expect(second.files['contenido/cursos/c/clases/a/clase.yaml']?.text).toBe('id: a\ntitle: B\n');
 
     fake.requests.length = 0;
     expect(await loadSnapshot(client, cache, { previous: second })).toBe(second);
@@ -117,16 +117,16 @@ describe('copia de trabajo', () => {
   it('un cambio que vuelve al texto de la rama desaparece', async () => {
     const { client, cache } = setup();
     const snapshot = await loadSnapshot(client, cache);
-    const path = 'content/lessons/a/lesson.yaml';
+    const path = 'contenido/cursos/c/clases/a/clase.yaml';
     let wc = putFile(emptyWorkingCopy('r'), snapshot, path, 'id: a\ntitle: X\n');
     expect(Object.keys(wc.changes)).toEqual([path]);
     wc = putFile(wc, snapshot, path, 'id: a\ntitle: Á\n');
     expect(wc.changes).toEqual({});
-    wc = deleteFile(wc, snapshot, 'content/lessons/a/slides/uno.mdx');
-    wc = putFile(wc, snapshot, 'content/lessons/a/slides/dos.mdx', 'nuevo');
+    wc = deleteFile(wc, snapshot, 'contenido/cursos/c/clases/a/laminas/uno.mdx');
+    wc = putFile(wc, snapshot, 'contenido/cursos/c/clases/a/laminas/dos.mdx', 'nuevo');
     const files = overlay(snapshotFiles(snapshot), wc);
-    expect(files.has('content/lessons/a/slides/uno.mdx')).toBe(false);
-    expect(files.get('content/lessons/a/slides/dos.mdx')).toBe('nuevo');
+    expect(files.has('contenido/cursos/c/clases/a/laminas/uno.mdx')).toBe(false);
+    expect(files.get('contenido/cursos/c/clases/a/laminas/dos.mdx')).toBe('nuevo');
   });
 
   it('rebase conserva lo que nadie más tocó y marca conflictos', async () => {
@@ -135,25 +135,25 @@ describe('copia de trabajo', () => {
     let wc = putFile(
       emptyWorkingCopy('r'),
       snapshot,
-      'content/lessons/a/lesson.yaml',
+      'contenido/cursos/c/clases/a/clase.yaml',
       'id: a\ntitle: Mía\n',
     );
-    wc = putFile(wc, snapshot, 'content/lessons/a/slides/uno.mdx', 'mía');
-    fake.pushExternal({ 'content/lessons/a/slides/uno.mdx': 'suya' });
+    wc = putFile(wc, snapshot, 'contenido/cursos/c/clases/a/laminas/uno.mdx', 'mía');
+    fake.pushExternal({ 'contenido/cursos/c/clases/a/laminas/uno.mdx': 'suya' });
     const next = await loadSnapshot(client, cache, { previous: snapshot });
     wc = rebase(wc, next);
-    expect(Object.keys(wc.changes)).toEqual(['content/lessons/a/lesson.yaml']);
+    expect(Object.keys(wc.changes)).toEqual(['contenido/cursos/c/clases/a/clase.yaml']);
     expect(wc.conflicts.map((c) => [c.path, c.theirs])).toEqual([
-      ['content/lessons/a/slides/uno.mdx', 'suya'],
+      ['contenido/cursos/c/clases/a/laminas/uno.mdx', 'suya'],
     ]);
-    const mine = resolveConflict(wc, 'content/lessons/a/slides/uno.mdx', 'mine');
+    const mine = resolveConflict(wc, 'contenido/cursos/c/clases/a/laminas/uno.mdx', 'mine');
     expect(mine.conflicts).toEqual([]);
-    expect(mine.changes['content/lessons/a/slides/uno.mdx']).toMatchObject({
+    expect(mine.changes['contenido/cursos/c/clases/a/laminas/uno.mdx']).toMatchObject({
       text: 'mía',
-      baseSha: next.files['content/lessons/a/slides/uno.mdx']?.sha,
+      baseSha: next.files['contenido/cursos/c/clases/a/laminas/uno.mdx']?.sha,
     });
-    const theirs = resolveConflict(wc, 'content/lessons/a/slides/uno.mdx', 'theirs');
-    expect(Object.keys(theirs.changes)).toEqual(['content/lessons/a/lesson.yaml']);
+    const theirs = resolveConflict(wc, 'contenido/cursos/c/clases/a/laminas/uno.mdx', 'theirs');
+    expect(Object.keys(theirs.changes)).toEqual(['contenido/cursos/c/clases/a/clase.yaml']);
   });
 });
 
@@ -165,22 +165,22 @@ describe('guardar', () => {
     let wc = putFile(
       emptyWorkingCopy('r'),
       snapshot,
-      'content/lessons/a/lesson.yaml',
+      'contenido/cursos/c/clases/a/clase.yaml',
       'id: a\ntitle: Nuevo\n',
     );
-    wc = deleteFile(wc, snapshot, 'content/lessons/a/slides/uno.mdx');
+    wc = deleteFile(wc, snapshot, 'contenido/cursos/c/clases/a/laminas/uno.mdx');
     const result = await saveChanges(client, { snapshot, wc }, {
       message: 'Aula: edita a',
       cache,
     });
     expect(result.kind).toBe('saved');
     expect(fake.headCommit()).toMatchObject({ parent: before, message: 'Aula: edita a' });
-    expect(fake.files()['content/lessons/a/lesson.yaml']).toBe('id: a\ntitle: Nuevo\n');
-    expect(fake.files()['content/lessons/a/slides/uno.mdx']).toBeUndefined();
+    expect(fake.files()['contenido/cursos/c/clases/a/clase.yaml']).toBe('id: a\ntitle: Nuevo\n');
+    expect(fake.files()['contenido/cursos/c/clases/a/laminas/uno.mdx']).toBeUndefined();
     expect(fake.files()['README.md']).toBe('Léeme');
     expect(result.wc.changes).toEqual({});
     expect(result.snapshot.commit).toBe(fake.ref);
-    expect(result.snapshot.files['content/lessons/a/lesson.yaml']?.text).toBe(
+    expect(result.snapshot.files['contenido/cursos/c/clases/a/clase.yaml']?.text).toBe(
       'id: a\ntitle: Nuevo\n',
     );
   });
@@ -191,15 +191,15 @@ describe('guardar', () => {
     const wc = putFile(
       emptyWorkingCopy('r'),
       snapshot,
-      'content/lessons/a/lesson.yaml',
+      'contenido/cursos/c/clases/a/clase.yaml',
       'id: a\ntitle: Mía\n',
     );
     fake.beforeUpdateRef = () =>
-      fake.pushExternal({ 'content/lessons/a/slides/uno.mdx': 'suya' });
+      fake.pushExternal({ 'contenido/cursos/c/clases/a/laminas/uno.mdx': 'suya' });
     const result = await saveChanges(client, { snapshot, wc }, { message: 'm', cache });
     expect(result.kind).toBe('saved');
-    expect(fake.files()['content/lessons/a/slides/uno.mdx']).toBe('suya');
-    expect(fake.files()['content/lessons/a/lesson.yaml']).toBe('id: a\ntitle: Mía\n');
+    expect(fake.files()['contenido/cursos/c/clases/a/laminas/uno.mdx']).toBe('suya');
+    expect(fake.files()['contenido/cursos/c/clases/a/clase.yaml']).toBe('id: a\ntitle: Mía\n');
   });
 
   it('si el mismo archivo cambió en los dos lados, devuelve el conflicto sin guardar', async () => {
@@ -208,10 +208,10 @@ describe('guardar', () => {
     const wc = putFile(
       emptyWorkingCopy('r'),
       snapshot,
-      'content/lessons/a/lesson.yaml',
+      'contenido/cursos/c/clases/a/clase.yaml',
       'id: a\ntitle: Mía\n',
     );
-    fake.pushExternal({ 'content/lessons/a/lesson.yaml': 'id: a\ntitle: Suya\n' });
+    fake.pushExternal({ 'contenido/cursos/c/clases/a/clase.yaml': 'id: a\ntitle: Suya\n' });
     const ref = fake.ref;
     const result = await saveChanges(client, { snapshot, wc }, { message: 'm', cache });
     expect(result.kind).toBe('conflicts');
@@ -221,7 +221,7 @@ describe('guardar', () => {
   it('no guarda si la validación encuentra problemas', async () => {
     const { fake, client, cache } = setup();
     const snapshot = await loadSnapshot(client, cache);
-    const wc = putFile(emptyWorkingCopy('r'), snapshot, 'content/x.yaml', 'x: 1\n');
+    const wc = putFile(emptyWorkingCopy('r'), snapshot, 'contenido/x.yaml', 'x: 1\n');
     const ref = fake.ref;
     const result = await saveChanges(client, { snapshot, wc }, {
       message: 'm',
@@ -237,11 +237,11 @@ describe('guardar', () => {
   it('sin conexión lanza un error «offline» y no pierde los cambios', async () => {
     const { fake, client, cache } = setup();
     const snapshot = await loadSnapshot(client, cache);
-    const wc = putFile(emptyWorkingCopy('r'), snapshot, 'content/x.yaml', 'x: 1\n');
+    const wc = putFile(emptyWorkingCopy('r'), snapshot, 'contenido/x.yaml', 'x: 1\n');
     fake.offline = true;
     await expect(
       saveChanges(client, { snapshot, wc }, { message: 'm', cache }),
     ).rejects.toMatchObject({ kind: 'offline' });
-    expect(Object.keys(wc.changes)).toEqual(['content/x.yaml']);
+    expect(Object.keys(wc.changes)).toEqual(['contenido/x.yaml']);
   });
 });

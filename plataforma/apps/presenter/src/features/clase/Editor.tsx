@@ -234,6 +234,7 @@ export function Editor({
                     title: meta.title,
                     objective: entry?.objective ?? '',
                     slides: skeleton(meta.title, mascotGallery.templates),
+                    libraryId: entry?.libraryId ?? null,
                   }),
                   ...planningWrites(content.bundle, content.files, entry?.libraryId ?? null, {
                     type: 'updateLesson',

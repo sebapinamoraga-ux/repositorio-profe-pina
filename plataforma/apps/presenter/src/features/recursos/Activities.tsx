@@ -408,7 +408,7 @@ export function ActivityRow({
   );
 }
 
-/** Banco de actividades (content/activities): preguntas abiertas y tipo PAES. */
+/** Banco de actividades (todas las actividades/ del contenido): preguntas abiertas y tipo PAES. */
 export function Activities({ onNavigate }: { onNavigate: Navigate }) {
   const content = useContent();
   const ui = useUi();

@@ -67,11 +67,11 @@ test('biblioteca: organizar con deshacer y preparar una clase nueva', async ({ p
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const files = fake.files();
-  expect(files['content/lessons/m1/algebra/clase-de-prueba/lesson.yaml']).toContain('status: draft');
+  expect(files['contenido/cursos/competencia-matematica-3m/clases/clase-de-prueba/clase.yaml']).toContain('status: draft');
   expect(
-    Object.keys(files).filter((p) => p.startsWith('content/lessons/m1/algebra/clase-de-prueba/slides/')),
+    Object.keys(files).filter((p) => p.startsWith('contenido/cursos/competencia-matematica-3m/clases/clase-de-prueba/laminas/')),
   ).toHaveLength(5);
-  expect(files['content/planning/m1-2027.yaml']).toContain('- id: clase-de-prueba');
+  expect(files['contenido/cursos/competencia-matematica-3m/curso.yaml']).toContain('- id: clase-de-prueba');
   expect(fake.headCommit()?.message).toMatch(/^Aula: /);
 });
 
@@ -112,12 +112,12 @@ test('bibliotecas: crear una y copiarle una clase de otra', async ({ page }) => 
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const files = fake.files();
-  expect(files['content/planning/canal-de-youtube.yaml']).toContain('title: Canal de YouTube');
-  expect(files['content/planning/canal-de-youtube.yaml']).toContain(
+  expect(files['contenido/cursos/canal-de-youtube/curso.yaml']).toContain('title: Canal de YouTube');
+  expect(files['contenido/cursos/canal-de-youtube/curso.yaml']).toContain(
     '- id: funcion-lineal-afin-2-cuadratica-1-canal-de-youtube',
   );
   const lesson =
-    files['content/lessons/m1/algebra/funcion-lineal-afin-2-cuadratica-1-canal-de-youtube/lesson.yaml'];
+    files['contenido/cursos/canal-de-youtube/clases/funcion-lineal-afin-2-cuadratica-1-canal-de-youtube/clase.yaml'];
   expect(lesson).toContain('status: draft');
   expect(lesson).toContain('repaso:');
 });
@@ -155,7 +155,7 @@ test('bibliotecas del canal: sus fechas de publicación no son la clase del día
   );
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
-  const saved = fake.files()['content/planning/yt-m1.yaml'];
+  const saved = fake.files()['contenido/youtube/paes-m1/curso.yaml'];
   expect(saved).toContain('title: PAES Matemática M1');
   expect(saved).not.toContain('calendario: publicacion');
 });
@@ -219,7 +219,8 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   const path = await download.path();
   if (!path) throw new Error('No se descargó el ZIP');
   const zip = (await readFile(path)).toString('utf8');
-  expect(zip).toContain('sistemas-2x2/lesson.yaml');
+  expect(zip).toContain('sistemas-2x2/clase.yaml');
+  expect(zip).toContain('sistemas-2x2/guia.md');
   expect(zip).toContain('status: published');
   expect(zip).toContain('<Objetivo titulo="Meta de hoy">');
 

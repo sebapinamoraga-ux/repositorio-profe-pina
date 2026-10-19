@@ -54,7 +54,7 @@ export const courseSchema = z.object({
   nombre: z.string(),
   nivel: z.string(),
   observaciones: z.string(),
-  /** Biblioteca (archivo de content/planning) del curso. Solo el curso apunta a ella. */
+  /** Biblioteca (curso.yaml) del curso. Solo el curso apunta a ella. */
   biblioteca: z.string().optional(),
 });
 export type Course = z.infer<typeof courseSchema>;

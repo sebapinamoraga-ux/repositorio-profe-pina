@@ -1,14 +1,19 @@
 import type { Activity, Lesson, Planning, PlannedLesson } from '@aula/content-model';
 import {
-  ACTIVITIES_DIR,
-  NEW_LESSON_DIR,
-  PLANNING_DIR,
+  activityPathIn,
+  courseDir,
+  guidePath,
+  isPlanningPath,
+  lessonDirIn,
+  lessonPath,
+  planningId,
   slidePath,
   type ContentBundle,
   type LessonEntry,
   type PlanningFile,
 } from '@aula/content-model/content-files';
 import { toMdx } from '@aula/content-model/frontmatter';
+import { guideTemplate } from '@aula/content-model/guide';
 import {
   ACTIVITY_KEYS,
   LESSON_KEYS,
@@ -30,7 +35,7 @@ export const DEFAULT_LIBRARY_ID = 'm1-2027';
 const PLANNING_HEADER =
   '# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).\n' +
   '# El título es público: usa un nombre genérico, sin datos privados de cursos.\n';
-const PLANNING_KEYS = ['title', 'calendario', 'units'];
+const PLANNING_KEYS = ['id', 'title', 'calendario', 'units'];
 
 export function findLesson(bundle: ContentBundle, id: string): LessonEntry | undefined {
   return bundle.lessons.find((lesson) => lesson.meta.id === id);
@@ -38,7 +43,7 @@ export function findLesson(bundle: ContentBundle, id: string): LessonEntry | und
 
 export const slideFile = (slide: { id: string }) => `${slide.id}.mdx`;
 
-/** Láminas editables de una clase, en el orden de lesson.yaml. */
+/** Láminas editables de una clase, en el orden de clase.yaml. */
 export function editableSlides(lesson: LessonEntry | undefined): EditedSlide[] {
   return (lesson?.slides ?? []).map(({ slide, body }) => ({ ...slide, body }));
 }
@@ -48,7 +53,7 @@ export function editableRepaso(lesson: LessonEntry | undefined): EditedSlide[] {
   return (lesson?.repaso ?? []).map(({ slide, body }) => ({ ...slide, body }));
 }
 
-/** Reemplaza las láminas de una clase: escribe cada .mdx, borra los quitados y ajusta lesson.yaml. */
+/** Reemplaza las láminas de una clase: escribe cada .mdx, borra los quitados y ajusta clase.yaml. */
 export function writeSlides(
   bundle: ContentBundle,
   lessonId: string,
@@ -70,7 +75,7 @@ export function writeSlides(
 
 /**
  * Reemplaza las láminas del repaso del estudiante: escribe cada .mdx, borra las quitadas y
- * ajusta `repaso` en lesson.yaml (sin la clave si queda vacío). No toca `slides` ni `tramos`.
+ * ajusta `repaso` en clase.yaml (sin la clave si queda vacío). No toca `slides` ni `tramos`.
  */
 export function writeRepaso(
   bundle: ContentBundle,
@@ -93,7 +98,7 @@ export function writeRepaso(
   return writes;
 }
 
-/** Cambia campos de lesson.yaml conservando el resto del archivo. */
+/** Cambia campos de clase.yaml conservando el resto del archivo. */
 export function writeLesson(
   bundle: ContentBundle,
   lessonId: string,
@@ -138,7 +143,7 @@ export function writePlanning(
   libraryId: string,
   next: Planning,
 ): FileWrite[] {
-  const path = planningFile(bundle, libraryId)?.path ?? `${PLANNING_DIR}/${libraryId}.yaml`;
+  const path = planningFile(bundle, libraryId)?.path ?? `${courseDir(libraryId)}/curso.yaml`;
   const original = files.get(path);
   const value: Record<string, unknown> = { ...next };
   if (!next.title) delete value.title;
@@ -164,7 +169,7 @@ export function planningWrites(
   return writePlanning(bundle, files, libraryId, next);
 }
 
-/** Crea una biblioteca vacía; el identificador (nombre del archivo) sale del título. */
+/** Crea una biblioteca vacía en `contenido/cursos/<id>`; el identificador sale del título. */
 export function createLibrary(
   bundle: ContentBundle,
   files: ReadonlyMap<string, string>,
@@ -173,8 +178,8 @@ export function createLibrary(
   const taken = new Set([
     ...bundle.plannings.map((item) => item.id),
     ...[...files.keys()]
-      .filter((path) => path.startsWith(`${PLANNING_DIR}/`))
-      .map((path) => path.slice(PLANNING_DIR.length + 1).replace(/\.yaml$/, '')),
+      .filter(isPlanningPath)
+      .map((path) => planningId(path)),
   ]);
   const id = slugify(title, taken);
   return {
@@ -183,7 +188,7 @@ export function createLibrary(
   };
 }
 
-/** Borra el archivo de una biblioteca; sus clases quedan «Sin unidad». */
+/** Borra el curso.yaml de una biblioteca; sus clases quedan «Sin unidad». */
 export function removeLibrary(bundle: ContentBundle, libraryId: string): FileWrite[] {
   const file = planningFile(bundle, libraryId);
   return file ? [{ path: file.path, text: null }] : [];
@@ -230,13 +235,15 @@ export function copyLesson(
         slides: editableSlides(source),
         repaso: editableRepaso(source),
         base: source.meta,
+        libraryId: input.libraryId,
+        guide: source.guide?.text,
       })
     : [];
   writes.push(...planningWrites(bundle, files, input.libraryId, ...actions));
   return { id, writes };
 }
 
-/** lesson.yaml de una clase nueva: borrador con los mínimos que pide content:check. */
+/** clase.yaml de una clase nueva: borrador con los mínimos que pide content:check. */
 export function newLessonMeta(
   bundle: ContentBundle,
   input: { id: string; title: string; objective: string; slides: string[]; repaso?: string[] },
@@ -263,7 +270,10 @@ export function newLessonMeta(
   };
 }
 
-/** Crea la carpeta de una clase (lesson.yaml + láminas) como borrador. */
+/**
+ * Crea la carpeta de una clase como borrador, dentro de la carpeta de su biblioteca:
+ * clase.yaml, guía pedagógica (la de la clase de origen o una por completar) y láminas.
+ */
 export function createLesson(
   bundle: ContentBundle,
   input: {
@@ -273,9 +283,14 @@ export function createLesson(
     slides: readonly EditedSlide[];
     repaso?: readonly EditedSlide[];
     base?: Lesson;
+    libraryId: string | null;
+    guide?: string | undefined;
   },
 ): FileWrite[] {
-  const dir = `${NEW_LESSON_DIR}/${input.id}`;
+  const library = input.libraryId
+    ? (planningFile(bundle, input.libraryId)?.dir ?? courseDir(input.libraryId))
+    : null;
+  const dir = lessonDirIn(library, input.id);
   const repaso = input.repaso ?? [];
   const meta = newLessonMeta(
     bundle,
@@ -284,9 +299,10 @@ export function createLesson(
   );
   return [
     {
-      path: `${dir}/lesson.yaml`,
+      path: lessonPath(dir),
       text: stringifyYaml({ ...meta }, LESSON_KEYS),
     },
+    { path: guidePath(dir), text: input.guide ?? guideTemplate(meta) },
     ...[...input.slides, ...repaso].map((slide) => ({
       path: slidePath(dir, slideFile(slide)),
       text: toMdx(slide),
@@ -308,7 +324,7 @@ export function removeLessonFiles(
 }
 
 export function activityPath(bundle: ContentBundle, id: string) {
-  return bundle.activityPaths[id] ?? `${ACTIVITIES_DIR}/${id}.yaml`;
+  return bundle.activityPaths[id] ?? activityPathIn(null, id);
 }
 
 export function writeActivity(

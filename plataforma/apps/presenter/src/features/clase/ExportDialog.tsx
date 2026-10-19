@@ -40,7 +40,7 @@ export function ExportDialog({ lessonId, onClose }: { lessonId: string; onClose:
         </IconButton>
       </div>
       <p className="muted modal-lead">
-        Descarga un ZIP con <code>lesson.yaml</code> y {count} archivos <code>.mdx</code>, tal
+        Descarga un ZIP con <code>clase.yaml</code>, <code>guia.md</code> y {count} archivos <code>.mdx</code>, tal
         como están en la app (incluye los cambios sin guardar). No hace falta para publicar:
         «Guardar en el repositorio» ya lo hace.
       </p>

@@ -1,6 +1,6 @@
 import type { MascotGallery } from './index.ts';
 
-export const MASCOT_PNG_DIR = 'content/assets/mascotas/png';
+export const MASCOT_PNG_DIR = 'contenido/comun/mascotas/png';
 
 /** Poses que aparecen en la galería o en alguna diapositiva: las únicas que el sitio y git necesitan. */
 export function usedPosesFromSources(

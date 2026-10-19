@@ -9,12 +9,12 @@ import { FakeGitHub } from '../../packages/content-repo/src/fake-github';
 const REPO = 'sebapinamoraga-ux/repositorio-profe-pina';
 const TOKEN = 'token-de-prueba';
 
-/** Contenido del repositorio (texto de content/ y rutas de las imágenes versionadas). */
+/** Contenido del repositorio (texto de contenido/ y rutas de las imágenes versionadas). */
 async function repoFiles(): Promise<Record<string, string>> {
   const files = Object.fromEntries(await readContentFiles());
   const pngs = execFileSync(
     'git',
-    ['ls-files', '-z', '--', 'content/assets/mascotas/png'],
+    ['ls-files', '-z', '--', 'contenido/comun/mascotas/png'],
     { cwd: repoRoot(), encoding: 'utf8' },
   );
   for (const path of pngs.split('\0').filter(Boolean)) files[path] = 'png';
