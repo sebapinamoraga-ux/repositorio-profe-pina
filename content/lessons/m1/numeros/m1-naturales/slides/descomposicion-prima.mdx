@@ -1,0 +1,29 @@
+---
+id: descomposicion-prima
+title: 'Descomposición única en factores primos'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Teorema
+  hipotesis="n es un número natural mayor que 1."
+  conclusion="n se escribe como producto de números primos de una única forma, salvo el orden de los factores."
+/>
+
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$2^3\cdot 3^2\cdot 5=8\cdot 9\cdot 5=360$. Da igual el camino: siempre salen tres $2$, dos $3$ y un $5$.
+</Comprobacion>
+</Paso>
+</div>
+<Paso n={1}>
+<ArbolFactores
+  n={360}
+  descripcion="Árbol de factores de 360: en cada nivel se separa el menor primo. 360 da 2 y 180; 180 da 2 y 90; 90 da 2 y 45; 45 da 3 y 15; 15 da 3 y 5. Resultado: 360 = 2³ · 3² · 5."
+/>
+</Paso>
+</Columnas>

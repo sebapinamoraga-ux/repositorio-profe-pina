@@ -1,0 +1,24 @@
+---
+id: suma-repetida
+title: 'Multiplicar es sumar repetido'
+phase: inicio
+momento: caso
+layout: escena
+steps: 3
+activities: []
+---
+
+<RectaEnteros
+  min={-8}
+  max={2}
+  desde={0}
+  saltos={[-2, -2, -2]}
+  pasosSaltos={[1, 2, 3]}
+  descripcion="Recta de −8 a 2. Desde 0, tres saltos ocres de −2 llegan a −2, −4 y −6."
+/>
+
+<Paso n={3}>
+$$
+3\cdot(-2)=(-2)+(-2)+(-2)=-6
+$$
+</Paso>

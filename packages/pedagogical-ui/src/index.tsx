@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { BookOpen, Lightbulb, TriangleAlert, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Lightbulb, TriangleAlert, CheckCircle2, RotateCcw } from 'lucide-react';
 import katex from 'katex';
 import type {
   Activity,
@@ -136,6 +136,30 @@ export function Composicion({
         {nota && <p>{nota}</p>}
       </aside>
     </div>
+  );
+}
+/**
+ * Prerrequisito que un video recuerda de otra clase. Es un marco sin fondo propio: su
+ * contenido conserva el color de su función (una definición recordada sigue azul).
+ */
+export function Recuerda({
+  clase,
+  titulo,
+  children,
+}: {
+  clase: string;
+  titulo: string;
+  children: ReactNode;
+}) {
+  return (
+    <aside className="recuerda" data-clase={clase}>
+      <div className="recuerda-label">
+        <RotateCcw size={22} aria-hidden="true" />
+        <span>Recuerda</span>
+        <span className="recuerda-source">· {titulo}</span>
+      </div>
+      <div>{children}</div>
+    </aside>
   );
 }
 export const Propiedad = (p: BlockProps) => <Block kind="propiedad" {...p} />;

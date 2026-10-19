@@ -10,6 +10,7 @@ import { splitSource, toMdx } from './frontmatter.ts';
 import { validateMdxTree } from './validate-mdx.ts';
 import { verifyActivity } from './verify-model.ts';
 import { verifyLessonPlan } from './verify-plan.ts';
+import { publicationPlanningWarnings, videoLessonWarnings } from './video-rules.ts';
 import { MASCOT_PNG_DIR, poseOfPng, usedPosesFromSources } from './poses.ts';
 
 export interface CheckOptions {
@@ -90,7 +91,7 @@ export async function checkContentFiles(
           );
         if (toMdx({ ...slide, body: file.body }) !== text)
           throw new Error(
-            'El frontmatter no tiene la forma canónica (id, title entre comillas simples, phase, layout, steps, activities).',
+            'El frontmatter no tiene la forma canónica (id, title entre comillas simples, phase, momento si es de video, layout, steps, activities).',
           );
         checkSourceLines(text);
         if (slideIds.has(slide.id)) throw new Error(`ID duplicado ${slide.id}`);
@@ -105,6 +106,18 @@ export async function checkContentFiles(
       }
     }
   }
+
+  for (const lesson of bundle.lessons)
+    for (const found of videoLessonWarnings(lesson.meta, lesson.slides, bundle.plannings)) {
+      const file = found.slide && lesson.slides.find((s) => s.slide.id === found.slide);
+      warnings.push({ path: file ? file.path : lesson.path, message: found.message });
+    }
+  warnings.push(
+    ...publicationPlanningWarnings(
+      bundle.plannings,
+      new Map(bundle.lessons.map((lesson) => [lesson.meta.id, lesson.meta])),
+    ),
+  );
 
   const known = new Set(bundle.lessons.map((lesson) => lesson.meta.id));
   for (const { path, planning } of bundle.plannings)

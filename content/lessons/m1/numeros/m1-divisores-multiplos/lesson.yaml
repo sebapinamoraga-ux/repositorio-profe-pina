@@ -1,0 +1,52 @@
+id: m1-divisores-multiplos
+title: '¿De cuántas formas se arma un rectángulo? Divisores, múltiplos y divisibilidad'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Dividir naturales con resto.
+objectives:
+  - Reconocer divisores y múltiplos y listar los divisores de un natural.
+  - Aplicar las reglas de divisibilidad del 2, 3, 5, 9 y 10 y explicar la del 3.
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: ¿De cuántas formas distintas se arma un rectángulo con 12 cuadrados iguales?
+previos:
+  - clase: m1-division-resto
+    idea: Si el resto es 0, la división es exacta.
+  - base: Valor posicional de las cifras.
+tramos:
+  - label: 'Doce cuadrados y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Rectángulos, divisores y múltiplos'
+    from: rectangulos-12
+    to: divisores-12
+    minutes: 2.25
+  - label: 'Reglas de divisibilidad y por qué la del 3'
+    from: reglas
+    to: por-que-3
+    minutes: 2
+  - label: 'Pausa y error'
+    from: pausa-1236
+    to: error-al-reves
+    minutes: 1.25
+  - label: 'Vuelta a los 12 cuadrados'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - rectangulos-12.mdx
+  - recuerda-exacta.mdx
+  - divisor-multiplo.mdx
+  - divisores-12.mdx
+  - reglas.mdx
+  - por-que-3.mdx
+  - pausa-1236.mdx
+  - error-al-reves.mdx
+  - cierre.mdx

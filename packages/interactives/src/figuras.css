@@ -1,0 +1,183 @@
+/*
+ * Estilos de las figuras de los números naturales, de la recta numérica y de las fracciones.
+ * Usan solo las variables de color de tokens.css: la plataforma y el proyecto de videos los
+ * importan igual.
+ */
+.natural-figure {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.natural-figure-narrow {
+  max-width: 560px;
+}
+.natural-figure svg {
+  width: 100%;
+  height: auto;
+}
+.natural-text {
+  fill: var(--ink);
+}
+.natural-text-strong {
+  fill: var(--blue);
+  font-weight: 750;
+}
+.natural-text-mask {
+  paint-order: stroke;
+  stroke: #fbf8f1;
+  stroke-width: 10px;
+  stroke-linejoin: round;
+}
+.natural-muted {
+  fill: var(--muted);
+}
+.natural-divider,
+.natural-axis {
+  stroke: var(--line-2);
+  stroke-width: 3;
+}
+.natural-bill,
+.natural-cell,
+.natural-sieve-prime,
+.natural-piece {
+  fill: var(--blue-soft);
+  stroke: var(--blue);
+  stroke-width: 2;
+}
+.natural-coin {
+  fill: var(--procedure-soft);
+  stroke: var(--procedure);
+  stroke-width: 2;
+}
+.natural-box {
+  fill: none;
+  stroke: var(--procedure-line);
+  stroke-width: 3;
+}
+.natural-box-rest {
+  fill: none;
+  stroke: var(--yellow);
+  stroke-width: 3;
+  stroke-dasharray: 10 7;
+}
+.natural-dot {
+  fill: var(--ink);
+}
+.natural-dot-rest {
+  fill: var(--yellow);
+}
+.natural-dot-common {
+  fill: var(--blue);
+}
+.natural-guide {
+  stroke: var(--blue);
+  stroke-width: 3;
+  stroke-dasharray: 8 8;
+}
+.natural-sieve {
+  fill: var(--panel);
+  stroke: var(--line-2);
+  stroke-width: 2;
+}
+.natural-sieve-mark {
+  stroke: var(--yellow);
+  stroke-width: 5;
+}
+.natural-branch {
+  stroke: var(--muted);
+  stroke-width: 3;
+}
+.natural-prime-leaf {
+  fill: var(--blue-soft);
+  stroke: var(--blue);
+  stroke-width: 3;
+}
+.natural-piece-alt {
+  fill: var(--panel);
+}
+.natural-piece-rest {
+  fill: var(--yellow-soft);
+  stroke: var(--yellow);
+  stroke-width: 3;
+  stroke-dasharray: 10 7;
+}
+.natural-text-rest {
+  fill: var(--yellow);
+  font-weight: 750;
+}
+.natural-sieve-cross {
+  stroke: var(--muted);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.natural-fraction-split {
+  stroke: var(--blue);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+}
+/* Recta numérica y recta de los enteros. */
+.number-line svg {
+  width: 100%;
+  height: auto;
+  max-height: 175px;
+}
+.number-line-axis {
+  stroke: var(--muted);
+  stroke-width: 3;
+}
+.number-line-label {
+  fill: var(--ink);
+}
+.number-line-label-strong {
+  font-weight: 750;
+}
+.integer-line {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.integer-line svg {
+  max-height: none;
+}
+.integer-fill-pos {
+  fill: var(--blue);
+}
+.integer-fill-neg {
+  fill: var(--yellow);
+}
+.integer-fill-cero {
+  fill: var(--ink);
+}
+.integer-stroke-pos {
+  stroke: var(--blue);
+}
+.integer-stroke-neg {
+  stroke: var(--yellow);
+}
+.integer-stroke-cero {
+  stroke: var(--ink);
+}
+.integer-text-pos {
+  fill: var(--blue);
+}
+.integer-text-neg {
+  fill: var(--yellow);
+}
+.integer-text-cero {
+  fill: var(--ink);
+}
+.integer-jump {
+  stroke-linecap: round;
+}
+.integer-jump-label {
+  font-weight: 750;
+}
+.integer-mirror {
+  stroke: var(--muted);
+}
+.integer-readings {
+  display: flex;
+  justify-content: center;
+  gap: 70px;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+}

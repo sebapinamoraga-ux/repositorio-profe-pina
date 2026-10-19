@@ -1,0 +1,30 @@
+---
+id: sumar-negativo
+title: 'Sumar un negativo es retroceder'
+phase: desarrollo
+momento: desarrollo
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={-6}
+  max={10}
+  desde={2}
+  saltos={[-5]}
+  pasosSaltos={[1]}
+  descripcion="Recta de −6 a 10. Desde 2 un salto ocre de −5 llega a −3."
+/>
+
+<Paso n={1}>
+$$
+2+(-5)=-3
+$$
+</Paso>
+
+<Paso n={2}>
+<Propiedad titulo="Sumar enteros">
+Sumar un positivo avanza a la derecha; sumar un negativo retrocede a la izquierda.
+</Propiedad>
+</Paso>

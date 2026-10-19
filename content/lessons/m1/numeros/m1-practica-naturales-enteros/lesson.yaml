@@ -1,0 +1,52 @@
+id: m1-practica-naturales-enteros
+title: 'Práctica: naturales y enteros'
+subject: m1
+axis: Números
+duration: 11
+prerequisites:
+  - Consecutivos, división con resto, divisibilidad, primos, MCM y mcd.
+  - Orden y operaciones con números enteros.
+objectives:
+  - Resolver de forma autónoma preguntas tipo PAES de naturales y enteros, con pausas para intentar y comprobar.
+skills: [Resolver problemas, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: En un cálculo con signos hay un paso con error. ¿En cuál está?
+previos:
+  - clase: m1-mcm-mcd
+    idea: Coincidir pide el MCM; repartir sin que sobre, el mcd.
+  - clase: m1-enteros-signos
+    idea: El exponente de −3² afecta solo al 3.
+tramos:
+  - label: 'Un paso con error'
+    from: gancho
+    to: recuerda
+    minutes: 1.5
+  - label: 'Naturales: consecutivos, resto y divisibilidad'
+    from: pregunta-1
+    to: pregunta-3
+    minutes: 4
+  - label: 'Coincidir o repartir'
+    from: pregunta-4
+    to: pregunta-5
+    minutes: 2.5
+  - label: 'Enteros: variación y orden'
+    from: pregunta-6
+    to: pregunta-7
+    minutes: 2.25
+  - label: 'Vuelta al paso con error'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - recuerda.mdx
+  - pregunta-1.mdx
+  - pregunta-2.mdx
+  - pregunta-3.mdx
+  - pregunta-4.mdx
+  - pregunta-5.mdx
+  - pregunta-6.mdx
+  - pregunta-7.mdx
+  - cierre.mdx

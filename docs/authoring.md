@@ -2,7 +2,7 @@
 
 Una clase contiene lesson.yaml y slides/\*.mdx. El manifiesto especifica ID estable, título, asignatura, eje, duración, prerrequisitos, objetivos observables, habilidades, referencias curriculares, estado y orden. La referencia inicial es m1-2027-sistemas; crear otra referencia al cambiar de conocimiento.
 
-El frontmatter de cada MDX tiene id, title, phase, layout, steps y activities, en ese orden, con el título entre comillas simples; el `id` coincide con el nombre del archivo. content:check exige esa forma para que la app y el código escriban lo mismo. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio.
+El frontmatter de cada MDX tiene id, title, phase, momento (solo en clases de video), layout, steps y activities, en ese orden, con el título entre comillas simples; el `id` coincide con el nombre del archivo. content:check exige esa forma para que la app y el código escriban lo mismo. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio y, para video, escena.
 
 La portada conserva el título principal y presenta directamente un bloque **Objetivo de clase**. No añade subtítulo descriptivo, duración ni una ruta temática del tipo “Ecuaciones → Sistemas → Modelamiento”; esos datos pertenecen al plan de la clase, no al lienzo proyectado.
 
@@ -90,6 +90,26 @@ La lámina `modelar` queda como registro para consulta: se pasa sin revisarla du
 `DiagramaSagital` dibuja dos conjuntos (`entradas`, `salidas`, `tituloEntradas`, `tituloSalidas`) unidos por `flechas` escritas como `'3 → 9'`, con hasta seis elementos por conjunto. Las entradas sin imagen o con más de una se destacan en ocre junto con sus flechas, y las salidas que nadie alcanza quedan atenuadas: así se ven a la vez el dominio, el recorrido y por qué una relación no es función. content:check exige todos sus atributos y el componente rechaza flechas hacia elementos que no existen.
 
 `RectaIntervalos` representa uno o dos intervalos en una recta numérica (`min`, `max`, `paso`, `intervalos`, `etiquetas`, `descripcion`). Los intervalos se escriben en notación escolar con punto y coma entre extremos para no confundirlos con la coma decimal: `intervalos={['[0; 7,5[', ']7,5; +∞[']}`. `tonos` elige el color de cada intervalo (1 o 2) para mantener la correspondencia con otros gráficos. Un extremo cerrado se dibuja con círculo lleno, uno abierto con círculo vacío y el infinito con flecha; un extremo infinito cerrado se rechaza.
+
+`RectaEnteros` dibuja una recta de enteros entre `min` y `max` (enteros; con más de 24 unidades rotula cada 5). Marca `puntos` con su rótulo opcional (`rotulos`), dibuja `saltos` sucesivos desde `desde` como arcos con flecha, acota la distancia al cero de cada valor de `distancias` (con su rótulo |a|) y une cada valor de `opuestos` con su opuesto. Positivos en azul y negativos en ocre, siempre. Un valor fuera de la recta se rechaza. `ExploradorResta` dibuja la resta a − b como el salto −b desde a, con sus dos lecturas (a − b y a + (−b)); tiene controles para a y b, «Restablecer» y valores impresos (`aEstatico`, `bEstatico`).
+
+Figuras de los números naturales (los números van en el contenido y se validan; tres de ellas cambian de estado por paso, ver más abajo): `ValorPosicional` (`numero`) muestra cada cifra como billetes o monedas de su posición; `GruposPuntos` (`total`, `grupo`) agrupa puntos y deja el resto en ocre, con la igualdad D = d · q + r; `RectangulosDivisores` (`n`) dibuja todos los rectángulos de n cuadrados, cuyos lados son los divisores; `CribaPrimos` (`max`, `columnas`, `marcar`) destaca los primos hasta `max` y marca en ocre los números de `marcar`; `ArbolFactores` (`n`) separa en cada nivel el menor primo; `LineasMultiplos` (`numeros`, `hasta`, `rotulos`) une con una guía los múltiplos comunes, y `BarrasDivision` (`longitudes`, `trozo`, `unidad`) corta cada barra en trozos iguales y rechaza un trozo que no divida a todas.
+
+Estados por paso de esas figuras (opcionales; el PDF muestra siempre el último estado): en `LineasMultiplos`, `pasosNumeros` da el paso en que aparece cada recta (uno por número) y `pasoComunes` el paso en que se destacan los múltiplos comunes; en `ArbolFactores`, `pasoArbol` hace crecer las ramas y `pasoEscritura` muestra n con potencias; en `BarrasDivision`, `intentos` son trozos que se prueban antes del final, cada uno en su paso (`pasosIntentos`), y pueden no dividir a todas: lo que sobra queda en ocre. Con intentos, `pasoTrozo` (el paso del trozo final) es obligatorio, y los pasos deben crecer.
+
+`CribaPrimos` también admite la criba de Eratóstenes: `criba` son los primos cuyos múltiplos se tachan (sin tachar el primo), cada uno en su paso (`pasosCriba`), y `pasoPrimos` es el paso en que se destacan los primos. `RectaEnteros` acepta `pasosSaltos`, `pasosDistancias` y `pasosOpuestos` (un paso por elemento); un salto que aún no aparece tampoco marca su punto de llegada.
+
+`BarraFraccion` muestra una fracción como partes de barras iguales: `barras` (1 por defecto, hasta 6), `partes`, `tomadas` (en azul; con `porBarra`, esa cantidad en cada barra, como un reparto), `subdividir` (parte cada parte en k, para una fracción equivalente) y `recta` (con una sola barra, el punto en la recta de 0 a 1). Sus pasos son `pasoTomadas`, `pasoSubdividir` y `pasoRecta`. La lógica está en `packages/interactives/src/fractions.ts`.
+
+## Clases de video
+
+Una clase con `formato: video` en lesson.yaml es el guion gráfico de un video del canal (plan en [plan-diapositivas-video.md](plan-diapositivas-video.md)). Lleva además `gancho` (la pregunta central en una frase) y `previos`: cada uno es `clase` + `idea` (otra clase que el video recuerda) o `base` (lo que se supone sabido). Los tramos son los capítulos de YouTube y sus minutos aceptan decimales.
+
+Cada lámina declara su `momento` en el frontmatter, después de `phase`: `gancho`, `caso`, `simplificada`, `desarrollo`, `recuerda`, `climax`, `prediccion`, `pausa`, `error`, `utilidad` o `cierre`. El momento decide la fase (el editor la ajusta sola). El diseño `escena` achica el título y deja libre la franja inferior para los subtítulos.
+
+`Recuerda clase="m1-primos" titulo="Números primos"` enmarca, sin fondo propio, lo que se recuerda de otra clase; su contenido conserva el color de su función. La clase debe estar en `previos`.
+
+Durante el piloto, content:check y la pestaña Revisión dan **avisos** (no bloquean) cuando un video no empieza con gancho o no termina con cierre, no tiene exactamente un clímax o ninguna pausa o predicción, tiene menos de 8 o más de 18 láminas, más de 25 palabras de prosa en una lámina (sin fórmulas ni rótulos), más de una definición en una lámina, una lámina de desarrollo o clímax sin figura ni fórmula central, una mascota fuera del gancho o el cierre, más de dos `Recuerda`, o una clase previa que no va antes en la biblioteca. También avisan cuando una biblioteca de publicación planifica una clase de aula. Los umbrales se calibran con el piloto `m1-mcm-mcd`.
 
 ## Editar desde la app
 

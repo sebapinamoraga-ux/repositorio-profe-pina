@@ -1,0 +1,27 @@
+---
+id: gancho
+title: 'Un termómetro marca 5 °C y baja 8 grados'
+phase: inicio
+momento: gancho
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={0}
+  max={10}
+  puntos={[5]}
+  rotulos={['5 °C']}
+  desde={5}
+  saltos={[-5]}
+  rotulosSaltos={['baja 5']}
+  pasosSaltos={[1]}
+  descripcion="Recta de 0 a 10. Desde 5 una flecha baja 5 lugares y llega a 0, el extremo izquierdo."
+/>
+
+<Paso n={2}>
+<PracticaGuiada titulo="Pregunta central">
+Faltan $3$ grados más y a la izquierda del $0$ no hay nada. ¿Qué marca el termómetro?
+</PracticaGuiada>
+</Paso>

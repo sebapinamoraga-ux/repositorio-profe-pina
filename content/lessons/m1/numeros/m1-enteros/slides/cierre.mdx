@@ -1,0 +1,27 @@
+---
+id: cierre
+title: 'Volvemos al termómetro'
+phase: cierre
+momento: cierre
+layout: escena
+steps: 2
+activities: []
+---
+
+<RectaEnteros
+  min={-5}
+  max={10}
+  puntos={[5]}
+  rotulos={['5 °C']}
+  desde={5}
+  saltos={[-8]}
+  rotulosSaltos={['baja 8']}
+  pasosSaltos={[1]}
+  descripcion="Recta de −5 a 10. Desde 5 una flecha baja 8 lugares y llega a −3."
+/>
+
+<Paso n={2}>
+<Comprobacion titulo="Marca −3 °C">
+Bajar $8$ desde $5$ deja en $-3$: $5+(-8)=-3$.
+</Comprobacion>
+</Paso>

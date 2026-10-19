@@ -7,7 +7,13 @@ import {
   type ReactNode,
 } from 'react';
 import { ArrowDown, ArrowUp, X } from 'lucide-react';
-import { phaseSchema } from '@aula/content-model';
+import {
+  MOMENT_NAMES,
+  PHASE_OF_MOMENT,
+  lessonFormat,
+  phaseSchema,
+  videoMomentSchema,
+} from '@aula/content-model';
 import { mascotGallery } from '../../app/gallery';
 import { TemplateSlide } from '../recursos/MascotGallery';
 import { useContent } from '../../content/ContentProvider';
@@ -28,6 +34,7 @@ import {
   deckSlides,
   hasPending,
   type DeckSlide,
+  lessonEntry,
   lessonMeta,
   pad2,
   PHASE_NAMES,
@@ -107,6 +114,7 @@ const LAYOUTS: [EditedSlide['layout'], string][] = [
   ['dos-columnas', 'Dos columnas'],
   ['resolucion', 'Resolución'],
   ['ejercicio', 'Ejercicio'],
+  ['escena', 'Escena de video'],
 ];
 const PRESENCE = { sutil: 'Sutil', pedagogica: 'Pedagógica', marca: 'Marca' } as const;
 
@@ -162,6 +170,7 @@ export function Editor({
   const { width, ref: rootRef } = useElementWidth();
   const layout = width >= 1100 ? 'wide' : width >= 700 ? 'mid' : 'narrow';
   const meta = lessonMeta(content, lessonId);
+  const video = lessonFormat(lessonEntry(content, lessonId)?.meta ?? {}) === 'video';
   const lesson = findLesson(content.bundle, lessonId);
   const pendingHere = hasPending(content, lessonId);
   const slides = useMemo(() => (lesson ? editableSlides(lesson) : null), [lesson]);
@@ -593,6 +602,27 @@ export function Editor({
             </select>
           </label>
         </div>
+        {video && (
+          <label className="field">
+            Momento del video
+            <select
+              value={slide.momento ?? ''}
+              onChange={(event) => {
+                const momento = videoMomentSchema.safeParse(event.target.value);
+                // El momento decide la fase, como exige content:check.
+                if (momento.success)
+                  update(index, { momento: momento.data, phase: PHASE_OF_MOMENT[momento.data] });
+              }}
+            >
+              {!slide.momento && <option value="">Sin momento</option>}
+              {videoMomentSchema.options.map((key) => (
+                <option key={key} value={key}>
+                  {MOMENT_NAMES[key]}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <div className="two-cols align-end">
           <div className="field">
             Pasos revelables

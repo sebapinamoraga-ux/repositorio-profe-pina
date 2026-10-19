@@ -202,6 +202,34 @@ it('exige los atributos de GraficoComparacion y RectaIntervalos', () => {
     ),
   ).toThrow('xMin');
 });
+it('exige los atributos de RectaEnteros y ExploradorResta', () => {
+  expect(() =>
+    validateMdxTree(componente('RectaEnteros', ['min', 'max']), sinPasos),
+  ).toThrow('descripcion');
+  expect(() =>
+    validateMdxTree(
+      componente('RectaEnteros', ['min', 'max', 'descripcion']),
+      sinPasos,
+    ),
+  ).not.toThrow();
+  expect(() =>
+    validateMdxTree(
+      componente('ExploradorResta', ['id', 'aInicial', 'bInicial', 'descripcion']),
+      sinPasos,
+    ),
+  ).toThrow('aEstatico');
+});
+it('exige los atributos de las figuras de naturales', () => {
+  expect(() =>
+    validateMdxTree(componente('BarrasDivision', ['longitudes', 'descripcion']), sinPasos),
+  ).toThrow('trozo');
+  expect(() =>
+    validateMdxTree(componente('LineasMultiplos', ['numeros', 'descripcion']), sinPasos),
+  ).toThrow('hasta');
+  expect(() =>
+    validateMdxTree(componente('GruposPuntos', ['total', 'grupo', 'descripcion']), sinPasos),
+  ).not.toThrow();
+});
 it('cuenta la señal como paso y valida su posición y texto', () => {
   const senal = (attrs: Record<string, string | { value: string }>) => ({
     type: 'root',

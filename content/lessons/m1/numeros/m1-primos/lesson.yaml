@@ -1,0 +1,52 @@
+id: m1-primos
+title: 'Los números que solo forman una fila: primos y descomposición'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Divisores y múltiplos de un natural.
+objectives:
+  - Distinguir números primos y compuestos y encontrar los primos hasta 30 con la criba.
+  - Descomponer un natural en factores primos y reconocer que la descomposición es única.
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: ¿Qué números de cuadrados solo se pueden ordenar en una fila?
+previos:
+  - clase: m1-divisores-multiplos
+    idea: Los divisores de n son los lados de los rectángulos de n cuadrados.
+  - base: Multiplicar y dividir naturales.
+tramos:
+  - label: 'Una sola fila'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Primos, compuestos y el 1'
+    from: recuerda-rectangulos
+    to: el-uno
+    minutes: 1.5
+  - label: 'La criba y un error'
+    from: criba
+    to: error-impares
+    minutes: 1.75
+  - label: 'Descomposición única'
+    from: arbol-60
+    to: pausa-84
+    minutes: 2.25
+  - label: 'Vuelta a las filas'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - recuerda-rectangulos.mdx
+  - primo-compuesto.mdx
+  - el-uno.mdx
+  - criba.mdx
+  - error-impares.mdx
+  - arbol-60.mdx
+  - una-sola-forma.mdx
+  - pausa-84.mdx
+  - cierre.mdx

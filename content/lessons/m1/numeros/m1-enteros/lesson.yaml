@@ -1,0 +1,49 @@
+id: m1-enteros
+title: '5 − 8 no tenía respuesta: los números enteros'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Números naturales y el cero en la recta numérica.
+objectives:
+  - Reconocer los números enteros y el opuesto de un entero en la recta.
+  - Ordenar enteros y distinguir el orden de la distancia al cero (valor absoluto).
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: Un termómetro marca 5 °C y la temperatura baja 8 grados. ¿Qué marca ahora?
+previos:
+  - base: Números naturales, el cero y la recta numérica.
+tramos:
+  - label: 'El termómetro y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Los enteros y el opuesto'
+    from: recta-sigue
+    to: opuestos
+    minutes: 1.75
+  - label: 'Orden y valor absoluto'
+    from: orden
+    to: orden-o-distancia
+    minutes: 2.5
+  - label: 'Pausa y error'
+    from: pausa
+    to: error-orden
+    minutes: 1.25
+  - label: 'Vuelta al termómetro'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - recta-sigue.mdx
+  - opuestos.mdx
+  - orden.mdx
+  - valor-absoluto.mdx
+  - orden-o-distancia.mdx
+  - pausa.mdx
+  - error-orden.mdx
+  - cierre.mdx

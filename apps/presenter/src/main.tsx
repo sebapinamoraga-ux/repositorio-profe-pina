@@ -7,6 +7,7 @@ import 'katex/dist/katex.min.css';
 // Se cargan todos al inicio (no con cada pantalla) para que el orden no dependa de la navegación.
 import './styles/tokens.css';
 import './styles/theme.css';
+import '@aula/interactives/figuras.css';
 import './styles/ui.css';
 import './styles/base.css';
 import './features/entrada/entrada.css';

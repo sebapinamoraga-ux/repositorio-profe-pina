@@ -1,0 +1,26 @@
+id: nat-ent-temperatura
+type: paes
+prompt: 'A las 6:00 la temperatura era −4 °C y a las 14:00 era 9 °C. ¿Cuántos grados subió?'
+answer: C · 13 °C
+solution: 'La variación es la final menos la inicial: 9 − (−4) = 9 + 4 = 13 °C. Comprobación: −4 + 13 = 9.'
+skills: [Resolver problemas]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '5 °C'
+    correct: false
+    explanation: 'Calcula 9 − 4 y olvida el signo de −4: desde −4 hasta 0 ya sube 4 grados.'
+  - id: B
+    text: '−13 °C'
+    correct: false
+    explanation: 'Resta al revés (−4 − 9): la temperatura subió, así que la variación es positiva.'
+  - id: C
+    text: '13 °C'
+    correct: true
+    explanation: '9 − (−4) = 13, y −4 + 13 = 9.'
+  - id: D
+    text: '9 °C'
+    correct: false
+    explanation: 'Es la temperatura final, no cuánto subió.'

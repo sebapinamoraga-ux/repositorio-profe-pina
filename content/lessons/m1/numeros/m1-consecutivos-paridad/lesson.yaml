@@ -1,0 +1,53 @@
+id: m1-consecutivos-paridad
+title: 'Tres seguidos siempre suman un múltiplo de 3: consecutivos y paridad'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - Sumar y multiplicar números naturales.
+  - Traducir frases como «el sucesor de n» a expresiones algebraicas.
+objectives:
+  - Escribir naturales consecutivos, pares e impares con expresiones algebraicas.
+  - Justificar propiedades de la suma de consecutivos con esas expresiones.
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: ¿La suma de tres naturales consecutivos es siempre un múltiplo de 3?
+previos:
+  - clase: m1-traducir-expresiones
+    idea: El sucesor de n es n + 1 y el doble de n es 2n.
+  - base: Sumar y multiplicar naturales.
+tramos:
+  - label: 'Tres seguidos y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Probar casos y recordar el sucesor'
+    from: mas-casos
+    to: recuerda-sucesor
+    minutes: 1.25
+  - label: 'La suma con letras: tres veces el del medio'
+    from: sumar-con-letras
+    to: el-del-medio
+    minutes: 2
+  - label: 'Pares, impares y una pausa'
+    from: pares-impares
+    to: pausa-cuatro
+    minutes: 2
+  - label: 'Error y vuelta a la pregunta'
+    from: error-n-2n
+    to: cierre
+    minutes: 1
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - mas-casos.mdx
+  - recuerda-sucesor.mdx
+  - sumar-con-letras.mdx
+  - el-del-medio.mdx
+  - pares-impares.mdx
+  - dos-consecutivos.mdx
+  - pausa-cuatro.mdx
+  - error-n-2n.mdx
+  - cierre.mdx

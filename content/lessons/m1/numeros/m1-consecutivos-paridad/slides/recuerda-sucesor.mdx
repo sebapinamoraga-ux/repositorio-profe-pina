@@ -1,0 +1,27 @@
+---
+id: recuerda-sucesor
+title: 'Recuerda: el sucesor de n'
+phase: activacion
+momento: recuerda
+layout: escena
+steps: 1
+activities: []
+---
+
+<Recuerda clase="m1-traducir-expresiones" titulo="Traducir expresiones algebraicas">
+<Propiedad titulo="Consecutivos">
+Tres naturales consecutivos: $n$, $n+1$ y $n+2$. Cada uno es el sucesor del anterior.
+</Propiedad>
+
+<RectaEnteros
+  min={0}
+  max={10}
+  puntos={[4]}
+  rotulos={['n']}
+  desde={4}
+  saltos={[1, 1]}
+  rotulosSaltos={['+1', '+1']}
+  pasosSaltos={[1, 1]}
+  descripcion="Recta de 0 a 10. Desde n = 4 dos saltos de +1 llegan a 5 y a 6: tres consecutivos."
+/>
+</Recuerda>

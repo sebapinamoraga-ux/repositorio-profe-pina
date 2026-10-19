@@ -1,0 +1,32 @@
+---
+id: menos-que-se-pierde
+title: 'El menos que se pierde: −2² no es 4'
+phase: desarrollo
+momento: error
+layout: escena
+steps: 3
+activities: []
+---
+
+<ErrorTipico titulo="Error: el menos que se pierde">
+Leer $-2^2$ como $4$.
+</ErrorTipico>
+
+<Paneles>
+<Tarjeta titulo="−2²: el exponente afecta solo al 2">
+<Paso n={1}>
+$-2^2=-(2\cdot 2)=-4$
+</Paso>
+</Tarjeta>
+<Tarjeta titulo="(−2)²: el paréntesis incluye el signo">
+<Paso n={2}>
+$(-2)^2=(-2)\cdot(-2)=4$
+</Paso>
+</Tarjeta>
+</Paneles>
+
+<Paso n={3}>
+<Comprobacion titulo="No son iguales">
+$-2^2=-4$ y $(-2)^2=4$.
+</Comprobacion>
+</Paso>

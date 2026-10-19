@@ -1,0 +1,26 @@
+id: nat-ent-orden
+type: paes
+prompt: '¿Cuál es el orden de menor a mayor de −7, 3, −2 y 0?'
+answer: D · −7, −2, 0, 3
+solution: 'En la recta, más a la izquierda es menor: −7 < −2 < 0 < 3.'
+skills: [Representar]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '−2, −7, 0, 3'
+    correct: false
+    explanation: 'Ordena los negativos por su distancia al 0: −7 está más a la izquierda, así que es menor que −2.'
+  - id: B
+    text: '0, −2, 3, −7'
+    correct: false
+    explanation: 'Ordena por distancia al cero (valor absoluto), no por posición en la recta.'
+  - id: C
+    text: '3, 0, −2, −7'
+    correct: false
+    explanation: 'Es el orden de mayor a menor.'
+  - id: D
+    text: '−7, −2, 0, 3'
+    correct: true
+    explanation: 'De izquierda a derecha en la recta: −7 < −2 < 0 < 3.'

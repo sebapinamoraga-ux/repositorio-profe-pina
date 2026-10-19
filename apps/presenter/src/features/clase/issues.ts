@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Lesson } from '@aula/content-model';
+import { lessonFormat, type Lesson, type Planning } from '@aula/content-model';
 import { mascotGallery } from '../../app/gallery';
 import { useContent } from '../../content/ContentProvider';
 import { hasPending, lessonEntry, toMdx } from '../../store/deck';
 import type { EditedSlide } from '../../store/schema';
 
-/** Revisión de una clase con las reglas de content:check, más los avisos del reparto de tiempo. */
+/**
+ * Revisión de una clase con las reglas de content:check, más los avisos del reparto de tiempo
+ * y, en una clase de video, los de video-rules.
+ */
 export interface LessonIssues {
   count: number;
   /** Mensaje de error por lámina (null si está bien), en el orden de la clase. */
@@ -47,6 +50,7 @@ export async function checkSlides(
   lesson: Lesson | null,
   activityIds: readonly string[],
   lessonErrors: readonly string[] = [],
+  plannings: readonly { id: string; planning: Planning }[] = [],
 ): Promise<LessonIssues> {
   const { verifyLessonPlan } = await import('@aula/content-model/verify-plan');
   const seen = new Set<string>();
@@ -63,13 +67,22 @@ export async function checkSlides(
   const plan = lesson
     ? verifyLessonPlan({ ...lesson, slides: slides.map((s) => `${s.id}.mdx`) })
     : [];
+  const video = lesson
+    ? (await import('@aula/content-model/video-rules'))
+        .videoLessonWarnings(
+          lesson,
+          slides.map((slide) => ({ slide, text: toMdx(slide) })),
+          plannings,
+        )
+        .map(({ slide, message }) => (slide ? `${slide}: ${message}` : message))
+    : [];
   return {
     count: slides.length,
     perSlide,
     bad,
     errors: bad.length + lessonErrors.length,
     lessonErrors: [...lessonErrors],
-    warnings: plan,
+    warnings: [...plan, ...video],
   };
 }
 
@@ -97,9 +110,13 @@ export function useLessonIssues(
   const entry = lessonEntry(content, lessonId);
   const pending = hasPending(content, lessonId);
   const source = entry?.[list] ?? [];
+  // Una clase de video se revisa siempre: sus avisos no bloquean y content:check no los guarda.
+  const video = list === 'slides' && entry !== undefined && lessonFormat(entry.meta) === 'video';
   const slides =
     slidesOverride ??
-    (pending && entry ? source.map(({ slide, body }) => ({ ...slide, body })) : undefined);
+    ((pending || video) && entry
+      ? source.map(({ slide, body }) => ({ ...slide, body }))
+      : undefined);
   const lesson = list === 'slides' ? entry : undefined;
   const lessonErrors = lesson
     ? content.bundle.problems
@@ -107,8 +124,9 @@ export function useLessonIssues(
         .map((problem) => problem.message)
     : [];
   const activityIds = Object.keys(content.bundle.activities).sort();
+  const plannings = content.bundle.plannings;
   const key = slides
-    ? JSON.stringify([slides, lesson?.meta ?? null, lessonErrors, activityIds])
+    ? JSON.stringify([slides, lesson?.meta ?? null, lessonErrors, activityIds, plannings])
     : null;
   const [result, setResult] = useState<{
     key: string;
@@ -116,9 +134,9 @@ export function useLessonIssues(
     issues: LessonIssues;
   } | null>(null);
   // `key` resume láminas y plan; el efecto toma los valores vigentes desde la ref.
-  const input = useRef({ slides, lesson, lessonId, lessonErrors, activityIds });
+  const input = useRef({ slides, lesson, lessonId, lessonErrors, activityIds, plannings });
   useEffect(() => {
-    input.current = { slides, lesson, lessonId, lessonErrors, activityIds };
+    input.current = { slides, lesson, lessonId, lessonErrors, activityIds, plannings };
   });
   useEffect(() => {
     const current = input.current;
@@ -131,6 +149,7 @@ export function useLessonIssues(
         current.lesson?.meta ?? null,
         current.activityIds,
         current.lessonErrors,
+        current.plannings,
       ).then((issues) => {
         if (active) setResult({ key, lessonId: current.lessonId, issues });
       });

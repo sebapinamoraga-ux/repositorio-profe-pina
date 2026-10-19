@@ -1,0 +1,27 @@
+---
+id: recuerda-primos
+title: 'Recuerda: la descomposición en primos'
+phase: activacion
+momento: recuerda
+layout: escena
+steps: 2
+activities: []
+---
+
+<Recuerda clase="m1-primos" titulo="Números primos">
+<Columnas>
+<div>
+<Propiedad titulo="Descomposición única">
+Todo natural mayor que $1$ se escribe como producto de primos de una sola forma.
+</Propiedad>
+</div>
+<div>
+<ArbolFactores
+  n={72}
+  pasoArbol={1}
+  pasoEscritura={2}
+  descripcion="Árbol de factores de 72: salen el 2, el 2, el 2, el 3 y queda el 3. Abajo, 72 = 2³ · 3²."
+/>
+</div>
+</Columnas>
+</Recuerda>

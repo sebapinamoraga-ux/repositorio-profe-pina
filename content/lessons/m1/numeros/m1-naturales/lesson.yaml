@@ -1,0 +1,74 @@
+id: m1-naturales
+title: 'Números naturales: divisibilidad, primos, MCM y mcd'
+subject: m1
+axis: Números
+duration: 16
+prerequisites:
+  - Sumar, restar, multiplicar y dividir números naturales.
+objectives:
+  - Reconocer los conjuntos de los números naturales y cardinales y el valor posicional del sistema decimal.
+  - Traducir expresiones usuales (sucesor, antecesor, doble, consecutivos, excede en) al lenguaje algebraico.
+  - Aplicar paridad, algoritmo de la división, divisores, múltiplos y reglas de divisibilidad.
+  - Descomponer en factores primos y calcular el MCM y el mcd en contextos aplicados.
+  - Respetar la prioridad de las operaciones y explicar con la clausura por qué hacen falta los enteros.
+skills: [Representar, Argumentar, Resolver problemas]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+tramos:
+  - label: 'Sistema decimal, naturales y cardinales'
+    from: apertura
+    to: naturales-cardinales
+    minutes: 2
+  - label: 'Sucesor, antecesor y expresiones usuales'
+    from: sucesor-antecesor
+    to: expresiones-usuales
+    minutes: 2
+  - label: 'Pares, impares y algoritmo de la división'
+    from: pares-impares
+    to: algoritmo-division
+    minutes: 2
+  - label: 'Divisores, múltiplos y reglas de divisibilidad'
+    from: divisores-multiplos
+    to: reglas-divisibilidad
+    minutes: 2
+  - label: 'Primos, compuestos y descomposición única'
+    from: primos-compuestos
+    to: descomposicion-prima
+    minutes: 2
+  - label: 'MCM y mcd: definición, cálculo y contextos'
+    from: mcm-mcd
+    to: pausa-mcm
+    minutes: 3.5
+  - label: 'Prioridad de las operaciones'
+    from: prioridad-operaciones
+    to: prioridad-ejemplo
+    minutes: 1.5
+  - label: 'Clausura: ¿por qué crear más conjuntos?'
+    from: clausura
+    to: cierre
+    minutes: 1
+slides:
+  - apertura.mdx
+  - sistema-decimal.mdx
+  - naturales-cardinales.mdx
+  - sucesor-antecesor.mdx
+  - expresiones-usuales.mdx
+  - pares-impares.mdx
+  - paridad-propiedades.mdx
+  - algoritmo-division.mdx
+  - divisores-multiplos.mdx
+  - reglas-divisibilidad.mdx
+  - primos-compuestos.mdx
+  - criba-primos.mdx
+  - descomposicion-prima.mdx
+  - mcm-mcd.mdx
+  - mcm-mcd-primos.mdx
+  - mcm-mcd-contexto.mdx
+  - mcd-contexto.mdx
+  - mcm-o-mcd.mdx
+  - pausa-mcm.mdx
+  - prioridad-operaciones.mdx
+  - prioridad-contexto.mdx
+  - prioridad-ejemplo.mdx
+  - clausura.mdx
+  - cierre.mdx

@@ -1,0 +1,26 @@
+id: nat-ent-alarmas
+type: paes
+prompt: 'Dos alarmas suenan juntas a las 10:00. Una suena cada 15 minutos y la otra cada 20 minutos. ¿A qué hora vuelven a sonar juntas?'
+answer: A · 11:00
+solution: 'Coincidir pide el MCM: 15 = 3 · 5 y 20 = 2² · 5, así que MCM(15, 20) = 2² · 3 · 5 = 60 minutos. Vuelven a sonar juntas a las 11:00.'
+skills: [Resolver problemas, Modelar]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '11:00'
+    correct: true
+    explanation: 'MCM(15, 20) = 60 minutos: 60 = 15 · 4 = 20 · 3.'
+  - id: B
+    text: '10:05'
+    correct: false
+    explanation: 'Usa el mcd, 5: a las 10:05 no suena ninguna de las dos.'
+  - id: C
+    text: '10:35'
+    correct: false
+    explanation: 'Suma 15 + 20 = 35, pero 35 no es múltiplo de 15 ni de 20.'
+  - id: D
+    text: '15:00'
+    correct: false
+    explanation: 'Multiplica 15 · 20 = 300 minutos: es un múltiplo común, pero no el menor.'

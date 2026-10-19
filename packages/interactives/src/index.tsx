@@ -10,6 +10,17 @@ import {
 export { GraficoFuncion } from './GraficoFuncion';
 export { GraficoComparacion } from './GraficoComparacion';
 export { RectaIntervalos } from './RectaIntervalos';
+export { RectaEnteros, ExploradorResta } from './RectaEnteros';
+export {
+  ArbolFactores,
+  BarrasDivision,
+  CribaPrimos,
+  GruposPuntos,
+  LineasMultiplos,
+  RectangulosDivisores,
+  ValorPosicional,
+} from './FigurasNaturales';
+export { BarraFraccion } from './BarraFraccion';
 export { DiagramaSagital } from './DiagramaSagital';
 export { MaquinaFuncion } from './MaquinaFuncion';
 export { ExploradorCuadratica } from './ExploradorCuadratica';

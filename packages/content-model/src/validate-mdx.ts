@@ -53,12 +53,23 @@ const components = new Set([
   'Semaforo',
   'Formula',
   'PreguntaPAES',
+  'Recuerda',
   'GraficoSistema',
   'GraficoDosCondiciones',
   'GraficoRectas',
   'GraficoFuncion',
   'GraficoComparacion',
   'RectaIntervalos',
+  'RectaEnteros',
+  'ExploradorResta',
+  'ArbolFactores',
+  'BarraFraccion',
+  'BarrasDivision',
+  'CribaPrimos',
+  'GruposPuntos',
+  'LineasMultiplos',
+  'RectangulosDivisores',
+  'ValorPosicional',
   'DiagramaSagital',
   'MaquinaFuncion',
   'ExploradorCuadratica',
@@ -66,9 +77,15 @@ const components = new Set([
   'div',
   'span',
 ]);
-/** Atributo con el paso en que aparece cada componente que se revela. */
+/**
+ * Atributo con el paso en que aparece cada componente que se revela. Con `list`, el atributo
+ * es una lista con un paso por elemento, del mismo largo que el atributo `of`.
+ */
 const STEP_ATTRIBUTES: Partial<
-  Record<string, readonly { name: string; required: boolean }[]>
+  Record<
+    string,
+    readonly { name: string; required: boolean; list?: { of: string } }[]
+  >
 > = {
   Paso: [{ name: 'n', required: true }],
   PreguntaPAES: [{ name: 'paso', required: true }],
@@ -80,6 +97,32 @@ const STEP_ATTRIBUTES: Partial<
     { name: 'pasoCorteY', required: false },
     { name: 'pasoCurva', required: false },
     { name: 'pasoReferencia', required: false },
+  ],
+  LineasMultiplos: [
+    { name: 'pasosNumeros', required: false, list: { of: 'numeros' } },
+    { name: 'pasoComunes', required: false },
+  ],
+  ArbolFactores: [
+    { name: 'pasoArbol', required: false },
+    { name: 'pasoEscritura', required: false },
+  ],
+  BarrasDivision: [
+    { name: 'pasosIntentos', required: false, list: { of: 'intentos' } },
+    { name: 'pasoTrozo', required: false },
+  ],
+  CribaPrimos: [
+    { name: 'pasosCriba', required: false, list: { of: 'criba' } },
+    { name: 'pasoPrimos', required: false },
+  ],
+  RectaEnteros: [
+    { name: 'pasosSaltos', required: false, list: { of: 'saltos' } },
+    { name: 'pasosDistancias', required: false, list: { of: 'distancias' } },
+    { name: 'pasosOpuestos', required: false, list: { of: 'opuestos' } },
+  ],
+  BarraFraccion: [
+    { name: 'pasoTomadas', required: false },
+    { name: 'pasoSubdividir', required: false },
+    { name: 'pasoRecta', required: false },
   ],
 };
 export function validateMdxTree(
@@ -142,6 +185,29 @@ export function validateMdxTree(
           throw new Error('Asociacion requiere un tono literal de 1..4');
       }
       for (const stepAttribute of STEP_ATTRIBUTES[node.name] ?? []) {
+        if (stepAttribute.list) {
+          const list = attributes.find((a) => a.name === stepAttribute.name);
+          if (!list) continue;
+          const pasos = parseLiteral(list.value);
+          const of = parseLiteral(
+            attributes.find((a) => a.name === stepAttribute.list?.of)?.value,
+          );
+          if (
+            !Array.isArray(pasos) ||
+            !Array.isArray(of) ||
+            pasos.length !== of.length
+          )
+            throw new Error(
+              `${node.name}: ${stepAttribute.name} lleva un paso por cada elemento de ${stepAttribute.list.of}.`,
+            );
+          for (const paso of pasos) {
+            const n = Number(paso);
+            if (!Number.isInteger(n) || n < 1 || n > slide.steps)
+              throw new Error(`Paso ${String(paso)} fuera de 1..${slide.steps}`);
+            steps.add(n);
+          }
+          continue;
+        }
         const raw = literalAttribute(attributes, stepAttribute.name);
         if (raw === undefined && !stepAttribute.required) continue;
         // Una pregunta sin respuesta en la lámina no ocupa pasos.
@@ -199,6 +265,23 @@ export function validateMdxTree(
         )
       )
         throw new Error('Semaforo requiere rojo, amarillo y verde literales');
+      if (node.name === 'Recuerda') {
+        const clase = literalAttribute(attributes, 'clase');
+        if (!clase || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(clase))
+          throw new Error(
+            'Recuerda requiere el identificador literal de la clase recordada en `clase`.',
+          );
+        if (!literalAttribute(attributes, 'titulo'))
+          throw new Error(
+            'Recuerda requiere un `titulo` literal: el nombre del video recordado.',
+          );
+      }
+      if (
+        node.name === 'BarrasDivision' &&
+        attributes.some((a) => a.name === 'intentos') &&
+        literalAttribute(attributes, 'pasoTrozo') === undefined
+      )
+        throw new Error('BarrasDivision con intentos requiere pasoTrozo.');
       if (node.name === 'TablaLectura') {
         const headers = literalAttribute(attributes, 'encabezados') ?? '';
         if (headers.split('|').filter((h) => h.trim()).length !== 3)

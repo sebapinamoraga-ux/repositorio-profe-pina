@@ -1,0 +1,23 @@
+---
+id: recuerda-opuesto
+title: 'Recuerda: el opuesto del opuesto'
+phase: activacion
+momento: recuerda
+layout: escena
+steps: 1
+activities: []
+---
+
+<Recuerda clase="m1-enteros" titulo="Números enteros">
+<Propiedad titulo="Opuesto del opuesto">
+El opuesto de $-2$ es $2$: $-(-2)=2$.
+</Propiedad>
+
+<RectaEnteros
+  min={-5}
+  max={5}
+  opuestos={[2]}
+  pasosOpuestos={[1]}
+  descripcion="Recta de −5 a 5. Un arco une −2 con su opuesto, 2."
+/>
+</Recuerda>

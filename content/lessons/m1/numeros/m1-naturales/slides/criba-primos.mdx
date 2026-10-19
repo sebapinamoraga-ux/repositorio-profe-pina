@@ -1,0 +1,25 @@
+---
+id: criba-primos
+title: 'Los primos hasta 30'
+phase: desarrollo
+layout: concepto
+steps: 2
+activities: []
+---
+
+<CribaPrimos
+  max={30}
+  marcar={[9, 15, 21, 25, 27]}
+  descripcion="Tabla del 1 al 30 con los primos destacados en azul: 2, 3, 5, 7, 11, 13, 17, 19, 23 y 29. Los impares compuestos 9, 15, 21, 25 y 27 tienen borde ocre."
+/>
+
+<Paso n={1}>
+<ErrorTipico titulo="Error: «todo impar es primo»">
+$9=3\cdot 3$, $15=3\cdot 5$, $21=3\cdot 7$, $25=5\cdot 5$ y $27=3\cdot 9$ son impares y compuestos.
+</ErrorTipico>
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="El único primo par">
+El $2$ es primo; todo otro par tiene al $2$ como divisor, así que tiene más de dos divisores.
+</Comprobacion>
+</Paso>

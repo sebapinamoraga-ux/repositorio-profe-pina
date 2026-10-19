@@ -1,0 +1,38 @@
+---
+id: el-resto-decide
+title: 'El resto decide: pares e impares'
+phase: desarrollo
+momento: climax
+layout: escena
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<GruposPuntos
+  total={14}
+  grupo={2}
+  descripcion="Catorce puntos en parejas: siete parejas y no sobra ninguno."
+/>
+</div>
+<div>
+<GruposPuntos
+  total={15}
+  grupo={2}
+  descripcion="Quince puntos en parejas: siete parejas y sobra un punto ocre."
+/>
+</div>
+</Columnas>
+
+<Paso n={1}>
+$$
+14=2\cdot 7+0\qquad 15=2\cdot 7+1
+$$
+</Paso>
+
+<Paso n={2}>
+<Comprobacion titulo="Resto 0 o resto 1">
+Resto $0$: par. Resto $1$: impar. Con resto $0$, la división es **exacta**.
+</Comprobacion>
+</Paso>

@@ -1,0 +1,26 @@
+id: nat-ent-cuerdas
+type: paes
+prompt: 'Dos cuerdas de 48 cm y 72 cm se cortan en trozos iguales, lo más largos posible, sin que sobre nada. ¿Cuántos trozos salen en total?'
+answer: B · 5
+solution: 'Repartir sin que sobre pide el mcd: 48 = 2⁴ · 3 y 72 = 2³ · 3², así que mcd(48, 72) = 2³ · 3 = 24 cm. Salen 48 : 24 = 2 y 72 : 24 = 3 trozos: 5 en total.'
+skills: [Resolver problemas, Modelar]
+source:
+  kind: original
+  reference: Elaboración propia para el canal (práctica de naturales y enteros).
+options:
+  - id: A
+    text: '24'
+    correct: false
+    explanation: '24 cm es el largo de cada trozo, no la cantidad de trozos.'
+  - id: B
+    text: '5'
+    correct: true
+    explanation: 'Trozos de 24 cm: 2 de la primera cuerda y 3 de la segunda.'
+  - id: C
+    text: '10'
+    correct: false
+    explanation: 'Corta en trozos de 12 cm, que no sobran pero no son los más largos posibles.'
+  - id: D
+    text: '20'
+    correct: false
+    explanation: 'Corta en trozos de 6 cm: no sobra nada, pero 6 no es el mayor divisor común.'

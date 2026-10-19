@@ -91,20 +91,48 @@ export const mascotGallerySchema = z
       ids.add(template.id);
     });
   });
+/**
+ * Momento del guion de una lámina de video (docs/plan-diapositivas-video.md §1). Los nombres
+ * coinciden con los momentos del motor de video: prediccion, pausa y recuerda.
+ */
+export const videoMomentSchema = z.enum([
+  'gancho',
+  'caso',
+  'simplificada',
+  'desarrollo',
+  'recuerda',
+  'climax',
+  'prediccion',
+  'pausa',
+  'error',
+  'utilidad',
+  'cierre',
+]);
 export const slideSchema = z.object({
   id,
   title: z.string().min(1),
   phase: phaseSchema,
+  /** Solo en clases de video. */
+  momento: videoMomentSchema.optional(),
   layout: z.enum([
     'portada',
     'concepto',
     'dos-columnas',
     'resolucion',
     'ejercicio',
+    /** Lámina de video: el título no ocupa el lienzo y queda libre la franja de subtítulos. */
+    'escena',
   ]),
   steps: z.number().int().min(0).max(12),
   activities: z.array(id).default([]),
 });
+/** Una clase de aula se proyecta; una de video es el guion gráfico de un video del canal. */
+export const lessonFormatSchema = z.enum(['aula', 'video']);
+/** Prerrequisito de un video: otra clase que se recuerda en pantalla, o una base supuesta. */
+export const lessonPrerequisiteSchema = z.union([
+  z.object({ clase: id, idea: z.string().min(1) }).strict(),
+  z.object({ base: z.string().min(1) }).strict(),
+]);
 export const lessonSchema = z.object({
   id,
   title: z.string().min(1),
@@ -116,6 +144,12 @@ export const lessonSchema = z.object({
   skills: z.array(z.string()).min(1),
   curriculum: z.array(id).min(1),
   status: z.enum(['draft', 'published']),
+  /** Sin el campo, la clase es de aula. */
+  formato: lessonFormatSchema.optional(),
+  /** Video: la pregunta central en una frase. */
+  gancho: z.string().min(1).optional(),
+  /** Video: lo que se recuerda de otras clases y la base que se supone. */
+  previos: z.array(lessonPrerequisiteSchema).optional(),
   slides: z.array(z.string().regex(/^[a-z0-9-]+\.mdx$/)).min(1),
   /**
    * Láminas solo para el repaso del estudiante: siguen a las de la clase en el celular, pero
@@ -276,6 +310,45 @@ export const planningSchema = z
   });
 export type Lesson = z.infer<typeof lessonSchema>;
 export type Slide = z.infer<typeof slideSchema>;
+export type Phase = z.infer<typeof phaseSchema>;
+export type VideoMoment = z.infer<typeof videoMomentSchema>;
+export type LessonFormat = z.infer<typeof lessonFormatSchema>;
+export type LessonPrerequisite = z.infer<typeof lessonPrerequisiteSchema>;
+
+/** Fase de la lámina que corresponde a cada momento del guion de video. */
+export const PHASE_OF_MOMENT: Record<VideoMoment, Phase> = {
+  gancho: 'inicio',
+  caso: 'inicio',
+  recuerda: 'activacion',
+  simplificada: 'desarrollo',
+  desarrollo: 'desarrollo',
+  climax: 'desarrollo',
+  error: 'desarrollo',
+  prediccion: 'practica',
+  pausa: 'practica',
+  utilidad: 'practica',
+  cierre: 'cierre',
+};
+
+/** Nombre de cada momento en la app. */
+export const MOMENT_NAMES: Record<VideoMoment, string> = {
+  gancho: 'Gancho',
+  caso: 'Caso concreto',
+  simplificada: 'Versión simplificada',
+  desarrollo: 'Desarrollo',
+  recuerda: 'Recuerda',
+  climax: 'Clímax',
+  prediccion: 'Predicción',
+  pausa: 'Pausa',
+  error: 'Error con nombre',
+  utilidad: 'Utilidad PAES',
+  cierre: 'Cierre',
+};
+
+/** Formato de una clase; sin el campo, es de aula. */
+export function lessonFormat(lesson: Pick<Lesson, 'formato'>): LessonFormat {
+  return lesson.formato ?? 'aula';
+}
 export type Activity = z.infer<typeof activitySchema>;
 export type MascotPresence = z.infer<typeof mascotPresenceSchema>;
 export type MascotPlacement = z.infer<typeof mascotPlacementSchema>;

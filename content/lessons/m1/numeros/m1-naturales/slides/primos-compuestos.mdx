@@ -1,0 +1,26 @@
+---
+id: primos-compuestos
+title: 'Números primos y compuestos'
+phase: desarrollo
+layout: concepto
+steps: 2
+activities: []
+---
+
+<Definicion titulo="Primo y compuesto">
+Un natural es **primo** si tiene exactamente **dos** divisores: el $1$ y él mismo. Es **compuesto** si tiene más de dos. El $0$ y el $1$ no son primos ni compuestos.
+</Definicion>
+
+Con $12$ baldosas cuadradas se arman tres rectángulos distintos. ¿Y con $13$?
+
+<Paso n={1}>
+<RectangulosDivisores
+  n={13}
+  descripcion="Con 13 cuadrados solo se forma un rectángulo: 1 × 13."
+/>
+</Paso>
+<Paso n={2}>
+<Comprobacion titulo="Respuesta">
+Solo $1\times 13$: sus únicos divisores son $1$ y $13$, así que $13$ es **primo**. El $12$, con seis divisores, es **compuesto**.
+</Comprobacion>
+</Paso>

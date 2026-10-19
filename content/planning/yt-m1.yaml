@@ -6,10 +6,20 @@ units:
   - id: m1-numeros
     title: Números
     lessons:
+      - id: m1-naturales
+      - id: m1-consecutivos-paridad
+      - id: m1-division-resto
+      - id: m1-divisores-multiplos
+      - id: m1-primos
+      - id: m1-mcm-mcd
       - id: m1-enteros
         title: 'Números enteros: operaciones y orden'
         objective: Operar y ordenar números enteros con seguridad en los signos.
         date: 2026-11-10
+      - id: m1-enteros-suma-resta
+      - id: m1-enteros-signos
+      - id: m1-practica-naturales-enteros
+      - id: m1-fracciones
       - id: m1-racionales
         title: 'Números racionales: operar y comparar'
         objective: Operar y comparar fracciones y decimales.

@@ -228,6 +228,40 @@ a {
 .block-error .block-label {
   color: var(--yellow);
 }
+.recuerda {
+  padding: 16px 24px 4px;
+  border: 2px solid var(--line-2);
+  border-radius: 14px;
+  margin: 16px 0;
+}
+.recuerda-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--muted);
+}
+.recuerda-source {
+  text-transform: none;
+  letter-spacing: 0;
+}
+.recuerda .block {
+  margin: 12px 0;
+}
+/* Lámina de video: el título no ocupa el lienzo y la franja inferior queda para los subtítulos. */
+.layout-escena .slide-body {
+  padding-bottom: 96px;
+}
+.layout-escena h1 {
+  font-size: 22px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -621,21 +655,6 @@ a {
 .comparison-band-2 {
   fill: var(--yellow);
   opacity: 0.5;
-}
-.number-line svg {
-  width: 100%;
-  height: auto;
-  max-height: 175px;
-}
-.number-line-axis {
-  stroke: var(--muted);
-  stroke-width: 3;
-}
-.number-line-label {
-  fill: var(--ink);
-}
-.number-line-label-strong {
-  font-weight: 750;
 }
 .interval-stroke-1 {
   stroke: var(--blue);

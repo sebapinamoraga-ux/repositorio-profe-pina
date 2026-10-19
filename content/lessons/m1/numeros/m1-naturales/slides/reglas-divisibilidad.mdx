@@ -1,0 +1,38 @@
+---
+id: reglas-divisibilidad
+title: 'Reglas de divisibilidad'
+phase: desarrollo
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas amplia="izquierda">
+<Propiedad titulo="Un número es divisible por...">
+$$
+\begin{array}{c|l}
+2 & \text{última cifra par}\\
+3 & \text{suma de cifras múltiplo de 3}\\
+4 & \text{dos últimas cifras múltiplo de 4, o 00}\\
+5 & \text{termina en 0 o en 5}\\
+6 & \text{divisible por 2 y por 3}\\
+9 & \text{suma de cifras múltiplo de 9}\\
+10 & \text{termina en 0}
+\end{array}
+$$
+</Propiedad>
+<div>
+<EjemploResuelto>
+¿Se reparten $4.302$ láminas en $9$ sobres iguales sin que sobre ninguna? ¿Y en $4$?
+
+<Paso n={1}>
+$4+3+0+2=9$: en $9$ sobres, **sí**. $02$ no es múltiplo de $4$: en $4$, **no**.
+</Paso>
+</EjemploResuelto>
+<Paso n={2}>
+<Comprobacion titulo="Comprobación">
+$9\cdot 478=4.302$ y $4.302=4\cdot 1.075+2$.
+</Comprobacion>
+</Paso>
+</div>
+</Columnas>

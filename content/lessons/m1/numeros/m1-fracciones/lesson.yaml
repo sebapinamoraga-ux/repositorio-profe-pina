@@ -1,0 +1,53 @@
+id: m1-fracciones
+title: '3 pizzas para 4 personas: la fracción como reparto'
+subject: m1
+axis: Números
+duration: 7
+prerequisites:
+  - División con resto y máximo común divisor.
+objectives:
+  - Interpretar una fracción como reparto y como punto de la recta numérica.
+  - Reconocer y obtener fracciones equivalentes amplificando y simplificando.
+skills: [Representar, Argumentar]
+curriculum: [m1-2027-enteros-racionales]
+status: draft
+formato: video
+gancho: Tres pizzas iguales se reparten entre 4 personas. ¿Cuánto le toca a cada una?
+previos:
+  - clase: m1-division-resto
+    idea: 3 dividido por 4 no es exacto en los naturales.
+  - clase: m1-mcm-mcd
+    idea: El mcd es el mayor divisor común.
+tramos:
+  - label: 'Tres pizzas y una pregunta'
+    from: gancho
+    to: prediccion
+    minutes: 0.75
+  - label: 'Repartir y nombrar'
+    from: recuerda-division
+    to: fraccion
+    minutes: 1.75
+  - label: 'La fracción en la recta y sus nombres'
+    from: punto-recta
+    to: simplificar
+    minutes: 2.25
+  - label: 'Pausa y error'
+    from: pausa
+    to: error-sumar
+    minutes: 1.5
+  - label: 'Vuelta a las pizzas'
+    from: cierre
+    to: cierre
+    minutes: 0.75
+slides:
+  - gancho.mdx
+  - prediccion.mdx
+  - recuerda-division.mdx
+  - cortar.mdx
+  - fraccion.mdx
+  - punto-recta.mdx
+  - equivalentes.mdx
+  - simplificar.mdx
+  - pausa.mdx
+  - error-sumar.mdx
+  - cierre.mdx

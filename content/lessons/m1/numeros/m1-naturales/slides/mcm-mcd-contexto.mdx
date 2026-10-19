@@ -1,0 +1,23 @@
+---
+id: mcm-mcd-contexto
+title: 'Coincidir: los buses y el MCM'
+phase: practica
+layout: concepto
+steps: 1
+activities: []
+---
+
+Tres buses salen juntos a las 8:00: uno cada $12$ min, otro cada $18$ y otro cada $24$. ¿A qué hora vuelven a salir juntos?
+
+<LineasMultiplos
+  numeros={[12, 18, 24]}
+  hasta={72}
+  rotulos={['cada 12 min', 'cada 18 min', 'cada 24 min']}
+  descripcion="Tres rectas de 0 a 72 minutos con las salidas de cada bus: múltiplos de 12, de 18 y de 24. Una guía azul une el 0 y el 72, donde coinciden los tres."
+/>
+
+<Paso n={1}>
+<Comprobacion titulo="El menor múltiplo común">
+$\text{MCM}(12,18,24)=72$ min $=1$ h $12$ min: salen juntos a las **9:12**. Comprobación: $72=12\cdot 6=18\cdot 4=24\cdot 3$.
+</Comprobacion>
+</Paso>
