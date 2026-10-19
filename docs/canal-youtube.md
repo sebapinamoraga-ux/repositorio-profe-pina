@@ -18,7 +18,7 @@ La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este cicl
 
 | Archivo | Título público | Unidades | Clases | Día de publicación |
 |---|---|---|---|---|
-| `yt-m1.yaml` | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 57 | Martes y viernes (piloto: cada dos semanas) |
+| `yt-m1.yaml` | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 58 | Martes y viernes, en el orden de los ejes (piloto: cada dos semanas) |
 | `yt-fisica.yaml` | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | 35 | Jueves |
 | `yt-m2.yaml` | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | 25 | Sábados, ciclo 2028 |
 | `yt-ia.yaml` | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | 12 | Cada 2 o 3 semanas |
@@ -33,10 +33,10 @@ La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este cicl
 
 | Período | Qué busca el estudiante | Qué hay en las bibliotecas |
 |---|---|---|
-| **Nov 2026–Feb 2027 (piloto)** | Última semana, resultados, postulación | M1: Expresiones algebraicas cada dos semanas y la mini serie de productos notables seguida en febrero. IA: tres videos. Canal: la última semana, puntajes, postulación, puente a la U y el plan para egresados |
-| **Mar–Abr** | Empezar desde cero | M1: Números y Proporcionalidad. Física: Ondas. Canal: cómo es la PAES, por dónde empezar y cálculo sin calculadora |
-| **May–Jun** | PAES de invierno | M1: ecuaciones, sistemas y funciones. Física: Mecánica. Canal: gestión del tiempo, ensayo en vivo de invierno e inscripción |
-| **Jul–Ago** | Vacaciones de invierno; inscripción | M1: Geometría y Probabilidad y estadística (M1 termina el 13 de agosto). Física: universo y Electricidad. Canal: descartar alternativas y suficiencia de datos |
+| **Nov 2026–Feb 2027 (piloto)** | Última semana, resultados, postulación | M1: Números en orden (enteros, racionales y porcentaje cada dos semanas; potencias, raíces y exponente racional seguidos en febrero). IA: tres videos. Canal: la última semana, puntajes, postulación, puente a la U y el plan para egresados |
+| **Mar–Abr** | Empezar desde cero | M1: práctica de potencias y raíces, Expresiones algebraicas (con la mini serie de productos notables), Proporcionalidad y Ecuaciones e inecuaciones. Física: Ondas. Canal: cómo es la PAES, por dónde empezar y cálculo sin calculadora |
+| **May–Jun** | PAES de invierno | M1: sistemas, funciones y el inicio de Geometría (Pitágoras, áreas y cuerpos). Física: Mecánica. Canal: gestión del tiempo, ensayo en vivo de invierno e inscripción |
+| **Jul–Ago** | Vacaciones de invierno; inscripción | M1: transformaciones isométricas, semejanza y Probabilidad y estadística (M1 termina el 17 de agosto). Física: universo y Electricidad. Canal: descartar alternativas y suficiencia de datos |
 | **Sep–Oct** | Repaso | Física: Energía–Tierra y Habilidades (Física termina el 28 de octubre). Ensayos en vivo de M1 y Física. Fuera de las bibliotecas: compilaciones por eje y Shorts |
 | **Nov** | Mayor pago por anuncio; la prueba | Ensayo en vivo de M2 y la última semana de 2027 |
 | **Ene–Feb 2028** | Resultados | Se rehacen los videos de temporada y se produce M2 |
