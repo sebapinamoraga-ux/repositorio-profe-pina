@@ -16,6 +16,6 @@ Estudiantes de tercero medio que se preparan para la PAES M1. Cada clase desarro
 - **Sistemas de ecuaciones** (`sistemas-2x2`): dos compras con dos precios desconocidos; énfasis en reducción, con igualación y sustitución sobre el mismo sistema.
 - **Funciones** (`funcion-lineal-afin-1`, `funcion-lineal-afin-2-cuadratica-1`, `funcion-cuadratica-2`): un mismo contexto de arriendo de bicicletas recorre las clases (planes Libre y Base → Plan Ruta conocido por dos boletas → ingreso $I(x)=x(40-2x)$, cuyo máximo se responde en la parte 2 de la cuadrática).
 - Notación $m$ y $n$ para la función afín, para no chocar con $ax^2+bx+c$.
-- La exploración completa de $a$, $b$ y $c$ va en el repaso del estudiante (en el celular). La parte 2 de la cuadrática abre con un repaso de $a$ y $c$ en clase (12 min, con el explorador) para asentar la parte 1.
+- La exploración completa de $a$, $b$ y $c$ va en el repaso del estudiante (en el celular). La parte 2 de la cuadrática vuelve a presentar $a$ y $c$ en clase como si fuera la primera vez (13 min, con el explorador), porque se vieron al final de la parte 1.
 - `funcion-lineal-afin-2-cuadratica-1-repaso-sistemas` es una variante de la clase del 17/10 que abre con un repaso de sistemas 2×2.
 - La práctica es siempre individual o guiada.

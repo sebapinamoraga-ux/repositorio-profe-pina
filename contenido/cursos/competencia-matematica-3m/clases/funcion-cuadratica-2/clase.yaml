@@ -19,11 +19,11 @@ tramos:
   - label: 'Inicio: el precio que da el mayor ingreso'
     from: apertura
     to: precio-optimo
-    minutes: 5
-  - label: 'Repaso de la parte 1: a y c'
-    from: repaso-a-c
+    minutes: 4
+  - label: 'Volver a la parábola: qué hacen a y c'
+    from: repaso-parabola
     to: repaso
-    minutes: 12
+    minutes: 13
   - label: 'Ceros por factorización'
     from: ceros-factorizacion
     to: ceros-trinomio
@@ -55,7 +55,9 @@ tramos:
 slides:
   - apertura.mdx
   - precio-optimo.mdx
-  - repaso-a-c.mdx
+  - repaso-parabola.mdx
+  - repaso-a.mdx
+  - repaso-c.mdx
   - repaso-a-c-practica.mdx
   - repaso.mdx
   - ceros-factorizacion.mdx
