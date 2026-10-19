@@ -7,6 +7,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+# El código vive en plataforma/; el contenido, fuera de ella.
+defaults:
+  run:
+    working-directory: plataforma
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,6 +26,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          cache-dependency-path: plataforma/package-lock.json
       - run: npm ci
       - name: Alcance del cambio
         id: scope
@@ -57,11 +62,11 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pdf-publicados
-          path: output/pdf/
+          path: plataforma/output/pdf/
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
         with:
-          path: dist
+          path: plataforma/dist
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
