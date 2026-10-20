@@ -69,6 +69,8 @@ export function GraficoFuncion({
   puntosX = [],
   rectaVertical,
   etiquetaRecta,
+  rectasHorizontales = [],
+  pasoHorizontales,
   marcarCorteY = false,
   pendienteEn,
   pendienteAncho = 1,
@@ -105,6 +107,10 @@ export function GraficoFuncion({
   rectaVertical?: number;
   /** Rótulo de la recta vertical; por defecto, «x = … · n cortes». */
   etiquetaRecta?: string;
+  /** Rectas horizontales discontinuas en estas alturas, para comparar imágenes. */
+  rectasHorizontales?: number[];
+  /** Paso en que aparecen las rectas horizontales; sin él, se ven siempre. */
+  pasoHorizontales?: number;
   /** Marca y rotula el corte con el eje y, (0, n), de una función afín. */
   marcarCorteY?: boolean;
   /** Dibuja el triángulo de pendiente desde este valor de x. */
@@ -284,6 +290,17 @@ export function GraficoFuncion({
               y2={sy(referencia.m * xMax + referencia.n)}
             />
           )}
+          {rectasHorizontales.map((y) => (
+            <line
+              key={`h${y}`}
+              className="graph-guide"
+              visibility={shown(pasoHorizontales)}
+              x1={left}
+              x2={left + plotWidth}
+              y1={sy(y)}
+              y2={sy(y)}
+            />
+          ))}
           {rectaVertical !== undefined && (
             <line
               className="graph-secondary-line"

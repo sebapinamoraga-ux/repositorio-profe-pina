@@ -124,6 +124,8 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       { name: 'puntosX', label: 'Puntos marcados (valores de x)', kind: 'numbers' },
       n('rectaVertical', 'Recta vertical en x =', false),
       t('etiquetaRecta', 'Rótulo de la recta vertical', false),
+      { name: 'rectasHorizontales', label: 'Rectas horizontales (valores de y)', kind: 'numbers' },
+      n('pasoHorizontales', 'Paso en que aparecen las rectas horizontales', false),
       { name: 'marcarCorteY', label: 'Marcar el corte con el eje y', kind: 'boolean', fallback: false },
       n('pendienteEn', 'Triángulo de pendiente desde x =', false),
       n('pendienteAncho', 'Avance del triángulo de pendiente', false, 1),
