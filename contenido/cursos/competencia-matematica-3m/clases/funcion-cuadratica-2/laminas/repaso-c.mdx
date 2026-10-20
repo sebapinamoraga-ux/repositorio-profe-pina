@@ -1,30 +1,31 @@
 ---
 id: repaso-c
-title: '¿Qué hace c?'
+title: 'El término libre c: el corte con el eje y'
 phase: activacion
 layout: dos-columnas
-steps: 2
+steps: 1
 activities: []
 ---
 
 <Columnas>
 <div>
-<PracticaGuiada titulo="Todo el curso · 2 minutos">
-Volvemos a $y=x^2$ y ahora movemos $c$:
+<Propiedad titulo="Corte con el eje y">
+En $f(x)=ax^2+bx+c$:
 
-1. Si $c=3$, ¿dónde corta el eje $y$?
-2. ¿Cambia la forma de la parábola?
-</PracticaGuiada>
+$$
+f(0)=a\cdot 0^2+b\cdot 0+c=c
+$$
 
-<Propiedad titulo="El término libre c">
-<Paso n={1}>
-La parábola corta el eje $y$ en $(0;\ c)$.
-</Paso>
-<Paso n={2}>
-$c$ la **sube** o la **baja**; no cambia su forma.
-</Paso>
+Toda parábola corta el eje $y$ en $(0;\ c)$. Cambiar $c$ la **sube** o la **baja** sin cambiar su forma.
 </Propiedad>
+
+<Paso n={1}>
+**Ejemplos:** $y=x^2+3$ corta el eje $y$ en $(0;\ 3)$.
+
+$y=x^2-2$ lo corta en $(0;\ -2)$.
+</Paso>
 </div>
+<Paso n={1}>
 <ExploradorCuadratica
   id="repaso-clase-c"
   b={0}
@@ -39,4 +40,5 @@ $c$ la **sube** o la **baja**; no cambia su forma.
   pasoY={2}
   descripcion="Parábola y = ax² + c con controles para a y c; la curva inicial y = x² queda discontinua como referencia."
 />
+</Paso>
 </Columnas>

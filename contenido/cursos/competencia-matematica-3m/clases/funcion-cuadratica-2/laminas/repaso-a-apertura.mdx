@@ -1,0 +1,39 @@
+---
+id: repaso-a-apertura
+title: 'El tamaño de |a|: la apertura'
+phase: activacion
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Propiedad titulo="Apertura">
+Mientras mayor es $|a|$, más **cerrada** es la parábola; mientras más cerca de $0$ está $|a|$, más **abierta**.
+</Propiedad>
+
+<Paso n={1}>
+**Ejemplo:** frente a $y=x^2$, la parábola $y=3x^2$ es más cerrada e $y=\tfrac{1}{2}x^2$ es más abierta.
+</Paso>
+<Paso n={2}>
+**Ejemplo:** $y=3x^2$ e $y=-3x^2$ son igual de cerradas: el signo de $a$ no cambia la apertura.
+</Paso>
+</div>
+<Paso n={1}>
+<ExploradorCuadratica
+  id="repaso-clase-apertura"
+  b={0}
+  aInicial={1}
+  cInicial={0}
+  aEstatico={3}
+  cEstatico={0}
+  xMin={-4}
+  xMax={4}
+  yMin={-6}
+  yMax={8}
+  pasoY={2}
+  descripcion="Parábola y = ax² + c con controles para a y c; la curva inicial y = x² queda discontinua como referencia."
+/>
+</Paso>
+</Columnas>
