@@ -3,18 +3,14 @@ id: discriminante-practica
 title: 'Anticipar los ceros con el discriminante'
 phase: desarrollo
 layout: dos-columnas
-steps: 3
+steps: 5
 activities: []
 ---
-
-<Propiedad titulo="El discriminante anticipa los ceros">
-Si $\Delta>0$, la parábola tiene **dos ceros**; si $\Delta=0$, **uno**; si $\Delta<0$, **ninguno**.
-</Propiedad>
 
 <Columnas>
 <div>
 <PracticaGuiada titulo="Individual · 2 minutos">
-¿Cuántos ceros tiene cada función?
+¿Cuántos ceros tiene cada función? Responde sin calcularlos.
 
 $p(x)=3x^2+2x+1$
 
@@ -23,12 +19,22 @@ $I(x)=-2x^2+40x$
 </div>
 <div>
 <Paso n={1}>
-$\Delta_p=2^2-4\cdot 3\cdot 1=4-12=-8<0$: **ninguno**.
+**$p$:** $a=3$, $\ b=2$, $\ c=1$.
+
+$\Delta_p=2^2-4\cdot 3\cdot 1=4-12=-8$
 </Paso>
 <Paso n={2}>
-$\Delta_I=40^2-4\cdot(-2)\cdot 0=1.600>0$: **dos**.
+$\Delta_p<0$: **ningún cero**.
 </Paso>
 <Paso n={3}>
+**$I$:** $a=-2$, $\ b=40$, $\ c=0$.
+
+$\Delta_I=40^2-4\cdot(-2)\cdot 0=1.600$
+</Paso>
+<Paso n={4}>
+$\Delta_I>0$: **dos ceros**.
+</Paso>
+<Paso n={5}>
 <Comprobacion titulo="Comprobación">
 Coincide con los ceros de $I$ que ya encontramos: $x=0$ y $x=20$ ✓
 </Comprobacion>

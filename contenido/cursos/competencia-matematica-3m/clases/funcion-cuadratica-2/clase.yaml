@@ -25,8 +25,8 @@ tramos:
     to: repaso-a-c-practica
     minutes: 15
   - label: 'Ceros por factorización'
-    from: ceros-factorizacion
-    to: ceros-trinomio
+    from: ceros-definicion
+    to: ceros-diferencia
     minutes: 10
   - label: 'Fórmula general y discriminante'
     from: formula-general
@@ -62,10 +62,15 @@ slides:
   - repaso-a-apertura.mdx
   - repaso-c.mdx
   - repaso-a-c-practica.mdx
+  - ceros-definicion.mdx
+  - ceros-producto.mdx
   - ceros-factorizacion.mdx
   - ceros-trinomio.mdx
+  - ceros-diferencia.mdx
   - formula-general.mdx
+  - formula-ejemplo.mdx
   - formula-practica.mdx
+  - discriminante-propiedad.mdx
   - discriminante.mdx
   - discriminante-practica.mdx
   - vertice.mdx

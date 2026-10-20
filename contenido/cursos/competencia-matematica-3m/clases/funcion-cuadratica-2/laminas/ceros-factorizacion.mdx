@@ -1,43 +1,51 @@
 ---
 id: ceros-factorizacion
-title: 'Ceros por factorización'
+title: '¿Cuándo el ingreso es 0?'
 phase: desarrollo
 layout: resolucion
-steps: 3
+steps: 5
 activities: []
 ---
 
-<Definicion titulo="Ceros de una función">
-Los **ceros** de $f$ son los $x$ tales que $f(x)=0$: donde su gráfico **corta el eje $x$**.
-</Definicion>
-
 <Columnas>
 <div>
-<Tarjeta titulo="¿Cuándo el ingreso es 0?">
+<Tarjeta titulo="Ceros del ingreso">
+Buscamos los precios $\htmlClass{asoc-4}{x}$ con $I(\htmlClass{asoc-4}{x})=0$:
 
 $$
 \htmlClass{asoc-4}{x}\,(40-2\htmlClass{asoc-4}{x})=0
 $$
 
-Un producto vale $0$ cuando **alguno de sus factores** vale $0$.
 </Tarjeta>
-</div>
-<div>
+
 <Paso n={1}>
+Ya está **factorizada**: es un producto de dos factores, $\htmlClass{asoc-4}{x}$ y $40-2\htmlClass{asoc-4}{x}$.
+</Paso>
+<Paso n={2}>
+Producto igual a cero: un factor vale $0$.
 
 $$
-\htmlClass{asoc-4}{x}=0\quad\text{o}\quad 40-2\htmlClass{asoc-4}{x}=0\ \Rightarrow\ \htmlClass{asoc-4}{x}=20
+\htmlClass{asoc-4}{x}=0\quad\text{o}\quad 40-2\htmlClass{asoc-4}{x}=0
 $$
 
 </Paso>
-<Paso n={2}>
+</div>
+<div>
+<Paso n={3}>
+
+$$
+40-2\htmlClass{asoc-4}{x}=0\ \Rightarrow\ 40=2\htmlClass{asoc-4}{x}\ \Rightarrow\ \htmlClass{asoc-4}{x}=20
+$$
+
+</Paso>
+<Paso n={4}>
 <Comprobacion titulo="Comprobación">
 $I(0)=0\cdot 40=0$ ✓
 
 $I(20)=20\cdot(40-40)=20\cdot 0=0$ ✓
 </Comprobacion>
 </Paso>
-<Paso n={3}>
+<Paso n={5}>
 Gratis no hay ingreso; a **20 mil pesos** no se arrienda ninguna bicicleta.
 </Paso>
 </div>
