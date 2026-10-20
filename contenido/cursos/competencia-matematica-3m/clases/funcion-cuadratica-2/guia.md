@@ -37,6 +37,7 @@ _Por completar._
 
 - 2026-10-19 · El repaso de $a$ y $c$ pasa de 5 a 12 minutos (explorador en vivo, práctica individual y aplicación al ingreso) · El docente quiere asentar la parte 1 antes de los ceros y el vértice.
 - 2026-10-19 · El repaso se plantea como una primera presentación: parábola $y=x^2$, una lámina para $a$ y otra para $c$ con su propiedad, y 1 minuto más tomado del inicio · $a$ y $c$ se vieron al final de la clase anterior y pueden estar olvidados.
+- 2026-10-19 · La parábola se define en forma genérica (eje de simetría vertical y vértice sobre el eje) y $y=x^2$ aparece después como ejemplo ($a=1$, $b=c=0$) · Que el eje $x=0$ y el vértice $(0;\ 0)$ del ejemplo no parezcan propiedades de toda parábola.
 - 2026-10-19 · El ticket queda en dos preguntas (vértice y máximo); la del discriminante pasa al repaso del estudiante, y el esbozo y el cierre se acortan · Liberar los 7 minutos del repaso sin quitar contenidos del temario; el discriminante ya se practica en clase.
 
 ## Después de la clase

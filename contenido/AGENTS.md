@@ -27,6 +27,7 @@ Leer, en este orden:
 ## Reglas
 
 - Práctica solo individual o guiada; consignas en singular, con modalidad y tiempo en el título.
+- Al definir algo por primera vez, usar expresiones genéricas; los casos particulares van después, como ejemplos («Ejemplo: $a=1$, $b=c=0$»), para que una propiedad del ejemplo no parezca general.
 - Español neutro, sin voseo.
 - Ecuaciones verificadas en ambos miembros y soluciones comprobadas en el problema original.
 - Definiciones formales azules, objetivos violetas, procedimientos piedra, práctica y errores ocres, comprobaciones verdes y reflexión rosa. Los tonos de asociación solo como fondo y con correspondencia estable.

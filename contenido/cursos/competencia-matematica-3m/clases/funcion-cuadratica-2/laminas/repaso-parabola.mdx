@@ -1,6 +1,6 @@
 ---
 id: repaso-parabola
-title: 'Volvamos a la parábola'
+title: 'La función cuadrática y su parábola'
 phase: activacion
 layout: dos-columnas
 steps: 2
@@ -10,10 +10,11 @@ activities: []
 <Columnas>
 <div>
 <Definicion titulo="Función cuadrática">
-$f(x)=ax^2+bx+c$, con $a\ne 0$.
+$f(x)=ax^2+bx+c$, con $a\ne 0$. Su gráfico es una **parábola**: es simétrica respecto de una recta vertical, su **eje de simetría**, y el punto donde el eje la corta es su **vértice**.
 </Definicion>
 
-La más simple es $f(x)=x^2$:
+<Paso n={1}>
+**Ejemplo:** $a=1$, $b=c=0$, es decir, $f(x)=x^2$.
 
 $$
 \begin{array}{c|c|c|c|c|c}
@@ -22,13 +23,12 @@ f(x) & 4 & 1 & 0 & 1 & 4
 \end{array}
 $$
 
-<Paso n={1}>
-Su gráfico es una curva: la **parábola**.
 </Paso>
 <Paso n={2}>
-Es **simétrica** y su punto más bajo, $(0;\ 0)$, es el **vértice**.
+En este caso, el eje es $x=0$ y el vértice es $(0;\ 0)$.
 </Paso>
 </div>
+<Paso n={1}>
 <GraficoFuncion
   tipo="cuadratica"
   a={1}
@@ -42,4 +42,5 @@ Es **simétrica** y su punto más bajo, $(0;\ 0)$, es el **vértice**.
   etiqueta="f(x) = x²"
   descripcion="Parábola f(x) = x² que pasa por (−2; 4), (−1; 1), (0; 0), (1; 1) y (2; 4)."
 />
+</Paso>
 </Columnas>
