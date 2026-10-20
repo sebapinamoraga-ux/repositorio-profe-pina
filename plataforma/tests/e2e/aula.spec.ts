@@ -342,7 +342,7 @@ test('repaso del estudiante: láminas para seguir explorando con control de b', 
   await page.getByRole('combobox', { name: 'Clase' }).selectOption('funcion-cuadratica-2');
   await page.getByRole('button', { name: 'Índice de láminas' }).click();
   await expect(page.getByRole('heading', { name: 'Para seguir explorando' })).toBeVisible();
-  await page.getByRole('button', { name: /28 Explora b y el vértice/ }).click();
+  await page.getByRole('button', { name: /27 Explora b y el vértice/ }).click();
   await expect(page.locator('.s-eyebrow')).toContainText('Para seguir explorando');
   const caption = page.locator('.graph-caption-primary');
   await expect(caption).toHaveText('y = x²');
