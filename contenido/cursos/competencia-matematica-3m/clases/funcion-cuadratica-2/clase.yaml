@@ -22,7 +22,7 @@ tramos:
     minutes: 4
   - label: 'Volver a la parábola: qué hacen a y c'
     from: repaso-parabola
-    to: repaso-a-c-practica
+    to: repaso-a-c-ingreso
     minutes: 15
   - label: 'Ceros por factorización'
     from: ceros-definicion
@@ -62,6 +62,9 @@ slides:
   - repaso-a-apertura.mdx
   - repaso-c.mdx
   - repaso-a-c-practica.mdx
+  - repaso-a-c-concavidad.mdx
+  - repaso-a-c-apertura.mdx
+  - repaso-a-c-ingreso.mdx
   - ceros-definicion.mdx
   - ceros-producto.mdx
   - ceros-factorizacion.mdx
