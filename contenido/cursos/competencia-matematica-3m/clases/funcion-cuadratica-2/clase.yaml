@@ -23,7 +23,7 @@ tramos:
   - label: 'Volver a la parábola: qué hacen a y c'
     from: repaso-parabola
     to: repaso
-    minutes: 13
+    minutes: 15
   - label: 'Ceros por factorización'
     from: ceros-factorizacion
     to: ceros-trinomio
@@ -35,7 +35,7 @@ tramos:
   - label: 'Simetría y vértice'
     from: vertice
     to: vertice-formula
-    minutes: 13
+    minutes: 11
   - label: 'Efecto de b y forma canónica (breve)'
     from: parametro-b-canonica
     to: forma-canonica
@@ -56,6 +56,8 @@ slides:
   - apertura.mdx
   - precio-optimo.mdx
   - repaso-parabola.mdx
+  - repaso-eje.mdx
+  - repaso-vertice.mdx
   - repaso-a.mdx
   - repaso-c.mdx
   - repaso-a-c-practica.mdx

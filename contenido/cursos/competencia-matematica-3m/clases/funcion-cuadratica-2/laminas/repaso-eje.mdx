@@ -1,0 +1,40 @@
+---
+id: repaso-eje
+title: 'El eje de simetría'
+phase: activacion
+layout: dos-columnas
+steps: 2
+activities: []
+---
+
+<Columnas>
+<div>
+<Definicion titulo="Eje de simetría">
+Toda parábola es simétrica respecto de una recta vertical, llamada **eje de simetría**: a cada lado del eje, a la misma distancia, la parábola toma el mismo valor.
+</Definicion>
+
+<Paso n={1}>
+**Ejemplo:** en $f(x)=x^2$, el eje es la recta $x=0$.
+</Paso>
+<Paso n={2}>
+$f(-2)=f(2)=4$ y $f(-1)=f(1)=1$: puntos a la misma distancia del eje, a la misma altura.
+</Paso>
+</div>
+<Paso n={1}>
+<GraficoFuncion
+  tipo="cuadratica"
+  a={1}
+  b={0}
+  c={0}
+  xMin={-3}
+  xMax={3}
+  yMin={-1}
+  yMax={9}
+  puntosX={[-2, -1, 1, 2]}
+  rectaVertical={0}
+  etiquetaRecta="eje de simetría: x = 0"
+  etiqueta="f(x) = x²"
+  descripcion="Parábola f(x) = x² con su eje de simetría x = 0 discontinuo; los puntos (−2; 4) y (2; 4), y (−1; 1) y (1; 1), quedan a la misma altura."
+/>
+</Paso>
+</Columnas>

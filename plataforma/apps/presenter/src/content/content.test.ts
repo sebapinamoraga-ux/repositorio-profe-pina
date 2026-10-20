@@ -341,6 +341,7 @@ describe('láminas de repaso', () => {
     'comprueba-apertura',
     'explorar-b',
     'comprueba-b-vertice',
+    'ticket-paes-discriminante',
   ];
 
   it('se leen aparte de las de la clase', () => {
@@ -439,7 +440,7 @@ describe('edición del repaso desde la app', () => {
     expect((files.get(lesson.path) ?? '').split('\n')).toEqual(
       lesson.text
         .split('\n')
-        .filter((line) => !/^repaso:|^ {2}- (explorar|comprueba)-/.test(line)),
+        .filter((line) => !/^repaso:|^ {2}- (explorar-|comprueba-|ticket-paes-discriminante)/.test(line)),
     );
     for (const slide of repaso)
       expect(files.has(slidePathOf(slide.id))).toBe(false);

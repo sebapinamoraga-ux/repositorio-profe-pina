@@ -68,6 +68,7 @@ export function GraficoFuncion({
   ejeY = 'y',
   puntosX = [],
   rectaVertical,
+  etiquetaRecta,
   marcarCorteY = false,
   pendienteEn,
   pendienteAncho = 1,
@@ -102,6 +103,8 @@ export function GraficoFuncion({
   ejeY?: string;
   puntosX?: number[];
   rectaVertical?: number;
+  /** Rótulo de la recta vertical; por defecto, «x = … · n cortes». */
+  etiquetaRecta?: string;
   /** Marca y rotula el corte con el eje y, (0, n), de una función afín. */
   marcarCorteY?: boolean;
   /** Dibuja el triángulo de pendiente desde este valor de x. */
@@ -405,8 +408,10 @@ export function GraficoFuncion({
         )}
         {rectaVertical !== undefined && (
           <span>
-            x = {formatNumber(rectaVertical)} · {cuts.length}{' '}
-            {cuts.length === 1 ? 'corte' : 'cortes'}
+            {etiquetaRecta ??
+              `x = ${formatNumber(rectaVertical)} · ${cuts.length} ${
+                cuts.length === 1 ? 'corte' : 'cortes'
+              }`}
           </span>
         )}
       </div>
