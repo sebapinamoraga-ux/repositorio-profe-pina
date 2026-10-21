@@ -21,7 +21,9 @@ import { LessonDialog } from './LessonForm';
 import { ExportDialog } from './ExportDialog';
 import { Summary } from './Summary';
 
-const Editor = lazy(async () => ({ default: (await import('./Editor')).Editor }));
+const Editor = lazy(async () => ({
+  default: (await import('./editor-directo/EditorDirecto')).EditorDirecto,
+}));
 const Review = lazy(async () => ({ default: (await import('./Review')).Review }));
 const LessonActivities = lazy(async () => ({
   default: (await import('./LessonActivities')).LessonActivities,

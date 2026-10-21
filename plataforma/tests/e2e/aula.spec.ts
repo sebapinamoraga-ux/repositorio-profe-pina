@@ -225,6 +225,8 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   expect(zip).toContain('status: published');
   expect(zip).toContain('<Objetivo titulo="Meta de hoy">');
 
+  await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
+  await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
   await page.getByRole('button', { name: 'Descartar cambios de esta clase' }).click();
   await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Objetivo de clase');
   await expect(page.locator('.pub')).toHaveText('Al día');
@@ -445,7 +447,7 @@ test('encabezado de la clase: deshacer, publicar desde el indicador, buscar y pr
   await page.setViewportSize({ width: 1500, height: 900 });
   await page.goto('/#rol=docente&vista=editor');
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
-  const title = page.locator('.props-grid').getByLabel('Título', { exact: true });
+  const title = page.getByLabel('Título de la lámina');
   const original = await title.inputValue();
   await expect(page.getByRole('button', { name: 'Deshacer' })).toBeDisabled();
 

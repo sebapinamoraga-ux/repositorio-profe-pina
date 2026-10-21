@@ -23,8 +23,7 @@ async function publish(page: Page) {
   await page.getByRole('button', { name: 'Publicar', exact: true }).click();
 }
 
-const slideTitle = (page: Page) =>
-  page.locator('.props-grid').getByLabel('Título', { exact: true });
+const slideTitle = (page: Page) => page.getByLabel('Título de la lámina');
 
 test('si otro dispositivo cambió la misma lámina, se elige qué versión guardar', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
@@ -161,19 +160,25 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   const repaso = page.getByRole('complementary', { name: 'Láminas del repaso' });
   await expect(repaso.locator('.thumb')).toHaveCount(5);
   await repaso.locator('.thumb').nth(1).click();
-  await expect(page.getByRole('heading', { name: 'Lámina de repaso R2' })).toBeVisible();
+  await expect(page.getByLabel('Lámina R2', { exact: true })).toBeVisible();
   await slideTitle(page).fill('Comprueba la apertura (editada)');
-  await page.getByRole('button', { name: 'Mover antes' }).click();
-  await expect(page.getByRole('heading', { name: 'Lámina de repaso R1' })).toBeVisible();
+  // Alt + ↑ sube la lámina elegida (el foco vuelve a la lista).
+  await repaso.locator('.thumb').nth(1).focus();
+  await page.keyboard.press('Alt+ArrowUp');
+  await expect(page.getByLabel('Lámina R1', { exact: true })).toBeVisible();
 
   await repaso.locator('.thumb').nth(3).click();
-  await page.getByRole('button', { name: 'Eliminar', exact: true }).click();
+  await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
+  await page.getByRole('menuitem', { name: 'Eliminar lámina' }).click();
   await expect(repaso.locator('.thumb')).toHaveCount(4);
-  await repaso.getByRole('button', { name: '+ Lámina de repaso' }).click();
-  await page.getByRole('dialog', { name: 'Elegir plantilla' }).locator('.picker-card').first().click();
+  await repaso.getByRole('button', { name: 'Nueva lámina de repaso' }).click();
+  await page.getByRole('dialog', { name: 'Nueva lámina de repaso' }).locator('.picker-card').first().click();
   await expect(repaso.locator('.thumb')).toHaveCount(5);
-  await expect(page.getByRole('heading', { name: 'Lámina de repaso R5' })).toBeVisible();
-  const added = await page.locator('.props-grid').getByLabel('Identificador').inputValue();
+  await expect(page.getByLabel('Lámina R5', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
+  await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
+  const added = await page.getByLabel('Identificador').inputValue();
+  await page.getByRole('button', { name: 'Cerrar la vista avanzada' }).click();
   await expect(page.locator('.editor-check')).toContainText('sin problemas');
 
   await publish(page);
@@ -209,4 +214,89 @@ test('la fecha de una clase se edita en Clases y se guarda en la planificación'
   await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const plan = fake.files()['contenido/cursos/competencia-matematica-3m/curso.yaml'] ?? '';
   expect(plan).toContain('      - id: funcion-cuadratica-2\n        date: 2026-10-31\n');
+});
+
+const CUADRATICA = 'contenido/cursos/competencia-matematica-3m/clases/funcion-cuadratica-2';
+const cuadratica = (page: Page) =>
+  openTeacher(page, 'vista=clase&clase=funcion-cuadratica-2&seccion=laminas');
+const thumbOf = (page: Page, title: string) =>
+  page.locator('.thumb', { has: page.locator('.thumb-title', { hasText: title }) });
+
+test('arrastrar una lámina a otro tramo cambia clase.yaml en una sola escritura', async ({ page }) => {
+  const fake = await connectFakeGitHub(page);
+  await cuadratica(page);
+  const before = fake.files()[`${CUADRATICA}/clase.yaml`] ?? '';
+  expect(before).toContain('    from: apertura\n    to: precio-optimo\n');
+  await expect(page.getByRole('button', { name: /^2\. Volver a la parábola/ })).toBeVisible();
+
+  // «precio-optimo» cierra el primer tramo: soltarla sobre el segundo la pone al comienzo de él.
+  await thumbOf(page, 'Para comenzar').dragTo(page.getByRole('button', { name: /^2\. Volver a la parábola/ }));
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
+  const after = fake.files()[`${CUADRATICA}/clase.yaml`] ?? '';
+  expect(after).toContain('    from: apertura\n    to: apertura\n');
+  expect(after).toContain('    from: precio-optimo\n    to: repaso-a-c-ingreso\n');
+  // El orden de las láminas no cambió: solo cambiaron los tramos.
+  expect(after.split('\nslides:')[1]).toBe(before.split('\nslides:')[1]);
+});
+
+test('un tramo no puede quedar sin láminas y Alt + flechas mueve entre tramos', async ({ page }) => {
+  await connectFakeGitHub(page);
+  await cuadratica(page);
+  // «Cierre» es la única lámina de su tramo.
+  await thumbOf(page, '¿Cómo nos vamos hoy?').dragTo(page.getByRole('button', { name: /^8\. Ticket tipo PAES/ }));
+  await expect(page.locator('.toast')).toContainText('El tramo «Cierre» quedaría sin láminas');
+  await expect(indicator(page)).toHaveText('Al día');
+
+  // Alt + ↑ pasa la primera lámina del segundo tramo al final del primero.
+  await page.locator('.thumb').nth(2).click();
+  await page.keyboard.press('Alt+ArrowUp');
+  await expect(indicator(page)).toHaveText('1 por publicar');
+  await page.getByRole('button', { name: 'Últimos cambios' }).click();
+  await expect(page.getByRole('dialog', { name: 'Últimos cambios' })).toContainText('al tramo 1');
+  await expect(page.getByRole('button', { name: /^1\. Inicio/ })).toContainText('3');
+});
+
+test('elegir varias láminas cambia su diseño juntas y Esc las suelta', async ({ page }) => {
+  const fake = await connectFakeGitHub(page);
+  await cuadratica(page);
+  await page.locator('.thumb').nth(2).click();
+  await page.locator('.thumb').nth(3).click({ modifiers: ['Shift'] });
+  await page.locator('.thumb').nth(4).click({ modifiers: ['Shift'] });
+  const bar = page.getByRole('group', { name: 'Láminas elegidas' });
+  await expect(bar).toContainText('3 láminas elegidas');
+  await bar.getByLabel('Diseño de las láminas elegidas').selectOption('concepto');
+  await expect(page.locator('.toast')).toContainText('Diseño «Concepto» en 3 láminas');
+  await expect(indicator(page)).toHaveText('3 por publicar');
+  await page.keyboard.press('Escape');
+  await expect(bar).toHaveCount(0);
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
+  const layouts = ['repaso-parabola', 'repaso-eje', 'repaso-vertice'].map(
+    (id) => fake.files()[`${CUADRATICA}/laminas/${id}.mdx`] ?? '',
+  );
+  for (const text of layouts) expect(text).toContain('layout: concepto');
+});
+
+test('nueva lámina en blanco al final de un tramo y atajos de teclado', async ({ page }) => {
+  const fake = await connectFakeGitHub(page);
+  await cuadratica(page);
+  const before = await page.locator('.thumb').count();
+  await page.getByRole('button', { name: 'Lámina en este tramo' }).first().click();
+  const dialog = page.getByRole('dialog', { name: 'Nueva lámina' });
+  await expect(dialog).toContainText('Se agrega en el tramo 1 · Inicio');
+  await dialog.getByRole('button', { name: /^Resolución/ }).click();
+  await expect(page.locator('.thumb')).toHaveCount(before + 1);
+  await expect(page.getByLabel('Título de la lámina')).toHaveValue('Resolución nueva');
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
+  const yaml = fake.files()[`${CUADRATICA}/clase.yaml`] ?? '';
+  expect(yaml).toContain('    from: apertura\n    to: nueva-resolucion\n');
+  expect(fake.files()[`${CUADRATICA}/laminas/nueva-resolucion.mdx`]).toContain('layout: resolucion');
+
+  await page.locator('.thumb').first().focus();
+  await page.keyboard.press('?');
+  await expect(page.getByRole('dialog', { name: 'Atajos de teclado' })).toContainText('Mover la lámina');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Atajos de teclado' })).toHaveCount(0);
 });
