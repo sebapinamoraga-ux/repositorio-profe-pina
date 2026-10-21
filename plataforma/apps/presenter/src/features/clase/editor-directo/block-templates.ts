@@ -2,7 +2,7 @@
 export const TEXT_SOURCE = 'Un párrafo con **lo importante** destacado.';
 export const FORMULA_SOURCE = '$$\nax+by=c\n$$';
 export const CARD_SOURCE =
-  '<Tarjeta titulo="Título de la tarjeta">\nEscribe el contenido. Usa $x$ para fórmulas.\n</Tarjeta>';
+  '<Tarjeta titulo="Encabezado de la tarjeta">\nEscribe el contenido. Usa $x$ para fórmulas.\n</Tarjeta>';
 export const PANELS_SOURCE = [
   '<Paneles>',
   '<div>',

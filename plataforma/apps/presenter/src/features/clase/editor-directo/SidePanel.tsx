@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useAula } from '../../../store/AulaProvider';
 import { makeNote } from '../../../store/notes';
 import type { EditedSlide, Note } from '../../../store/schema';
@@ -8,7 +8,7 @@ import type { LessonIssues } from '../issues';
 import { NoteItem, useNoteActions } from '../NoteItem';
 import { slideNumber, useLessonNotes, type SlideListName } from './shared';
 
-export type SideTab = 'comentarios' | 'revision';
+export type SideTab = 'parte' | 'comentarios' | 'revision';
 
 type Scope = 'block' | 'slide' | 'lesson';
 
@@ -27,6 +27,7 @@ export function SidePanel({
   tab,
   focusNote,
   draftSignal = 0,
+  part,
   layout,
   open,
   onTab,
@@ -46,6 +47,8 @@ export function SidePanel({
   focusNote: string | null;
   /** Cambia cuando se pide «Comentar» sobre el bloque: enfoca el campo con ese ámbito. */
   draftSignal?: number;
+  /** Contenido de la pestaña «Parte». */
+  part: ReactNode;
   layout: 'wide' | 'mid' | 'narrow';
   open: boolean;
   onTab: (tab: SideTab) => void;
@@ -166,10 +169,18 @@ export function SidePanel({
   );
   return (
     <section
-      aria-label="Comentarios y revisión"
+      aria-label="Panel de la lámina"
       className={`side-panel is-${layout} ${layout === 'mid' && !open ? 'is-hidden' : ''}`}
     >
       <div className="side-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'parte'}
+          onClick={() => onTab('parte')}
+        >
+          Parte
+        </button>
         <button
           type="button"
           role="tab"
@@ -196,7 +207,9 @@ export function SidePanel({
           </Button>
         )}
       </div>
-      {tab === 'comentarios' ? (
+      {tab === 'parte' ? (
+        part
+      ) : tab === 'comentarios' ? (
         <div className="side-body" role="tabpanel" aria-label="Comentarios">
           <section
             aria-label="Comentarios para mejorar la clase"

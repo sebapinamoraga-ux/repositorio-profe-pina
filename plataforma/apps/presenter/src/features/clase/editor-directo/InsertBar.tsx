@@ -29,7 +29,7 @@ export function InsertBar({
   onPanel,
 }: {
   enabled: boolean;
-  /** «después de «Sumar elimina…», en Paso 1». */
+  /** «Paso 1, después de «Sumar elimina…»». */
   where: string;
   /** Hay actividades del banco para la pregunta. */
   canAskQuestion: boolean;
@@ -50,9 +50,9 @@ export function InsertBar({
     <div
       className={`insert-bar ${enabled ? '' : 'is-off'}`}
       role="toolbar"
-      aria-label="Insertar"
+      aria-label="Agregar parte"
     >
-      <span className="insert-label">Insertar</span>
+      <span className="insert-label">Agregar parte</span>
       {items.map(([kind, label, Icon]) => (
         <button
           key={kind}
@@ -92,7 +92,7 @@ export function InsertBar({
         {open && (
           <div
             role="menu"
-            aria-label="Insertar por función"
+            aria-label="Agregar por función"
             className="menu-list is-left family-menu"
           >
             {FAMILIES.map((family) => (
@@ -124,8 +124,8 @@ export function InsertBar({
           Comentarios y revisión
         </button>
       )}
-      <span className="insert-where" title={`Se inserta ${where}`}>
-        Se inserta {where}
+      <span className="insert-where" title={`Se agrega en ${where}`}>
+        Se agrega en <b>{where}</b>
       </span>
     </div>
   );

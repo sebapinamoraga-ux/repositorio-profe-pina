@@ -215,7 +215,7 @@ function describe(name: string | null, fields: Field[]) {
 
 function summarize(label: string, fields: Field[]) {
   const title = fields.find(
-    (f) => f.kind === 'attr' && f.label === 'Título' && f.value.trim(),
+    (f) => f.kind === 'attr' && f.attr === 'titulo' && f.value.trim(),
   );
   if (title?.kind === 'attr') return excerpt(title.value);
   const text = fields.find((f) => f.kind === 'text');

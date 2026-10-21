@@ -80,6 +80,7 @@ import {
 import { NewSlideDialog } from './NewSlideDialog';
 import { PrepareLesson } from './PrepareLesson';
 import { ShortcutsDialog } from './ShortcutsDialog';
+import { PartPanel } from './PartPanel';
 import { SidePanel, type SideTab } from './SidePanel';
 import { SlideBar } from './SlideBar';
 import { SlideList } from './SlideList';
@@ -183,7 +184,7 @@ function LoadedEditor({
   const [multi, setMulti] = useState<string[]>([]);
   const [advanced, setAdvanced] = useState(false);
   const [sideOpen, setSideOpen] = useState(false);
-  const [tab, setTab] = useState<SideTab>('comentarios');
+  const [tab, setTab] = useState<SideTab>('parte');
   const [focusNote, setFocusNote] = useState<string | null>(null);
   const [mode, setMode] = useState<'todo' | 'proyectar'>('todo');
   const [dialog, setDialog] = useState<'nueva' | 'atajos' | 'variante' | null>(
@@ -594,8 +595,8 @@ function LoadedEditor({
       after: after ? after.index : null,
       step: after ? after.step : viewStep,
       text: after
-        ? `después de «${after.summary}», en ${stepName(after.step)}`
-        : `al final, en ${stepName(viewStep)}`,
+        ? `${stepName(after.step)}, después de «${after.summary}»`
+        : `${stepName(viewStep)}, al final`,
     };
   };
   const insert = (source: string, extra: Partial<EditedSlide> = {}) => {
@@ -733,6 +734,7 @@ function LoadedEditor({
         editing={editingNow}
         editable={editable}
         compact={touch}
+        stepInPanel={layout === 'wide'}
         canMove={canMove}
         format={format}
         onStep={(n) => setStepOf(block.index, n)}
@@ -780,6 +782,15 @@ function LoadedEditor({
         tab={tab}
         focusNote={focusNote}
         draftSignal={draftSignal}
+        part={
+          <PartPanel
+            slide={slide}
+            number={number}
+            block={selectedBlock}
+            editable={editable && blocks !== null}
+            onStep={(n) => selectedBlock && setStepOf(selectedBlock.index, n)}
+          />
+        }
         layout={panelLayout}
         open={sideOpen || panelLayout === 'narrow'}
         onTab={setTab}
@@ -1238,6 +1249,14 @@ function LoadedEditor({
               }}
               onView={(n) => patchSel({ step: n })}
               onAdd={addStepToSlide}
+              onAddHere={(n) =>
+                patchSel({
+                  step: n,
+                  block: null,
+                  editing: null,
+                  commenting: null,
+                })
+              }
               onRemove={removeStepAt}
               onAssign={setStepOf}
               onSelect={(i) => patchSel({ block: i, editing: null })}

@@ -32,6 +32,7 @@ export function BlockToolbar({
   editing,
   editable,
   compact = false,
+  stepInPanel = false,
   canMove,
   format,
   onStep,
@@ -49,6 +50,8 @@ export function BlockToolbar({
   editable: boolean;
   /** Con el dedo: botones de 44 px con nombre y Duplicar y Eliminar bajo «Más». */
   compact?: boolean;
+  /** El paso se cambia en la pestaña «Parte»: aquí solo se muestra. */
+  stepInPanel?: boolean;
   canMove: { up: boolean; down: boolean };
   format: RefObject<FormatApi | null>;
   onStep: (step: number) => void;
@@ -130,26 +133,32 @@ export function BlockToolbar({
     >
       <span className="toolbar-type">{block.label}</span>
       <span className="toolbar-sep" aria-hidden="true" />
-      <label className="toolbar-step">
-        <span className="sr-only">Paso en que aparece</span>
-        <select
-          aria-label="Paso en que aparece"
-          value={block.step}
-          disabled={locked || block.inherited}
-          title={
-            block.inherited
-              ? 'Aparece en el paso de su contenedor'
-              : 'Paso en que aparece'
-          }
-          onChange={(event) => onStep(Number(event.target.value))}
-        >
-          {Array.from({ length: steps + 1 }, (_, n) => (
-            <option key={n} value={n}>
-              {n === 0 ? 'Inicial' : `Paso ${n}`}
-            </option>
-          ))}
-        </select>
-      </label>
+      {stepInPanel ? (
+        <span className="toolbar-step-chip" title="Se cambia en la pestaña Parte">
+          {block.step === 0 ? 'Inicial' : `Paso ${block.step}`}
+        </span>
+      ) : (
+  <label className="toolbar-step">
+          <span className="sr-only">Paso en que aparece</span>
+          <select
+            aria-label="Paso en que aparece"
+            value={block.step}
+            disabled={locked || block.inherited}
+            title={
+              block.inherited
+                ? 'Aparece en el paso de su contenedor'
+                : 'Paso en que aparece'
+            }
+            onChange={(event) => onStep(Number(event.target.value))}
+          >
+            {Array.from({ length: steps + 1 }, (_, n) => (
+              <option key={n} value={n}>
+                {n === 0 ? 'Inicial' : `Paso ${n}`}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <button
         type="button"
         aria-label="Escribir"

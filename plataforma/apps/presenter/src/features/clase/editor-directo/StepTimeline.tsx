@@ -18,6 +18,7 @@ export function StepTimeline({
   onMode,
   onView,
   onAdd,
+  onAddHere,
   onRemove,
   onAssign,
   onSelect,
@@ -33,6 +34,8 @@ export function StepTimeline({
   onMode: (mode: 'todo' | 'proyectar') => void;
   onView: (step: number) => void;
   onAdd: () => void;
+  /** Deja el paso como destino de lo que se agregue (sin parte elegida). */
+  onAddHere: (step: number) => void;
   onRemove: (step: number) => void;
   onAssign: (blockIndex: number, step: number) => void;
   onSelect: (index: number) => void;
@@ -207,6 +210,15 @@ export function StepTimeline({
                   </li>
                 ))}
               </ul>
+              {editable && (
+                <button
+                  type="button"
+                  className="timeline-here"
+                  onClick={() => onAddHere(n)}
+                >
+                  + Agregar aquí
+                </button>
+              )}
               {empty && (
                 <p className="timeline-hint">
                   {n === 0
