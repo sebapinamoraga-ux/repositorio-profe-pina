@@ -1,23 +1,27 @@
 # Etapas posteriores
 
+> Estado: hoja de ruta, no compromiso · Ámbito: plataforma · Autoridad: el docente.
+
 ## Etapa 2 · Desde enero de 2027
 
 Esta etapa comienza después de diciembre de 2026. Hasta entonces, el hito actual no incorpora cuentas ni dependencias de Firebase. El contenido de las clases (que es público) ya se edita desde la app y se sincroniza entre dispositivos a través del propio repositorio de GitHub; esta etapa se ocupa de los datos privados del docente, que nunca van al repositorio.
 
 ### Cursos e historial docente
 
-- Incorporar cursos persistentes con tres campos: nombre, nivel y observaciones.
+**Ya disponible en local:** los cursos (nombre, nivel y observaciones), las sesiones (curso, clase, fecha, hora de inicio y de término, observación posterior) y los resúmenes de votación existen en el navegador del docente, fuera del repositorio ([datos y privacidad](datos-y-privacidad.md)).
+
+**Pendiente de esta etapa:**
+
 - Sincronizar los cursos automáticamente entre los dispositivos del docente mediante Firebase.
 - Exigir autenticación y restringir el acceso a una única cuenta docente autorizada durante el primer incremento.
-- Permitir seleccionar un curso al iniciar una clase sin duplicar el contenido de la lección.
-- Registrar por cada sesión el curso, la clase, la fecha, la hora de inicio, la hora de término y una observación posterior del docente.
+- Mantener la selección de un curso al iniciar una clase sin duplicar el contenido de la lección, también entre dispositivos.
 - Mantener los perfiles y el historial fuera del contenido público, del PDF y del repositorio.
 
 El diseño de datos debe admitir más docentes en el futuro sin abrir el acceso en este hito. La configuración de Firebase, las reglas de seguridad y las credenciales se implementarán y probarán como parte de esta etapa, no antes.
 
 ### Participación anónima en clase
 
-Después de establecer cursos e historial, permitir que una pregunta de alternativas abra una sesión de participación y muestre un código QR. Cada estudiante podrá enviar de forma anónima una alternativa desde su dispositivo. La vista del docente mostrará conteos y porcentajes actualizados en tiempo real y asociará el resumen a la sesión de clase.
+Después de sincronizar cursos e historial, permitir que una pregunta de alternativas abra una sesión de participación y muestre un código QR. Cada estudiante podrá enviar de forma anónima una alternativa desde su dispositivo. La vista del docente mostrará conteos y porcentajes actualizados en tiempo real y asociará el resumen a la sesión de clase.
 
 No se almacenará la identidad del estudiante. Antes de implementar esta función se deberán definir prevención de respuestas duplicadas, cierre y reapertura de votaciones, retención de datos, funcionamiento ante conectividad inestable y reglas de seguridad. El PDF conservará una representación estática y no incluirá controles de participación.
 

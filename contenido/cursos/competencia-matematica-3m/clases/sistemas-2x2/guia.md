@@ -36,7 +36,9 @@
 
 - Clase de 80 minutos con énfasis en reducción; igualación y sustitución se muestran sobre el mismo sistema para ver que dan el mismo par.
 - `modelar` queda como lámina de consulta (0 minutos): se pasa sin revisarla en clase.
-- El ticket es de elaboración propia, no una pregunta oficial PAES.
+- El ticket es de elaboración propia, no una pregunta oficial PAES. Se dan seis minutos de trabajo antes de mostrar las alternativas y cuatro para contrastar, resolver y discutir el error.
+- 2026-09-21 · Se aplica el lenguaje visual común: se mantienen 25 láminas y 80 minutos; 03 y 04 siguen separadas (traducir la compra y contrastar dos pares posibles, con las mismas etiquetas de variables y unidades); se retira la pregunta sobre 2x; la 06, «Dos ecuaciones, dos incógnitas», lleva la definición formal «Sistema de ecuaciones lineales de 2x2» en azul; la 07 presenta reducción, sustitución e igualación como definiciones de los métodos, también azules; la 10, 12, 14 y 16 aplican los patrones de modelación, reducción, sustitución, práctica y comparación; la portada conserva título y objetivo en violeta · Fijar esta clase como primer caso del lenguaje común.
+- 2026-09-21 · Plantillas de la galería incorporadas: pedagogica-punto-clave (03), pedagogica-modelado (10 y 12), pedagogica-pista (14), pedagogica-comprobacion (15), pedagogica-comparacion (16), sutil-practica (21) y sutil-metacognicion (25); la portada conserva su presencia de marca · El uso se decide por función, no por mostrar todas las poses.
 
 ## Después de la clase
 

@@ -1,5 +1,7 @@
 # Curso de Matemática 2021 (Preu Perlman) y su paralelo con la PAES M1
 
+> Estado: referencia histórica (análisis del 14-10-2026); no es una regla vigente.
+
 Fuente: `G:\Clases 2022\Preuniversitario Perlman\2021\Matemáticas` (índice en `Matemáticas.docx`,
 17 capítulos en pptx/pdf, guías, 2 ensayos propios, 4 transmisiones y 5 clases complementarias).
 Referencia actual: DEMRE, *Temario Regular M1, Admisión 2027* (y el de M2 para ver qué salió de M1).

@@ -34,7 +34,7 @@ export interface SaveOptions {
 /**
  * Guarda todos los cambios en un solo commit sobre la rama. Si la rama avanzó mientras
  * tanto, trae lo nuevo, vuelve a validar y reintenta; si hay archivos tocados en los dos
- * lados, se detiene y devuelve los conflictos para que la docente decida.
+ * lados, se detiene y devuelve los conflictos para que el docente decida.
  */
 export async function saveChanges(
   client: GitHubClient,

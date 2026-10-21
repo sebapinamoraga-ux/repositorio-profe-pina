@@ -121,7 +121,7 @@ function errorText(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
 
-/** Mensaje de commit: qué se tocó, en palabras de la docente. */
+/** Mensaje de commit: qué se tocó, en palabras del docente. */
 export function defaultMessage(paths: readonly string[]) {
   const names = [...new Set(paths.map(describePath))];
   const head = names.slice(0, 3).join(', ');

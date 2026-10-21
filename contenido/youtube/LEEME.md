@@ -1,6 +1,6 @@
 # Canal de YouTube PAES
 
-Planificación del canal autoinstruccional Profe Piña para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física, más el bloque «Uso de IA como estudiante». Versión del 14-10-2026.
+Planificación del canal autoinstruccional Profe Piña para 3.º y 4.º medio y egresados que preparan la PAES de M1, M2 y Ciencias, mención Física, más el bloque «Uso de IA como estudiante». Versión del 14-10-2026, actualizada el 21-10-2026 con las decisiones del 15-10.
 
 **Fuente de verdad:** los `curso.yaml` de cada lista en `youtube/` (bibliotecas `yt-*`) mandan en el orden, las unidades y las fechas tentativas de publicación. Llevan `calendario: publicacion`: sus fechas no aparecen como «Clase de hoy» de los cursos y, con la biblioteca abierta, la tarjeta de Clases muestra la «Próxima publicación». La carpeta del canal (`H:\Canal Profe Piña`) guarda la producción: guiones, animaciones, estado y metadatos. Su `Calendario editorial.md` remite a estas bibliotecas y solo lleva el estado de cada video. Los videos no se guardan en la plataforma.
 
@@ -11,19 +11,20 @@ La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este cicl
 1. **Separar lo durable de lo de temporada.** Los videos de contenido no nombran año, admisión ni fechas, así que una clase sirve de 3 a 5 ciclos. La fecha va solo en los videos de temporada y en los ensayos, cuyo identificador lleva el año (`canal-puntajes-2027`).
 2. **Cada video sabe a qué parte del temario responde.** La unidad de la biblioteca es el eje de DEMRE y la clase es una unidad temática o una parte de ella. Si cambia el temario, la diferencia dice qué rehacer, qué queda y qué se despublica.
 3. **Formato híbrido** (§5). Un video conceptual, en el estilo del canal, explica la idea. Un video de práctica autoinstruccional, por unidad temática, la ejercita.
-4. **El video largo es la unidad monetizable.** Dura 8 minutos o más, para admitir anuncios a mitad del video. Los Shorts sirven para el descubrimiento y son derivados baratos de los largos.
+4. **El video largo es la unidad monetizable.** Su meta es de 8 minutos, para admitir anuncios a mitad del video; no se obliga ni se rellena (decisión del 15-10-2026), y lo que quede más corto se agrupa en compilaciones por bloque. Los Shorts sirven para el descubrimiento y son derivados baratos de los largos.
 5. **Producir por lotes.** Enero y febrero son de producción. Conviene tener unas 6 semanas de videos listos antes de marzo.
 
 ## 2. Bibliotecas
 
-| Carpeta (biblioteca) | Título público | Unidades | Clases | Día de publicación |
-|---|---|---|---|---|
-| `paes-m1/` (`yt-m1`) | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | 58 | Martes y viernes, en el orden de los ejes (piloto: cada dos semanas) |
-| `fisica/` (`yt-fisica`) | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | 35 | Jueves |
-| `paes-m2/` (`yt-m2`) | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | 25 | Sábados, ciclo 2028 |
-| `ia/` (`yt-ia`) | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | 12 | Cada 2 o 3 semanas |
-| `estrategia/` (`yt-canal`) | Canal: estrategia y temporada | Estrategia de prueba · Ensayos · Temporada · Puente a la universidad | 18 | Según el hito |
+| Carpeta (biblioteca) | Título público | Unidades | Día de publicación |
+|---|---|---|---|
+| `paes-m1/` (`yt-m1`) | PAES Matemática M1 | Números · Álgebra y funciones · Geometría · Probabilidad y estadística | Martes y viernes, en el orden de los ejes (piloto: cada dos semanas) |
+| `fisica/` (`yt-fisica`) | PAES Ciencias: Física | Ondas · Mecánica · Electricidad · Energía y Tierra · Habilidades científicas | Jueves |
+| `paes-m2/` (`yt-m2`) | PAES Matemática M2 | Los cuatro ejes, solo lo que M2 agrega a M1 | Sábados, ciclo 2028 |
+| `ia/` (`yt-ia`) | Uso de IA como estudiante | Aprender con IA · Estudiar para la PAES con IA · Integridad y cuidado · Proyectos con IA | Cada 2 o 3 semanas |
+| `estrategia/` (`yt-canal`) | Canal: estrategia y temporada | Estrategia de prueba · Ensayos · Temporada · Puente a la universidad | Según el hito |
 
+- **Número de clases:** se lee del `curso.yaml` de cada lista; este documento no lo repite.
 - **Temario de referencia:** son los temarios regulares de la Admisión 2027 publicados por DEMRE. M1 tiene 65 preguntas (60 cuentan para el puntaje) y dura 2 h 20 min. M2 tiene 55 preguntas (50 cuentan), incluye suficiencia de datos y dura 2 h 20 min. Ciencias tiene 80 preguntas (75 cuentan) y dura 2 h 40 min: 54 son del módulo común, con los tres ejes, y 26 del módulo electivo. Las áreas de Física son Ondas, Mecánica (incluye sistema solar y universo), Energía–Tierra y Electricidad; las habilidades científicas son transversales. Las copias de los temarios están en las carpetas «Temarios oficiales» del canal.
 - **El canal cubre solo Física.** Las 36 preguntas de Biología y Química del módulo común quedan fuera; hay que decirlo en la descripción de los videos de Física.
 - **Identificadores:** las clases llevan el prefijo `m1-`, `m2-`, `fis-`, `ia-` o `canal-`, y las de práctica, el segmento `-practica-`. Una clase del curso que se reutilice se copia con «Copiar a otra biblioteca», nunca se mueve.
@@ -48,7 +49,7 @@ La PAES Regular de 2026 es el 30 de noviembre y el 1 y 2 de diciembre. Este cicl
 
 | Formato | Producción | Duración | Rol |
 |---|---|---|---|
-| **Conceptual** (las clases sin `-practica-`) | Manim, según la guía de estilo del canal | 8–10 min | Explicar la idea; búsqueda orgánica; anuncios |
+| **Conceptual** (las clases sin `-practica-`) | Clase de video de la plataforma; Remotion para la composición y Manim solo para transformaciones continuas, según la guía de estilo del canal | Meta de 8 min, sin relleno | Explicar la idea; búsqueda orgánica; anuncios |
 | **Práctica** (las clases `-practica-`) | Clase de la plataforma convertida a video (Remotion + Manim) | 10–15 min | Ejercitar con pausas; retención; lista de reproducción |
 | **Shorts** | Un tramo de cualquiera de los dos | 30–90 s | Descubrimiento |
 | **Compilación por eje** | Montaje de videos ya publicados | 40–90 min | Horas de reproducción en el último trimestre |
@@ -106,6 +107,7 @@ Ya está en las bibliotecas `yt-ia` y `yt-canal`. Quedan como ideas sin fecha:
 
 ## 6. Decisiones abiertas
 
+- **Duración de los conceptuales:** con la voz estimada, los diez primeros videos duran entre 3½ y 6 minutos. Salidas posibles: unir videos vecinos, ampliar la narración con un segundo ejemplo o un caso PAES, o aceptarlos cortos con compilaciones por bloque. Se decide al revisar los videos.
 - **Voz real:** no hay voz sintética en español instalada.
 - **Capacidad real por semana:** se mide con el piloto y define si M1 sigue en dos videos por semana.
 - **Material de apoyo:** falta decidir si el PDF de láminas o el repaso se enlazan desde la descripción, lo que depende de la entrada pública.

@@ -2,11 +2,11 @@
 
 > Nota del 19-10-2026: el contenido se reorganizó por curso. `content/planning/yt-m1.yaml` es ahora `contenido/youtube/paes-m1/curso.yaml`, `docs/canal-youtube.md` es `contenido/youtube/LEEME.md`, `docs/visual-language.md` es `docs/lenguaje-visual.md` y `docs/authoring.md` es `contenido/como-escribir-clases.md`.
 
-Propuesta del 15-10-2026. Las decisiones del docente están en §7 y el análisis de duración en §9. **Nada de esto está implementado.** No cambia contenido, planificación ni fechas. `content/planning/yt-m1.yaml` y `docs/canal-youtube.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
+Propuesta del 15-10-2026. Las decisiones del docente están en §7 y el análisis de duración en §9. **Estado al 21-10-2026:** implementado en lo esencial (formato `video`, `gancho`, `previos`, `momento`, diseño `escena`, `Recuerda`, avisos, figuras con estados por paso, los diez primeros videos como borradores y renderizados). La especificación vigente está en [Clases de video](../contenido/autoria/video.md); este documento es el historial de la propuesta y puede diferir de lo implementado. `contenido/youtube/paes-m1/curso.yaml` y `contenido/youtube/LEEME.md` tienen cambios en revisión en el checkout principal; este plan no los toca y las listas de §5 son solo propuestas.
 
 Lo que pidió el docente: que las láminas de video se estructuren distinto a las de aula, con más elementos visuales e interactivos; que un tema se detalle cuanto haga falta, sin limitar el número de videos, y que casi cada video sea autocontenido, con referencias a contenidos previos cuando no haya otra opción.
 
-Fuentes revisadas: `AGENTS.md`, README, `docs/architecture.md`, `docs/visual-language.md`, `docs/authoring.md`, `docs/canal-youtube.md` y `content/planning/yt-m1.yaml` de esta plataforma; las clases borrador `m1-naturales` (24 láminas) y `m1-enteros` (19 láminas) frente a `sistemas-2x2`; «Plan de producción - Números.md» y «Estilo de guion y video (referencia 3Blue1Brown).md» de la carpeta del canal; y el README, `AGENTS.md`, `docs/recursos.md`, `src/plataforma/` y `src/motor/tipos.ts` del repositorio `H:\Videos Profe Pina`.
+Fuentes revisadas: `AGENTS.md`, README, `plataforma/docs/architecture.md`, `docs/lenguaje-visual.md`, `contenido/como-escribir-clases.md`, `contenido/youtube/LEEME.md` y `contenido/youtube/paes-m1/curso.yaml` de esta plataforma; las clases borrador `m1-naturales` (24 láminas) y `m1-enteros` (19 láminas) frente a `sistemas-2x2`; «Plan de producción - Números.md» y «Estilo de guion y video (referencia 3Blue1Brown).md» de la carpeta del canal; y el README, `AGENTS.md`, `docs/recursos.md`, `src/plataforma/` y `src/motor/tipos.ts` del repositorio `H:\Videos Profe Pina`.
 
 ## 0. Diagnóstico: qué hacen hoy las dos clases de ejemplo
 
@@ -21,7 +21,7 @@ Fuentes revisadas: `AGENTS.md`, README, `docs/architecture.md`, `docs/visual-lan
 - reúne cinco ideas en 12 minutos (conjunto y opuesto; orden y valor absoluto; suma y resta; multiplicación y signos; contextos PAES), y el tramo teórico mete cuatro ideas en 3,5 minutos;
 - los bloques `Definicion` siguen dominando, y `ExploradorResta` es un control con deslizadores que en un video no tiene a quién responder.
 
-**El puente hacia los videos es manual.** El repositorio de videos lee de cada clase `lesson.yaml` (tramos, orden), el frontmatter y el cuerpo de las láminas, la galería y los tokens. Con eso genera `estructura.json`: tramos, láminas, pasos, componentes usados y mascota. Lo que se ve en pantalla se **vuelve a escribir a mano** en `guion.ts`. De `packages/interactives` reutiliza solo la matemática de `function-graph.ts`. Las figuras de la plataforma (`RectaEnteros`, `LineasMultiplos`…) no llegan al video. Sus estilos viven en `apps/presenter/src/styles/theme.css`, y el motor de video no puede importarlos.
+**El puente hacia los videos es manual.** El repositorio de videos lee de cada clase `clase.yaml` (tramos, orden), el frontmatter y el cuerpo de las láminas, la galería y los tokens. Con eso genera `estructura.json`: tramos, láminas, pasos, componentes usados y mascota. Lo que se ve en pantalla se **vuelve a escribir a mano** en `guion.ts`. De `packages/interactives` reutiliza solo la matemática de `function-graph.ts`. Las figuras de la plataforma (`RectaEnteros`, `LineasMultiplos`…) no llegan al video. Sus estilos viven en `apps/presenter/src/styles/theme.css`, y el motor de video no puede importarlos.
 
 **Conclusión:** hoy una «clase de video» es una clase de aula más corta. Para lo que pide el docente hacen falta tres cosas: otro molde de clase, figuras que se puedan animar y un puente que lleve esas figuras al video sin reescribirlas.
 
@@ -31,7 +31,7 @@ Fuentes revisadas: `AGENTS.md`, README, `docs/architecture.md`, `docs/visual-lan
 |---|---|---|
 | **Unidad** | La clase de 80 min, con tramos para el docente | Un video = una pregunta central y una idea (duración en §9) |
 | **Estructura** | Portada con Objetivo → activación → desarrollo → práctica → cierre metacognitivo | Gancho → caso concreto → versión simplificada → desarrollo → **clímax** → pausa → utilidad PAES → cierre que responde al gancho |
-| **Apertura** | Portada con título y Objetivo (violeta) | Una lámina-gancho: la tensión y un objeto (el termómetro, los buses). Sin portada ni Objetivo en pantalla: el objetivo queda en `lesson.yaml` y en la descripción |
+| **Apertura** | Portada con título y Objetivo (violeta) | Una lámina-gancho: la tensión y un objeto (el termómetro, los buses). Sin portada ni Objetivo en pantalla: el objetivo queda en `clase.yaml` y en la descripción |
 | **Ritmo** | Una idea por lámina; el docente regula el tiempo | Una idea por lámina y **un cambio visible por paso**. Cada paso es un beat de la narración (5–15 s) |
 | **Texto en pantalla** | Bloques completos que se leen en voz alta o en silencio | Lo que se dice no se escribe. En pantalla quedan objetos, rótulos, la fórmula clave y como máximo una frase. La narración explica |
 | **Definiciones** | Al inicio de la lámina, en azul | Después del caso, como **síntesis** de lo que ya se vio. Una por video como idea central y pocas de apoyo |
@@ -82,7 +82,7 @@ Nada más.
 - **El cierre responde a su propio gancho,** no al del video siguiente. El adelanto del siguiente va al final, después de la respuesta, y es opcional.
 - **Errores con nombre estables.** «El menos que se pierde» se llama igual en todos los videos donde aparece. Si otro video lo usa, lo vuelve a mostrar en 10 s.
 
-**Cómo se declaran los prerrequisitos.** Hoy `prerequisites` es texto libre. Se propone agregar en `lesson.yaml` una lista estructurada:
+**Cómo se declaran los prerrequisitos.** Hoy `prerequisites` es texto libre. Se propone agregar en `clase.yaml` una lista estructurada:
 
 ```yaml
 previos:
@@ -99,7 +99,7 @@ $72=2^3\cdot 3^2$: cada natural se escribe como producto de primos de una sola f
 </Recuerda>
 ```
 
-`Recuerda` es un **marco**: lleva un borde, la etiqueta «Recuerda» y el nombre del video de origen, sin fondo propio. Su contenido conserva el color de su función: una definición recordada sigue azul y un procedimiento sigue piedra. Así se cumple `docs/canal-youtube.md` («recuerda… azul») sin usar el azul como caja decorativa. El motor de video lo convierte en un beat `momento: 'recuerda'` y en una tarjeta de YouTube hacia ese video.
+`Recuerda` es un **marco**: lleva un borde, la etiqueta «Recuerda» y el nombre del video de origen, sin fondo propio. Su contenido conserva el color de su función: una definición recordada sigue azul y un procedimiento sigue piedra. Así se cumple `contenido/youtube/LEEME.md` («recuerda… azul») sin usar el azul como caja decorativa. El motor de video lo convierte en un beat `momento: 'recuerda'` y en una tarjeta de YouTube hacia ese video.
 
 **Criterio de tamaño para dividir un tema:**
 1. **Una pregunta, un clímax.** Si el gancho no cabe en una pregunta, o si hay dos momentos en que «se combinan las piezas», son dos videos.
@@ -108,7 +108,7 @@ $72=2^3\cdot 3^2$: cada natural se escribe como producto de primos de una sola f
 4. **Cada error típico PAES tiene dónde vivir.** Si un error frecuente no tiene espacio para cometerse, nombrarse y contrastarse, falta un video.
 5. **De 8 a 16 láminas por video conceptual,** con 2 a 6 pasos cada una. Más de 18 láminas indica que hay que dividir.
 
-La regla del canal dice que el video largo monetizable dura **8 minutos o más** (`canal-youtube.md`, principio 4). Dividir en videos autocontenidos empuja algunos temas por debajo de ese umbral. Es una decisión del docente (§7, pregunta 2); el análisis está en §9.
+La regla del canal dice que el video largo monetizable dura **8 minutos o más** (`contenido/youtube/LEEME.md`, principio 4). Dividir en videos autocontenidos empuja algunos temas por debajo de ese umbral. Es una decisión del docente (§7, pregunta 2); el análisis está en §9.
 
 ## 3. Elementos visuales e interactivos
 
@@ -188,7 +188,7 @@ Las reglas nuevas van en `packages/content-model`, para que rijan igual en conte
 
 ### 4.1 Formato de la clase
 
-En `lesson.yaml`, un campo nuevo `formato: aula | video`, con `aula` por omisión. Las clases actuales no cambian.
+En `clase.yaml`, un campo nuevo `formato: aula | video`, con `aula` por omisión. Las clases actuales no cambian.
 - El tipo de video sale del identificador, que ya es convención: con `-practica-` es de práctica; si no, conceptual.
 - content:check **avisa** si una biblioteca con `calendario: publicacion` planifica una clase `aula`. Un aviso y no un error, porque `yt-canal` puede tener otras necesidades.
 - «Copiar a otra biblioteca» no cambia el formato. Convertir una clase de aula en video es una acción explícita que no reescribe láminas.
@@ -199,10 +199,10 @@ Se prefiere el campo en la clase y no en la biblioteca, porque las reglas se apl
 
 | Dónde | Campo | Reglas |
 |---|---|---|
-| `lesson.yaml` | `formato` | `aula` \| `video` |
-| `lesson.yaml` | `previos` | `clase` existente en la misma biblioteca y anterior en su orden, con `idea` obligatoria; o `base` como texto |
-| `lesson.yaml` | `gancho` | La pregunta central en una frase; obligatoria en video conceptual |
-| `lesson.yaml` | `tramos` | En video, los minutos aceptan decimales y la suma da la duración estimada; cada tramo es un capítulo de YouTube |
+| `clase.yaml` | `formato` | `aula` \| `video` |
+| `clase.yaml` | `previos` | `clase` existente en la misma biblioteca y anterior en su orden, con `idea` obligatoria; o `base` como texto |
+| `clase.yaml` | `gancho` | La pregunta central en una frase; obligatoria en video conceptual |
+| `clase.yaml` | `tramos` | En video, los minutos aceptan decimales y la suma da la duración estimada; cada tramo es un capítulo de YouTube |
 | Frontmatter | `momento` | Solo en video; va después de `phase` en la forma canónica de `toMdx` |
 | MDX | `Recuerda`, `Animacion` | Fichas en el catálogo de componentes; `Recuerda.clase` debe estar en `previos` |
 | Figuras | `pasos…` por elemento, `secuencia` | Fichas en `interactive-params.ts` |
@@ -243,7 +243,7 @@ La pestaña Láminas de una clase de video podría mostrar la franja de subtítu
 - Es la representación estática que garantiza que cada estado final existe y cabe.
 - Sirve como guion gráfico para revisar un video antes de grabar.
 
-Lo que cambia es su uso. Mientras no se decida el «material de apoyo» (`canal-youtube.md` §6), el PDF de una clase de video no se enlaza en la descripción. Un PDF de láminas escuetas no es buen material de estudio; si se quiere uno, conviene una ficha resumen aparte, que es otra decisión.
+Lo que cambia es su uso. Mientras no se decida el «material de apoyo» (`contenido/youtube/LEEME.md` §6), el PDF de una clase de video no se enlaza en la descripción. Un PDF de láminas escuetas no es buen material de estudio; si se quiere uno, conviene una ficha resumen aparte, que es otra decisión.
 
 ### 4.7 Repositorio de videos
 
@@ -268,7 +268,7 @@ Los cambios del repositorio de videos se hacen allá, con sus propias reglas:
 
 ## 5. Consecuencias para la planificación: eje Números
 
-**Propuesta sin tocar `yt-m1.yaml`.** Hoy el eje tiene 11 clases (`m1-naturales` sin fecha y 10 con fecha). Con un video por pregunta central quedaría en **unos 25**. Se conservan los identificadores que ya existen cuando su idea central sigue siendo la misma. Los marcados como *nuevo* no tienen todavía `lesson.yaml`.
+**Propuesta sin tocar `contenido/youtube/paes-m1/curso.yaml`.** Hoy el eje tiene 11 clases (`m1-naturales` sin fecha y 10 con fecha). Con un video por pregunta central quedaría en **unos 25**. Se conservan los identificadores que ya existen cuando su idea central sigue siendo la misma. Los marcados como *nuevo* no tienen todavía `clase.yaml`.
 
 | # | id | Estado | Gancho (pregunta) | Idea central / clímax | Recuerda |
 |---|---|---|---|---|---|
@@ -304,8 +304,8 @@ Los cambios del repositorio de videos se hacen allá, con sus propias reglas:
 - **Prioridad de las operaciones y lenguaje algebraico** (sucesor, doble, «excede en») ya tienen su video en Álgebra: `m1-evaluar-expresiones` y `m1-traducir-expresiones`, que se publican antes. Se proponen como `Recuerda` y no como videos de Números. El valor posicional y los naturales frente a los cardinales quedan como Shorts, o como 30 s del video 2.
 - **Prácticas por bloque** (cuatro en vez de tres), para que ninguna práctica junte más de cinco o seis videos conceptuales. Cada pregunta enlaza en su capítulo el video conceptual que la respalda.
 - **`m1-naturales` y `m1-enteros` actuales** son la fuente de los videos 1–8: sus láminas y figuras se reparten. `m1-naturales` es borrador, sin fecha ni publicación, así que retirarlo no rompe enlaces. Ver §7.
-- **Calendario.** 27 videos a dos por semana son unas 13–14 semanas solo para Números, contra las 5 de hoy (2 de marzo a 2 de abril de 2027). Habría que correr el resto de M1, publicar más seguido o producir antes. Este plan no propone fechas. La capacidad real se mide con el piloto (`canal-youtube.md` §6).
-- **Desfase detectado.** «Plan de producción - Números.md» fecha `m1-enteros` el 10-11-2026, pero `yt-m1.yaml` de esta rama lo fecha el 2 de marzo de 2027, con Expresiones algebraicas desde noviembre. Puede corresponder a los cambios en revisión del checkout principal; no se corrige aquí.
+- **Calendario.** 27 videos a dos por semana son unas 13–14 semanas solo para Números, contra las 5 de hoy (2 de marzo a 2 de abril de 2027). Habría que correr el resto de M1, publicar más seguido o producir antes. Este plan no propone fechas. La capacidad real se mide con el piloto (`contenido/youtube/LEEME.md` §6).
+- **Desfase detectado.** «Plan de producción - Números.md» fecha `m1-enteros` el 10-11-2026, pero `contenido/youtube/paes-m1/curso.yaml` de esta rama lo fecha el 2 de marzo de 2027, con Expresiones algebraicas desde noviembre. Puede corresponder a los cambios en revisión del checkout principal; no se corrige aquí.
 
 ## 6. Piloto: `m1-mcm-mcd`
 
@@ -357,7 +357,7 @@ La utilidad PAES (los contextos de coincidir y repartir) entra en la voz entre l
 - Editor: el selector «Momento del video» (solo en clases de video) ajusta la fase; `escena` aparece entre los diseños; `Recuerda` y los pasos nuevos de las figuras se editan como los demás bloques y parámetros.
 - Figuras con estados por paso: `LineasMultiplos` (`pasosNumeros`, `pasoComunes`), `ArbolFactores` (`pasoArbol`, `pasoEscritura`) y `BarrasDivision` (`intentos`, `pasosIntentos`, `pasoTrozo`; el resto de un intento queda en ocre). La elección del trozo vigente es una función pura con pruebas.
 - La clase `m1-mcm-mcd` (12 láminas, borrador) con el guion gráfico de la tabla anterior, sin avisos propios salvo uno esperado: `m1-primos`, que recuerda, todavía no está planificada.
-- `m1-mcm-mcd` quedó en `yt-m1.yaml` como una línea sin fecha después de `m1-naturales`, porque las pruebas exigen que toda clase esté planificada. Es el único cambio en la planificación.
+- `m1-mcm-mcd` quedó en `contenido/youtube/paes-m1/curso.yaml` como una línea sin fecha después de `m1-naturales`, porque las pruebas exigen que toda clase esté planificada. Es el único cambio en la planificación.
 
 **Diferencias con lo propuesto:** solo se creó el diseño `escena` (no `gancho` ni `pausa`), porque bastó para las 12 láminas. Los estilos de las figuras siguen en `theme.css`, y `progreso` en `useSlide` todavía no existe: los dos se hacen junto con el paso 4, cuando el video necesite renderizar las figuras.
 
@@ -370,11 +370,11 @@ El umbral de 25 palabras se cumplió en las 12 láminas con poco ajuste (una lá
 - En vez de `progreso` en `useSlide`, cada cambio de estado es un fundido entre el estado anterior y el nuevo: no hizo falta tocar las figuras.
 - Guion de `m1-mcm-mcd`: 12 escenas, unos **6 min 11 s** con la voz estimada (2,4 palabras por segundo), por debajo de la meta de 8 minutos. Con la decisión 2 se publica así; la duración real depende de la voz grabada.
 
-**Pendiente:** que el docente vea el MP4 completo y decida si el enfoque se generaliza (criterios de arriba). Mientras la rama de la plataforma no esté en `main`, el video necesita `PLATAFORMA_DIR` apuntando a la carpeta de esa rama.
+**Pendiente:** que el docente vea el MP4 completo y decida si el enfoque se generaliza (criterios de arriba). Mientras la rama de la plataforma no esté en `main`, el video necesita `PLATAFORMA_DIR` apuntando a la carpeta de esa rama (obsoleto desde el 19-10-2026: el video lee la plataforma de `main`).
 
 ### Los primeros 10 videos (15-10-2026)
 
-El docente aprobó el piloto y pidió las láminas de los primeros 10 videos de §5 antes de hacer ajustes. Están como borradores `formato: video` en `content/lessons/m1/numeros`, planificados sin fecha en `yt-m1.yaml` en el orden de §5, y pasan content:check sin avisos propios:
+El docente aprobó el piloto y pidió las láminas de los primeros 10 videos de §5 antes de hacer ajustes. *Aclaración del 21-10-2026: lo aprobado fue el enfoque, para escribir los diez borradores; la revisión de los videos renderizados sigue pendiente.* Están como borradores `formato: video` en `contenido/youtube/paes-m1/clases`, planificados sin fecha en `contenido/youtube/paes-m1/curso.yaml` en el orden de §5, y pasan content:check sin avisos propios:
 
 | # | Clase | Láminas | Figuras y momentos |
 |---|---|---|---|
@@ -386,7 +386,7 @@ El docente aprobó el piloto y pidió las láminas de los primeros 10 videos de 
 | 6 | `m1-enteros` | 10 | Rehecha desde cero: termómetro, opuestos y distancias por paso; clímax «orden y distancia no son lo mismo» |
 | 7 | `m1-enteros-suma-resta` | 10 | Saltos en la recta; clímax «el mismo salto» |
 | 8 | `m1-enteros-signos` | 10 | Suma repetida y tabla; clímax «multiplicar por −1 da el opuesto» |
-| 9 | `m1-practica-naturales-enteros` | 10 | Siete preguntas propias (`nat-ent-*` en content/activities) y un paso con error que se resuelve al final |
+| 9 | `m1-practica-naturales-enteros` | 10 | Siete preguntas propias (`nat-ent-*`, en las actividades de la clase) y un paso con error que se resuelve al final |
 | 10 | `m1-fracciones` | 11 | `BarraFraccion` nueva: reparto, punto en la recta y equivalencia |
 
 Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figura nueva (`BarraFraccion`). La regla de `previos` ahora compara fechas cuando las dos clases las tienen, porque las unidades del canal no se publican en el orden del archivo.
@@ -416,7 +416,7 @@ Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figur
 |---|---|---|
 | 1 | ¿Dónde viven las láminas de video? | **En la plataforma**, como clases con `formato: video`. Se editan desde la app, pasan por content:check, comparten figuras con el aula y alimentan el video sin reescribirse. La narración sigue en el repositorio de videos. |
 | 2 | ¿Se mantiene el mínimo de 8 minutos? | **Opción A de §9.3: meta de 8 minutos, sin obligarla, con compilaciones por bloque.** Ningún video se rellena para llegar a 8. |
-| 3 | ¿Los videos conceptuales también parten de la plataforma? | **Sí.** Ambos tipos parten de una clase de video de la plataforma (guion gráfico y figuras), con Remotion para la composición y Manim solo para transformaciones continuas. La tabla de formatos de `canal-youtube.md` §4 se actualiza cuando se cierre la revisión en curso de ese archivo. |
+| 3 | ¿Los videos conceptuales también parten de la plataforma? | **Sí.** Ambos tipos parten de una clase de video de la plataforma (guion gráfico y figuras), con Remotion para la composición y Manim solo para transformaciones continuas. La tabla de formatos de `contenido/youtube/LEEME.md` §4 se actualiza cuando se cierre la revisión en curso de ese archivo. |
 | 4 | ¿Cuántos videos en Números y con qué calendario? | **La lista de §5 como dirección, sin fechas.** El calendario se decide con la capacidad medida en el piloto. |
 | 5 | ¿Qué pasa con `m1-naturales` y `m1-enteros`? | Delegada; ver abajo. |
 | 6 | ¿Quién pone la mascota en video? | **El motor de video, según el momento.** La lámina solo la declara en el gancho o el cierre, si cumple una función. |
@@ -427,7 +427,7 @@ Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figur
 
 **Decisión 5 (delegada).** Se empieza desde cero en el formato de video:
 - `m1-enteros` **conserva su id** como el primer video de enteros (video 6 de §5), acotado a conjunto, orden y valor absoluto. Sus láminas se rehacen desde cero y las actuales quedan como referencia en el historial de git. Se reutilizan `RectaEnteros` y `ExploradorResta`, ampliadas con estados por paso.
-- `m1-naturales` **se retira**. Sus ideas pasan a los videos 1–5 de §5, que se escriben desde cero con las figuras de `FigurasNaturales.tsx`. La carpeta y su entrada en `yt-m1.yaml` se quitan en el paso de replanificación (§8, paso 4), no antes, para no tocar la planificación mientras sigue en revisión. Como es borrador sin fecha ni publicación, retirarla no rompe enlaces.
+- `m1-naturales` **se retira**. Sus ideas pasan a los videos 1–5 de §5, que se escriben desde cero con las figuras de `FigurasNaturales.tsx`. La carpeta y su entrada en `contenido/youtube/paes-m1/curso.yaml` se quitan en el paso de replanificación (§8, paso 4), no antes, para no tocar la planificación mientras sigue en revisión. Como es borrador sin fecha ni publicación, retirarla no rompe enlaces.
 - El sistema decimal y los naturales frente a los cardinales, que hoy solo están en `m1-naturales`, quedan como 30 s dentro de `m1-division-resto` (video 2) o como Short. No se pierden.
 - El piloto `m1-mcm-mcd` se escribe desde cero, sin copiar láminas de `m1-naturales`.
 
@@ -438,14 +438,14 @@ Las figuras sumaron estados por paso (`CribaPrimos`, `RectaEnteros`) y una figur
 | Prioridad de las operaciones | `m1-evaluar-expresiones` | 2026-11-10 | Ya es su tema central; nombrar la regla igual que en Números |
 | Sucesor, antecesor, doble, «excede en» | `m1-traducir-expresiones` | 2026-12-15 | El glosario del plan de producción ya incluye «el doble de» y «el sucesor de». Falta agregar antecesor, **consecutivos** (n, n + 1, n + 2) y «excede en», que usa el video 1 de Números |
 
-Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. Si la revisión en curso de `yt-m1.yaml` mueve esas fechas, hay que comprobar que sigan antes de los videos que los recuerdan. Se propone que la regla de `previos` de §4.2 lo compruebe sola: que la clase recordada tenga una fecha anterior, además de un lugar anterior en el orden.
+Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. Si la revisión en curso de `contenido/youtube/paes-m1/curso.yaml` mueve esas fechas, hay que comprobar que sigan antes de los videos que los recuerdan. Se propone que la regla de `previos` de §4.2 lo compruebe sola: que la clase recordada tenga una fecha anterior, además de un lugar anterior en el orden.
 
 ## 8. Orden de trabajo
 
 1. Piloto `m1-mcm-mcd` (§6): plataforma primero, luego el repositorio de videos.
 2. Revisión del MP4 por el docente y ajuste de umbrales, incluida la duración real frente a la meta de 8 minutos.
-3. Convertir avisos en errores, documentar en `docs/authoring.md` y `docs/visual-language.md` y actualizar `canal-youtube.md` §4, incluida la duración (decisión 2) y las compilaciones por bloque.
-4. Rehacer la planificación de Números en `yt-m1.yaml` con lo aprobado: retirar `m1-naturales`, completar el guion de `m1-traducir-expresiones` y agregar las compilaciones por bloque (por ejemplo, «Números enteros» con los videos 6–8). Se hace cuando se cierre la revisión en curso de la planificación.
+3. Convertir avisos en errores, documentar en `contenido/como-escribir-clases.md` y `docs/lenguaje-visual.md` y actualizar `contenido/youtube/LEEME.md` §4, incluida la duración (decisión 2) y las compilaciones por bloque.
+4. Rehacer la planificación de Números en `contenido/youtube/paes-m1/curso.yaml` con lo aprobado: retirar `m1-naturales`, completar el guion de `m1-traducir-expresiones` y agregar las compilaciones por bloque (por ejemplo, «Números enteros» con los videos 6–8). Se hace cuando se cierre la revisión en curso de la planificación.
 5. Interactivos para el estudiante desde la descripción (decisión 10), cuando se decida la entrada pública.
 
 ## 9. Duración: monetización, pedagogía y planificación
@@ -469,7 +469,7 @@ Ambos se publican antes que Números (marzo de 2027), así que el orden sirve. S
 | **4–7 min** | Sin anuncios a mitad de video; buena retención; muchas puertas de entrada desde la búsqueda; pocas horas por vista | Lo más cercano a lo que mantiene la atención: en un estudio de 6,9 millones de sesiones de edX (Guo, Kim y Rubin, 2014), el interés caía con fuerza pasados unos 6 minutos. Una idea por video. Pero el marco de un video autocontenido (gancho, recuerdo, pausa, cierre ≈ 2 min) ocupa un tercio del tiempo | Más videos para el mismo temario (unos 27 en Números) y más costo fijo por video: miniatura, título, descripción, capítulos, subida y render |
 | **8–10 min** | Habilita 1 o 2 anuncios a mitad de video; más horas por vista; la retención sigue siendo alcanzable | Cabe una idea con su marco completo, que ocupa un quinto. El riesgo es **rellenar** para llegar a 8, que se nota y baja la retención | Unos 20–24 videos en Números; es lo que suponía el plan del canal |
 | **11–15 min** | Varios anuncios a mitad de video; más horas por vista; retención más difícil | Suele traer dos ideas y dos clímax, lo que contradice la regla de un video por pregunta. Es razonable para las **prácticas**, donde cada pregunta es un capítulo | Menos videos, pero cada uno más caro de revisar y de corregir |
-| **20–40 min (compilación)** | Varios anuncios; muchas horas por vista; búsquedas tipo «enteros completo» en época de repaso | El estudiante elige la parte por capítulos; sirve para repasar, no para aprender por primera vez | Casi gratis: es un montaje de videos ya publicados. Ya está previsto en `canal-youtube.md` §4 |
+| **20–40 min (compilación)** | Varios anuncios; muchas horas por vista; búsquedas tipo «enteros completo» en época de repaso | El estudiante elige la parte por capítulos; sirve para repasar, no para aprender por primera vez | Casi gratis: es un montaje de videos ya publicados. Ya está previsto en `contenido/youtube/LEEME.md` §4 |
 
 **La idea central:** la duración de cada video no tiene que resolver a la vez la pedagogía y la monetización. Los videos conceptuales cortos y autocontenidos sirven al aprendizaje y a la búsqueda. Las **compilaciones por bloque** (por ejemplo, «Números enteros» con los videos 6–8, ≈ 25 min) juntan horas de visualización y llevan anuncios a mitad de video sin rellenar ningún video.
 
