@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { parseContentFiles } from '@aula/content-model/content-files';
 import { readContentFiles } from '@aula/content-model/read-content';
 import { mascotGallery } from '../app/gallery';
-import { skeleton, splitSource, toMdx } from './mdx';
+import { checkSlideSource } from '@aula/content-model/check-source';
+import { extractBlocks } from '../features/clase/editor/blocks';
+import { blankSlide, skeleton, splitSource, toMdx, type BlankLayout } from './mdx';
 
 /** El contenido del repositorio, leído como lo lee el build. */
 const buildBundle = parseContentFiles(await readContentFiles());
@@ -27,5 +29,31 @@ describe('MDX de las láminas', () => {
     ]);
     expect(slides[0]?.title).toBe('Dominio y recorrido');
     expect(new Set(slides.map((s) => s.id)).size).toBe(5);
+  });
+  it('cada lámina en blanco pasa content:check y se lee como bloques', async () => {
+    const layouts: BlankLayout[] = ['portada', 'concepto', 'dos-columnas', 'resolucion', 'ejercicio'];
+    const context = {
+      templateIds: new Set(mascotGallery.templates.map((t) => t.id)),
+      activityIds: new Set<string>(),
+    };
+    for (const layout of layouts) {
+      const slide = blankSlide(layout, `nueva-${layout}`);
+      expect(slide.layout).toBe(layout);
+      const text = toMdx(slide);
+      const { error } = await checkSlideSource(text, context);
+      expect(error, layout).toBeNull();
+      const { slide: parsed, body } = splitSource(text);
+      expect(toMdx({ ...parsed, body }), layout).toBe(text);
+      const model = extractBlocks(slide.body);
+      expect(model.ok, layout).toBe(true);
+      if (model.ok) {
+        expect(model.blocks.length, layout).toBeGreaterThan(0);
+        // Cada paso declarado tiene al menos un bloque que lo muestra.
+        const shown = new Set(model.blocks.map((b) => b.step));
+        for (let n = 1; n <= slide.steps; n++) expect(shown.has(n), `${layout} paso ${n}`).toBe(true);
+      }
+    }
+    expect(blankSlide('resolucion', 'r').steps).toBe(2);
+    expect(blankSlide('portada', 'p', 'Mi clase').title).toBe('Mi clase');
   });
 });

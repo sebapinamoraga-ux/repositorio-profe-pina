@@ -8,7 +8,7 @@ import type {
 import { buildBundle, compiledFor } from '../content/build';
 import { libraryOf, type Library } from '../content/library';
 
-export { skeleton, slideFromTemplate, toMdx } from './mdx';
+export { blankSlide, skeleton, slideFromTemplate, toMdx, type BlankLayout } from './mdx';
 export { editableSlides } from '../content/ops';
 
 export type CompiledContent = ComponentType<{ components: MDXComponents }>;

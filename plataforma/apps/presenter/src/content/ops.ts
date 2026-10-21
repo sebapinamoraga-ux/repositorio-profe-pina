@@ -53,11 +53,108 @@ export function editableRepaso(lesson: LessonEntry | undefined): EditedSlide[] {
   return (lesson?.repaso ?? []).map(({ slide, body }) => ({ ...slide, body }));
 }
 
-/** Reemplaza las láminas de una clase: escribe cada .mdx, borra los quitados y ajusta clase.yaml. */
+/** Un tramo de `clase.yaml`: sus láminas van de `from` a `to`, ambas incluidas. */
+export type Tramo = NonNullable<Lesson['tramos']>[number];
+
+/** Cómo quedan los tramos cuando cambian las láminas de la clase. */
+export interface SlideLayout {
+  /** Láminas de cada tramo, en orden: lo usa quien mueve láminas entre tramos. */
+  groups?: readonly (readonly string[])[];
+  /** Identificadores que cambiaron (`antes → después`). Si falta, se deduce un cambio en su sitio. */
+  rename?: Readonly<Record<string, string>>;
+}
+
+const slideIdOf = (file: string) => file.replace(/\.mdx$/, '');
+
+/** Láminas de cada tramo según su `from`/`to`; null si la clase no tiene tramos o no calzan. */
+export function tramoGroups(lesson: Lesson): string[][] | null {
+  if (!lesson.tramos?.length) return null;
+  const ids = lesson.slides.map(slideIdOf);
+  const groups: string[][] = [];
+  for (const tramo of lesson.tramos) {
+    const from = ids.indexOf(tramo.from);
+    const to = ids.indexOf(tramo.to);
+    if (from < 0 || to < from) return null;
+    groups.push(ids.slice(from, to + 1));
+  }
+  return groups;
+}
+
+/** Tramos con las mismas etiquetas y minutos, ajustados a las láminas que tiene cada uno. */
+export function tramosFromGroups(
+  tramos: readonly Tramo[],
+  groups: readonly (readonly string[])[],
+): Tramo[] | null {
+  if (groups.length !== tramos.length) return null;
+  const next: Tramo[] = [];
+  for (const [k, tramo] of tramos.entries()) {
+    const group = groups[k];
+    const from = group?.[0];
+    const to = group?.[group.length - 1];
+    if (from === undefined || to === undefined) return null;
+    next.push({ ...tramo, from, to });
+  }
+  return next;
+}
+
+/**
+ * Tramos para un orden nuevo de láminas, cuando no se dice a qué tramo va cada una: cada tramo
+ * conserva su tamaño (menos las láminas quitadas), las nuevas entran en el tramo de la que las
+ * precede y un identificador cambiado en su sitio se sigue en `from`/`to`. Null si algún tramo
+ * quedaría vacío o la clase no tiene tramos coherentes: entonces no se tocan.
+ */
+export function tramosForOrder(
+  lesson: Lesson,
+  nextIds: readonly string[],
+  rename: Readonly<Record<string, string>> = {},
+): Tramo[] | null {
+  const old = tramoGroups(lesson);
+  const tramos = lesson.tramos;
+  if (!old || !tramos) return null;
+  const oldIds = old.flat();
+  const nextSet = new Set(nextIds);
+  const oldSet = new Set(oldIds);
+  const map: Record<string, string> = { ...rename };
+  if (!Object.keys(map).length) {
+    const removed = oldIds.filter((id) => !nextSet.has(id));
+    const added = nextIds.filter((id) => !oldSet.has(id));
+    if (
+      removed.length &&
+      removed.length === added.length &&
+      removed.every((id, k) => oldIds.indexOf(id) === nextIds.indexOf(added[k] ?? ''))
+    )
+      removed.forEach((id, k) => {
+        map[id] = added[k] ?? id;
+      });
+  }
+  const tramoOf = new Map<string, number>();
+  old.forEach((group, k) => group.forEach((id) => tramoOf.set(map[id] ?? id, k)));
+  const sizes = old.map(() => 0);
+  let last = 0;
+  for (const id of nextIds) {
+    const k = tramoOf.get(id) ?? last;
+    sizes[k] = (sizes[k] ?? 0) + 1;
+    last = k;
+  }
+  if (sizes.some((size) => size === 0)) return null;
+  let at = 0;
+  const groups = sizes.map((size) => {
+    const group = nextIds.slice(at, at + size);
+    at += size;
+    return group;
+  });
+  return tramosFromGroups(tramos, groups);
+}
+
+/**
+ * Reemplaza las láminas de una clase: escribe cada .mdx, borra los quitados y ajusta clase.yaml.
+ * Si la clase tiene tramos, también los ajusta en la misma escritura (ver `SlideLayout`).
+ */
 export function writeSlides(
   bundle: ContentBundle,
   lessonId: string,
   slides: readonly EditedSlide[],
+  layout: SlideLayout = {},
 ): FileWrite[] {
   const lesson = findLesson(bundle, lessonId);
   if (!lesson) return [];
@@ -67,8 +164,20 @@ export function writeSlides(
     writes.push({ path: slidePath(lesson.dir, slideFile(slide)), text: toMdx(slide) });
   for (const file of lesson.meta.slides)
     if (!kept.has(file)) writes.push({ path: slidePath(lesson.dir, file), text: null });
+  const ids = slides.map((slide) => slide.id);
+  const tramos = lesson.meta.tramos
+    ? (layout.groups &&
+        layout.groups.flat().length === ids.length &&
+        layout.groups.flat().every((id, k) => id === ids[k])
+        ? tramosFromGroups(lesson.meta.tramos, layout.groups)
+        : tramosForOrder(lesson.meta, ids, layout.rename))
+    : null;
+  const changed = tramos && JSON.stringify(tramos) !== JSON.stringify(lesson.meta.tramos);
   writes.push(
-    ...writeLesson(bundle, lessonId, { slides: slides.map(slideFile) }),
+    ...writeLesson(bundle, lessonId, {
+      slides: slides.map(slideFile),
+      ...(changed ? { tramos } : {}),
+    }),
   );
   return writes;
 }

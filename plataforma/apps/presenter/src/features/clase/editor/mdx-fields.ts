@@ -36,14 +36,14 @@ export type Field =
 
 const pointSchema = z.object({ offset: z.number().optional() }).passthrough();
 const positionSchema = z.object({ start: pointSchema, end: pointSchema }).optional();
-type MdxNode = {
+export type MdxNode = {
   type: string;
   name?: string | null;
   attributes?: { type: string; name?: string; value?: unknown; position?: z.infer<typeof positionSchema> }[];
   children?: MdxNode[];
   position?: z.infer<typeof positionSchema>;
 };
-const nodeSchema: z.ZodType<MdxNode> = z.lazy(() =>
+export const nodeSchema: z.ZodType<MdxNode> = z.lazy(() =>
   z
     .object({
       type: z.string(),
@@ -66,7 +66,7 @@ const nodeSchema: z.ZodType<MdxNode> = z.lazy(() =>
     .passthrough(),
 );
 
-const BLOCK_NAMES: Record<string, string> = {
+export const BLOCK_NAMES: Record<string, string> = {
   Definicion: 'Definición',
   Objetivo: 'Objetivo',
   Comprobacion: 'Comprobación',
@@ -96,7 +96,7 @@ const ATTR_LABELS: Record<string, string> = {
   amarillo: 'Luz amarilla',
   verde: 'Luz verde',
 };
-const FIXED: Record<string, string> = {
+export const FIXED: Record<string, string> = {
   PreguntaPAES: 'Pregunta PAES',
   GraficoSistema: 'Gráfico',
   GraficoDosCondiciones: 'Gráfico',
@@ -125,7 +125,7 @@ const PRESENCE: Record<string, string> = {
   marca: 'Marca',
 };
 
-function fixedValue(name: string, attrs: MdxNode['attributes'] = []) {
+export function fixedValue(name: string, attrs: MdxNode['attributes'] = []) {
   const read = (key: string) => {
     const attr = attrs.find((a) => a.name === key);
     if (!attr) return undefined;
@@ -139,14 +139,14 @@ function fixedValue(name: string, attrs: MdxNode['attributes'] = []) {
   return 'Parámetros fijos; se editan en «MDX de la lámina».';
 }
 
-const processor = createProcessor({ remarkPlugins: [remarkMath] });
+export const processor = createProcessor({ remarkPlugins: [remarkMath] });
 
-function literal(attr: { value?: unknown }) {
+export function literal(attr: { value?: unknown }) {
   return typeof attr.value === 'string' ? attr.value : undefined;
 }
 
 /** Rango del valor entre comillas dentro de `nombre="valor"`. */
-function valueRange(source: string, start: number, end: number) {
+export function valueRange(source: string, start: number, end: number) {
   const slice = source.slice(start, end);
   const eq = slice.indexOf('=');
   const quote = slice.slice(eq + 1).search(/["']/);
@@ -156,79 +156,94 @@ function valueRange(source: string, start: number, end: number) {
   return close > open ? { start: open + 1, end: close } : null;
 }
 
-const isJsx = (node: MdxNode) =>
+export const isJsx = (node: MdxNode) =>
   node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement';
+
+/** Campo de texto con el contenido de uno o más nodos de markdown contiguos. */
+export function textField(body: string, group: string, nodes: MdxNode[]): Field | null {
+  const start = nodes[0]?.position?.start.offset;
+  const end = nodes[nodes.length - 1]?.position?.end.offset;
+  if (start === undefined || end === undefined) return null;
+  const value = body.slice(start, end);
+  if (!value.trim()) return null;
+  return { kind: 'text', group, label: 'Contenido', start, end, value };
+}
+
+/** Campos de un elemento JSX (y de lo que contiene), como los lee `extractFields`. */
+export function elementFields(body: string, child: MdxNode, group: string): Field[] {
+  const out: Field[] = [];
+  visitElement(body, child, group, out);
+  return out;
+}
+
+function visitElement(body: string, child: MdxNode, group: string, out: Field[]) {
+  const name = child.name ?? '';
+  const label = BLOCK_NAMES[name];
+  const inner =
+    name === 'Paso'
+      ? `${group ? `${group} › ` : ''}Paso ${literal(child.attributes?.find((a) => a.name === 'n') ?? {}) ?? ''}`.trim()
+      : label
+        ? `${group ? `${group} › ` : ''}${label}`
+        : group;
+  const params = INTERACTIVE_SPECS[name] ? paramsOf(child) : null;
+  if (params) {
+    out.push({
+      kind: 'params',
+      group: inner || (FIXED[name] ?? name),
+      label: FIXED[name] ?? name,
+      component: name,
+      ...params,
+    });
+    return;
+  }
+  if (FIXED[name]) {
+    const fixedLabel = FIXED[name] ?? name;
+    out.push({
+      kind: 'fixed',
+      group: inner || fixedLabel,
+      label: fixedLabel,
+      value: fixedValue(name, child.attributes),
+    });
+    return;
+  }
+  for (const attr of child.attributes ?? []) {
+    const value = literal(attr);
+    const start = attr.position?.start.offset;
+    const end = attr.position?.end.offset;
+    if (!attr.name || value === undefined || start === undefined || end === undefined) continue;
+    const range = valueRange(body, start, end);
+    if (!range) continue;
+    if (attr.name === 'plantilla')
+      out.push({ kind: 'template', group: inner, label: 'Plantilla de mascota', ...range, value });
+    else if (ATTR_LABELS[attr.name])
+      out.push({ kind: 'attr', group: inner, label: ATTR_LABELS[attr.name] ?? attr.name, ...range, value });
+  }
+  if (child.children?.some((c) => !isJsx(c)) || child.children?.some(isJsx))
+    walkChildren(body, child, inner, out);
+}
+
+function walkChildren(body: string, node: MdxNode, group: string, out: Field[]) {
+  let run: MdxNode[] = [];
+  const flush = () => {
+    const field = textField(body, group, run);
+    if (field) out.push(field);
+    run = [];
+  };
+  for (const child of node.children ?? []) {
+    if (child.type !== 'mdxJsxFlowElement') {
+      run.push(child);
+      continue;
+    }
+    flush();
+    visitElement(body, child, group, out);
+  }
+  flush();
+}
 
 export function extractFields(body: string): Field[] {
   const root = nodeSchema.parse(processor.parse(body));
   const out: Field[] = [];
-
-  const pushText = (group: string, nodes: MdxNode[]) => {
-    const start = nodes[0]?.position?.start.offset;
-    const end = nodes[nodes.length - 1]?.position?.end.offset;
-    if (start === undefined || end === undefined) return;
-    const value = body.slice(start, end);
-    if (!value.trim()) return;
-    out.push({ kind: 'text', group, label: 'Contenido', start, end, value });
-  };
-
-  const walk = (node: MdxNode, group: string) => {
-    let run: MdxNode[] = [];
-    for (const child of node.children ?? []) {
-      if (child.type !== 'mdxJsxFlowElement') {
-        run.push(child);
-        continue;
-      }
-      pushText(group, run);
-      run = [];
-      const name = child.name ?? '';
-      const label = BLOCK_NAMES[name];
-      const inner =
-        name === 'Paso'
-          ? `${group ? `${group} › ` : ''}Paso ${literal(child.attributes?.find((a) => a.name === 'n') ?? {}) ?? ''}`.trim()
-          : label
-            ? `${group ? `${group} › ` : ''}${label}`
-            : group;
-      const params = INTERACTIVE_SPECS[name] ? paramsOf(child) : null;
-      if (params) {
-        out.push({
-          kind: 'params',
-          group: inner || (FIXED[name] ?? name),
-          label: FIXED[name] ?? name,
-          component: name,
-          ...params,
-        });
-        continue;
-      }
-      if (FIXED[name]) {
-        const label = FIXED[name] ?? name;
-        out.push({
-          kind: 'fixed',
-          group: inner || label,
-          label,
-          value: fixedValue(name, child.attributes),
-        });
-        continue;
-      }
-      for (const attr of child.attributes ?? []) {
-        const value = literal(attr);
-        const start = attr.position?.start.offset;
-        const end = attr.position?.end.offset;
-        if (!attr.name || value === undefined || start === undefined || end === undefined)
-          continue;
-        const range = valueRange(body, start, end);
-        if (!range) continue;
-        if (attr.name === 'plantilla')
-          out.push({ kind: 'template', group: inner, label: 'Plantilla de mascota', ...range, value });
-        else if (ATTR_LABELS[attr.name])
-          out.push({ kind: 'attr', group: inner, label: ATTR_LABELS[attr.name] ?? attr.name, ...range, value });
-      }
-      if (child.children?.some((c) => !isJsx(c)) || child.children?.some(isJsx))
-        walk(child, inner);
-    }
-    pushText(group, run);
-  };
-  walk(root, '');
+  walkChildren(body, root, '', out);
   return out;
 }
 
