@@ -230,7 +230,8 @@ export function TeacherShell({
           <>
             <SessionBar onNavigate={go} />
             <ConnectionStrip onNavigate={go} />
-            <SaveBar onNavigate={go} />
+            {/* En Clase el indicador de publicación del encabezado ocupa su lugar. */}
+            {view !== 'clase' && <SaveBar onNavigate={go} />}
           </>
         )}
         {area === 'recursos' && (

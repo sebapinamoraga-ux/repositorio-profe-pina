@@ -18,7 +18,7 @@
   border-bottom: 1px solid var(--line);
 }
 .ws-title {
-  flex: 1 1 420px;
+  flex: 1 1 300px;
   min-width: 0;
 }
 .ws-title .page-head-kicker {

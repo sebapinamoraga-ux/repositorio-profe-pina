@@ -1,0 +1,412 @@
+/* Tableta y celular del editor: objetivos de 44 px, modo enfoque, pantallas del celular y
+   «Organizar». Se añade a las reglas de escritorio sin cambiarlas. */
+@media (pointer: coarse) {
+  .editor .insert-btn,
+  .editor .slide-bar-select,
+  .editor .slide-bar-title,
+  .editor .tramo-add,
+  .editor .segmented button,
+  .editor .timeline-add,
+  .editor .menu-trigger,
+  .block-toolbar button,
+  .block-toolbar select {
+    min-height: 44px;
+  }
+  .editor .timeline-remove {
+    width: 44px;
+    height: 44px;
+  }
+  .editor .timeline-chip {
+    min-height: 44px;
+  }
+  .editor .thumb {
+    padding-block: 10px;
+  }
+  .menu-item {
+    min-height: 48px;
+  }
+}
+.editor.is-mid .insert-bar,
+.editor.is-narrow .insert-bar {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.editor.is-mid .insert-bar > *,
+.editor.is-narrow .insert-bar > * {
+  flex: none;
+}
+.toolbar-more {
+  min-height: 44px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.timeline-more {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.timeline-col .menu {
+  display: flex;
+}
+.timeline-col .menu .timeline-chip {
+  width: 100%;
+}
+
+/* Organizar láminas */
+.organize-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.organize-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 44px 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line-4);
+}
+.organize-row .organize-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.organize-row button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+}
+.organize-row button:disabled {
+  opacity: 0.4;
+}
+.organize-row select {
+  grid-column: 2 / -1;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+/* Modo enfoque: escribir con el dedo */
+.focus-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--page);
+}
+.focus-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.focus-head b {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.focus-body {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 46%) minmax(0, 1fr);
+}
+.focus-slide {
+  min-width: 0;
+  padding: 12px;
+  overflow: auto;
+}
+.focus-editor {
+  min-width: 0;
+  padding: 12px 14px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  overflow: auto;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+}
+.focus-editor .inline-text {
+  font-size: 17px;
+}
+.focus-editor .inline-input {
+  font-size: 17px;
+  min-height: 44px;
+}
+.focus-formats {
+  padding: 6px 10px;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.focus-formats .block-toolbar {
+  width: max-content;
+}
+.mini-slide {
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--sh-card);
+}
+@media (orientation: portrait), (max-width: 719px) {
+  .focus-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: auto;
+  }
+  .focus-editor {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+/* Celular */
+.editor.is-narrow {
+  display: block;
+  height: 100%;
+  overflow: auto;
+}
+.editor.is-narrow > .editor-list {
+  max-height: none;
+  min-height: 100%;
+  border-bottom: 0;
+}
+.phone-slide {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 28px;
+}
+.phone-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+.phone-back {
+  min-height: 44px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--blue);
+  font: inherit;
+  font-weight: 650;
+}
+.phone-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.phone-more {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.phone-canvas {
+  padding: 0 12px;
+}
+.phone-steps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+}
+.phone-steps-pills {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.phone-steps .pill {
+  flex: none;
+  min-height: 44px;
+}
+.phone-blocks {
+  padding: 0 12px;
+  display: grid;
+  gap: 8px;
+}
+.phone-blocks ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.phone-blocks-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.phone-blocks-head p {
+  margin: 0;
+}
+.phone-block {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.phone-block-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+.phone-block-copy {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.phone-block-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--muted);
+}
+.phone-block-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.phone-block-tags small {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.phone-block-tags small.is-note {
+  background: var(--yellow-soft);
+  color: var(--note-ink);
+}
+.insert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.insert-tile {
+  min-height: 56px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+.insert-tile:disabled {
+  opacity: 0.5;
+}
+.sheet-intro {
+  display: grid;
+  gap: 4px;
+}
+.sheet-intro h2,
+.sheet-intro p {
+  margin: 0;
+}
+.sheet .side-panel {
+  height: 60vh;
+  border: 0;
+}
+.sheet .blank-grid {
+  grid-auto-flow: column;
+  grid-template-columns: none;
+  grid-auto-columns: 200px;
+  overflow-x: auto;
+}
+.sheet .picker-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 719px) {
+  .sheet .blank-grid {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-columns: auto;
+    overflow-x: visible;
+  }
+}
+@media print {
+  .focus-mode,
+  .phone-head {
+    display: none;
+  }
+}
+
+/* Encabezado de la clase en pantallas angostas */
+@media (max-width: 720px) {
+  .ws-actions {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .ws-kbd {
+    display: none;
+  }
+}

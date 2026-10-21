@@ -10,6 +10,7 @@ export function makeNote(
     slideId: string | null;
     slideTitle: string;
     source: Note['source'];
+    blockRef?: Note['blockRef'];
   },
 ): Note {
   const t = nowParts();
@@ -27,5 +28,6 @@ export function makeNote(
       ? (data.courses.find((c) => c.id === session.courseId)?.nombre ?? '')
       : '',
     status: 'pendiente',
+    ...(input.blockRef && input.slideId ? { blockRef: input.blockRef } : {}),
   };
 }

@@ -3,6 +3,7 @@ import { parse } from 'yaml';
 import type { Planning } from '@aula/content-model';
 import { parseContentFiles } from '@aula/content-model/content-files';
 import { checkContentFiles } from '@aula/content-model/check-content';
+import { verifyLessonPlan } from '@aula/content-model/verify-plan';
 import { readContentFiles } from '@aula/content-model/read-content';
 import { mascotGallery } from '../app/gallery';
 import { skeleton, slideFromTemplate } from '../store/mdx';
@@ -28,6 +29,9 @@ import {
   findLesson,
   planningWrites,
   removeLessonFiles,
+  slideFile,
+  tramoGroups,
+  tramosForOrder,
   writePlanning,
   writeLesson,
   writeRepaso,
@@ -706,5 +710,107 @@ describe('varias bibliotecas', () => {
       { type: 'addUnit', id: 'u1', title: 'Funciones' },
     );
     expect(next.title).toBe('Canal');
+  });
+});
+
+describe('tramos al cambiar las láminas', () => {
+  const ID = 'funcion-cuadratica-2';
+  const lessonEntry = () => {
+    const lesson = findLesson(bundle, ID);
+    if (!lesson) throw new Error('Falta la clase base');
+    return lesson;
+  };
+  /** La clase leída otra vez después de aplicar las escrituras. */
+  const reread = (writes: readonly FileWrite[]) => {
+    const next = parseContentFiles(apply(disk, writes));
+    const lesson = findLesson(next, ID);
+    if (!lesson) throw new Error('La clase desapareció');
+    return lesson;
+  };
+  const { slides } = (() => {
+    const entry = lessonEntry();
+    return { slides: editableSlides(entry) };
+  })();
+  const tramos = () => lessonEntry().meta.tramos ?? [];
+
+  it('la clase base declara tramos coherentes', () => {
+    expect(verifyLessonPlan(lessonEntry().meta)).toEqual([]);
+    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 10, 5, 6, 2, 2, 2, 2, 1]);
+  });
+
+  it('renombrar una lámina que abre o cierra un tramo actualiza from y to', () => {
+    const first = slides[0];
+    const last = slides[1];
+    if (!first || !last) throw new Error('Sin láminas');
+    const renamed = slides.map((s) =>
+      s === first ? { ...s, id: 'inicio-nuevo' } : s === last ? { ...s, id: 'precio-nuevo' } : s,
+    );
+    const lesson = reread(writeSlides(bundle, ID, renamed));
+    expect(lesson.meta.tramos?.[0]).toMatchObject({ from: 'inicio-nuevo', to: 'precio-nuevo', minutes: 4 });
+    expect(verifyLessonPlan(lesson.meta)).toEqual([]);
+    // Con el cambio dicho de forma explícita da lo mismo.
+    const explicit = reread(writeSlides(bundle, ID, renamed, { rename: { apertura: 'inicio-nuevo', 'precio-optimo': 'precio-nuevo' } }));
+    expect(explicit.meta.tramos).toEqual(lesson.meta.tramos);
+  });
+
+  it('reordenar dentro de un tramo ajusta from y to y conserva minutos y etiquetas', () => {
+    const next = [...slides];
+    const a = next[2];
+    const b = next[11];
+    if (!a || !b) throw new Error('Sin láminas');
+    // Las dos puntas del segundo tramo se intercambian.
+    next[2] = b;
+    next[11] = a;
+    const lesson = reread(writeSlides(bundle, ID, next));
+    expect(lesson.meta.tramos?.[1]).toMatchObject({
+      label: tramos()[1]?.label,
+      minutes: 15,
+      from: b.id,
+      to: a.id,
+    });
+    expect(verifyLessonPlan(lesson.meta)).toEqual([]);
+  });
+
+  it('mover láminas entre tramos escribe orden y tramos en una sola pasada', async () => {
+    const groups = tramoGroups(lessonEntry().meta);
+    if (!groups) throw new Error('Sin tramos');
+    // La última lámina del segundo tramo pasa al comienzo del tercero.
+    const moved = groups[1]?.at(-1);
+    if (!moved) throw new Error('Tramo vacío');
+    const next = groups.map((g, k) => (k === 1 ? g.slice(0, -1) : k === 2 ? [moved, ...g] : [...g]));
+    const ordered = next.flat().map((id) => {
+      const slide = slides.find((s) => s.id === id);
+      if (!slide) throw new Error(id);
+      return slide;
+    });
+    const writes = writeSlides(bundle, ID, ordered, { groups: next });
+    expect(writes.filter((w) => w.path === lessonEntry().path)).toHaveLength(1);
+    const lesson = reread(writes);
+    expect(lesson.meta.slides).toEqual(slides.map(slideFile));
+    expect(lesson.meta.tramos?.[1]?.to).toBe(groups[1]?.at(-2));
+    expect(lesson.meta.tramos?.[2]?.from).toBe(moved);
+    expect(verifyLessonPlan(lesson.meta)).toEqual([]);
+    const result = await checkContentFiles(apply(disk, writes), { shouldCompile: () => false });
+    expect(result.problems.map((p) => p.message)).toEqual([]);
+  });
+
+  it('una lámina nueva entra en el tramo de la anterior y quitar una lo achica', () => {
+    const at = slides.findIndex((s) => s.id === 'ceros-producto');
+    const added = [...slides];
+    added.splice(at + 1, 0, { ...slides[at], id: 'ceros-extra' } as (typeof slides)[number]);
+    const withNew = reread(writeSlides(bundle, ID, added));
+    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 10, 6, 6, 2, 2, 2, 2, 1]);
+    expect(verifyLessonPlan(withNew.meta)).toEqual([]);
+    const without = reread(writeSlides(bundle, ID, slides.filter((s) => s.id !== 'repaso-eje')));
+    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 9, 5, 6, 2, 2, 2, 2, 1]);
+    expect(verifyLessonPlan(without.meta)).toEqual([]);
+  });
+
+  it('si un tramo quedaría vacío no se tocan los tramos', () => {
+    const lesson = lessonEntry();
+    expect(tramosForOrder(lesson.meta, slides.filter((s) => s.id !== 'cierre').map((s) => s.id))).toBeNull();
+    const writes = writeSlides(bundle, ID, slides.filter((s) => s.id !== 'cierre'));
+    const [yaml] = writes.filter((w) => w.path === lesson.path);
+    expect(parse(yaml?.text ?? '')).toMatchObject({ tramos: lesson.meta.tramos });
   });
 });

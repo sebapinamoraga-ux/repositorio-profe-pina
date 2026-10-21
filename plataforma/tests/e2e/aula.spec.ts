@@ -199,19 +199,25 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   await page.goto('/#rol=docente&vista=editor');
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await expect(page.locator('.thumb')).toHaveCount(25);
-  const objective = page.locator('.field-block', { hasText: 'Objetivo' }).getByRole('textbox').first();
-  await objective.fill('Meta de hoy');
-  await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Meta de hoy');
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  // Se edita sobre la lámina: clic en el bloque, Enter y sus campos.
+  await page.locator('.canvas-frame .block-objetivo').click();
+  await page.keyboard.press('Enter');
+  const editor = page.getByRole('group', { name: /^Escribir en «Objetivo/ });
+  await editor.getByLabel('Título').fill('Meta de hoy');
+  await expect(page.locator('.canvas-frame > .fit-slide .block-objetivo .block-label')).toHaveText('Meta de hoy');
+  await page.getByRole('tab', { name: /^Revisión/ }).click();
+  const review = page.getByRole('tabpanel', { name: 'Revisión' });
+  await expect(review).toContainText('sin problemas');
 
-  await page.getByRole('button', { name: 'Más pasos' }).click();
-  await expect(page.locator('.editor-check')).toContainText('El paso 1 no está definido');
+  await page.getByRole('button', { name: '+ Paso' }).click();
+  await expect(review).toContainText('El paso 1 no está definido');
   await expect(page.getByText(/1 lámina con errores/)).toBeVisible();
-  await page.getByRole('button', { name: 'Menos pasos' }).click();
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  await page.getByRole('button', { name: 'Quitar paso 1' }).click();
+  await expect(review).toContainText('sin problemas');
 
-  await expect(page.locator('.save-bar')).toContainText('1 cambio sin guardar');
-  await page.getByRole('button', { name: 'Copia ZIP' }).click();
+  await expect(page.locator('.pub')).toHaveText('1 por publicar');
+  await page.getByRole('button', { name: 'Más opciones de la clase' }).click();
+  await page.getByRole('menuitem', { name: 'Descargar copia ZIP' }).click();
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Descargar ZIP' }).click();
   const download = await downloadPromise;
@@ -224,9 +230,11 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   expect(zip).toContain('status: published');
   expect(zip).toContain('<Objetivo titulo="Meta de hoy">');
 
+  await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
+  await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
   await page.getByRole('button', { name: 'Descartar cambios de esta clase' }).click();
-  await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Objetivo de clase');
-  await expect(page.locator('.save-bar')).toHaveCount(0);
+  await expect(page.locator('.canvas-frame > .fit-slide .block-objetivo .block-label')).toHaveText('Objetivo de clase');
+  await expect(page.locator('.pub')).toHaveText('Al día');
 });
 
 test('comentario desde el presentador aparece pendiente en Revisión y junto a su lámina', async ({ page }) => {
@@ -246,9 +254,13 @@ test('comentario desde el presentador aparece pendiente en Revisión y junto a s
   // El enlace del comentario abre su lámina en el editor.
   await notes.getByRole('button', { name: /^Lámina \d+ «/ }).click();
   await expect(page).toHaveURL(/seccion=laminas&slide=signos$/);
-  await expect(page.locator('.editor-notes .note-item')).toContainText('Dar más tiempo a los signos.');
+  // En un editor angosto el panel de comentarios y revisión se abre aparte.
+  await page.getByRole('button', { name: 'Comentarios y revisión' }).click();
+  const panel = page.getByRole('tabpanel', { name: 'Comentarios' });
+  await expect(panel.locator('.note-item')).toContainText('Dar más tiempo a los signos.');
   await page.getByRole('button', { name: 'Marcar como aplicado' }).click();
-  await expect(page.locator('.editor-notes')).toContainText('Todo aplicado');
+  await expect(panel.locator('.note-item')).toHaveCount(0);
+  await expect(panel.getByRole('button', { name: 'Ver 1 aplicado' })).toBeVisible();
 });
 
 test('control remoto y votación anónima entre pestañas del mismo navegador', async ({
@@ -436,4 +448,58 @@ test('sin conexión con GitHub la biblioteca es de solo lectura y explica cómo 
   await strip.getByRole('button', { name: 'Ajustes' }).click();
   await expect(page).toHaveURL(/vista=ajustes$/);
   await expect(page.getByRole('heading', { name: 'Contenido en GitHub' })).toBeVisible();
+});
+
+test('encabezado de la clase: deshacer, publicar desde el indicador, buscar y presentar', async ({ page }) => {
+  await unlock(page);
+  await connectFakeGitHub(page);
+  await page.setViewportSize({ width: 1500, height: 900 });
+  await page.goto('/#rol=docente&vista=editor');
+  await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
+  const title = page.getByLabel('Título de la lámina');
+  const original = await title.inputValue();
+  await expect(page.getByRole('button', { name: 'Deshacer' })).toBeDisabled();
+
+  // Un cambio: el indicador pide publicar, no hay franja de guardado y se puede deshacer.
+  await title.fill('Título de prueba');
+  await expect(page.locator('.pub')).toHaveText('1 por publicar');
+  await expect(page.locator('.save-bar')).toHaveCount(0);
+  await page.locator('.pub').click();
+  await expect(page.getByText('1 archivo cambiado')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('1 archivo cambiado')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Últimos cambios' }).click();
+  await expect(page.getByRole('dialog', { name: 'Últimos cambios' })).toContainText('Cambió el título de la lámina');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
+  await expect(title).toHaveValue(original);
+  await expect(page.locator('.pub')).toHaveText('Al día');
+
+  // Ctrl + Z deshace fuera de los campos.
+  await title.fill('Otro título');
+  await page.locator('.ws-title h1').click();
+  await page.keyboard.press('Control+z');
+  await expect(title).toHaveValue(original);
+
+  // Buscar: sin acentos ni mayúsculas; Enter va a la lámina.
+  await page.keyboard.press('Control+k');
+  const search = page.getByRole('dialog', { name: 'Buscar en la clase' });
+  await search.getByRole('textbox', { name: 'Buscar en la clase' }).fill('INTERSECCION');
+  await expect(search.getByRole('option').first()).toContainText('El mismo par es la intersección de las rectas');
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/slide=grafico/);
+  await page.keyboard.press('Control+k');
+  await page.getByRole('textbox', { name: 'Buscar en la clase' }).fill('zzzzqq');
+  await expect(page.getByText('No hay coincidencias para «zzzzqq».')).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  // Menús: ⋯ de la clase y Presentar.
+  await page.getByRole('button', { name: 'Más opciones de la clase' }).click();
+  await expect(page.getByRole('menuitem', { name: /Datos de la clase/ })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Otras formas de presentar' }).click();
+  await expect(page.getByRole('menuitem', { name: /Pantalla completa/ })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: /Recorrer los pasos aquí/ })).toBeEnabled();
+  await page.getByRole('menuitem', { name: /Pantalla completa/ }).click();
+  await expect(page).toHaveURL(/vista=presentar.*slide=grafico/);
 });
