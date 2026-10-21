@@ -93,7 +93,7 @@ export async function checkContentFiles(
           );
         if (toMdx({ ...slide, body: file.body }) !== text)
           throw new Error(
-            'El frontmatter no tiene la forma canónica (id, title entre comillas simples, phase, momento si es de video, layout, steps, activities).',
+            'El frontmatter no tiene la forma canónica (id, title entre comillas simples, phase, momento si es de video, layout, steps, activities, notas si las hay entre comillas dobles).',
           );
         checkSourceLines(text);
         if (slideIds.has(slide.id)) throw new Error(`ID duplicado ${slide.id}`);

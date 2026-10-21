@@ -521,3 +521,23 @@
     padding: 0 6px;
   }
 }
+
+.speaker-notes {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 76px;
+  width: min(640px, calc(100% - 24px));
+  max-height: 40%;
+  overflow: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+}
+.speaker-notes p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  font-size: 18px;
+}

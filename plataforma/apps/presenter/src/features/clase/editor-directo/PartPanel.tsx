@@ -15,12 +15,14 @@ export function PartPanel({
   block,
   editable,
   onStep,
+  onNotes,
 }: {
   slide: EditedSlide;
   number: string;
   block: Block | null;
   editable: boolean;
   onStep: (step: number) => void;
+  onNotes: (text: string) => void;
 }) {
   const layout = LAYOUTS.find(([key]) => key === slide.layout)?.[1];
   const locked = !editable || !block;
@@ -37,6 +39,23 @@ export function PartPanel({
             : `${slide.steps} ${slide.steps === 1 ? 'paso' : 'pasos'}`}
         </p>
         <p className="muted small">El título se cambia en la barra de la lámina.</p>
+      </section>
+      <section className="part-section" aria-label="Notas del orador">
+        <label className="part-kicker" htmlFor="notas-del-orador">
+          Notas del orador
+        </label>
+        <textarea
+          id="notas-del-orador"
+          rows={4}
+          value={slide.notas ?? ''}
+          disabled={!editable}
+          placeholder="Qué decir, preguntas para el curso, errores a vigilar…"
+          onChange={(event) => onNotes(event.target.value)}
+        />
+        <p className="muted small">
+          Solo para ti: no se proyectan ni salen en el PDF. Se guardan con la
+          lámina en el repositorio.
+        </p>
       </section>
       {block ? (
         <>

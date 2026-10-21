@@ -125,6 +125,8 @@ export const slideSchema = z.object({
   ]),
   steps: z.number().int().min(0).max(12),
   activities: z.array(id).default([]),
+  /** Notas del orador: solo para el docente; no se proyectan ni van al PDF ni al estudiante. */
+  notas: z.string().optional(),
 });
 /** Una clase de aula se proyecta; una de video es el guion gráfico de un video del canal. */
 export const lessonFormatSchema = z.enum(['aula', 'video']);

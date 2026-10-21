@@ -789,6 +789,12 @@ function LoadedEditor({
             block={selectedBlock}
             editable={editable && blocks !== null}
             onStep={(n) => selectedBlock && setStepOf(selectedBlock.index, n)}
+            onNotes={(text) =>
+              update(index, { notas: text }, [
+                'Escribió las notas del orador',
+                `notas:${slide.id}`,
+              ])
+            }
           />
         }
         layout={panelLayout}

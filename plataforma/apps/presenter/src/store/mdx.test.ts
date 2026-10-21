@@ -18,6 +18,15 @@ describe('MDX de las láminas', () => {
       expect(toMdx({ ...slide, body })).toBe(text);
     }
   });
+  it('las notas del orador viajan en el frontmatter y se reproducen igual', () => {
+    const base = blankSlide('concepto', 'notas-prueba', 'Con notas');
+    const notas = 'Preguntar: ¿por qué?\n"Cuidado" con el signo.';
+    const text = toMdx({ ...base, notas });
+    const parsed = splitSource(text);
+    expect(parsed.slide.notas).toBe(notas);
+    expect(toMdx({ ...parsed.slide, body: parsed.body })).toBe(text);
+    expect(toMdx({ ...base, notas: '  ' })).not.toContain('notas:');
+  });
   it('la estructura base tiene una lámina por momento y la portada lleva el título', () => {
     const slides = skeleton('Dominio y recorrido', mascotGallery.templates);
     expect(slides.map((s) => s.phase)).toEqual([
