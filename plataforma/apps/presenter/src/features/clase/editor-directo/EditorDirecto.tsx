@@ -82,6 +82,8 @@ import {
 import { StepTimeline } from './StepTimeline';
 import { TourPill, useTour } from './tour';
 import { useEditorKeys } from './useEditorKeys';
+import { VariantDialog } from './VariantDialog';
+import { applyVariant } from './variant';
 
 /** Etiqueta y clave de fusión del historial para un cambio de una lámina. */
 function describePatch(
@@ -167,7 +169,9 @@ function LoadedEditor({
   const [tab, setTab] = useState<SideTab>('comentarios');
   const [focusNote, setFocusNote] = useState<string | null>(null);
   const [mode, setMode] = useState<'todo' | 'proyectar'>('todo');
-  const [dialog, setDialog] = useState<'nueva' | 'atajos' | null>(null);
+  const [dialog, setDialog] = useState<'nueva' | 'atajos' | 'variante' | null>(
+    null,
+  );
   const [newTarget, setNewTarget] = useState<DropTarget | null>(null);
   const [selection, setSelection] = useState<Selection | null>(null);
   const format = useRef<FormatApi | null>(null);
@@ -354,6 +358,19 @@ function LoadedEditor({
       );
     if (commit(order, label, undefined, tramoIds ? next : undefined))
       select(created.id);
+  };
+  /** Copia la lámina a continuación con otros números (solo en texto y fórmulas). */
+  const createVariant = (replacements: Map<string, string>) => {
+    if (!slide) return;
+    const id = uniqueId(`${slide.id}-variante`, all);
+    const undo = content.snap();
+    setDialog(null);
+    addSlide(
+      { ...slide, id, body: applyVariant(slide.body, replacements) },
+      afterCurrent(),
+      `Creó una variante de la lámina ${number}`,
+    );
+    ui.toast(`Variante creada como «${id}»`, undo);
   };
   const afterCurrent = (): DropTarget => {
     const here = slide ? locate(groups, slide.id) : null;
@@ -736,6 +753,7 @@ function LoadedEditor({
               advanced={advanced}
               onUpdate={(patch) => update(index, patch)}
               onDuplicate={() => duplicate()}
+              onVariant={blocks ? () => setDialog('variante') : null}
               onRemove={remove}
               onAdvanced={setAdvanced}
               onShortcuts={() => setDialog('atajos')}
@@ -950,6 +968,14 @@ function LoadedEditor({
                 template.id,
               );
           }}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === 'variante' && slide && (
+        <VariantDialog
+          number={number}
+          body={slide.body}
+          onCreate={createVariant}
           onClose={() => setDialog(null)}
         />
       )}

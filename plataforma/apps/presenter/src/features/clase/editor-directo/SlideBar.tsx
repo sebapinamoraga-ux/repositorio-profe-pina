@@ -31,6 +31,7 @@ export function SlideBar({
   advanced,
   onUpdate,
   onDuplicate,
+  onVariant,
   onRemove,
   onAdvanced,
   onShortcuts,
@@ -43,6 +44,8 @@ export function SlideBar({
   advanced: boolean;
   onUpdate: (patch: Partial<EditedSlide>) => void;
   onDuplicate: () => void;
+  /** Abre «Con otros números…»; null si la lámina no se puede leer por bloques. */
+  onVariant: (() => void) | null;
   onRemove: () => void;
   onAdvanced: (open: boolean) => void;
   onShortcuts: () => void;
@@ -143,9 +146,8 @@ export function SlideBar({
             label: 'Con otros números…',
             hint: 'Cambia los datos, conserva el desarrollo',
             icon: <CopyPlus size={16} />,
-            // Llega con el diálogo de variantes.
-            disabled: true,
-            onSelect: () => undefined,
+            disabled: !editable || !onVariant,
+            onSelect: () => onVariant?.(),
           },
         ]}
       />

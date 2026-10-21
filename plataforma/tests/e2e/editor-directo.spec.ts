@@ -180,3 +180,32 @@ test('una lámina que el editor no entiende queda en solo lectura y se corrige e
     page.getByRole('button', { name: 'Texto', exact: true }),
   ).toBeEnabled();
 });
+
+test('variante con otros números: la copia queda a continuación con los números nuevos', async ({
+  page,
+}) => {
+  const fake = await open(page, 'guiada');
+  const before = await page.locator('.thumb').count();
+  await page.getByRole('button', { name: 'Otras formas de duplicar' }).click();
+  await page.getByRole('menuitem', { name: /Con otros números/ }).click();
+  const dialog = page.getByRole('dialog', { name: /^Variante de la lámina/ });
+  await expect(dialog).toContainText('Los resultados no se recalculan');
+  await expect(
+    dialog.getByRole('button', { name: 'Crear copia sin cambios' }),
+  ).toBeVisible();
+  await dialog.getByLabel('Nuevo valor para 6.700').fill('7.200');
+  await expect(
+    dialog.getByRole('button', { name: 'Crear variante · 1 número cambia' }),
+  ).toBeVisible();
+  await dialog.getByRole('button', { name: /^Crear variante/ }).click();
+  await expect(page.locator('.toast')).toContainText(
+    'Variante creada como «guiada-variante»',
+  );
+  await expect(page.locator('.thumb')).toHaveCount(before + 1);
+  await expect(canvas(page)).toContainText('7.200');
+  await publish(page);
+  const copy = fake.files()[`${SISTEMAS}/laminas/guiada-variante.mdx`] ?? '';
+  expect(copy).toContain('7.200');
+  expect(copy).not.toContain('6.700');
+  expect(fake.files()[`${SISTEMAS}/laminas/guiada.mdx`]).toContain('6.700');
+});

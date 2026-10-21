@@ -802,3 +802,42 @@
     display: none;
   }
 }
+
+/* Variante con otros números */
+.variant-dialog {
+  width: min(560px, 100%);
+}
+.variant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.variant-table th {
+  padding: 4px 6px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--muted);
+}
+.variant-table td {
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+.variant-table .input.is-changed {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+.variant-empty {
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--editor-bg);
+  color: var(--muted);
+}
+.variant-warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--yellow-soft);
+  border: 1px solid var(--yellow-line);
+  color: var(--note-ink);
+  font-size: 14px;
+}
