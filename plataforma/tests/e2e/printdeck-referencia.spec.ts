@@ -12,15 +12,22 @@ const REFERENCE = new URL(
   import.meta.url,
 );
 
+/**
+ * Las imágenes de la mascota se sirven desde la ruta de cada equipo (`/@fs/<carpeta del
+ * repositorio>/contenido/…`): se iguala para que la referencia valga en cualquier máquina.
+ */
+const normalize = (html: string) =>
+  html.replace(/\/@fs\/[^"]*?\/contenido\//g, '/@fs/REPO/contenido/');
+
 test('el HTML de PrintDeck de sistemas-2x2 coincide con la referencia', async ({
   page,
 }) => {
   await page.goto('/#clase=sistemas-2x2&modo=pdf');
   await expect(page.locator('.print-deck [data-slide]')).toHaveCount(25);
   await page.evaluate(() => document.fonts.ready);
-  const html = await page
-    .locator('.print-deck')
-    .evaluate((node) => node.outerHTML);
+  const html = normalize(
+    await page.locator('.print-deck').evaluate((node) => node.outerHTML),
+  );
   if (process.env.UPDATE_PRINTDECK_REFERENCE) {
     writeFileSync(REFERENCE, `${html}\n`);
     return;
