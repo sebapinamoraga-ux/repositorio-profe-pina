@@ -841,3 +841,93 @@
   color: var(--note-ink);
   font-size: 14px;
 }
+
+.part-panel {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+.part-section {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.part-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.part-kicker.is-slide {
+  color: var(--ink);
+}
+.part-title {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.part-type {
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  margin-right: 4px;
+}
+.part-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.part-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.part-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.part-actions .is-danger {
+  color: var(--bad, #a32d2d);
+}
+.part-empty {
+  padding: 4px 2px;
+}
+.toolbar-step-chip {
+  font-size: 12px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.timeline-here {
+  margin-top: 6px;
+  padding: 3px 8px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.timeline-here:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.insert-where b {
+  font-weight: 600;
+  color: var(--ink);
+}

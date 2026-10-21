@@ -21,7 +21,16 @@ export interface ParamAttr {
  */
 export type Field =
   | { kind: 'text'; group: string; label: string; start: number; end: number; value: string }
-  | { kind: 'attr'; group: string; label: string; start: number; end: number; value: string }
+  | {
+      kind: 'attr';
+      group: string;
+      label: string;
+      /** Nombre del atributo en el MDX (`titulo`, `etiqueta`…). */
+      attr: string;
+      start: number;
+      end: number;
+      value: string;
+    }
   | { kind: 'template'; group: string; label: string; start: number; end: number; value: string }
   | { kind: 'fixed'; group: string; label: string; value: string }
   | {
@@ -82,8 +91,25 @@ export const BLOCK_NAMES: Record<string, string> = {
   Etiqueta: 'Etiqueta',
   Recuerda: 'Recuerda',
 };
+/**
+ * El `titulo` de una parte no es el título de la lámina: cada tipo lo llama como lo ve el
+ * estudiante, para que el docente no confunda los dos.
+ */
+const TITLE_LABELS: Record<string, string> = {
+  Tarjeta: 'Encabezado de la tarjeta',
+  Definicion: 'Término definido',
+  Objetivo: 'Encabezado del objetivo',
+  Comprobacion: 'Encabezado de la comprobación',
+  Propiedad: 'Nombre de la propiedad',
+  Teorema: 'Nombre del teorema',
+  EjemploResuelto: 'Encabezado del ejemplo',
+  PracticaGuiada: 'Encabezado de la práctica',
+  PracticaIndividual: 'Encabezado de la práctica',
+  ErrorTipico: 'Encabezado del error típico',
+  Cierre: 'Encabezado del cierre',
+};
 const ATTR_LABELS: Record<string, string> = {
-  titulo: 'Título',
+  titulo: 'Encabezado de la parte',
   clase: 'Clase recordada (identificador)',
   etiqueta: 'Etiqueta',
   nota: 'Nota de la mascota',
@@ -216,7 +242,17 @@ function visitElement(body: string, child: MdxNode, group: string, out: Field[])
     if (attr.name === 'plantilla')
       out.push({ kind: 'template', group: inner, label: 'Plantilla de mascota', ...range, value });
     else if (ATTR_LABELS[attr.name])
-      out.push({ kind: 'attr', group: inner, label: ATTR_LABELS[attr.name] ?? attr.name, ...range, value });
+      out.push({
+        kind: 'attr',
+        group: inner,
+        label:
+          (attr.name === 'titulo' ? TITLE_LABELS[name] : undefined) ??
+          ATTR_LABELS[attr.name] ??
+          attr.name,
+        attr: attr.name,
+        ...range,
+        value,
+      });
   }
   if (child.children?.some((c) => !isJsx(c)) || child.children?.some(isJsx))
     walkChildren(body, child, inner, out);

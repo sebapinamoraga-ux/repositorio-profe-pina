@@ -203,7 +203,7 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   await page.locator('.canvas-frame .block-objetivo').click();
   await page.keyboard.press('Enter');
   const editor = page.getByRole('group', { name: /^Escribir en «Objetivo/ });
-  await editor.getByLabel('Título').fill('Meta de hoy');
+  await editor.getByLabel('Encabezado del objetivo').fill('Meta de hoy');
   await expect(page.locator('.canvas-frame > .fit-slide .block-objetivo .block-label')).toHaveText('Meta de hoy');
   await page.getByRole('tab', { name: /^Revisión/ }).click();
   const review = page.getByRole('tabpanel', { name: 'Revisión' });
@@ -256,6 +256,7 @@ test('comentario desde el presentador aparece pendiente en Revisión y junto a s
   await expect(page).toHaveURL(/seccion=laminas&slide=signos$/);
   // En un editor angosto el panel de comentarios y revisión se abre aparte.
   await page.getByRole('button', { name: 'Comentarios y revisión' }).click();
+  await page.getByRole('tab', { name: /^Comentarios/ }).click();
   const panel = page.getByRole('tabpanel', { name: 'Comentarios' });
   await expect(panel.locator('.note-item')).toContainText('Dar más tiempo a los signos.');
   await page.getByRole('button', { name: 'Marcar como aplicado' }).click();

@@ -53,7 +53,7 @@ export function SlideBar({
   return (
     <div className="slide-bar">
       <span className="slide-bar-n" aria-label={`Lámina ${number}`}>
-        {number}
+        Lámina {number}
       </span>
       <input
         className={`slide-bar-title ${slide.title.trim() ? '' : 'is-empty'}`}

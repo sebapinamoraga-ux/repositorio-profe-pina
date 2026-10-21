@@ -92,8 +92,9 @@ test('un bloque pasa de paso con la barra y con la línea de pasos', async ({
   // Se elige en la línea de pasos y se cambia de paso con la barra del bloque.
   await chips('Paso 1').first().click();
   await page
-    .getByRole('combobox', { name: 'Paso en que aparece' })
-    .selectOption('2');
+    .getByRole('radiogroup', { name: 'Cuándo aparece' })
+    .getByRole('radio', { name: 'Paso 2' })
+    .click();
   await expect(chips('Paso 2')).toHaveCount(2);
   await expect(chips('Paso 1')).toHaveCount(0);
   // Arrastrar la ficha a otra columna también lo cambia.

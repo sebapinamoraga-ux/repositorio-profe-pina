@@ -30,7 +30,7 @@ describe('campos editables del MDX', () => {
     const text = fields.find((f) => f.kind === 'text');
     if (title?.kind !== 'attr' || text?.kind !== 'text')
       throw new Error('Faltan campos');
-    expect(title).toMatchObject({ group: 'Objetivo', label: 'Título' });
+    expect(title).toMatchObject({ group: 'Objetivo', label: 'Encabezado del objetivo', attr: 'titulo' });
     expect(text.value).toBe('Texto con $x+y=3$.');
     expect(spliceField(body, title, 'Meta de hoy')).toBe(
       '\n<Objetivo titulo="Meta de hoy">\n  Texto con $x+y=3$.\n</Objetivo>\n',
