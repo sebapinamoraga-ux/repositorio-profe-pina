@@ -199,16 +199,21 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   await page.goto('/#rol=docente&vista=editor');
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await expect(page.locator('.thumb')).toHaveCount(25);
-  const objective = page.locator('.field-block', { hasText: 'Objetivo' }).getByRole('textbox').first();
-  await objective.fill('Meta de hoy');
-  await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Meta de hoy');
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  // Se edita sobre la lámina: clic en el bloque, Enter y sus campos.
+  await page.locator('.canvas-frame .block-objetivo').click();
+  await page.keyboard.press('Enter');
+  const editor = page.getByRole('group', { name: /^Escribir en «Objetivo/ });
+  await editor.getByLabel('Título').fill('Meta de hoy');
+  await expect(page.locator('.canvas-frame > .fit-slide .block-objetivo .block-label')).toHaveText('Meta de hoy');
+  await page.getByRole('tab', { name: /^Revisión/ }).click();
+  const review = page.getByRole('tabpanel', { name: 'Revisión' });
+  await expect(review).toContainText('sin problemas');
 
-  await page.getByRole('button', { name: 'Más pasos' }).click();
-  await expect(page.locator('.editor-check')).toContainText('El paso 1 no está definido');
+  await page.getByRole('button', { name: '+ Paso' }).click();
+  await expect(review).toContainText('El paso 1 no está definido');
   await expect(page.getByText(/1 lámina con errores/)).toBeVisible();
-  await page.getByRole('button', { name: 'Menos pasos' }).click();
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  await page.getByRole('button', { name: 'Quitar paso 1' }).click();
+  await expect(review).toContainText('sin problemas');
 
   await expect(page.locator('.pub')).toHaveText('1 por publicar');
   await page.getByRole('button', { name: 'Más opciones de la clase' }).click();
@@ -228,7 +233,7 @@ test('editor: cambiar un título, revisar con content:check y descargar la copia
   await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
   await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
   await page.getByRole('button', { name: 'Descartar cambios de esta clase' }).click();
-  await expect(page.locator('.preview-frame .block-objetivo .block-label')).toHaveText('Objetivo de clase');
+  await expect(page.locator('.canvas-frame > .fit-slide .block-objetivo .block-label')).toHaveText('Objetivo de clase');
   await expect(page.locator('.pub')).toHaveText('Al día');
 });
 
@@ -249,9 +254,13 @@ test('comentario desde el presentador aparece pendiente en Revisión y junto a s
   // El enlace del comentario abre su lámina en el editor.
   await notes.getByRole('button', { name: /^Lámina \d+ «/ }).click();
   await expect(page).toHaveURL(/seccion=laminas&slide=signos$/);
-  await expect(page.locator('.editor-notes .note-item')).toContainText('Dar más tiempo a los signos.');
+  // En un editor angosto el panel de comentarios y revisión se abre aparte.
+  await page.getByRole('button', { name: 'Comentarios y revisión' }).click();
+  const panel = page.getByRole('tabpanel', { name: 'Comentarios' });
+  await expect(panel.locator('.note-item')).toContainText('Dar más tiempo a los signos.');
   await page.getByRole('button', { name: 'Marcar como aplicado' }).click();
-  await expect(page.locator('.editor-notes')).toContainText('Todo aplicado');
+  await expect(panel.locator('.note-item')).toHaveCount(0);
+  await expect(panel.getByRole('button', { name: 'Ver 1 aplicado' })).toBeVisible();
 });
 
 test('control remoto y votación anónima entre pestañas del mismo navegador', async ({
@@ -490,7 +499,7 @@ test('encabezado de la clase: deshacer, publicar desde el indicador, buscar y pr
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Otras formas de presentar' }).click();
   await expect(page.getByRole('menuitem', { name: /Pantalla completa/ })).toBeVisible();
-  await expect(page.getByRole('menuitem', { name: /Recorrer los pasos aquí/ })).toBeDisabled();
+  await expect(page.getByRole('menuitem', { name: /Recorrer los pasos aquí/ })).toBeEnabled();
   await page.getByRole('menuitem', { name: /Pantalla completa/ }).click();
   await expect(page).toHaveURL(/vista=presentar.*slide=grafico/);
 });

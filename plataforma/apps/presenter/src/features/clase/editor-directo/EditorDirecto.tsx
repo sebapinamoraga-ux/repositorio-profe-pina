@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { lessonFormat } from '@aula/content-model';
 import { slidePath } from '@aula/content-model/content-files';
 import { mascotGallery } from '../../../app/gallery';
@@ -22,13 +22,41 @@ import {
   slideFromTemplate,
   type BlankLayout,
 } from '../../../store/deck';
+import { makeNote } from '../../../store/notes';
 import type { EditedSlide, View } from '../../../store/schema';
 import { useUi } from '../../../ui/UiProvider';
+import {
+  addStep,
+  duplicateBlock,
+  extractBlocks,
+  findBlockByRef,
+  insertBlock,
+  moveBlock,
+  questionIds,
+  removeBlock,
+  removeStep,
+  setBlockStep,
+  type BlockEdit,
+} from '../editor/blocks';
 import type { LessonIssues } from '../issues';
 import { AdvancedPanel } from './AdvancedPanel';
 import { BatchBar } from './BatchBar';
-import { ContentPanel } from './ContentPanel';
+import { BlockToolbar } from './BlockToolbar';
+import {
+  CARD_SOURCE,
+  FORMULA_SOURCE,
+  PANELS_SOURCE,
+  TEXT_SOURCE,
+  familySource,
+  questionSource,
+  type Family,
+} from './block-templates';
+import { Canvas } from './Canvas';
+import { CommentPopover } from './CommentPopover';
+import { formulaErrorBlocks } from './error-blocks';
 import { useLessonHistory } from './HistoryContext';
+import { InlineEditor, type FormatApi } from './InlineEditor';
+import { InsertBar, type InsertKind } from './InsertBar';
 import {
   insertId,
   locate,
@@ -39,8 +67,8 @@ import {
 } from './layout-ops';
 import { NewSlideDialog } from './NewSlideDialog';
 import { PrepareLesson } from './PrepareLesson';
-import { PreviewPane } from './PreviewPane';
 import { ShortcutsDialog } from './ShortcutsDialog';
+import { SidePanel, type SideTab } from './SidePanel';
 import { SlideBar } from './SlideBar';
 import { SlideList } from './SlideList';
 import {
@@ -51,6 +79,8 @@ import {
   useLessonNotes,
   type SlideListName,
 } from './shared';
+import { StepTimeline } from './StepTimeline';
+import { TourPill, useTour } from './tour';
 import { useEditorKeys } from './useEditorKeys';
 
 /** Etiqueta y clave de fusión del historial para un cambio de una lámina. */
@@ -72,9 +102,18 @@ function describePatch(
   return ['Cambió la lámina', `lamina:${id}`];
 }
 
+/** Lo que cambia en la lámina cuando cambia un bloque (y las preguntas del banco que usa). */
+interface Selection {
+  slide: string;
+  block: number | null;
+  editing: number | null;
+  commenting: number | null;
+  step: number | null;
+}
+
 /**
  * Editor de una lista de láminas (la clase o el repaso): lista por tramos, barra de la lámina y
- * panel de contenido. La lámina seleccionada la decide la URL (`slideId`).
+ * lienzo de edición directa. La lámina seleccionada la decide la URL (`slideId`).
  */
 export function EditorDirecto(props: EditorProps) {
   const content = useContent();
@@ -104,7 +143,7 @@ function LoadedEditor({
   onSelect,
   onOpenDetails,
 }: EditorProps) {
-  const { dispatch } = useAula();
+  const { data, dispatch } = useAula();
   const content = useContent();
   const ui = useUi();
   const history = useLessonHistory();
@@ -124,9 +163,14 @@ function LoadedEditor({
 
   const [multi, setMulti] = useState<string[]>([]);
   const [advanced, setAdvanced] = useState(false);
-  const [propsOpen, setPropsOpen] = useState(false);
+  const [sideOpen, setSideOpen] = useState(false);
+  const [tab, setTab] = useState<SideTab>('comentarios');
+  const [focusNote, setFocusNote] = useState<string | null>(null);
+  const [mode, setMode] = useState<'todo' | 'proyectar'>('todo');
   const [dialog, setDialog] = useState<'nueva' | 'atajos' | null>(null);
   const [newTarget, setNewTarget] = useState<DropTarget | null>(null);
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const format = useRef<FormatApi | null>(null);
 
   const current = listName === 'repaso' ? repaso : slides;
   const found = current.findIndex((item) => item.id === slideId);
@@ -156,6 +200,33 @@ function LoadedEditor({
   const all = [...slides, ...repaso];
   const canRemove = listName === 'repaso' || slides.length > 1;
 
+  // Lo elegido en el lienzo vale solo para la lámina en que se eligió.
+  const sel: Selection =
+    selection && slide && selection.slide === slide.id
+      ? selection
+      : {
+          slide: slide?.id ?? '',
+          block: null,
+          editing: null,
+          commenting: null,
+          step: null,
+        };
+  const patchSel = (patch: Partial<Omit<Selection, 'slide'>>) =>
+    setSelection({ ...sel, ...patch, slide: slide?.id ?? '' });
+
+  // Bloques de la lámina; null si el MDX no se puede interpretar (solo lectura).
+  const model = useMemo(
+    () => (slide ? extractBlocks(slide.body) : null),
+    [slide],
+  );
+  const blocks = model?.ok ? model.blocks : null;
+  const selectedBlock =
+    blocks && sel.block !== null
+      ? (blocks.find((b) => b.index === sel.block) ?? null)
+      : null;
+  const view = sel.step ?? selectedBlock?.step ?? slide?.steps ?? 0;
+  const viewStep = Math.min(view, slide?.steps ?? 0);
+
   const commit = (
     next: EditedSlide[],
     label = 'Editó las láminas',
@@ -180,10 +251,30 @@ function LoadedEditor({
     history.rec(label, undo, key);
     return true;
   };
-  const update = (i: number, patch: Partial<EditedSlide>) => {
-    const [label, key] = describePatch(patch, current[i]?.id ?? '');
-    commit(
-      current.map((item, k) => (k === i ? { ...item, ...patch } : item)),
+  const update = (
+    i: number,
+    patch: Partial<EditedSlide>,
+    named?: [string, string],
+  ) => {
+    const target = current[i];
+    if (!target) return false;
+    const full = { ...patch };
+    // Las preguntas del banco que usa la lámina se declaran en su encabezado.
+    if (full.body !== undefined) {
+      const next = extractBlocks(full.body);
+      if (next.ok) {
+        const ids = questionIds(next.blocks);
+        const same =
+          ids.length === (full.activities ?? target.activities).length &&
+          ids.every((id) =>
+            (full.activities ?? target.activities).includes(id),
+          );
+        if (!same) full.activities = ids;
+      }
+    }
+    const [label, key] = named ?? describePatch(full, target.id);
+    return commit(
+      current.map((item, k) => (k === i ? { ...item, ...full } : item)),
       label,
       key,
     );
@@ -221,6 +312,11 @@ function LoadedEditor({
       .flatMap((id) => current.find((s) => s.id === id) ?? []);
     return commit(order, label, undefined, tramoIds ? next : undefined);
   };
+  const indexOfId = (id: string | undefined) =>
+    Math.max(
+      0,
+      current.findIndex((s) => s.id === id),
+    );
   const moveSlides = (ids: string[], target: DropTarget) => {
     const result = moveIds(groups, ids, target);
     if (!result.ok) {
@@ -236,11 +332,6 @@ function LoadedEditor({
           : `Movió la lámina ${slideNumber(listName, indexOfId(ids[0]))}`;
     place(result.groups, label);
   };
-  const indexOfId = (id: string | undefined) =>
-    Math.max(
-      0,
-      current.findIndex((s) => s.id === id),
-    );
   const step = (direction: -1 | 1) => {
     if (!slide) return;
     const target = stepTarget(groups, slide.id, direction);
@@ -357,6 +448,213 @@ function LoadedEditor({
     addSlide(next, target, label);
   };
 
+  // ---- Bloques de la lámina ------------------------------------------------------------
+  const stepName = (n: number) => (n === 0 ? 'Inicial' : `Paso ${n}`);
+  /** Aplica una operación sobre el MDX; devuelve el modelo nuevo para elegir el bloque. */
+  const applyBlockEdit = (
+    edit: BlockEdit,
+    label: string,
+    key?: string,
+    patch: Partial<EditedSlide> = {},
+  ) => {
+    if (!slide) return null;
+    if (!edit.ok) {
+      ui.toast(edit.reason);
+      return null;
+    }
+    const next: Partial<EditedSlide> = { ...patch, body: edit.body };
+    if (edit.steps !== undefined) next.steps = edit.steps;
+    if (!update(index, next, [label, key ?? `${label}:${slide.id}`]))
+      return null;
+    const after = extractBlocks(edit.body);
+    return { select: edit.select, blocks: after.ok ? after.blocks : [] };
+  };
+  const setStepOf = (i: number, n: number) => {
+    const block = blocks?.find((b) => b.index === i);
+    if (!slide || !block) return;
+    const done = applyBlockEdit(
+      setBlockStep(slide.body, i, n),
+      `Pasó «${block.summary}» a ${stepName(n)}`,
+    );
+    if (done) patchSel({ block: done.select ?? i, step: n });
+  };
+  const moveBlockBy = (i: number, direction: -1 | 1) => {
+    const block = blocks?.find((b) => b.index === i);
+    if (!slide || !block) return;
+    const done = applyBlockEdit(
+      moveBlock(slide.body, i, direction),
+      `Movió «${block.summary}»`,
+    );
+    if (done) patchSel({ block: done.select ?? i });
+  };
+  const duplicateBlockAt = (i: number) => {
+    const block = blocks?.find((b) => b.index === i);
+    if (!slide || !block) return;
+    const done = applyBlockEdit(
+      duplicateBlock(slide.body, i),
+      `Duplicó «${block.summary}»`,
+    );
+    if (done) patchSel({ block: done.select ?? i, editing: null });
+  };
+  const removeBlockAt = (i: number) => {
+    const block = blocks?.find((b) => b.index === i);
+    if (!slide || !block) return;
+    const undo = content.snap();
+    const done = applyBlockEdit(
+      removeBlock(slide.body, i),
+      `Eliminó «${block.summary}»`,
+    );
+    if (!done) return;
+    patchSel({ block: null, editing: null, commenting: null });
+    ui.toast(`${block.label} «${block.summary}» eliminada`, undo);
+  };
+  const writeBlock = (patch: Partial<EditedSlide>) => {
+    if (!selectedBlock && sel.editing === null) return;
+    const label = selectedBlock?.label ?? 'bloque';
+    update(index, patch, [
+      `Escribió en «${selectedBlock?.summary ?? label}»`,
+      `bloque:${slide?.id}:${sel.editing}`,
+    ]);
+  };
+  const addStepToSlide = () => {
+    if (!slide) return;
+    const done = applyBlockEdit(
+      addStep(slide.body, slide.steps),
+      'Agregó un paso',
+    );
+    if (done) patchSel({ step: slide.steps + 1 });
+  };
+  const removeStepAt = (n: number) => {
+    if (!slide) return;
+    const undo = content.snap();
+    const done = applyBlockEdit(
+      removeStep(slide.body, n, slide.steps),
+      `Quitó el paso ${n}`,
+    );
+    if (done) {
+      patchSel({
+        step: Math.min(sel.step ?? 0, n - 1),
+        block: null,
+        editing: null,
+      });
+      ui.toast(`Paso ${n} quitado: sus bloques pasaron al paso anterior`, undo);
+    }
+  };
+
+  /** Dónde se inserta lo nuevo: después del bloque elegido y en su paso, o al final. */
+  const insertTarget = () => {
+    const after =
+      selectedBlock && selectedBlock.component !== 'Composicion'
+        ? selectedBlock
+        : null;
+    return {
+      after: after ? after.index : null,
+      step: after ? after.step : viewStep,
+      text: after
+        ? `después de «${after.summary}», en ${stepName(after.step)}`
+        : `al final, en ${stepName(viewStep)}`,
+    };
+  };
+  const insert = (source: string, extra: Partial<EditedSlide> = {}) => {
+    if (!slide) return;
+    const where = insertTarget();
+    const done = applyBlockEdit(
+      insertBlock(slide.body, { after: where.after }, where.step, source),
+      'Agregó un bloque',
+      undefined,
+      extra,
+    );
+    if (!done || done.select === undefined) return;
+    const created = done.blocks.find((b) => b.index === done.select);
+    patchSel({
+      block: done.select,
+      editing: created && created.kind !== 'fixed' ? done.select : null,
+    });
+  };
+  const paes = Object.values(content.bundle.activities).filter(
+    (activity) => activity.type === 'paes',
+  );
+  const onInsert = (kind: InsertKind) => {
+    if (kind === 'texto') insert(TEXT_SOURCE);
+    else if (kind === 'formula') insert(FORMULA_SOURCE);
+    else if (kind === 'tarjeta') insert(CARD_SOURCE);
+    else if (kind === 'paneles') insert(PANELS_SOURCE);
+    else if (slide) {
+      const unused =
+        paes.find((a) => !slide.activities.includes(a.id)) ?? paes[0];
+      if (unused)
+        insert(questionSource(unused.id, 1), {
+          steps: Math.max(slide.steps, 1),
+        });
+    }
+  };
+  const onFamily = (family: Family) => insert(familySource(family));
+
+  const addBlockComment = (text: string) => {
+    if (!slide || !selectedBlock) return;
+    dispatch({
+      type: 'addNote',
+      note: makeNote(data, {
+        text,
+        lessonId,
+        slideId: slide.id,
+        slideTitle: slide.title,
+        source: 'editor',
+        blockRef: { index: selectedBlock.index, label: selectedBlock.summary },
+      }),
+    });
+    patchSel({ commenting: null });
+    setTab('comentarios');
+    ui.toast('Comentario agregado');
+  };
+
+  // Marcas del lienzo: comentarios pendientes por bloque y errores de fórmula por bloque.
+  const marks = useMemo(() => {
+    const map = new Map<number, { count: number; first: string }>();
+    if (!slide || !blocks) return map;
+    for (const note of pendingNotes) {
+      if (note.slideId !== slide.id || !note.blockRef) continue;
+      const target = findBlockByRef(blocks, note.blockRef);
+      if (!target) continue;
+      const known = map.get(target.index);
+      map.set(target.index, {
+        count: (known?.count ?? 0) + 1,
+        first: known?.first ?? note.id,
+      });
+    }
+    return map;
+  }, [pendingNotes, slide, blocks]);
+  const errors = useMemo(
+    () =>
+      slide && blocks
+        ? formulaErrorBlocks(issues?.perSlide[index] ?? null, slide, blocks)
+        : new Map<number, string>(),
+    [issues, index, slide, blocks],
+  );
+  const canMove = useMemo(
+    () =>
+      slide && selectedBlock
+        ? {
+            up: moveBlock(slide.body, selectedBlock.index, -1).ok,
+            down: moveBlock(slide.body, selectedBlock.index, 1).ok,
+          }
+        : { up: false, down: false },
+    [slide, selectedBlock],
+  );
+
+  const stepView = (delta: -1 | 1) => {
+    if (!slide) return;
+    patchSel({ step: Math.min(Math.max(viewStep + delta, 0), slide.steps) });
+  };
+  const tour = useTour({
+    steps: slide?.steps ?? 0,
+    enabled: Boolean(slide) && (slide?.steps ?? 0) > 0,
+    onView: (n) =>
+      patchSel({ step: n, block: null, editing: null, commenting: null }),
+    onMode: setMode,
+    mode,
+  });
+
   useEditorKeys(root, {
     onMove: step,
     onDuplicate: () => duplicate(),
@@ -364,9 +662,14 @@ function LoadedEditor({
     onClearSelection: () => setMulti([]),
     hasSelection: multi.length > 0,
   });
+  useEffect(() => {
+    // «?» y Ctrl + D del editor no deben actuar con un bloque en escritura.
+    if (sel.editing === null) return;
+    setMulti([]);
+  }, [sel.editing]);
 
-  const slideIds = new Set(all.map((s) => s.id));
   const dupTarget = newTarget ?? afterCurrent();
+  const where = insertTarget();
   return (
     <main
       ref={(node) => {
@@ -395,7 +698,7 @@ function LoadedEditor({
         onOpenDetails={onOpenDetails}
       />
       {!slide && (
-        <section aria-label="Vista previa" className="editor-preview">
+        <section aria-label="Lámina" className="editor-preview">
           <p className="empty-note">
             {listName === 'repaso'
               ? 'El repaso aún no tiene láminas. Agrega una para que el estudiante siga explorando en el celular.'
@@ -438,30 +741,158 @@ function LoadedEditor({
               onShortcuts={() => setDialog('atajos')}
             />
           )}
-          <PreviewPane
-            lessonId={lessonId}
-            listName={listName}
-            meta={meta}
-            deck={currentDeck}
-            index={index}
-            slide={slide}
-            slideIds={slideIds}
-            number={number}
-            issues={issues}
-            layout={layout}
-            propsOpen={propsOpen}
-            onToggleProps={() => setPropsOpen((open) => !open)}
+          <InsertBar
+            enabled={editable && blocks !== null && mode === 'todo'}
+            where={where.text}
+            canAskQuestion={paes.length > 0}
+            onInsert={onInsert}
+            onFamily={onFamily}
+            {...(layout === 'wide'
+              ? {}
+              : { onPanel: () => setSideOpen((open) => !open) })}
           />
+          <div className="canvas-scroll">
+            {tour.active && (
+              <TourPill
+                view={viewStep}
+                steps={slide.steps}
+                onStop={tour.stop}
+              />
+            )}
+            <section aria-label="Vista previa" className="editor-preview-stage">
+              <Canvas
+                meta={meta}
+                deckSlide={
+                  currentDeck[index] ??
+                  (currentDeck[0] as NonNullable<(typeof currentDeck)[number]>)
+                }
+                index={index}
+                total={currentDeck.length}
+                body={slide.body}
+                blocks={blocks}
+                selected={mode === 'proyectar' ? null : sel.block}
+                editing={sel.editing}
+                mode={mode}
+                view={viewStep}
+                editable={editable}
+                errors={errors}
+                marks={marks}
+                onSelect={(i) =>
+                  patchSel({
+                    block: i,
+                    editing: i === sel.editing ? sel.editing : null,
+                    commenting: null,
+                    step: i === null ? sel.step : null,
+                  })
+                }
+                onEdit={(i) =>
+                  patchSel({ editing: i, ...(i !== null ? { block: i } : {}) })
+                }
+                onStepView={stepView}
+                onRemove={removeBlockAt}
+                onFocusNote={(id) => {
+                  setTab('comentarios');
+                  setFocusNote(id);
+                  setSideOpen(true);
+                }}
+                toolbar={(block) => (
+                  <BlockToolbar
+                    block={block}
+                    steps={slide.steps}
+                    editing={sel.editing === block.index}
+                    editable={editable}
+                    canMove={canMove}
+                    format={format}
+                    onStep={(n) => setStepOf(block.index, n)}
+                    onEdit={() => patchSel({ editing: block.index })}
+                    onComment={() => patchSel({ commenting: block.index })}
+                    onMove={(direction) => moveBlockBy(block.index, direction)}
+                    onDuplicate={() => duplicateBlockAt(block.index)}
+                    onRemove={() => removeBlockAt(block.index)}
+                    onDragStart={() => undefined}
+                    onDone={() => patchSel({ editing: null })}
+                  />
+                )}
+                popover={(block) =>
+                  block && sel.commenting === block.index ? (
+                    <CommentPopover
+                      label={block.summary}
+                      onAdd={addBlockComment}
+                      onCancel={() => patchSel({ commenting: null })}
+                    />
+                  ) : null
+                }
+              />
+              {mode === 'todo' && blocks === null && (
+                <p className="canvas-readonly" role="status">
+                  {model && !model.ok ? model.reason : ''}
+                </p>
+              )}
+            </section>
+            {sel.editing !== null && (
+              <section
+                className="inline-dock"
+                aria-label="Escribir en el bloque"
+                onKeyDown={(event) => {
+                  if (event.key === 'Escape') {
+                    event.stopPropagation();
+                    patchSel({ editing: null });
+                  }
+                }}
+              >
+                <InlineEditor
+                  slide={slide}
+                  block={blocks?.find((b) => b.index === sel.editing) ?? null}
+                  activities={content.bundle.activities}
+                  format={format}
+                  issueCount={issues?.errors ?? 0}
+                  onBody={writeBlock}
+                  onReview={() => {
+                    patchSel({ editing: null });
+                    setTab('revision');
+                    setSideOpen(true);
+                  }}
+                />
+              </section>
+            )}
+            <StepTimeline
+              blocks={blocks ?? []}
+              steps={slide.steps}
+              view={viewStep}
+              mode={mode}
+              selected={sel.block}
+              editable={editable && blocks !== null}
+              onMode={(next) => {
+                setMode(next);
+                if (next === 'proyectar')
+                  patchSel({ block: null, editing: null, commenting: null });
+              }}
+              onView={(n) => patchSel({ step: n })}
+              onAdd={addStepToSlide}
+              onRemove={removeStepAt}
+              onAssign={setStepOf}
+              onSelect={(i) => patchSel({ block: i, editing: null })}
+            />
+          </div>
         </div>
       )}
       {slide && (
-        <ContentPanel
+        <SidePanel
+          lessonId={lessonId}
+          listName={listName}
+          slides={current}
           slide={slide}
+          blocks={blocks}
+          selected={selectedBlock}
+          issues={issues}
+          tab={tab}
+          focusNote={focusNote}
           layout={layout}
-          open={propsOpen}
-          editable={editable}
-          onUpdate={(patch) => update(index, patch)}
-          onClose={() => setPropsOpen(false)}
+          open={sideOpen}
+          onTab={setTab}
+          onGoSlide={(id) => select(id)}
+          onGoBlock={(i) => patchSel({ block: i, editing: null })}
+          onClose={() => setSideOpen(false)}
         />
       )}
       {slide && advanced && (

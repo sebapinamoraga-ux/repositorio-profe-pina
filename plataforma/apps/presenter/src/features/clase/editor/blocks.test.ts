@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { checkSlideSource } from '@aula/content-model/check-source';
 import { parseContentFiles } from '@aula/content-model/content-files';
 import { readContentFiles } from '@aula/content-model/read-content';
-import { toMdx } from '../../../store/mdx';
+import { blankSlide, toMdx } from '../../../store/mdx';
+import {
+  CARD_SOURCE,
+  FAMILIES,
+  FORMULA_SOURCE,
+  PANELS_SOURCE,
+  TEXT_SOURCE,
+  familySource,
+  questionSource,
+} from '../editor-directo/block-templates';
 import {
   addStep,
   duplicateBlock,
@@ -10,6 +19,7 @@ import {
   insertBlock,
   isMascotBlock,
   moveBlock,
+  questionIds,
   removeBlock,
   removeStep,
   setBlockStep,
@@ -566,4 +576,40 @@ describe('operaciones sobre las láminas del repositorio', () => {
       }
     }
   }, 120_000);
+});
+
+describe('bloques que inserta la barra Insertar', () => {
+  it('cada plantilla compila con las reglas de content:check y se lee como bloques', async () => {
+    const activity = Object.values(bundle.activities).find(
+      (a) => a.type === 'paes',
+    );
+    if (!activity) throw new Error('El repositorio no tiene preguntas PAES');
+    const base = blankSlide('concepto', 'prueba');
+    const sources: [string, string, Partial<typeof base>][] = [
+      ['texto', TEXT_SOURCE, {}],
+      ['fórmula', FORMULA_SOURCE, {}],
+      ['tarjeta', CARD_SOURCE, {}],
+      ['paneles', PANELS_SOURCE, {}],
+      [
+        'pregunta',
+        questionSource(activity.id, 1),
+        { steps: 1, activities: [activity.id] },
+      ],
+      ...FAMILIES.map((family): [string, string, Partial<typeof base>] => [
+        family.label,
+        familySource(family),
+        {},
+      ]),
+    ];
+    for (const [name, source, patch] of sources) {
+      const slide = { ...base, ...patch };
+      const edit = applied(insertBlock('\n', { after: null }, 0, source));
+      expect(await problemOf(slide, edit.body), name).toBeNull();
+      const blocks = blocksOf(edit.body).blocks;
+      expect(blocks.length, name).toBeGreaterThan(0);
+      expect(questionIds(blocks), name).toEqual(
+        name === 'pregunta' ? [activity.id] : [],
+      );
+    }
+  });
 });

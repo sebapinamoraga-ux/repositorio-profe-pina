@@ -67,7 +67,7 @@ test('una lámina con errores no se guarda', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
   await openTeacher(page, 'vista=editor');
   const ref = fake.ref;
-  await page.getByRole('button', { name: 'Más pasos' }).click();
+  await page.getByRole('button', { name: '+ Paso' }).click();
   await publish(page);
   await expect(indicator(page)).toHaveText('No se puede publicar');
   await expect(page.getByText('Hay problemas que impiden publicar')).toBeVisible();
@@ -83,9 +83,13 @@ test('los parámetros de un interactivo se editan con un formulario', async ({ p
   await page.getByRole('button', { name: /^Láminas/ }).click();
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
   await page.locator('.thumb', { hasText: '¿Qué hacen a y c?' }).click();
-  const form = page.getByRole('group', { name: 'Explorador de la parábola' });
+  // El interactivo se elige en la línea de pasos y se abre con «Escribir».
+  await page.locator('.timeline-chip', { hasText: 'Gráfico interactivo' }).click();
+  await page.getByRole('button', { name: 'Escribir' }).click();
+  const form = page.getByRole('group', { name: /^Escribir en/ }).getByRole('group', { name: 'Explorador de la parábola' });
   await form.getByLabel('a inicial').fill('2');
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  await page.getByRole('tab', { name: /^Revisión/ }).click();
+  await expect(page.getByRole('tabpanel', { name: 'Revisión' })).toContainText('sin problemas');
   await publish(page);
   await expect(indicator(page)).toHaveText('Publicado');
   const file =
@@ -179,7 +183,8 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
   const added = await page.getByLabel('Identificador').inputValue();
   await page.getByRole('button', { name: 'Cerrar la vista avanzada' }).click();
-  await expect(page.locator('.editor-check')).toContainText('sin problemas');
+  await page.getByRole('tab', { name: /^Revisión/ }).click();
+  await expect(page.getByRole('tabpanel', { name: 'Revisión' })).toContainText('sin problemas');
 
   await publish(page);
   await expect(indicator(page)).toHaveText('Publicado');

@@ -231,9 +231,9 @@ export function LessonWorkspace({
                 label: 'Recorrer los pasos aquí',
                 hint: 'Sin salir del editor · Esc para terminar',
                 icon: <Play size={16} />,
-                // Se activa con la edición directa sobre la lámina.
-                disabled: true,
-                onSelect: () => undefined,
+                // Solo con una lámina que tenga pasos y se pueda editar.
+                disabled: !(editing && content.canEdit && (slides.find((s) => s.id === here)?.steps ?? 0) > 0),
+                onSelect: () => window.dispatchEvent(new Event('aula:recorrer')),
               },
             ]}
           />

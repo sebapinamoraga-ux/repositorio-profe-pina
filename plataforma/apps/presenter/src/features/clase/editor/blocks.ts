@@ -1044,3 +1044,29 @@ export function usedSteps(body: string): number[] {
     (a, b) => a - b,
   );
 }
+
+/** Identificadores de actividad de los `PreguntaPAES` de la lámina, sin repetir. */
+export function questionIds(blocks: readonly Block[]): string[] {
+  const ids = blocks.flatMap((block) =>
+    block.fields.flatMap((field) => {
+      if (field.kind !== 'params' || field.component !== 'PreguntaPAES')
+        return [];
+      const id = field.attrs.id?.value;
+      return typeof id === 'string' ? [id] : [];
+    }),
+  );
+  return [...new Set(ids)];
+}
+
+/**
+ * Encuentra el bloque al que se refería un comentario: el que tiene su resumen en la misma
+ * posición o, si cambió de lugar, el primero con ese resumen. Null si ya no existe.
+ */
+export function findBlockByRef(
+  blocks: readonly Block[],
+  ref: { index: number; label: string },
+): Block | null {
+  const same = blocks[ref.index];
+  if (same && same.summary === ref.label) return same;
+  return blocks.find((block) => block.summary === ref.label) ?? null;
+}

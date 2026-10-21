@@ -46,6 +46,8 @@ export const noteSchema = z.object({
   source: noteSourceSchema,
   course: z.string(),
   status: z.enum(['pendiente', 'aplicado']),
+  /** Bloque de la lámina al que se refiere (posición y resumen); opcional, sin migración. */
+  blockRef: z.object({ index: z.number(), label: z.string() }).optional(),
 });
 export type Note = z.infer<typeof noteSchema>;
 
