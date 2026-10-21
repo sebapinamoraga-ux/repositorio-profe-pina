@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react';
-import { Check, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Plus,
+} from 'lucide-react';
 import type { Tramo } from '../../../content/ops';
 import { FitSlide } from '../../../slides/FitSlide';
 import { SlideView } from '../../../slides/SlideView';
@@ -11,7 +18,7 @@ import {
 import type { EditedSlide } from '../../../store/schema';
 import { Button } from '../../../ui/Button';
 import type { LessonIssues } from '../issues';
-import type { DropTarget } from './layout-ops';
+import { stepTarget, type DropTarget } from './layout-ops';
 import { slideNumber, type SlideListName } from './shared';
 
 /** Miniatura real de una lámina: se monta cuando entra (o está por entrar) en pantalla. */
@@ -73,6 +80,7 @@ export function SlideList({
   pendingTotal,
   editable,
   layout,
+  touch = false,
   onPick,
   onMove,
   onNew,
@@ -94,6 +102,8 @@ export function SlideList({
   pendingTotal: number;
   editable: boolean;
   layout: 'wide' | 'mid' | 'narrow';
+  /** Con el dedo: «Organizar» reemplaza al arrastre y a Alt + flechas. */
+  touch?: boolean;
   onPick: (id: string, additive: boolean) => void;
   onMove: (ids: string[], target: DropTarget) => void;
   /** Abre «Nueva lámina»; con un tramo, la agrega al final de ese tramo. */
@@ -104,6 +114,7 @@ export function SlideList({
   const [collapsed, setCollapsed] = useState<ReadonlySet<number>>(new Set());
   const [drag, setDrag] = useState<string[] | null>(null);
   const [over, setOver] = useState<DropTarget | null>(null);
+  const [organizing, setOrganizing] = useState(false);
   const byId = new Map(slides.map((slide, k) => [slide.id, k]));
   const indexOf = (id: string) => byId.get(id) ?? 0;
   const selected = selectedId ? indexOf(selectedId) : 0;
@@ -251,6 +262,16 @@ export function SlideList({
         >
           + Lámina
         </Button>
+        {touch && (
+          <Button
+            size="sm"
+            aria-pressed={organizing}
+            disabled={!editable}
+            onClick={() => setOrganizing((now) => !now)}
+          >
+            {organizing ? 'Listo' : 'Organizar'}
+          </Button>
+        )}
       </div>
       {listName === 'repaso' && (
         <div className="editor-repaso-head">
@@ -344,7 +365,71 @@ export function SlideList({
                   </span>
                 </button>
               )}
-              {open && (
+              {open && organizing && (
+                <ul className="organize-list">
+                  {group.map((id) => {
+                    const k = indexOf(id);
+                    return (
+                      <li key={id} className="organize-row">
+                        <span className="thumb-n">
+                          {slideNumber(listName, k)}
+                        </span>
+                        <span className="organize-title">
+                          {slides[k]?.title}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={`Subir la lámina ${slideNumber(listName, k)}`}
+                          disabled={!stepTarget(groups, id, -1)}
+                          onClick={() => {
+                            const target = stepTarget(groups, id, -1);
+                            if (target) onMove([id], target);
+                          }}
+                        >
+                          <ArrowUp size={18} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Bajar la lámina ${slideNumber(listName, k)}`}
+                          disabled={!stepTarget(groups, id, 1)}
+                          onClick={() => {
+                            const target = stepTarget(groups, id, 1);
+                            if (target) onMove([id], target);
+                          }}
+                        >
+                          <ArrowDown size={18} aria-hidden="true" />
+                        </button>
+                        {tramos && (
+                          <select
+                            aria-label={`Mover la lámina ${slideNumber(listName, k)} a un tramo`}
+                            value=""
+                            onChange={(event) => {
+                              if (event.target.value === '') return;
+                              const to = Number(event.target.value);
+                              onMove([id], {
+                                tramo: to,
+                                at: groups[to]?.length ?? 0,
+                              });
+                            }}
+                          >
+                            <option value="">Mover a tramo…</option>
+                            {tramos.map((info, to) => (
+                              <option
+                                key={to}
+                                value={to}
+                                disabled={to === tramo}
+                              >
+                                {to + 1}. {info.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {open && !organizing && (
                 <ul className="thumb-list">
                   {group.map((id, at) => item(id, tramo, at))}
                   <li

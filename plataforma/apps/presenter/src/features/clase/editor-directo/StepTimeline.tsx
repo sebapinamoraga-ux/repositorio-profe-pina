@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { GripVertical, X } from 'lucide-react';
+import { Ellipsis, GripVertical, X } from 'lucide-react';
+import { Menu } from '../../../ui/Menu';
 import type { Block } from '../editor/blocks';
 
 /**
@@ -13,6 +14,7 @@ export function StepTimeline({
   mode,
   selected,
   editable,
+  compact = false,
   onMode,
   onView,
   onAdd,
@@ -26,6 +28,8 @@ export function StepTimeline({
   mode: 'todo' | 'proyectar';
   selected: number | null;
   editable: boolean;
+  /** Con el dedo: tocar una ficha ofrece «Mover a» y cada columna tiene «⋯» con «Quitar paso». */
+  compact?: boolean;
   onMode: (mode: 'todo' | 'proyectar') => void;
   onView: (step: number) => void;
   onAdd: () => void;
@@ -111,7 +115,7 @@ export function StepTimeline({
                   {here.length + inner.length === 1 ? 'bloque' : 'bloques'}
                 </span>
               </button>
-              {n > 0 && editable && (
+              {n > 0 && editable && !compact && (
                 <button
                   type="button"
                   className="timeline-remove"
@@ -122,32 +126,77 @@ export function StepTimeline({
                   <X size={14} aria-hidden="true" />
                 </button>
               )}
+              {n > 0 && editable && compact && (
+                <span className="timeline-remove">
+                  <Menu
+                    label={`Opciones del paso ${n}`}
+                    className="timeline-more"
+                    entries={[
+                      {
+                        key: 'quitar',
+                        label: `Quitar paso ${n}`,
+                        hint: 'Sus bloques pasan al paso anterior',
+                        danger: true,
+                        onSelect: () => onRemove(n),
+                      },
+                    ]}
+                  >
+                    <Ellipsis size={16} aria-hidden="true" />
+                  </Menu>
+                </span>
+              )}
               <ul>
                 {here.map((block) => (
                   <li key={block.index}>
-                    <button
-                      type="button"
-                      className={`timeline-chip ${block.index === selected ? 'is-selected' : ''}`}
-                      draggable={editable && !block.inherited}
-                      onDragStart={(event) => {
-                        event.dataTransfer.setData(
-                          'text/plain',
-                          String(block.index),
-                        );
-                        event.dataTransfer.effectAllowed = 'move';
-                        setDragging(true);
-                      }}
-                      onDragEnd={() => {
-                        setDragging(false);
-                        setOver(null);
-                      }}
-                      onClick={() => onSelect(block.index)}
-                    >
-                      <GripVertical size={14} aria-hidden="true" />
-                      <span>
-                        <b>{block.label}</b> · {block.summary}
-                      </span>
-                    </button>
+                    {compact ? (
+                      <Menu
+                        label={`Mover «${block.summary}»`}
+                        className={`timeline-chip ${block.index === selected ? 'is-selected' : ''}`}
+                        entries={[
+                          {
+                            key: 'elegir',
+                            label: 'Elegir en la lámina',
+                            onSelect: () => onSelect(block.index),
+                          },
+                          ...Array.from({ length: steps + 1 }, (_, to) => to)
+                            .filter((to) => to !== block.step)
+                            .map((to) => ({
+                              key: `a-${to}`,
+                              label: `Mover a ${to === 0 ? 'Inicial' : `Paso ${to}`}`,
+                              disabled: !editable || block.inherited,
+                              onSelect: () => onAssign(block.index, to),
+                            })),
+                        ]}
+                      >
+                        <span>
+                          <b>{block.label}</b> · {block.summary}
+                        </span>
+                      </Menu>
+                    ) : (
+                      <button
+                        type="button"
+                        className={`timeline-chip ${block.index === selected ? 'is-selected' : ''}`}
+                        draggable={editable && !block.inherited}
+                        onDragStart={(event) => {
+                          event.dataTransfer.setData(
+                            'text/plain',
+                            String(block.index),
+                          );
+                          event.dataTransfer.effectAllowed = 'move';
+                          setDragging(true);
+                        }}
+                        onDragEnd={() => {
+                          setDragging(false);
+                          setOver(null);
+                        }}
+                        onClick={() => onSelect(block.index)}
+                      >
+                        <GripVertical size={14} aria-hidden="true" />
+                        <span>
+                          <b>{block.label}</b> · {block.summary}
+                        </span>
+                      </button>
+                    )}
                   </li>
                 ))}
                 {inner.map((block) => (

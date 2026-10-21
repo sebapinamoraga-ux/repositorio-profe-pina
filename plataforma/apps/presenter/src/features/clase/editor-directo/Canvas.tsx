@@ -129,6 +129,7 @@ export function Canvas({
   mode,
   view,
   editable,
+  interactive = true,
   errors,
   marks,
   toolbar,
@@ -150,6 +151,8 @@ export function Canvas({
   mode: 'todo' | 'proyectar';
   view: number;
   editable: boolean;
+  /** Sin capa de edición (celular: la lámina solo se ve). */
+  interactive?: boolean;
   /** Mensaje de error por bloque (fórmulas). */
   errors: ReadonlyMap<number, string>;
   /** Comentarios por bloque: cantidad y el primero. */
@@ -181,7 +184,7 @@ export function Canvas({
     return () => observer.disconnect();
   }, [frame]);
 
-  const projecting = mode === 'proyectar';
+  const projecting = mode === 'proyectar' || !interactive;
   const list = blocks ?? [];
   const current =
     selected === null ? null : (list.find((b) => b.index === selected) ?? null);
@@ -220,6 +223,8 @@ export function Canvas({
   const keys = (event: KeyboardEvent) => {
     if (projecting) return;
     const target = event.target;
+    // Un menú abierto dentro de la barra (p. ej. «Más») maneja sus propias teclas.
+    if (target instanceof Element && target.closest('.menu')) return;
     const inField =
       target instanceof HTMLElement &&
       (target.isContentEditable ||

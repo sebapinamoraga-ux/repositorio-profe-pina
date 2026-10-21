@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { lessonFormat } from '@aula/content-model';
 import { slidePath } from '@aula/content-model/content-files';
+import type { Navigate } from '../../../app/routes';
 import { mascotGallery } from '../../../app/gallery';
 import { useContent } from '../../../content/ContentProvider';
 import {
@@ -23,7 +24,8 @@ import {
   type BlankLayout,
 } from '../../../store/deck';
 import { makeNote } from '../../../store/notes';
-import type { EditedSlide, View } from '../../../store/schema';
+import type { EditedSlide } from '../../../store/schema';
+import { Sheet } from '../../../ui/Sheet';
 import { useUi } from '../../../ui/UiProvider';
 import {
   addStep,
@@ -53,6 +55,16 @@ import {
 } from './block-templates';
 import { Canvas } from './Canvas';
 import { CommentPopover } from './CommentPopover';
+import { FocusMode } from './FocusMode';
+import { MiniSlide } from './MiniSlide';
+import {
+  ActionsSheet,
+  InsertSheet,
+  PhoneBlocks,
+  PhoneHeader,
+  PhoneSteps,
+} from './phone';
+import { useCoarsePointer } from './touch';
 import { formulaErrorBlocks } from './error-blocks';
 import { useLessonHistory } from './HistoryContext';
 import { InlineEditor, type FormatApi } from './InlineEditor';
@@ -134,7 +146,7 @@ interface EditorProps {
   issues: LessonIssues | null;
   onSelect: (id: string) => void;
   onOpenDetails: () => void;
-  onNavigate: (view: View) => void;
+  onNavigate: Navigate;
 }
 
 function LoadedEditor({
@@ -144,6 +156,7 @@ function LoadedEditor({
   issues,
   onSelect,
   onOpenDetails,
+  onNavigate,
 }: EditorProps) {
   const { data, dispatch } = useAula();
   const content = useContent();
@@ -152,6 +165,10 @@ function LoadedEditor({
   const { width, ref: rootRef } = useElementWidth();
   const [root, setRoot] = useState<HTMLElement | null>(null);
   const layout = width >= 1100 ? 'wide' : width >= 700 ? 'mid' : 'narrow';
+  const coarse = useCoarsePointer();
+  // Celular: pantallas de lista y de lámina. Tableta con el dedo: barras de 44 px, modo enfoque.
+  const phone = layout === 'narrow';
+  const touch = phone || (layout !== 'wide' && coarse);
   const meta = lessonMeta(content, lessonId);
   const video =
     lessonFormat(lessonEntry(content, lessonId)?.meta ?? {}) === 'video';
@@ -175,6 +192,13 @@ function LoadedEditor({
   const [newTarget, setNewTarget] = useState<DropTarget | null>(null);
   const [selection, setSelection] = useState<Selection | null>(null);
   const format = useRef<FormatApi | null>(null);
+  const [screen, setScreen] = useState<'lista' | 'lamina'>(
+    slideId ? 'lamina' : 'lista',
+  );
+  const [sheet, setSheet] = useState<
+    'insertar' | 'acciones' | 'comentarios' | null
+  >(null);
+  const [draftSignal, setDraftSignal] = useState(0);
 
   const current = listName === 'repaso' ? repaso : slides;
   const found = current.findIndex((item) => item.id === slideId);
@@ -356,8 +380,10 @@ function LoadedEditor({
           ? [created]
           : (current.find((s) => s.id === id) ?? []),
       );
-    if (commit(order, label, undefined, tramoIds ? next : undefined))
+    if (commit(order, label, undefined, tramoIds ? next : undefined)) {
       select(created.id);
+      if (phone) setScreen('lamina');
+    }
   };
   /** Copia la lámina a continuación con otros números (solo en texto y fórmulas). */
   const createVariant = (replacements: Map<string, string>) => {
@@ -659,6 +685,14 @@ function LoadedEditor({
     [slide, selectedBlock],
   );
 
+  /** Con el dedo, «Comentar» abre el panel de comentarios con el campo listo. */
+  const openComment = (index: number) => {
+    patchSel({ block: index, commenting: null });
+    setTab('comentarios');
+    setDraftSignal((n) => n + 1);
+    if (phone) setSheet('comentarios');
+    else setSideOpen(true);
+  };
   const stepView = (delta: -1 | 1) => {
     if (!slide) return;
     patchSel({ step: Math.min(Math.max(viewStep + delta, 0), slide.steps) });
@@ -687,6 +721,348 @@ function LoadedEditor({
 
   const dupTarget = newTarget ?? afterCurrent();
   const where = insertTarget();
+  const editingBlock = blocks?.find((b) => b.index === sel.editing) ?? null;
+  const toolbarFor = (
+    block: NonNullable<typeof editingBlock>,
+    editingNow: boolean,
+  ) =>
+    slide && (
+      <BlockToolbar
+        block={block}
+        steps={slide.steps}
+        editing={editingNow}
+        editable={editable}
+        compact={touch}
+        canMove={canMove}
+        format={format}
+        onStep={(n) => setStepOf(block.index, n)}
+        onEdit={() => patchSel({ editing: block.index })}
+        onComment={() =>
+          touch
+            ? openComment(block.index)
+            : patchSel({ commenting: block.index })
+        }
+        onMove={(direction) => moveBlockBy(block.index, direction)}
+        onDuplicate={() => duplicateBlockAt(block.index)}
+        onRemove={() => removeBlockAt(block.index)}
+        onDragStart={() => undefined}
+        onDone={() => patchSel({ editing: null })}
+      />
+    );
+  const inlineEditor = (hidePreview: boolean) =>
+    slide && (
+      <InlineEditor
+        slide={slide}
+        block={editingBlock}
+        activities={content.bundle.activities}
+        format={format}
+        issueCount={issues?.errors ?? 0}
+        hidePreview={hidePreview}
+        onBody={writeBlock}
+        onReview={() => {
+          patchSel({ editing: null });
+          setTab('revision');
+          if (phone) setSheet('comentarios');
+          else setSideOpen(true);
+        }}
+      />
+    );
+  const sidePanel = (panelLayout: 'wide' | 'mid' | 'narrow') =>
+    slide && (
+      <SidePanel
+        lessonId={lessonId}
+        listName={listName}
+        slides={current}
+        slide={slide}
+        blocks={blocks}
+        selected={selectedBlock}
+        issues={issues}
+        tab={tab}
+        focusNote={focusNote}
+        draftSignal={draftSignal}
+        layout={panelLayout}
+        open={sideOpen || panelLayout === 'narrow'}
+        onTab={setTab}
+        onGoSlide={(id) => {
+          setSheet(null);
+          select(id);
+        }}
+        onGoBlock={(i) => {
+          setSheet(null);
+          patchSel({ block: i, editing: null });
+        }}
+        onClose={() => setSideOpen(false)}
+      />
+    );
+  const focusMode =
+    touch && slide && editingBlock ? (
+      <FocusMode
+        label={editingBlock.summary}
+        slide={
+          <MiniSlide
+            meta={meta}
+            deckSlide={
+              currentDeck[index] ??
+              (currentDeck[0] as NonNullable<(typeof currentDeck)[number]>)
+            }
+            index={index}
+            total={currentDeck.length}
+            body={slide.body}
+          />
+        }
+        editor={
+          <>
+            {!editingBlock.inherited &&
+              editingBlock.component !== 'Composicion' && (
+                <label className="field focus-step">
+                  Aparece en
+                  <select
+                    value={editingBlock.step}
+                    disabled={!editable}
+                    onChange={(event) =>
+                      setStepOf(editingBlock.index, Number(event.target.value))
+                    }
+                  >
+                    {Array.from({ length: slide.steps + 1 }, (_, n) => (
+                      <option key={n} value={n}>
+                        {stepName(n)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            {inlineEditor(true)}
+          </>
+        }
+        formats={toolbarFor(editingBlock, true)}
+        onDone={() => patchSel({ editing: null })}
+      />
+    ) : null;
+  const dialogs = (
+    <>
+      {dialog === 'nueva' && (
+        <NewSlideDialog
+          number={targetNumber()}
+          where={
+            tramos
+              ? `${dupTarget.tramo + 1} · ${tramoName(dupTarget.tramo)}`
+              : null
+          }
+          duplicateOf={slide ? number : null}
+          repaso={listName === 'repaso'}
+          sheet={touch}
+          onBlank={(layoutName: BlankLayout) =>
+            created(
+              `Agregó una lámina en blanco (${layoutName})`,
+              (id) => blankSlide(layoutName, id),
+              `nueva-${layoutName}`,
+            )
+          }
+          onDuplicate={() => {
+            setDialog(null);
+            duplicate(dupTarget);
+          }}
+          onTemplate={(templateId) => {
+            const template = mascotGallery.templates.find(
+              (t) => t.id === templateId,
+            );
+            if (template)
+              created(
+                `Agregó la lámina «${template.heading}»`,
+                (id) => slideFromTemplate(template, id),
+                template.id,
+              );
+          }}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === 'variante' && slide && (
+        <VariantDialog
+          number={number}
+          body={slide.body}
+          onCreate={createVariant}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      {dialog === 'atajos' && (
+        <ShortcutsDialog onClose={() => setDialog(null)} />
+      )}
+      {slide && advanced && (
+        <AdvancedPanel
+          slide={slide}
+          number={number}
+          taken={all.filter((s) => s !== slide).map((s) => s.id)}
+          editable={editable}
+          slideChanged={
+            Boolean(lesson) &&
+            content.pending.includes(
+              slidePath(lesson?.dir ?? '', slideFile(slide)),
+            )
+          }
+          lessonChanged={
+            Boolean(lesson) &&
+            content.pending.some((path) => path.startsWith(`${lesson?.dir}/`))
+          }
+          onRename={rename}
+          onBody={(body) => update(index, { body })}
+          onDiscardSlide={restoreSlide}
+          onDiscardLesson={restoreLesson}
+          onClose={() => setAdvanced(false)}
+        />
+      )}
+      {focusMode}
+    </>
+  );
+
+  if (phone)
+    return (
+      <main
+        ref={(node) => {
+          rootRef(node);
+          setRoot(node);
+        }}
+        className="editor is-narrow"
+      >
+        {screen === 'lista' || !slide ? (
+          <SlideList
+            listName={listName}
+            slides={current}
+            deck={listDeck}
+            meta={meta}
+            tramos={tramos}
+            groups={groups}
+            selectedId={slide?.id}
+            multi={multi}
+            issues={issues}
+            pendingFor={pendingFor}
+            pendingTotal={pendingNotes.length}
+            editable={editable}
+            layout="narrow"
+            touch
+            onPick={(id, additive) => {
+              pick(id, additive);
+              if (!additive) setScreen('lamina');
+            }}
+            onMove={moveSlides}
+            onNew={openNew}
+            onOpenDetails={onOpenDetails}
+          />
+        ) : (
+          <div className="phone-slide">
+            <PhoneHeader
+              number={number}
+              title={slide.title}
+              onBack={() => setScreen('lista')}
+              onActions={() => setSheet('acciones')}
+            />
+            <div className="phone-canvas">
+              <Canvas
+                meta={meta}
+                deckSlide={
+                  currentDeck[index] ??
+                  (currentDeck[0] as NonNullable<(typeof currentDeck)[number]>)
+                }
+                index={index}
+                total={currentDeck.length}
+                body={slide.body}
+                blocks={blocks}
+                selected={null}
+                editing={null}
+                mode="todo"
+                view={viewStep}
+                editable={false}
+                interactive={false}
+                errors={errors}
+                marks={marks}
+                toolbar={() => null}
+                popover={() => null}
+                onSelect={() => undefined}
+                onEdit={() => undefined}
+                onStepView={() => undefined}
+                onRemove={() => undefined}
+                onFocusNote={() => undefined}
+              />
+            </div>
+            <PhoneSteps
+              steps={slide.steps}
+              view={viewStep}
+              editable={editable && blocks !== null}
+              onView={(n) => patchSel({ step: n })}
+              onAdd={addStepToSlide}
+              onRemove={removeStepAt}
+            />
+            {blocks ? (
+              <PhoneBlocks
+                blocks={blocks}
+                steps={slide.steps}
+                editable={editable}
+                marks={marks}
+                onOpen={(i) => patchSel({ block: i, editing: i })}
+                onMove={moveBlockBy}
+                onStep={setStepOf}
+                onDuplicate={duplicateBlockAt}
+                onRemove={removeBlockAt}
+                onComment={openComment}
+                onInsert={() => setSheet('insertar')}
+              />
+            ) : (
+              <p className="canvas-readonly" role="status">
+                {model && !model.ok ? model.reason : ''}
+              </p>
+            )}
+          </div>
+        )}
+        {slide && sheet === 'insertar' && (
+          <InsertSheet
+            canAskQuestion={paes.length > 0}
+            where={where.text}
+            onInsert={onInsert}
+            onFamily={onFamily}
+            onClose={() => setSheet(null)}
+          />
+        )}
+        {slide && sheet === 'acciones' && (
+          <ActionsSheet
+            slide={slide}
+            number={number}
+            video={video}
+            editable={editable}
+            canRemove={canRemove}
+            tramos={tramos}
+            currentTramo={locate(groups, slide.id)?.tramo ?? 0}
+            onUpdate={(patch) => update(index, patch)}
+            onDuplicate={() => duplicate()}
+            onVariant={blocks ? () => setDialog('variante') : null}
+            onMoveToTramo={(to) =>
+              moveSlides([slide.id], { tramo: to, at: groups[to]?.length ?? 0 })
+            }
+            onReview={() => {
+              setTab('revision');
+              setSheet('comentarios');
+            }}
+            onAdvanced={() => setAdvanced(true)}
+            onPresent={() =>
+              onNavigate('presentar', { lesson: lessonId, slide: slide.id })
+            }
+            onRemove={() => {
+              remove();
+              setScreen('lista');
+            }}
+            onClose={() => setSheet(null)}
+          />
+        )}
+        {slide && sheet === 'comentarios' && (
+          <Sheet
+            label="Comentarios y revisión"
+            size="tall"
+            onClose={() => setSheet(null)}
+          >
+            {sidePanel('narrow')}
+          </Sheet>
+        )}
+        {dialogs}
+      </main>
+    );
   return (
     <main
       ref={(node) => {
@@ -709,6 +1085,7 @@ function LoadedEditor({
         pendingTotal={pendingNotes.length}
         editable={editable}
         layout={layout}
+        touch={touch}
         onPick={pick}
         onMove={moveSlides}
         onNew={openNew}
@@ -813,24 +1190,9 @@ function LoadedEditor({
                   setFocusNote(id);
                   setSideOpen(true);
                 }}
-                toolbar={(block) => (
-                  <BlockToolbar
-                    block={block}
-                    steps={slide.steps}
-                    editing={sel.editing === block.index}
-                    editable={editable}
-                    canMove={canMove}
-                    format={format}
-                    onStep={(n) => setStepOf(block.index, n)}
-                    onEdit={() => patchSel({ editing: block.index })}
-                    onComment={() => patchSel({ commenting: block.index })}
-                    onMove={(direction) => moveBlockBy(block.index, direction)}
-                    onDuplicate={() => duplicateBlockAt(block.index)}
-                    onRemove={() => removeBlockAt(block.index)}
-                    onDragStart={() => undefined}
-                    onDone={() => patchSel({ editing: null })}
-                  />
-                )}
+                toolbar={(block) =>
+                  toolbarFor(block, sel.editing === block.index)
+                }
                 popover={(block) =>
                   block && sel.commenting === block.index ? (
                     <CommentPopover
@@ -847,7 +1209,7 @@ function LoadedEditor({
                 </p>
               )}
             </section>
-            {sel.editing !== null && (
+            {sel.editing !== null && !touch && (
               <section
                 className="inline-dock"
                 aria-label="Escribir en el bloque"
@@ -858,19 +1220,7 @@ function LoadedEditor({
                   }
                 }}
               >
-                <InlineEditor
-                  slide={slide}
-                  block={blocks?.find((b) => b.index === sel.editing) ?? null}
-                  activities={content.bundle.activities}
-                  format={format}
-                  issueCount={issues?.errors ?? 0}
-                  onBody={writeBlock}
-                  onReview={() => {
-                    patchSel({ editing: null });
-                    setTab('revision');
-                    setSideOpen(true);
-                  }}
-                />
+                {inlineEditor(false)}
               </section>
             )}
             <StepTimeline
@@ -880,6 +1230,7 @@ function LoadedEditor({
               mode={mode}
               selected={sel.block}
               editable={editable && blocks !== null}
+              compact={touch}
               onMode={(next) => {
                 setMode(next);
                 if (next === 'proyectar')
@@ -894,94 +1245,8 @@ function LoadedEditor({
           </div>
         </div>
       )}
-      {slide && (
-        <SidePanel
-          lessonId={lessonId}
-          listName={listName}
-          slides={current}
-          slide={slide}
-          blocks={blocks}
-          selected={selectedBlock}
-          issues={issues}
-          tab={tab}
-          focusNote={focusNote}
-          layout={layout}
-          open={sideOpen}
-          onTab={setTab}
-          onGoSlide={(id) => select(id)}
-          onGoBlock={(i) => patchSel({ block: i, editing: null })}
-          onClose={() => setSideOpen(false)}
-        />
-      )}
-      {slide && advanced && (
-        <AdvancedPanel
-          slide={slide}
-          number={number}
-          taken={all.filter((s) => s !== slide).map((s) => s.id)}
-          editable={editable}
-          slideChanged={
-            Boolean(lesson) &&
-            content.pending.includes(
-              slidePath(lesson?.dir ?? '', slideFile(slide)),
-            )
-          }
-          lessonChanged={
-            Boolean(lesson) &&
-            content.pending.some((path) => path.startsWith(`${lesson?.dir}/`))
-          }
-          onRename={rename}
-          onBody={(body) => update(index, { body })}
-          onDiscardSlide={restoreSlide}
-          onDiscardLesson={restoreLesson}
-          onClose={() => setAdvanced(false)}
-        />
-      )}
-      {dialog === 'nueva' && (
-        <NewSlideDialog
-          number={targetNumber()}
-          where={
-            tramos
-              ? `${dupTarget.tramo + 1} · ${tramoName(dupTarget.tramo)}`
-              : null
-          }
-          duplicateOf={slide ? number : null}
-          repaso={listName === 'repaso'}
-          onBlank={(layoutName: BlankLayout) =>
-            created(
-              `Agregó una lámina en blanco (${layoutName})`,
-              (id) => blankSlide(layoutName, id),
-              `nueva-${layoutName}`,
-            )
-          }
-          onDuplicate={() => {
-            setDialog(null);
-            duplicate(dupTarget);
-          }}
-          onTemplate={(templateId) => {
-            const template = mascotGallery.templates.find(
-              (t) => t.id === templateId,
-            );
-            if (template)
-              created(
-                `Agregó la lámina «${template.heading}»`,
-                (id) => slideFromTemplate(template, id),
-                template.id,
-              );
-          }}
-          onClose={() => setDialog(null)}
-        />
-      )}
-      {dialog === 'variante' && slide && (
-        <VariantDialog
-          number={number}
-          body={slide.body}
-          onCreate={createVariant}
-          onClose={() => setDialog(null)}
-        />
-      )}
-      {dialog === 'atajos' && (
-        <ShortcutsDialog onClose={() => setDialog(null)} />
-      )}
+      {sidePanel(layout)}
+      {dialogs}
     </main>
   );
 }

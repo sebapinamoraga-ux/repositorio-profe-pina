@@ -1,4 +1,6 @@
 import type { RefObject } from 'react';
+import { Ellipsis } from 'lucide-react';
+import { Menu } from '../../../ui/Menu';
 import {
   AlignCenter,
   ArrowDown,
@@ -29,6 +31,7 @@ export function BlockToolbar({
   steps,
   editing,
   editable,
+  compact = false,
   canMove,
   format,
   onStep,
@@ -44,6 +47,8 @@ export function BlockToolbar({
   steps: number;
   editing: boolean;
   editable: boolean;
+  /** Con el dedo: botones de 44 px con nombre y Duplicar y Eliminar bajo «Más». */
+  compact?: boolean;
   canMove: { up: boolean; down: boolean };
   format: RefObject<FormatApi | null>;
   onStep: (step: number) => void;
@@ -165,21 +170,23 @@ export function BlockToolbar({
         Comentar
       </button>
       <span className="toolbar-sep" aria-hidden="true" />
-      <button
-        type="button"
-        aria-label="Arrastrar a un paso"
-        title="Arrastra a una columna de la línea de pasos"
-        className="toolbar-grip"
-        draggable={!locked && !block.inherited}
-        disabled={locked || block.inherited}
-        onDragStart={(event) => {
-          event.dataTransfer.setData('text/plain', String(block.index));
-          event.dataTransfer.effectAllowed = 'move';
-          onDragStart();
-        }}
-      >
-        <GripVertical size={16} aria-hidden="true" />
-      </button>
+      {!compact && (
+        <button
+          type="button"
+          aria-label="Arrastrar a un paso"
+          title="Arrastra a una columna de la línea de pasos"
+          className="toolbar-grip"
+          draggable={!locked && !block.inherited}
+          disabled={locked || block.inherited}
+          onDragStart={(event) => {
+            event.dataTransfer.setData('text/plain', String(block.index));
+            event.dataTransfer.effectAllowed = 'move';
+            onDragStart();
+          }}
+        >
+          <GripVertical size={16} aria-hidden="true" />
+        </button>
+      )}
       <button
         type="button"
         aria-label="Subir"
@@ -188,6 +195,7 @@ export function BlockToolbar({
         onClick={() => onMove(-1)}
       >
         <ArrowUp size={16} aria-hidden="true" />
+        {compact && 'Subir'}
       </button>
       <button
         type="button"
@@ -197,26 +205,56 @@ export function BlockToolbar({
         onClick={() => onMove(1)}
       >
         <ArrowDown size={16} aria-hidden="true" />
+        {compact && 'Bajar'}
       </button>
-      <button
-        type="button"
-        aria-label="Duplicar"
-        title="Duplicar"
-        disabled={locked || block.component === 'MascotaProfePina'}
-        onClick={onDuplicate}
-      >
-        <Copy size={16} aria-hidden="true" />
-      </button>
-      <button
-        type="button"
-        className="is-danger"
-        aria-label="Eliminar"
-        title="Eliminar bloque (Supr)"
-        disabled={locked}
-        onClick={onRemove}
-      >
-        <Trash2 size={16} aria-hidden="true" />
-      </button>
+      {compact ? (
+        <Menu
+          label="Más sobre el bloque"
+          className="toolbar-more"
+          entries={[
+            {
+              key: 'duplicar',
+              label: 'Duplicar',
+              icon: <Copy size={16} />,
+              disabled: locked || block.component === 'MascotaProfePina',
+              onSelect: onDuplicate,
+            },
+            {
+              key: 'eliminar',
+              label: 'Eliminar',
+              icon: <Trash2 size={16} />,
+              danger: true,
+              disabled: locked,
+              onSelect: onRemove,
+            },
+          ]}
+        >
+          <Ellipsis size={16} aria-hidden="true" />
+          Más
+        </Menu>
+      ) : (
+        <>
+          <button
+            type="button"
+            aria-label="Duplicar"
+            title="Duplicar"
+            disabled={locked || block.component === 'MascotaProfePina'}
+            onClick={onDuplicate}
+          >
+            <Copy size={16} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className="is-danger"
+            aria-label="Eliminar"
+            title="Eliminar bloque (Supr)"
+            disabled={locked}
+            onClick={onRemove}
+          >
+            <Trash2 size={16} aria-hidden="true" />
+          </button>
+        </>
+      )}
     </div>
   );
 }

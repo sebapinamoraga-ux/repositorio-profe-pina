@@ -26,6 +26,7 @@ export function SidePanel({
   issues,
   tab,
   focusNote,
+  draftSignal = 0,
   layout,
   open,
   onTab,
@@ -43,6 +44,8 @@ export function SidePanel({
   tab: SideTab;
   /** Comentario que se acaba de elegir en el lienzo. */
   focusNote: string | null;
+  /** Cambia cuando se pide «Comentar» sobre el bloque: enfoca el campo con ese ámbito. */
+  draftSignal?: number;
   layout: 'wide' | 'mid' | 'narrow';
   open: boolean;
   onTab: (tab: SideTab) => void;
@@ -57,11 +60,17 @@ export function SidePanel({
   const [scope, setScope] = useState<Scope>('slide');
   const [showApplied, setShowApplied] = useState(false);
   const focus = useRef<HTMLLIElement | null>(null);
+  const draftField = useRef<HTMLTextAreaElement>(null);
   const effective: Scope = scope === 'block' && !selected ? 'slide' : scope;
 
   useEffect(() => {
     focus.current?.scrollIntoView({ block: 'nearest' });
   }, [focusNote, tab]);
+  useEffect(() => {
+    if (!draftSignal) return;
+    setScope('block');
+    draftField.current?.focus();
+  }, [draftSignal]);
 
   const ids = new Set(slides.map((s) => s.id));
   const visible = (note: Note) => note.status === 'pendiente' || showApplied;
@@ -194,6 +203,7 @@ export function SidePanel({
             className="note-draft"
           >
             <textarea
+              ref={draftField}
               rows={2}
               aria-label="Nuevo comentario"
               placeholder="Anota algo que quieras cambiar después…"

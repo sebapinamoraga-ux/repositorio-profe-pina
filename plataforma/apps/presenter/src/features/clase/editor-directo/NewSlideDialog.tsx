@@ -4,6 +4,7 @@ import { mascotGallery } from '../../../app/gallery';
 import { blankSlide, type BlankLayout } from '../../../store/deck';
 import { IconButton } from '../../../ui/Button';
 import { Modal } from '../../../ui/Modal';
+import { Sheet } from '../../../ui/Sheet';
 import { TemplateSlide } from '../../recursos/MascotGallery';
 import { extractBlocks } from '../editor/blocks';
 import { PRESENCE } from './shared';
@@ -36,6 +37,7 @@ export function NewSlideDialog({
   where,
   duplicateOf,
   repaso,
+  sheet = false,
   onBlank,
   onDuplicate,
   onTemplate,
@@ -48,6 +50,8 @@ export function NewSlideDialog({
   /** Número de la lámina que se puede duplicar. */
   duplicateOf: string | null;
   repaso: boolean;
+  /** En el celular y la tableta sube como hoja. */
+  sheet?: boolean;
   onBlank: (layout: BlankLayout) => void;
   onDuplicate: () => void;
   onTemplate: (templateId: string) => void;
@@ -67,29 +71,23 @@ export function NewSlideDialog({
   const shown = templates.filter(
     (t) => filter === 'todas' || t.mascot.nivel === filter,
   );
-  return (
-    <Modal
-      label={repaso ? 'Nueva lámina de repaso' : 'Nueva lámina'}
-      onClose={onClose}
-      className="picker new-slide-dialog"
-    >
-      <div className="modal-head">
-        <div>
-          <p className="kicker">
-            {repaso ? 'Nueva lámina de repaso' : 'Nueva lámina'} {number}
-          </p>
-          <h2>¿Cómo quieres empezar?</h2>
-          {where && (
-            <p className="muted small">
-              Se agrega en el tramo {where}. Después puedes arrastrarla a otro
-              lugar.
-            </p>
-          )}
-        </div>
-        <IconButton label="Cerrar" onClick={onClose}>
-          <X size={22} aria-hidden="true" />
-        </IconButton>
-      </div>
+  const title = repaso ? 'Nueva lámina de repaso' : 'Nueva lámina';
+  const intro = (
+    <>
+      <p className="kicker">
+        {title} {number}
+      </p>
+      <h2>¿Cómo quieres empezar?</h2>
+      {where && (
+        <p className="muted small">
+          Se agrega en el tramo {where}. Después puedes arrastrarla a otro
+          lugar.
+        </p>
+      )}
+    </>
+  );
+  const body = (
+    <>
       <h3 className="picker-sub">En blanco, según el diseño</h3>
       <div className="blank-grid">
         {BLANKS.map(([layout, title, text]) => (
@@ -159,6 +157,29 @@ export function NewSlideDialog({
           </button>
         ))}
       </div>
+    </>
+  );
+  if (sheet)
+    return (
+      <Sheet
+        label={title}
+        title={`${title} ${number}`}
+        size="tall"
+        onClose={onClose}
+      >
+        <div className="sheet-intro">{intro}</div>
+        {body}
+      </Sheet>
+    );
+  return (
+    <Modal label={title} onClose={onClose} className="picker new-slide-dialog">
+      <div className="modal-head">
+        <div>{intro}</div>
+        <IconButton label="Cerrar" onClick={onClose}>
+          <X size={22} aria-hidden="true" />
+        </IconButton>
+      </div>
+      {body}
     </Modal>
   );
 }

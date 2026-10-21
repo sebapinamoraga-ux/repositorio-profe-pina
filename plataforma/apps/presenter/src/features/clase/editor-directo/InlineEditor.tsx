@@ -103,6 +103,7 @@ export function InlineEditor({
   activities,
   format,
   issueCount,
+  hidePreview = false,
   onBody,
   onReview,
 }: {
@@ -113,6 +114,8 @@ export function InlineEditor({
   format: MutableRefObject<FormatApi | null>;
   /** Problemas de la clase, para el enlace a Revisión. */
   issueCount: number;
+  /** En el modo enfoque la lámina completa ya se ve cambiar al lado. */
+  hidePreview?: boolean;
   onBody: (patch: Partial<EditedSlide>) => void;
   onReview: () => void;
 }) {
@@ -369,10 +372,12 @@ export function InlineEditor({
           </div>
         </div>
       )}
-      <div className="inline-preview">
-        <p className="inline-kicker">Así se verá</p>
-        <ScaledPreview source={source} />
-      </div>
+      {!hidePreview && (
+        <div className="inline-preview">
+          <p className="inline-kicker">Así se verá</p>
+          <ScaledPreview source={source} />
+        </div>
+      )}
     </div>
   );
 }

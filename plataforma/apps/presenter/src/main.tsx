@@ -28,6 +28,8 @@ import './ui/menu.css';
 import './features/clase/editor-directo/directo.css';
 import './features/clase/editor-directo/lista.css';
 import './features/clase/editor-directo/lienzo.css';
+import './features/clase/editor-directo/tactil.css';
+import './ui/sheet.css';
 import './features/clases/today.css';
 import './features/ajustes/settings.css';
 import './features/estudiante/student.css';
