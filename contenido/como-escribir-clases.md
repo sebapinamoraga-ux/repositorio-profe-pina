@@ -10,7 +10,7 @@ Una clase publicada no pasa content:check sin Propósito, Evidencia y Errores es
 
 ## Láminas
 
-El frontmatter de cada MDX tiene id, title, phase, momento (solo en clases de video), layout, steps y activities, en ese orden, con el título entre comillas simples; el `id` coincide con el nombre del archivo. content:check exige esa forma para que la app y el código escriban lo mismo. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio y, para video, escena.
+El frontmatter de cada MDX tiene id, title, phase, momento (solo en clases de video), layout, steps y activities, en ese orden, y al final `notas` si la lámina tiene notas del orador (texto entre comillas dobles; solo para el docente, no se proyectan ni salen en el PDF), con el título entre comillas simples; el `id` coincide con el nombre del archivo. content:check exige esa forma para que la app y el código escriban lo mismo. Fases: inicio, activacion, desarrollo, practica, cierre. Layouts: portada, concepto, dos-columnas, resolucion, ejercicio y, para video, escena.
 
 La portada conserva el título principal y presenta directamente un bloque **Objetivo de clase**. No añade subtítulo descriptivo, duración ni una ruta temática del tipo “Ecuaciones → Sistemas → Modelamiento”; esos datos pertenecen al plan de la clase, no al lienzo proyectado.
 

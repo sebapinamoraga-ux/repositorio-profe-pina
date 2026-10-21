@@ -10,6 +10,7 @@ import {
   Minimize,
   Printer,
   RotateCcw,
+  StickyNote,
   Timer,
   Vote,
   X,
@@ -130,6 +131,7 @@ export function Presenter({
   const [menu, setMenu] = useState(false);
   const [votePanel, setVotePanel] = useState(false);
   const [note, setNote] = useState(false);
+  const [speaker, setSpeaker] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [noteScope, setNoteScope] = useState<'slide' | 'lesson'>('slide');
   const [paceOn, setPaceOn] = useState(readPaceVisible);
@@ -247,6 +249,7 @@ export function Presenter({
         event.preventDefault();
         setNote(true);
       }
+      if (letter === 's') setSpeaker((open) => !open);
       if (letter === 'm') setMenu(true);
       if (letter === 'f') void toggleFullscreen();
       if (letter === 'r' && tramo) togglePace();
@@ -444,6 +447,19 @@ export function Presenter({
               </button>
             )}
           </span>
+          {slide.notas?.trim() && (
+            <button
+              type="button"
+              className="bar-btn"
+              aria-label="Notas del orador"
+              title="Notas del orador (S)"
+              aria-pressed={speaker}
+              onClick={() => setSpeaker((open) => !open)}
+            >
+              <StickyNote size={20} aria-hidden="true" />
+              {barLabels && <span>Notas</span>}
+            </button>
+          )}
           <button
             type="button"
             className="bar-btn"
@@ -576,6 +592,17 @@ export function Presenter({
             </Button>
           </div>
         </div>
+      )}
+      {speaker && slide.notas?.trim() && (
+        <aside aria-label="Notas del orador" className="speaker-notes">
+          <div className="note-pop-head">
+            <b>Notas del orador · {slide.title}</b>
+            <IconButton label="Cerrar notas" onClick={() => setSpeaker(false)}>
+              <X size={20} aria-hidden="true" />
+            </IconButton>
+          </div>
+          <p>{slide.notas}</p>
+        </aside>
       )}
       {votePanel && activity && activityId && (
         <aside aria-label="Votación anónima" className={`vote-panel ${wide ? '' : 'is-narrow'}`}>

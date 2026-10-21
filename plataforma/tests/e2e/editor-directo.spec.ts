@@ -210,3 +210,23 @@ test('variante con otros números: la copia queda a continuación con los númer
   expect(copy).not.toContain('6.700');
   expect(fake.files()[`${SISTEMAS}/laminas/guiada.mdx`]).toContain('6.700');
 });
+
+test('las notas del orador se guardan con la lámina y se leen al presentar', async ({
+  page,
+}) => {
+  const fake = await open(page, 'guiada');
+  await page
+    .getByRole('textbox', { name: 'Notas del orador' })
+    .fill('Preguntar por qué se despeja x.');
+  await publish(page);
+  expect(fake.files()[`${SISTEMAS}/laminas/guiada.mdx`]).toContain(
+    'notas: "Preguntar por qué se despeja x."',
+  );
+  await page.getByRole('button', { name: /^Presentar desde/ }).click();
+  const notes = page.getByRole('complementary', { name: 'Notas del orador' });
+  await expect(notes).toHaveCount(0);
+  await page.getByRole('button', { name: 'Notas del orador' }).click();
+  await expect(notes).toContainText('Preguntar por qué se despeja x.');
+  await page.keyboard.press('s');
+  await expect(notes).toHaveCount(0);
+});

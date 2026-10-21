@@ -30,6 +30,7 @@ export function toMdx(slide: Slide & { body: string }): string {
     `layout: ${slide.layout}`,
     `steps: ${slide.steps}`,
     `activities: [${slide.activities.join(', ')}]`,
+    ...(slide.notas?.trim() ? [`notas: ${JSON.stringify(slide.notas)}`] : []),
     '---',
     slide.body,
   ].join('\n');

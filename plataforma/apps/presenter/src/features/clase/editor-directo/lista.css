@@ -261,8 +261,8 @@
   font-variant-numeric: tabular-nums;
 }
 .slide-bar-title {
-  flex: 1 1 220px;
-  min-width: 160px;
+  flex: 1 1 120px;
+  min-width: 90px;
   min-height: 40px;
   padding: 0 10px;
   border: 1px solid transparent;
