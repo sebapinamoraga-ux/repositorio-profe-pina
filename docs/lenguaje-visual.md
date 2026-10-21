@@ -1,6 +1,8 @@
 # Lenguaje visual de todas las clases
 
-Decisión acordada el 21-09-2026, aplicada a Sistemas 2×2 y obligatoria para nuevas clases y plantillas de la galería. El diseño se elige por la función docente; la pose y el color no sustituyen esa decisión.
+> Estado: vigente desde el 21-09-2026 · Ámbito: clases de aula y de video, y plantillas de la galería (obligatorio para las nuevas) · Autoridad: el docente.
+
+El diseño se elige por la función docente; la pose y el color no sustituyen esa decisión. Esta norma no enumera láminas de ninguna clase: las decisiones de una clase están en su guía.
 
 ## Significado de los bloques
 
@@ -37,16 +39,12 @@ La asociación se expresa solo mediante el fondo. No cambia tipografía, color d
 
 ## Mascota dentro de la composición
 
-Preferir `Composicion plantilla="identificador"` con una plantilla del catálogo. El componente reserva una columna lateral; para comparación, gráfico y síntesis reserva una franja inferior. La mascota nunca se superpone a fórmulas, ejes o instrucciones. `nota` es opcional y debe explicar una acción pertinente, sin dar la respuesta durante la práctica.
+Preferir `Composicion plantilla="identificador"` con una plantilla del catálogo: reserva una columna lateral (o una franja inferior en comparación, gráfico y síntesis) para que la mascota nunca se superponga a fórmulas, ejes o instrucciones. Las reglas de uso (una por lámina, niveles, poses, descripción alternativa) están en [Presencia de Profe Piña](presencia-mascota.md).
 
-Una mascota como máximo por lámina, incluida la incorporada mediante Composicion. No añadir otra MascotaProfePina dentro de esa composición. Mantener diapositivas sin mascota cuando eso dé más espacio al contenido. La integración usa el identificador estable de la galería y hereda pose, nivel y descripción accesible.
+## Revisión visual antes de entregar
 
-## Decisiones concretas de Sistemas 2×2
+Además de la [lista de verificación](../AGENTS.md#antes-de-entregar): revisar cada lámina en su estado inicial y con todos los pasos revelados, las miniaturas de la galería, las plantillas descargadas y el PDF (una página por diapositiva, sin controles, notas, recortes ni scroll interno). Dividir antes de reducir la tipografía.
 
-Se mantienen 25 láminas y 80 minutos. Las láminas 03 y 04 siguen separadas: la primera traduce la compra y la segunda contrasta dos pares posibles; comparten las etiquetas de variables y unidades. Se retira la pregunta sobre 2x. La 06 se titula «Dos ecuaciones, dos incógnitas» y contiene la definición formal «Sistema de ecuaciones lineales de 2x2» en azul. La 07 presenta reducción, sustitución e igualación como definiciones formales de los métodos, también azules. Las 10, 12, 14 y 16 aplican los patrones anteriores. La portada conserva título y objetivo en violeta suave.
+## Qué comprueba el código y qué no
 
-Plantillas incorporadas: pedagogica-punto-clave (03), pedagogica-modelado (10 y 12), pedagogica-pista (14), pedagogica-comprobacion (15), pedagogica-comparacion (16), sutil-practica (21) y sutil-metacognicion (25). La portada conserva su presencia de marca. El uso se decide por su función, no por intentar mostrar todas las poses.
-
-## Validación antes de entregar
-
-Conservar los IDs, contenido en contenido/ y ecuaciones verificadas. Ejecutar content:check, typecheck, lint, test, build y test:e2e. Revisar estados inicial y revelado, miniaturas de galería, plantillas descargadas y PDF. Una página por diapositiva; sin controles, notas, recortes ni scroll interno. Dividir antes de reducir la tipografía. No publicar borradores ni afirmar revisión docente o ensayo en proyector.
+`content:check` verifica los tonos de asociación (1–4), la mascota única y los pasos. No verifica que el bloque corresponda a su función (por ejemplo, `Definicion` como caja decorativa) ni que la lámina quede clara: eso es revisión visual.

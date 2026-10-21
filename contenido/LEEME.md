@@ -19,13 +19,14 @@ contenido/
 │   ├─ galeria/               plantillas de Profe Piña
 │   ├─ mascotas/              imágenes de Profe Piña
 │   └─ plantillas/            punto de partida de una clase nueva
-├─ como-escribir-clases.md    reglas de clase.yaml, láminas, bloques e interactivos
-└─ AGENTS.md                  cómo trabajar con Claude sobre el contenido
+├─ como-escribir-clases.md    índice de los manuales de autoría
+├─ autoria/                   clase y guía, láminas, componentes, video y edición desde la app
+└─ AGENTS.md                  cómo crear y mejorar clases (para cualquier herramienta)
 ```
 
 ## Cómo se trabaja una clase
 
-1. **La guía primero.** En `guia.md`, o en la pestaña Resumen de la app, escribe el Propósito, la Evidencia y los Errores esperados. Es lo que las láminas deben servir ([principios pedagógicos](../docs/pedagogia.md)).
+1. **La guía primero.** En `guia.md`, o en la pestaña Resumen de la app, escribe el Propósito, la Evidencia (con la respuesta que cuenta como logro) y los Errores esperados. Es lo que las láminas deben servir ([principios pedagógicos](../docs/pedagogia.md)).
 2. **Los tramos.** En `clase.yaml`, reparte los minutos de la clase entre sus momentos.
 3. **Las láminas.** Una idea por lámina, con los bloques del [lenguaje visual](../docs/lenguaje-visual.md).
 4. **Comprobar.** Desde `plataforma/`, `npm run content:check` revisa el contenido con las mismas reglas que la app al guardar. Revisa las láminas y el PDF antes de publicar.

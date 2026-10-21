@@ -19,6 +19,19 @@ Solo las clases con `status: published` entran en el sitio y en el PDF público.
 
 Cambiar `status` a `published` (en el código o en Datos de la clase, desde la app) es una decisión del docente tras su revisión y el ensayo en proyector.
 
+Los borradores no salen en el sitio, pero sí están en el repositorio, que es público: ver [datos y privacidad](datos-y-privacidad.md).
+
+## Estados
+
+Hay dos estados que no se deben confundir:
+
+| Campo | Valores | Qué significa |
+|---|---|---|
+| `status` (en `clase.yaml`) | `draft`, `published` | Disponibilidad pública en el sitio y en el PDF. Lo decide el docente |
+| `mark` (en `curso.yaml`) | `lista`, `en-preparacion`, `por-preparar` («por preparar» se usa cuando la clase aún no tiene `clase.yaml`) | Marca de preparación en la planificación |
+
+«Lista» no acredita publicación, y `published` no prueba que se haya hecho el ensayo en proyector. La revisión docente y el ensayo no tienen campo propio: se registran en la sección Decisiones de la guía de la clase, y solo si ocurrieron.
+
 BASE_PATH es /nombre-del-repositorio/ para Pages de proyecto; / para un repositorio usuario.github.io. La navegación utiliza fragmentos y no requiere reglas de reescritura. Para volver a una versión previa, ejecutar el workflow sobre una revisión válida o revertir el cambio y publicar nuevamente.
 
 El despliegue requiere credenciales activas y permisos del repositorio. Una compilación local correcta no prueba una publicación remota.
