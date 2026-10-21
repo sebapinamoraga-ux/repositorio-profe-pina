@@ -461,3 +461,8 @@
     display: none;
   }
 }
+
+/* En la lista angosta de la tableta, el botón baja bajo el conteo en vez de recortarse. */
+.editor-list.is-mid .list-head {
+  flex-wrap: wrap;
+}

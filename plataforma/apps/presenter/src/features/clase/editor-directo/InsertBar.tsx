@@ -119,14 +119,14 @@ export function InsertBar({
           </div>
         )}
       </div>
-      <span className="insert-where" title={`Se inserta ${where}`}>
-        Se inserta {where}
-      </span>
       {onPanel && (
         <button type="button" className="insert-btn" onClick={onPanel}>
           Comentarios y revisión
         </button>
       )}
+      <span className="insert-where" title={`Se inserta ${where}`}>
+        Se inserta {where}
+      </span>
     </div>
   );
 }
