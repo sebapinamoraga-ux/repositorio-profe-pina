@@ -24,6 +24,8 @@ import './features/clase/editor.css';
 import './features/cursos/courses.css';
 import './features/recursos/gallery.css';
 import './features/clase/workspace.css';
+import './ui/menu.css';
+import './features/clase/editor-directo/directo.css';
 import './features/clases/today.css';
 import './features/ajustes/settings.css';
 import './features/estudiante/student.css';

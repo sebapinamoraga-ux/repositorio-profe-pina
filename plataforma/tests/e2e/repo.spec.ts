@@ -12,6 +12,17 @@ async function openTeacher(page: Page, hash: string) {
     await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
 }
 
+/** En la vista Clase el estado de publicación vive en el encabezado, no en la franja. */
+const indicator = (page: Page) => page.locator('.pub');
+async function openPublish(page: Page) {
+  if (!(await page.getByRole('dialog', { name: 'Publicación de la clase' }).isVisible()))
+    await indicator(page).click();
+}
+async function publish(page: Page) {
+  await openPublish(page);
+  await page.getByRole('button', { name: 'Publicar', exact: true }).click();
+}
+
 const slideTitle = (page: Page) =>
   page.locator('.props-grid').getByLabel('Título', { exact: true });
 
@@ -25,14 +36,14 @@ test('si otro dispositivo cambió la misma lámina, se elige qué versión guard
   );
   fake.pushExternal({ [APERTURA]: theirs });
 
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText('Otro dispositivo cambió los mismos archivos.')).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Hay un conflicto');
   await page.getByRole('button', { name: 'Resolver 1 conflicto' }).click();
   const dialog = page.getByRole('dialog', { name: 'Resolver conflictos' });
   await expect(dialog.getByLabel('Diferencias')).toContainText('Título desde el computador');
   await dialog.getByRole('button', { name: 'Conservar mi versión' }).click();
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
   expect(fake.files()[APERTURA]).toContain("title: 'Título desde la tablet'");
 });
 
@@ -41,14 +52,15 @@ test('sin conexión el guardado espera y se envía al volver la red', async ({ p
   await openTeacher(page, 'vista=editor');
   await slideTitle(page).fill('Escrito sin red');
   fake.offline = true;
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText('Sin conexión: se guardará al recuperar la red.')).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Sin conexión · se publicará al volver');
+  await expect(page.getByText('Sin conexión: se publicará al recuperar la red.')).toBeVisible();
   await page.reload();
-  await expect(page.locator('.save-bar')).toContainText('1 cambio sin guardar');
+  await expect(indicator(page)).toHaveText('1 por publicar');
   fake.offline = false;
   await page.evaluate(() => window.dispatchEvent(new Event('online')));
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
   expect(fake.files()[APERTURA]).toContain("title: 'Escrito sin red'");
 });
 
@@ -57,9 +69,10 @@ test('una lámina con errores no se guarda', async ({ page }) => {
   await openTeacher(page, 'vista=editor');
   const ref = fake.ref;
   await page.getByRole('button', { name: 'Más pasos' }).click();
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText('Hay problemas que impiden guardar.')).toBeVisible();
-  await expect(page.locator('.save-bar-files')).toContainText('El paso 1 no está definido');
+  await publish(page);
+  await expect(indicator(page)).toHaveText('No se puede publicar');
+  await expect(page.getByText('Hay problemas que impiden publicar')).toBeVisible();
+  await expect(page.locator('.pub-problems')).toContainText('El paso 1 no está definido');
   expect(fake.ref).toBe(ref);
 });
 
@@ -74,8 +87,8 @@ test('los parámetros de un interactivo se editan con un formulario', async ({ p
   const form = page.getByRole('group', { name: 'Explorador de la parábola' });
   await form.getByLabel('a inicial').fill('2');
   await expect(page.locator('.editor-check')).toContainText('sin problemas');
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
   const file =
     fake.files()['contenido/cursos/competencia-matematica-3m/clases/funcion-lineal-afin-2-cuadratica-1/laminas/efecto-a-c.mdx'] ?? '';
   expect(file).toContain('aInicial={2}');
@@ -105,8 +118,8 @@ test('datos de la clase: publicar un borrador pide confirmación y cambia clase.
   await guide.getByLabel(/^Errores esperados/).fill('Confundir el signo de b al calcular el vértice.');
   await guide.getByRole('button', { name: 'Aplicar' }).click();
   await expect(guide.getByText('Ticket tipo PAES sobre el vértice.')).toBeVisible();
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
   const dir = 'contenido/cursos/competencia-matematica-3m/clases/funcion-cuadratica-2';
   const lesson = fake.files()[`${dir}/clase.yaml`] ?? '';
   expect(lesson).toContain('status: published');
@@ -163,8 +176,8 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   const added = await page.locator('.props-grid').getByLabel('Identificador').inputValue();
   await expect(page.locator('.editor-check')).toContainText('sin problemas');
 
-  await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
+  await publish(page);
+  await expect(indicator(page)).toHaveText('Publicado');
   const files = fake.files();
   const lesson = files[`${dir}/clase.yaml`] ?? '';
   // slides y tramos quedan igual: solo cambia la lista `repaso`, al final del archivo.

@@ -51,11 +51,22 @@ import { makeNote } from '../../store/notes';
 import { ParamFields } from './ParamForm';
 import { Button, buttonClass, IconButton } from '../../ui/Button';
 import { Notice } from '../../ui/Layout';
+import { useLessonHistory } from './editor-directo/HistoryContext';
 
 const SLIDE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 /** Lista que se edita: las láminas de la clase o las del repaso del estudiante. */
 export type SlideList = 'slides' | 'repaso';
+
+/** Etiqueta y clave de fusión del historial para un cambio de una lámina. */
+function describePatch(patch: Partial<EditedSlide>, id: string): [string, string] {
+  if ('title' in patch) return ['Cambió el título de la lámina', `titulo:${id}`];
+  if ('body' in patch) return ['Editó el contenido de la lámina', `cuerpo:${id}`];
+  if ('layout' in patch) return ['Cambió el diseño de la lámina', `diseno:${id}`];
+  if ('steps' in patch) return ['Cambió los pasos de la lámina', `pasos:${id}`];
+  if ('id' in patch) return ['Cambió el identificador de la lámina', `id:${id}`];
+  return ['Cambió la lámina', `lamina:${id}`];
+}
 
 /** Número visible: 01, 02… en la clase; R1, R2… en el repaso. */
 const slideNumber = (list: SlideList, k: number) =>
@@ -167,6 +178,7 @@ export function Editor({
   const noteActions = useNoteActions();
   const content = useContent();
   const ui = useUi();
+  const history = useLessonHistory();
   const { width, ref: rootRef } = useElementWidth();
   const layout = width >= 1100 ? 'wide' : width >= 700 ? 'mid' : 'narrow';
   const meta = lessonMeta(content, lessonId);
@@ -256,19 +268,27 @@ export function Editor({
   }
 
   const all = [...slides, ...repaso];
-  const commit = (next: EditedSlide[]) => {
+  const commit = (next: EditedSlide[], label = 'Editó las láminas', key?: string) => {
     if (!content.canEdit) {
       ui.toast('Conecta la app con GitHub en Ajustes para editar.');
       return;
     }
+    const undo = content.snap();
     content.edit(
       listName === 'repaso'
         ? writeRepaso(content.bundle, lessonId, next)
         : writeSlides(content.bundle, lessonId, next),
     );
+    history.rec(label, undo, key);
   };
-  const update = (i: number, patch: Partial<EditedSlide>) =>
-    commit(current.map((item, k) => (k === i ? { ...item, ...patch } : item)));
+  const update = (i: number, patch: Partial<EditedSlide>) => {
+    const [label, key] = describePatch(patch, current[i]?.id ?? '');
+    commit(
+      current.map((item, k) => (k === i ? { ...item, ...patch } : item)),
+      label,
+      key,
+    );
+  };
   const select = (id: string | undefined) => {
     if (id) onSelect(id);
     setPreview(null);
@@ -284,14 +304,14 @@ export function Editor({
     if (!a || !b) return;
     next[index] = b;
     next[j] = a;
-    commit(next);
+    commit(next, `Movió la lámina ${number}`);
   };
   const duplicate = () => {
     if (!slide) return;
     const next = [...current];
     const id = uniqueId(`${slide.id}-copia`, all);
     next.splice(index + 1, 0, { ...slide, id });
-    commit(next);
+    commit(next, `Duplicó la lámina ${number}`);
     select(id);
   };
   // La clase conserva al menos una lámina; el repaso puede quedar vacío.
@@ -300,7 +320,7 @@ export function Editor({
     if (!slide || !canRemove) return;
     const undo = content.snap();
     const neighbour = current[index + 1] ?? current[index - 1];
-    commit(current.filter((_, k) => k !== index));
+    commit(current.filter((_, k) => k !== index), `Eliminó la lámina ${number}`);
     select(neighbour?.id);
     ui.toast(
       `${listName === 'repaso' ? 'Lámina de repaso' : 'Lámina'} ${number} «${slide.title}» eliminada`,
@@ -315,7 +335,7 @@ export function Editor({
     const id = uniqueId(template.id, all);
     const next = [...current];
     next.splice(at, 0, slideFromTemplate(template, id));
-    commit(next);
+    commit(next, `Agregó la lámina «${template.heading}»`);
     setPicker(false);
     select(id);
   };
