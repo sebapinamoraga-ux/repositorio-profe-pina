@@ -25,7 +25,7 @@ tramos:
     minutes: 15
   - label: 'Ceros por factorización'
     from: ceros-definicion
-    to: ceros-diferencia
+    to: ceros-trinomio
     minutes: 10
   - label: 'Fórmula general y discriminante'
     from: formula-general
@@ -62,7 +62,6 @@ slides:
   - ceros-producto.mdx
   - ceros-factorizacion.mdx
   - ceros-trinomio.mdx
-  - ceros-diferencia.mdx
   - formula-general.mdx
   - formula-ejemplo.mdx
   - formula-practica.mdx
