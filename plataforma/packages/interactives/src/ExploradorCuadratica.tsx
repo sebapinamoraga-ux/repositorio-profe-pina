@@ -22,7 +22,8 @@ const curvaDe = (a: number, b: number, c: number): Curva =>
 /**
  * Parábola y = ax² + bx + c con controles para a y c; b queda fijo salvo con `variarB`.
  * La curva inicial se conserva discontinua como referencia y `marcarVertice` rotula el
- * vértice. El PDF muestra los valores estáticos declarados.
+ * vértice. `ejemplosA` (con `ejemplosC`, uno por ejemplo; si falta, c inicial) agrega un botón
+ * por ejemplo que fija esos valores de una vez. El PDF muestra los valores estáticos declarados.
  */
 export function ExploradorCuadratica({
   id,
@@ -38,6 +39,8 @@ export function ExploradorCuadratica({
   cMax = 4,
   cPaso = 1,
   variarB = false,
+  ejemplosA = [],
+  ejemplosC = [],
   bEstatico,
   bMin = -4,
   bMax = 4,
@@ -65,6 +68,10 @@ export function ExploradorCuadratica({
   cPaso?: number;
   /** Agrega un control para b; `b` pasa a ser su valor inicial. */
   variarB?: boolean;
+  /** Valores de a de los ejemplos; cada uno tiene su botón (están en el rango del control de a). */
+  ejemplosA?: number[];
+  /** Valores de c de los ejemplos, en el mismo orden que `ejemplosA`; por defecto, c inicial. */
+  ejemplosC?: number[];
   /** b en la versión impresa; por defecto, `b`. */
   bEstatico?: number;
   bMin?: number;
@@ -274,6 +281,26 @@ export function ExploradorCuadratica({
           <span>inicial: y = {expresionCuadratica(aInicial, bInicial, cInicial)}</span>
         )}
       </div>
+      {!runtime.print && ejemplosA.length > 0 && (
+        <div className="graph-examples" role="group" aria-label="Ejemplos">
+          {ejemplosA.map((aEjemplo, k) => {
+            const cEjemplo = ejemplosC[k] ?? cInicial;
+            const activo = a === aEjemplo && c === cEjemplo;
+            return (
+              <button
+                key={`${aEjemplo}-${cEjemplo}`}
+                aria-pressed={activo}
+                onClick={() => {
+                  runtime.setValue(keyA, String(aEjemplo));
+                  runtime.setValue(keyC, String(cEjemplo));
+                }}
+              >
+                y = {expresionCuadratica(aEjemplo, bInicial, cEjemplo)}
+              </button>
+            );
+          })}
+        </div>
+      )}
       {!runtime.print && (
         <div className="graph-controls">
           <label>

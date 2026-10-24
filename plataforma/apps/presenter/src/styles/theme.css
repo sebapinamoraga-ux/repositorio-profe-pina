@@ -756,6 +756,7 @@ a {
   font-size: 17px;
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
   align-items: center;
   margin-top: 12px;
 }
@@ -768,11 +769,25 @@ a {
   max-width: 150px;
   accent-color: var(--blue);
 }
+.graph-examples {
+  font-size: 17px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+.graph-examples button,
 .graph-controls button {
+  white-space: nowrap;
   background: var(--panel);
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+.graph-examples button[aria-pressed='true'] {
+  border-color: var(--blue);
+  box-shadow: inset 0 0 0 1px var(--blue);
+  font-weight: 700;
 }
 .slide-mascot {
   position: absolute;
