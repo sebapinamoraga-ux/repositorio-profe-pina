@@ -18,7 +18,7 @@ tramos:
   - label: 'Inicio: el precio que da el mayor ingreso'
     from: apertura
     to: precio-optimo
-    minutes: 4
+    minutes: 5
   - label: 'Volver a la parábola: qué hacen a y c'
     from: repaso-parabola
     to: repaso-a-c-ingreso
@@ -26,7 +26,7 @@ tramos:
   - label: 'Ceros por factorización'
     from: ceros-definicion
     to: ceros-trinomio
-    minutes: 10
+    minutes: 9
   - label: 'Fórmula general y discriminante'
     from: formula-general
     to: discriminante-practica
@@ -49,6 +49,7 @@ tramos:
     minutes: 3
 slides:
   - apertura.mdx
+  - aviso-ensayo.mdx
   - precio-optimo.mdx
   - repaso-parabola.mdx
   - repaso-eje.mdx
