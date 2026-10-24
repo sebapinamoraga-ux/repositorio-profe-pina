@@ -1,5 +1,5 @@
 id: funcion-cuadratica-2
-title: Función cuadrática (parte 2)
+title: 'Función cuadrática: vértice y ceros.'
 subject: m1
 axis: Álgebra y funciones
 duration: 80
@@ -8,7 +8,7 @@ prerequisites:
   - Factorizar por factor común, diferencia de cuadrados y trinomios.
   - Operar con raíces cuadradas.
 objectives:
-  - Encontrar los ceros de una función cuadrática por factorización o con la fórmula general, y usar el discriminante para anticipar cuántos tiene.
+  - Determinar el vértice y los ceros de una parábola para realizar su esbozo gráfico y aplicarlo en la resolución de problemas de máximos y mínimos.
   - Determinar el vértice y el eje de simetría de una parábola, y decidir si el vértice es un máximo o un mínimo.
   - Esbozar una parábola a partir de sus puntos importantes y resolver problemas de máximo o mínimo en contexto.
 skills: [Representar, Modelar, Resolver problemas, Argumentar]

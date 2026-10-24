@@ -1,8 +1,3 @@
-# Biblioteca docente: unidades, orden y fechas de sus clases. Se edita desde la app (Clases).
-# Cada curso.yaml es una biblioteca; el título es público y genérico.
-# Las clases con clase.yaml toman de ahí su título y objetivo; aquí basta el identificador.
-# `date` (AAAA-MM-DD) es el día de la clase según el calendario y decide la «Clase de hoy».
-id: m1-2027
 title: Competencia Matemática 3° medio
 units:
   - id: u3
@@ -21,3 +16,4 @@ units:
       - id: funcion-lineal-afin-2-cuadratica-1-repaso-sistemas
       - id: funcion-cuadratica-2
         date: 2026-10-24
+        mark: lista
