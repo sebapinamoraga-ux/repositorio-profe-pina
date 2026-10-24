@@ -229,7 +229,7 @@ test('arrastrar una lámina a otro tramo cambia clase.yaml en una sola escritura
   await publish(page);
   await expect(indicator(page)).toHaveText('Publicado');
   const after = fake.files()[`${CUADRATICA}/clase.yaml`] ?? '';
-  expect(after).toContain('    from: apertura\n    to: apertura\n');
+  expect(after).toContain('    from: apertura\n    to: aviso-ensayo\n');
   expect(after).toContain('    from: precio-optimo\n    to: repaso-a-c-ingreso\n');
   // El orden de las láminas no cambió: solo cambiaron los tramos.
   expect(after.split('\nslides:')[1]).toBe(before.split('\nslides:')[1]);
@@ -244,20 +244,20 @@ test('un tramo no puede quedar sin láminas y Alt + flechas mueve entre tramos',
   await expect(indicator(page)).toHaveText('Al día');
 
   // Alt + ↑ pasa la primera lámina del segundo tramo al final del primero.
-  await page.locator('.thumb').nth(2).click();
+  await page.locator('.thumb').nth(3).click();
   await page.keyboard.press('Alt+ArrowUp');
   await expect(indicator(page)).toHaveText('1 por publicar');
   await page.getByRole('button', { name: 'Últimos cambios' }).click();
   await expect(page.getByRole('dialog', { name: 'Últimos cambios' })).toContainText('al tramo 1');
-  await expect(page.getByRole('button', { name: /^1\. Inicio/ })).toContainText('3');
+  await expect(page.getByRole('button', { name: /^1\. Inicio/ })).toContainText('4');
 });
 
 test('elegir varias láminas cambia su diseño juntas y Esc las suelta', async ({ page }) => {
   const fake = await connectFakeGitHub(page);
   await cuadratica(page);
-  await page.locator('.thumb').nth(2).click();
-  await page.locator('.thumb').nth(3).click({ modifiers: ['Shift'] });
+  await page.locator('.thumb').nth(3).click();
   await page.locator('.thumb').nth(4).click({ modifiers: ['Shift'] });
+  await page.locator('.thumb').nth(5).click({ modifiers: ['Shift'] });
   const bar = page.getByRole('group', { name: 'Láminas elegidas' });
   await expect(bar).toContainText('3 láminas elegidas');
   await bar.getByLabel('Diseño de las láminas elegidas').selectOption('concepto');

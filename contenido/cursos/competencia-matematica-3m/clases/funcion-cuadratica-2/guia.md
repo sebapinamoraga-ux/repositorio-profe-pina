@@ -10,7 +10,7 @@
 
 Propuesta para revisión del docente.
 
-- **Ceros** (`ceros-diferencia` y `formula-practica`, individuales): en $g(x)=x^2-9$ da los dos ceros, $3$ y $-3$, y los comprueba; en $x^2+2x-8=0$ obtiene $\Delta=36$ y las soluciones $2$ y $-4$. Un logro aparente es dar solo un cero ($x=3$) o partir la fórmula en $-b=-2$ en vez de $+2$.
+- **Ceros** (`formula-practica`, individual): en $x^2+2x-8=0$ obtiene $\Delta=36$ y las soluciones $2$ y $-4$. Un logro aparente es dar solo una solución o partir la fórmula en $-b=-2$ en vez de $+2$.
 - **Discriminante** (`discriminante-practica`, individual): sin calcular los ceros, dice que $p(x)=3x^2+2x+1$ no tiene ceros ($\Delta=-8$) y que $I(x)=-2x^2+40x$ tiene dos ($\Delta=1.600$), y justifica con el signo de $\Delta$. Un logro aparente es acertar sin calcular $\Delta$, por ejemplo suponiendo que como $c=0$ hay un solo cero.
 - **Vértice** (ticket `ticket-paes`, actividad `cuadratica-vertice`): elige **A · $(3,\ -4)$** para $f(x)=x^2-6x+5$, es decir, calcula $x_v=-\frac{b}{2a}$ y además valoriza $f(x_v)$. Elegir C, con $x_v$ correcto y $y_v$ con error de signo, muestra que no controla la valorización.
 - **Máximo en contexto** (ticket `ticket-paes-maximo`, actividad `cuadratica-maximo`): elige **D · 20 m** y explica que es un máximo porque $a<0$. Elegir A (2 m) indica que confunde el $t$ del vértice con la altura.
@@ -27,9 +27,9 @@ Estas evidencias son la propuesta y aún no se han contrastado con respuestas de
 
 ## Secuencia
 
-- **Inicio: el precio que da el mayor ingreso** (apertura → precio-optimo, 4 min).
+- **Inicio: el precio que da el mayor ingreso** (apertura → precio-optimo, 5 min): incluye el aviso del último ensayo (`aviso-ensayo`).
 - **Volver a la parábola: qué hacen a y c** (repaso-parabola → repaso-a-c-ingreso, 15 min): se presenta como si fuera la primera vez (función cuadrática, eje de simetría y vértice, cada uno con su definición genérica y el ejemplo $y=x^2$; signo de $a$, tamaño de $|a|$ y $c$, cada uno con su propiedad general primero y ejemplos en el explorador), luego una práctica individual que incluye el ingreso, corregida en la misma lámina con una tabla, el orden de apertura y el error frecuente, y una lámina final con lo que dicen $a$ y $c$ del ingreso.
-- **Ceros por factorización** (ceros-definicion → ceros-diferencia, 10 min): definición genérica de cero, producto igual a cero con su ejemplo; ceros del ingreso (factor común), de un trinomio y, como práctica, de una diferencia de cuadrados.
+- **Ceros por factorización** (ceros-definicion → ceros-trinomio, 9 min): definición genérica de cero, producto igual a cero con su ejemplo; ceros del ingreso (factor común) y de un trinomio.
 - **Fórmula general y discriminante** (formula-general → discriminante-practica, 15 min): fórmula y cómo usarla, ejemplo resuelto paso a paso, práctica, por qué el discriminante anticipa los ceros y luego tres ejemplos.
 - **Simetría y vértice** (vertice → vertice-formula, 13 min).
 - **Esbozar la parábola y cerrar el contexto** (esbozo-ingreso → respuesta-ingreso, 12 min).
@@ -43,7 +43,7 @@ Propuesta para revisión del docente.
 - **Tomar como $a$ el primer número** ($4-x^2$ con $a=4$): se aborda en `repaso-a-c-practica`.
 - **Comparar $a$ en vez de $|a|$** al ordenar la apertura ($-2<\frac{1}{2}$, pero $I$ es más cerrada): `repaso-a-c-practica`.
 - **Omitir el signo de $b$ en $-b$** de la fórmula general ($b=-3$ y numerador $-3$): `formula-ejemplo`. Se espera también con $b=2$ en `formula-practica`.
-- **Dar un solo cero**, por ejemplo $x=3$ en $x^2-9$, o creer que $c=0$ implica un solo cero: se retoma en `ceros-diferencia` y `discriminante-practica`, donde se muestran ambos ceros y el cálculo de $\Delta$.
+- **Dar una sola solución** con el $\pm$, o creer que $c=0$ implica un solo cero: se retoma en `formula-practica` y `discriminante-practica`, donde se muestran ambas soluciones y el cálculo de $\Delta$.
 - **Olvidar que $\Delta<0$ no tiene raíz real** y concluir que hay un cero igualmente: `discriminante-propiedad`.
 - **Usar $-\frac{b}{2a}$ sin dividir por $2a$, sin el signo, o sin valorizar** para $y_v$: se aborda en las explicaciones de los distractores B, C y D de `cuadratica-vertice`.
 - **Responder con $x_v$ cuando se pide el máximo** (2 s en vez de 20 m): explicación del distractor A de `cuadratica-maximo`.
@@ -64,6 +64,8 @@ Son errores previstos, no observados; ajustar con lo que ocurra en la clase.
 - 2026-10-19 · El ticket queda en dos preguntas (vértice y máximo); la del discriminante pasa al repaso del estudiante, y el esbozo y el cierre se acortan · Liberar los 7 minutos del repaso sin quitar contenidos del temario; el discriminante ya se practica en clase.
 - 2026-10-23 · Se quita de los objetivos «reconocer cómo $b$ desplaza el vértice y leer la forma canónica»; las láminas `parametro-b-canonica` y `forma-canonica` se quitan y sus 7 minutos pasan a vértice (+2), esbozo (+2), ticket (+2) y cierre (+1) · Decisión del docente al revisar el propósito; el motivo no quedó registrado.
 - 2026-10-24 · La corrección de la práctica de $a$ y $c$ pasa de tres láminas a una: la práctica con su respuesta en pasos (tabla, orden de apertura y error frecuente), como en la verificación de `identificar-abc` de la clase del 17/10; se quitan `repaso-a-c-concavidad` y `repaso-a-c-apertura` · El docente pidió reducir la explicación; revierte parte del detalle pedido el 2026-10-19.
+- 2026-10-24 · Se agrega al comienzo la lámina `aviso-ensayo` (último ensayo, sábado 7 de noviembre): el inicio pasa de 4 a 5 min y «Ceros por factorización» de 10 a 9 · Aviso del coordinador docente, que pide decírselo a los estudiantes en clase; los 9 min corresponden a que el docente quitó la práctica `ceros-diferencia`.
+- 2026-10-24 · El docente editó desde la app láminas de los tramos de ceros, discriminante, vértice y repaso (entre ellas quitó `ceros-diferencia` y varias comprobaciones); esos cambios se conservan tal cual · Decisión del docente.
 
 ## Después de la clase
 

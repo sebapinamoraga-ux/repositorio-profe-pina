@@ -733,18 +733,18 @@ describe('tramos al cambiar las láminas', () => {
 
   it('la clase base declara tramos coherentes', () => {
     expect(verifyLessonPlan(lessonEntry().meta)).toEqual([]);
-    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 8, 5, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([3, 8, 4, 6, 2, 2, 2, 1]);
   });
 
   it('renombrar una lámina que abre o cierra un tramo actualiza from y to', () => {
     const first = slides[0];
-    const last = slides[1];
+    const last = slides[2];
     if (!first || !last) throw new Error('Sin láminas');
     const renamed = slides.map((s) =>
       s === first ? { ...s, id: 'inicio-nuevo' } : s === last ? { ...s, id: 'precio-nuevo' } : s,
     );
     const lesson = reread(writeSlides(bundle, ID, renamed));
-    expect(lesson.meta.tramos?.[0]).toMatchObject({ from: 'inicio-nuevo', to: 'precio-nuevo', minutes: 4 });
+    expect(lesson.meta.tramos?.[0]).toMatchObject({ from: 'inicio-nuevo', to: 'precio-nuevo', minutes: 5 });
     expect(verifyLessonPlan(lesson.meta)).toEqual([]);
     // Con el cambio dicho de forma explícita da lo mismo.
     const explicit = reread(writeSlides(bundle, ID, renamed, { rename: { apertura: 'inicio-nuevo', 'precio-optimo': 'precio-nuevo' } }));
@@ -753,12 +753,12 @@ describe('tramos al cambiar las láminas', () => {
 
   it('reordenar dentro de un tramo ajusta from y to y conserva minutos y etiquetas', () => {
     const next = [...slides];
-    const a = next[2];
-    const b = next[9];
+    const a = next[3];
+    const b = next[10];
     if (!a || !b) throw new Error('Sin láminas');
     // Las dos puntas del segundo tramo se intercambian.
-    next[2] = b;
-    next[9] = a;
+    next[3] = b;
+    next[10] = a;
     const lesson = reread(writeSlides(bundle, ID, next));
     expect(lesson.meta.tramos?.[1]).toMatchObject({
       label: tramos()[1]?.label,
@@ -797,10 +797,10 @@ describe('tramos al cambiar las láminas', () => {
     const added = [...slides];
     added.splice(at + 1, 0, { ...slides[at], id: 'ceros-extra' } as (typeof slides)[number]);
     const withNew = reread(writeSlides(bundle, ID, added));
-    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 8, 6, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([3, 8, 5, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(withNew.meta)).toEqual([]);
     const without = reread(writeSlides(bundle, ID, slides.filter((s) => s.id !== 'repaso-eje')));
-    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 7, 5, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([3, 7, 4, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(without.meta)).toEqual([]);
   });
 
