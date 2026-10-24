@@ -350,6 +350,18 @@ export const INTERACTIVE_SPECS: Readonly<Record<string, InteractiveSpec>> = {
       n('cMax', 'c máximo', false, 4),
       n('cPaso', 'Paso de c', false, 1),
       { name: 'variarB', label: 'Agregar un control para b', kind: 'boolean', fallback: false },
+      {
+        name: 'ejemplosA',
+        label: 'a de los ejemplos',
+        kind: 'numbers',
+        help: 'Cada valor agrega un botón que fija a (dentro del rango del control).',
+      },
+      {
+        name: 'ejemplosC',
+        label: 'c de los ejemplos',
+        kind: 'numbers',
+        help: 'Mismo orden que los de a; si se omite, cada ejemplo usa c inicial.',
+      },
       n('bEstatico', 'b en la versión impresa', false),
       n('bMin', 'b mínimo', false, -4),
       n('bMax', 'b máximo', false, 4),
