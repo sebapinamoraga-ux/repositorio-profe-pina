@@ -3,16 +3,49 @@ id: repaso-a-c-practica
 title: 'Leer a y c sin graficar'
 phase: practica
 layout: ejercicio
-steps: 0
+steps: 3
 activities: []
 ---
 
+<Columnas>
+<div>
 <PracticaIndividual titulo="Individual · 5 minutos">
 Sin graficar, responde para cada función:
 
-$f(x)=2x^2-3\qquad g(x)=4-x^2\qquad h(x)=\tfrac{1}{2}x^2+1\qquad I(x)=-2x^2+40x$
+$f(x)=2x^2-3$
+
+$g(x)=4-x^2$
+
+$h(x)=\tfrac{1}{2}x^2+1$
+
+$I(x)=-2x^2+40x$
 
 1. ¿Hacia dónde abre su parábola?
 2. ¿Dónde corta el eje $y$?
 3. Ordénalas de la más abierta a la más cerrada.
 </PracticaIndividual>
+</div>
+<div>
+<Paso n={1}>
+
+$$
+\begin{array}{c|c|c|c}
+ & a & \text{abre} & \text{corta el eje } y\\ \hline
+f & 2 & \text{arriba} & (0,\ -3)\\
+g & -1 & \text{abajo} & (0,\ 4)\\
+h & \tfrac{1}{2} & \text{arriba} & (0,\ 1)\\
+I & -2 & \text{abajo} & (0,\ 0)
+\end{array}
+$$
+
+</Paso>
+<Paso n={2}>
+De la más abierta a la más cerrada, según $|a|$: $h$, $g$ y, empatadas, $f$ e $I$.
+</Paso>
+<Paso n={3}>
+<ErrorTipico titulo="Error frecuente">
+$a$ es el coeficiente de $x^2$, **no el primer número**: en $4-x^2$, $a=-1$. Y se compara $|a|$, no $a$: $I$ es más cerrada que $h$ aunque $-2<\tfrac{1}{2}$.
+</ErrorTipico>
+</Paso>
+</div>
+</Columnas>

@@ -733,7 +733,7 @@ describe('tramos al cambiar las láminas', () => {
 
   it('la clase base declara tramos coherentes', () => {
     expect(verifyLessonPlan(lessonEntry().meta)).toEqual([]);
-    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 10, 5, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 8, 5, 6, 2, 2, 2, 1]);
   });
 
   it('renombrar una lámina que abre o cierra un tramo actualiza from y to', () => {
@@ -754,11 +754,11 @@ describe('tramos al cambiar las láminas', () => {
   it('reordenar dentro de un tramo ajusta from y to y conserva minutos y etiquetas', () => {
     const next = [...slides];
     const a = next[2];
-    const b = next[11];
+    const b = next[9];
     if (!a || !b) throw new Error('Sin láminas');
     // Las dos puntas del segundo tramo se intercambian.
     next[2] = b;
-    next[11] = a;
+    next[9] = a;
     const lesson = reread(writeSlides(bundle, ID, next));
     expect(lesson.meta.tramos?.[1]).toMatchObject({
       label: tramos()[1]?.label,
@@ -797,10 +797,10 @@ describe('tramos al cambiar las láminas', () => {
     const added = [...slides];
     added.splice(at + 1, 0, { ...slides[at], id: 'ceros-extra' } as (typeof slides)[number]);
     const withNew = reread(writeSlides(bundle, ID, added));
-    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 10, 6, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 8, 6, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(withNew.meta)).toEqual([]);
     const without = reread(writeSlides(bundle, ID, slides.filter((s) => s.id !== 'repaso-eje')));
-    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 9, 5, 6, 2, 2, 2, 1]);
+    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 7, 5, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(without.meta)).toEqual([]);
   });
 
