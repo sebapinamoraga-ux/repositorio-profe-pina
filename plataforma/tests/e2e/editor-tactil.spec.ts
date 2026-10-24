@@ -133,14 +133,16 @@ test.describe('tableta', () => {
     await page.getByRole('button', { name: 'Bajar la lámina 01' }).tap();
     await expect(page.locator('.pub')).toHaveText('1 por publicar');
     await page
-      .getByLabel('Mover la lámina 03 a un tramo')
+      .getByLabel('Mover la lámina 04 a un tramo')
       .selectOption({ index: 3 });
     await page.getByRole('button', { name: 'Listo', exact: true }).tap();
     await page.locator('.pub').tap();
     await page.getByRole('button', { name: 'Publicar', exact: true }).tap();
     await expect(page.locator('.pub')).toHaveText('Publicado');
     const yaml = fake.files()[`${CUADRATICA}/clase.yaml`] ?? '';
-    expect(yaml).toContain('slides:\n  - precio-optimo.mdx\n  - apertura.mdx');
+    expect(yaml).toContain(
+      'slides:\n  - aviso-ensayo.mdx\n  - apertura.mdx\n  - precio-optimo.mdx',
+    );
   });
 
   test('un toque elige el bloque, otro lo abre en modo enfoque y «Más» guarda Duplicar y Eliminar', async ({
