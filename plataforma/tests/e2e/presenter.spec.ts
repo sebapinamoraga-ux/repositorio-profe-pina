@@ -317,7 +317,7 @@ test('explorador cuadrático cambia a y c y se restablece', async ({ page }) => 
   await page.getByRole('slider', { name: 'Coeficiente a' }).fill('-2');
   await page.getByRole('slider', { name: 'Coeficiente c' }).fill('3');
   await expect(caption).toHaveText('y = −2x² + 3');
-  await expect(page.locator('.graph-point-label')).toHaveText('(0; 3)');
+  await expect(page.locator('.graph-point-label')).toHaveText('(0, 3)');
   await page.getByRole('slider', { name: 'Coeficiente a' }).fill('0');
   await expect(caption).toContainText('recta: no es cuadrática');
   await page.getByRole('button', { name: 'Restablecer' }).click();

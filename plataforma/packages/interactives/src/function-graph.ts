@@ -193,3 +193,12 @@ export function verticeCuadratica(
   const x = -b / (2 * a) + 0;
   return { x, y: a * x * x + b * x + c + 0 };
 }
+
+/**
+ * Par ordenado ya formateado: coma entre las coordenadas, salvo que alguna tenga coma decimal,
+ * donde se usa «;» para no confundirlas (por ejemplo «(7,5; 3.750)»).
+ */
+export function parOrdenado(x: string, y: string): string {
+  const separador = x.includes(',') || y.includes(',') ? ';' : ',';
+  return `(${x}${separador} ${y})`;
+}

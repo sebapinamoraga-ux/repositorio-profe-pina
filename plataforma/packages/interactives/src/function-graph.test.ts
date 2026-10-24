@@ -10,6 +10,7 @@ import {
   validarVentana,
   verticeCuadratica,
   type Curva,
+  parOrdenado,
 } from './function-graph';
 
 const ventana = { xMin: -4, xMax: 4, yMin: -3, yMax: 5 };
@@ -92,5 +93,14 @@ describe('verticeCuadratica', () => {
   });
   it('sin término cuadrático no hay vértice', () => {
     expect(() => verticeCuadratica(0, 1, 2)).toThrow();
+  });
+});
+
+describe('parOrdenado', () => {
+  it('separa con coma, o con punto y coma si alguna coordenada tiene decimales', () => {
+    expect(parOrdenado('10', '200')).toBe('(10, 200)');
+    expect(parOrdenado('0', '3.750')).toBe('(0, 3.750)');
+    expect(parOrdenado('7,5', '3.750')).toBe('(7,5; 3.750)');
+    expect(parOrdenado('1', '0,7')).toBe('(1; 0,7)');
   });
 });
