@@ -355,7 +355,7 @@ test('repaso del estudiante: láminas para seguir explorando con controles de a 
   await page.getByRole('combobox', { name: 'Clase' }).selectOption('funcion-cuadratica-2');
   await page.getByRole('button', { name: 'Índice de láminas' }).click();
   await expect(page.getByRole('heading', { name: 'Para seguir explorando' })).toBeVisible();
-  await page.getByRole('button', { name: /31 Explora a y c/ }).click();
+  await page.getByRole('button', { name: /Explora a y c/ }).click();
   await expect(page.locator('.s-eyebrow')).toContainText('Para seguir explorando');
   const caption = page.locator('.graph-caption-primary');
   await expect(caption).toHaveText('y = x²');
