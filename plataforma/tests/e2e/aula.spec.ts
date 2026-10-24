@@ -346,7 +346,7 @@ test('repaso del estudiante: el enlace abre la clase indicada y la URL la sigue'
   );
 });
 
-test('repaso del estudiante: láminas para seguir explorando con control de b', async ({
+test('repaso del estudiante: láminas para seguir explorando con controles de a y c', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -355,13 +355,12 @@ test('repaso del estudiante: láminas para seguir explorando con control de b', 
   await page.getByRole('combobox', { name: 'Clase' }).selectOption('funcion-cuadratica-2');
   await page.getByRole('button', { name: 'Índice de láminas' }).click();
   await expect(page.getByRole('heading', { name: 'Para seguir explorando' })).toBeVisible();
-  await page.getByRole('button', { name: /35 Explora b y el vértice/ }).click();
+  await page.getByRole('button', { name: /31 Explora a y c/ }).click();
   await expect(page.locator('.s-eyebrow')).toContainText('Para seguir explorando');
   const caption = page.locator('.graph-caption-primary');
   await expect(caption).toHaveText('y = x²');
-  await page.getByRole('slider', { name: 'Coeficiente b' }).fill('2');
-  await expect(caption).toHaveText('y = x² + 2x');
-  await expect(page.locator('.graph-vertex-label')).toHaveText('V(-1; -1)');
+  await page.getByRole('slider', { name: 'Coeficiente c' }).fill('3');
+  await expect(caption).toHaveText('y = x² + 3');
   await page.getByRole('button', { name: 'Restablecer' }).click();
   await expect(caption).toHaveText('y = x²');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);

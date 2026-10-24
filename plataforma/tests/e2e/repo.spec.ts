@@ -112,22 +112,12 @@ test('datos de la clase: publicar un borrador pide confirmación y cambia clase.
   await page.getByRole('button', { name: 'Publicar al guardar' }).click();
   await dialog.getByRole('button', { name: 'Listo' }).click();
   await page.getByRole('button', { name: 'Guardar en el repositorio' }).click();
-  // Una clase publicada necesita su guía pedagógica completa.
-  await expect(page.getByText('Completa en la guía: Evidencia, Errores esperados.')).toBeVisible();
-  await page.goto('/#rol=docente&vista=clase&clase=funcion-cuadratica-2&seccion=resumen');
-  const guide = page.getByRole('region', { name: 'Guía pedagógica' });
-  await guide.getByRole('button', { name: 'Editar la guía' }).click();
-  await guide.getByLabel(/^Evidencia/).fill('Ticket tipo PAES sobre el vértice.');
-  await guide.getByLabel(/^Errores esperados/).fill('Confundir el signo de b al calcular el vértice.');
-  await guide.getByRole('button', { name: 'Aplicar' }).click();
-  await expect(guide.getByText('Ticket tipo PAES sobre el vértice.')).toBeVisible();
-  await publish(page);
-  await expect(indicator(page)).toHaveText('Publicado');
+  // La guía de esta clase ya está completa: se publica al guardar, sin avisos que corregir.
+  await expect(page.getByText(/Guardado en GitHub/)).toBeVisible();
   const dir = 'contenido/cursos/competencia-matematica-3m/clases/funcion-cuadratica-2';
   const lesson = fake.files()[`${dir}/clase.yaml`] ?? '';
   expect(lesson).toContain('status: published');
   expect(lesson).toContain('duration: 80');
-  expect(fake.files()[`${dir}/guia.md`]).toContain('## Evidencia\n\nTicket tipo PAES sobre el vértice.');
 });
 
 test('actividades: editar una pregunta PAES y guardarla', async ({ page }) => {
@@ -162,7 +152,7 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   await expect(page.locator('.save-pill').first()).toHaveText('Al día con GitHub');
 
   const repaso = page.getByRole('complementary', { name: 'Láminas del repaso' });
-  await expect(repaso.locator('.thumb')).toHaveCount(5);
+  await expect(repaso.locator('.thumb')).toHaveCount(3);
   await repaso.locator('.thumb').nth(1).click();
   await expect(page.getByLabel('Lámina R2', { exact: true })).toBeVisible();
   await slideTitle(page).fill('Comprueba la apertura (editada)');
@@ -171,14 +161,14 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   await page.keyboard.press('Alt+ArrowUp');
   await expect(page.getByLabel('Lámina R1', { exact: true })).toBeVisible();
 
-  await repaso.locator('.thumb').nth(3).click();
+  await repaso.locator('.thumb').nth(2).click();
   await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
   await page.getByRole('menuitem', { name: 'Eliminar lámina' }).click();
-  await expect(repaso.locator('.thumb')).toHaveCount(4);
+  await expect(repaso.locator('.thumb')).toHaveCount(2);
   await repaso.getByRole('button', { name: 'Nueva lámina de repaso' }).click();
   await page.getByRole('dialog', { name: 'Nueva lámina de repaso' }).locator('.picker-card').first().click();
-  await expect(repaso.locator('.thumb')).toHaveCount(5);
-  await expect(page.getByLabel('Lámina R5', { exact: true })).toBeVisible();
+  await expect(repaso.locator('.thumb')).toHaveCount(3);
+  await expect(page.getByLabel('Lámina R3', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Más acciones de la lámina' }).click();
   await page.getByRole('menuitem', { name: /Vista avanzada/ }).click();
   const added = await page.getByLabel('Identificador').inputValue();
@@ -193,10 +183,10 @@ test('repaso del estudiante: editar, reordenar, agregar y quitar sin tocar la cl
   // slides y tramos quedan igual: solo cambia la lista `repaso`, al final del archivo.
   expect(lesson.split('\nrepaso:')[0]).toBe(before.split('\nrepaso:')[0]);
   expect(lesson).toContain(
-    `repaso:\n  - comprueba-apertura.mdx\n  - explorar-a-c.mdx\n  - explorar-b.mdx\n  - ticket-paes-discriminante.mdx\n  - ${added}.mdx\n`,
+    `repaso:\n  - comprueba-apertura.mdx\n  - explorar-a-c.mdx\n  - ${added}.mdx\n`,
   );
   expect(files[`${dir}/laminas/comprueba-apertura.mdx`]).toContain('Comprueba la apertura (editada)');
-  expect(files[`${dir}/laminas/comprueba-b-vertice.mdx`]).toBeUndefined();
+  expect(files[`${dir}/laminas/ticket-paes-discriminante.mdx`]).toBeUndefined();
   expect(files[`${dir}/laminas/${added}.mdx`]).toBeDefined();
 });
 
@@ -249,7 +239,7 @@ test('un tramo no puede quedar sin láminas y Alt + flechas mueve entre tramos',
   await connectFakeGitHub(page);
   await cuadratica(page);
   // «Cierre» es la única lámina de su tramo.
-  await thumbOf(page, '¿Cómo nos vamos hoy?').dragTo(page.getByRole('button', { name: /^8\. Ticket tipo PAES/ }));
+  await thumbOf(page, '¿Cómo nos vamos hoy?').dragTo(page.getByRole('button', { name: /^7\. Ticket tipo PAES/ }));
   await expect(page.locator('.toast')).toContainText('El tramo «Cierre» quedaría sin láminas');
   await expect(indicator(page)).toHaveText('Al día');
 

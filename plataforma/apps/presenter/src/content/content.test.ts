@@ -343,8 +343,6 @@ describe('láminas de repaso', () => {
   const REPASO = [
     'explorar-a-c',
     'comprueba-apertura',
-    'explorar-b',
-    'comprueba-b-vertice',
     'ticket-paes-discriminante',
   ];
 
@@ -416,16 +414,16 @@ describe('edición del repaso desde la app', () => {
   });
 
   it('reordenar, quitar y agregar láminas cambia solo `repaso` y pasa content:check', async () => {
-    const [a, b, c, d] = repaso;
+    const [a, b, c] = repaso;
     const template = mascotGallery.templates[0];
-    if (!a || !b || !c || !d || !template)
+    if (!a || !b || !c || !template)
       throw new Error('Faltan datos de prueba');
     const nueva = slideFromTemplate(template, 'repaso-extra');
-    const files = apply(disk, writeRepaso(bundle, ID, [c, a, nueva, d]));
+    const files = apply(disk, writeRepaso(bundle, ID, [c, a, nueva]));
     const before = meta(disk);
     const after = meta(files);
     expect(after.repaso).toEqual(
-      [c.id, a.id, 'repaso-extra', d.id].map((id) => `${id}.mdx`),
+      [c.id, a.id, 'repaso-extra'].map((id) => `${id}.mdx`),
     );
     expect(after.slides).toEqual(before.slides);
     expect(after.tramos).toEqual(before.tramos);
@@ -435,7 +433,7 @@ describe('edición del repaso desde la app', () => {
     expect(result.problems).toEqual([]);
     expect(
       findLesson(result.bundle, ID)?.repaso.map((f) => f.slide.id),
-    ).toEqual([c.id, a.id, 'repaso-extra', d.id]);
+    ).toEqual([c.id, a.id, 'repaso-extra']);
   });
 
   it('quitar todo el repaso borra la clave y sus archivos, sin tocar la clase', async () => {
@@ -735,7 +733,7 @@ describe('tramos al cambiar las láminas', () => {
 
   it('la clase base declara tramos coherentes', () => {
     expect(verifyLessonPlan(lessonEntry().meta)).toEqual([]);
-    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 10, 5, 6, 2, 2, 2, 2, 1]);
+    expect(tramoGroups(lessonEntry().meta)?.map((g) => g.length)).toEqual([2, 10, 5, 6, 2, 2, 2, 1]);
   });
 
   it('renombrar una lámina que abre o cierra un tramo actualiza from y to', () => {
@@ -799,10 +797,10 @@ describe('tramos al cambiar las láminas', () => {
     const added = [...slides];
     added.splice(at + 1, 0, { ...slides[at], id: 'ceros-extra' } as (typeof slides)[number]);
     const withNew = reread(writeSlides(bundle, ID, added));
-    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 10, 6, 6, 2, 2, 2, 2, 1]);
+    expect(tramoGroups(withNew.meta)?.map((g) => g.length)).toEqual([2, 10, 6, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(withNew.meta)).toEqual([]);
     const without = reread(writeSlides(bundle, ID, slides.filter((s) => s.id !== 'repaso-eje')));
-    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 9, 5, 6, 2, 2, 2, 2, 1]);
+    expect(tramoGroups(without.meta)?.map((g) => g.length)).toEqual([2, 9, 5, 6, 2, 2, 2, 1]);
     expect(verifyLessonPlan(without.meta)).toEqual([]);
   });
 
