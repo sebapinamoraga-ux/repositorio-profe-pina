@@ -20,6 +20,7 @@ Formato: fecha · decisión · motivo · estado.
 - 2026-10-19 · Se prefiere el desarrollo detallado (más láminas y pasos) mientras quepa en el tiempo; si no cabe, sale primero la extensión y nunca la práctica ni el cierre ([principio 8](pedagogia.md)) · Que el razonamiento quede claro sin romper los 80 minutos · Vigente (límite agregado el 2026-10-21).
 - 2026-10-21 · «Nueva presentación» (crear una clase con estructuras de tramos) no se implementa mientras el docente no entregue sus estructuras y minutos reales; tampoco arrastrar una miniatura manteniéndola presionada · Las estructuras del prototipo eran inventadas · Vigente.
 - 2026-10-21 · Revisión de definiciones: principio 11 de accesibilidad; sin mínimo fijo de minutos para práctica y cierre; las notas del orador son públicas y no llevan datos de cursos ni estudiantes; manuales de autoría en `contenido/autoria/`; una regla vive en un solo documento · Ordenar la estructura antes de revisar la clase del 24/10 · Vigente.
+- 2026-10-24 · Los pares ordenados se escriben con coma, no con punto y coma, en el contenido, los manuales y las etiquetas de los gráficos; los pares con decimales y los intervalos conservan el punto y coma · Pedido del docente · Vigente.
 
 ## Abiertas
 

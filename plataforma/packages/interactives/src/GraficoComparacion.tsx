@@ -2,6 +2,7 @@ import { useId } from 'react';
 import {
   interseccionAfines,
   marcasEje,
+  parOrdenado,
   tramosMenor,
   validarVentana,
   type FuncionAfin,
@@ -216,7 +217,7 @@ export function GraficoComparacion({
             textAnchor="end"
             fontSize="22"
           >
-            ({formatNumber(corte.x)}; {formatNumber(corte.y)})
+            {parOrdenado(formatNumber(corte.x), formatNumber(corte.y))}
           </text>
         )}
         <text

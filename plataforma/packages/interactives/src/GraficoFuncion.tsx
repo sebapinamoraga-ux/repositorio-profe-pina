@@ -3,6 +3,7 @@ import { useSlide } from '@aula/pedagogical-ui';
 import {
   cortesVerticales,
   marcasEje,
+  parOrdenado,
   muestrearCurva,
   valorFuncion,
   validarCurva,
@@ -360,7 +361,7 @@ export function GraficoFuncion({
             textAnchor="start"
             fontSize="20"
           >
-            ({formatNumber(point.x)}; {formatNumber(point.y)})
+            {parOrdenado(formatNumber(point.x), formatNumber(point.y))}
           </text>
         ))}
         {triangulo && (
@@ -393,7 +394,7 @@ export function GraficoFuncion({
             y={sy(corteY) + (curva.tipo === 'afin' && curva.m > 0 ? 30 : -14)}
             fontSize="21"
           >
-            (0; {formatNumber(corteY)})
+            {parOrdenado('0', formatNumber(corteY))}
           </text>
         )}
         <text

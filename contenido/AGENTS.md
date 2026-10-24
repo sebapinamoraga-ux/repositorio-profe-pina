@@ -32,6 +32,7 @@ Leer, en este orden:
 ## Reglas propias del contenido
 
 - Al definir algo por primera vez, usar expresiones genéricas con su dominio; los casos particulares van después, como ejemplos («Ejemplo: $a=1$, $b=c=0$»), para que una propiedad del ejemplo no parezca general.
+- Los pares ordenados se escriben con coma: $(3,\ -4)$ o (3, −4). Si alguna coordenada es decimal se usa punto y coma: $(7{,}5;\ 3.750)$; los intervalos también lo conservan ([0; 7,5[). Las etiquetas de los gráficos ya lo siguen.
 - Ecuaciones verificadas en ambos miembros y soluciones comprobadas en el problema original.
 - Una actividad nueva va en `actividades/` de su clase, o en `comun/actividades/` si la usan varias.
 - La guía y las notas del orador son públicas: no llevan datos de cursos ni de estudiantes.

@@ -1,8 +1,8 @@
 id: cuadratica-coeficientes
 type: paes
 prompt: 'Respecto de la función f(x) = 5 − 2x², ¿cuál de las siguientes afirmaciones es verdadera?'
-answer: C · Su gráfico corta el eje y en (0; 5).
-solution: 'Al ordenarla, f(x) = −2x² + 5: a = −2, b = 0 y c = 5. Como f(0) = 5, corta el eje y en (0; 5); como a < 0, la parábola abre hacia abajo.'
+answer: C · Su gráfico corta el eje y en (0, 5).
+solution: 'Al ordenarla, f(x) = −2x² + 5: a = −2, b = 0 y c = 5. Como f(0) = 5, corta el eje y en (0, 5); como a < 0, la parábola abre hacia abajo.'
 skills: [Representar, Argumentar]
 source:
   kind: original
@@ -17,10 +17,10 @@ options:
     correct: false
     explanation: 'a es el coeficiente de x², no el primer número escrito: a = −2 y 5 es el término libre c.'
   - id: C
-    text: 'Su gráfico corta el eje y en (0; 5).'
+    text: 'Su gráfico corta el eje y en (0, 5).'
     correct: true
-    explanation: 'f(0) = 5 − 2 · 0² = 5: el corte con el eje y es (0; c) = (0; 5).'
+    explanation: 'f(0) = 5 − 2 · 0² = 5: el corte con el eje y es (0, c) = (0, 5).'
   - id: D
-    text: 'Su gráfico corta el eje y en (0; −2).'
+    text: 'Su gráfico corta el eje y en (0, −2).'
     correct: false
     explanation: 'Confunde c con a: −2 multiplica a x², y el corte con el eje y está en f(0) = 5.'

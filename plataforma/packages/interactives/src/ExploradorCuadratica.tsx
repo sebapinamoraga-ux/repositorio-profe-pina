@@ -3,6 +3,7 @@ import { useSlide } from '@aula/pedagogical-ui';
 import {
   expresionCuadratica,
   marcasEje,
+  parOrdenado,
   muestrearCurva,
   verticeCuadratica,
   type Curva,
@@ -234,7 +235,7 @@ export function ExploradorCuadratica({
             textAnchor="middle"
             fontSize="21"
           >
-            V({formatNumber(vertice.x)}; {formatNumber(vertice.y)})
+            V{parOrdenado(formatNumber(vertice.x), formatNumber(vertice.y))}
           </text>
         )}
         {corteVisible && (
@@ -244,7 +245,7 @@ export function ExploradorCuadratica({
             y={sy(c) + (a > 0 ? 30 : -14)}
             fontSize="21"
           >
-            (0; {formatNumber(c)})
+            {parOrdenado('0', formatNumber(c))}
           </text>
         )}
         <text

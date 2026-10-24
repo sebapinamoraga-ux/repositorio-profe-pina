@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { useSlide } from '@aula/pedagogical-ui';
+import { parOrdenado } from './function-graph';
 import {
   solveLinearSystem,
   yOnLine,
@@ -139,7 +140,7 @@ export function GraficoRectas({
             y={sy(solution.y) - 18}
             fontSize="24"
           >
-            ({formatNumber(solution.x)}; {formatNumber(solution.y)})
+            {parOrdenado(formatNumber(solution.x), formatNumber(solution.y))}
           </text>
         )}
         <text className="graph-axis-title" x="565" y="435" fontSize="24">
@@ -341,7 +342,10 @@ export function GraficoDosCondiciones({
           y={sy(solution.y) - 16}
           fontSize="22"
         >
-          ({formatNumber(solution.x / 1000)}; {formatNumber(solution.y / 1000)})
+          {parOrdenado(
+            formatNumber(solution.x / 1000),
+            formatNumber(solution.y / 1000),
+          )}
         </text>
         <text
           className="graph-axis-title"
@@ -472,7 +476,7 @@ export function GraficoSistema({
           y={sy(y) - 17}
           fontSize="26"
         >
-          ({x}; {y})
+          {parOrdenado(String(x), String(y))}
         </text>
         <text className="graph-axis-title" x="605" y="455" fontSize="26">
           x
