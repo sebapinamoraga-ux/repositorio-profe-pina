@@ -10,7 +10,6 @@ prerequisites:
 objectives:
   - Encontrar los ceros de una función cuadrática por factorización o con la fórmula general, y usar el discriminante para anticipar cuántos tiene.
   - Determinar el vértice y el eje de simetría de una parábola, y decidir si el vértice es un máximo o un mínimo.
-  - Reconocer cómo b desplaza el vértice y leer el vértice en la forma canónica f(x) = a(x − h)² + k.
   - Esbozar una parábola a partir de sus puntos importantes y resolver problemas de máximo o mínimo en contexto.
 skills: [Representar, Modelar, Resolver problemas, Argumentar]
 curriculum: [m1-2027-funcion-cuadratica]
@@ -35,23 +34,19 @@ tramos:
   - label: 'Simetría y vértice'
     from: vertice
     to: vertice-formula
-    minutes: 11
-  - label: 'Efecto de b y forma canónica (breve)'
-    from: parametro-b-canonica
-    to: forma-canonica
-    minutes: 7
+    minutes: 13
   - label: 'Esbozar la parábola y cerrar el contexto'
     from: esbozo-ingreso
     to: respuesta-ingreso
-    minutes: 10
+    minutes: 12
   - label: 'Ticket tipo PAES'
     from: ticket-paes
     to: ticket-paes-maximo
-    minutes: 6
+    minutes: 8
   - label: 'Cierre'
     from: cierre
     to: cierre
-    minutes: 2
+    minutes: 3
 slides:
   - apertura.mdx
   - precio-optimo.mdx
@@ -78,8 +73,6 @@ slides:
   - discriminante-practica.mdx
   - vertice.mdx
   - vertice-formula.mdx
-  - parametro-b-canonica.mdx
-  - forma-canonica.mdx
   - esbozo-ingreso.mdx
   - respuesta-ingreso.mdx
   - ticket-paes.mdx
@@ -88,6 +81,4 @@ slides:
 repaso:
   - explorar-a-c.mdx
   - comprueba-apertura.mdx
-  - explorar-b.mdx
-  - comprueba-b-vertice.mdx
   - ticket-paes-discriminante.mdx

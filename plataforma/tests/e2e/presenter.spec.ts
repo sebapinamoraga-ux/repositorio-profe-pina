@@ -170,8 +170,8 @@ test('el PDF con pasos imprime una página por paso y termina cada lámina compl
 });
 test('las láminas de repaso no se proyectan ni salen en el PDF', async ({ page }) => {
   await page.goto('/#clase=funcion-cuadratica-2&modo=pdf');
-  await expect(page.locator('.slide')).toHaveCount(32);
-  await expect(page.locator('[data-slide="explorar-b"]')).toHaveCount(0);
+  await expect(page.locator('.slide')).toHaveCount(30);
+  await expect(page.locator('[data-slide="explorar-a-c"]')).toHaveCount(0);
   await page.goto('/#clase=funcion-cuadratica-2&slide=cierre');
   await expect(page.locator('.slide')).toHaveAttribute('data-slide', 'cierre');
   await page.keyboard.press('ArrowRight');
